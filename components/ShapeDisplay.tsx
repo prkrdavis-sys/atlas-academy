@@ -9,13 +9,13 @@ export function ShapeDisplay({ code, compact = false }: { code: string; compact?
   return (
     <div className="flex justify-center">
       <div
-        className={`flex w-full max-w-md items-center justify-center rounded-2xl border-2 border-slate-200 bg-gradient-to-b from-sky-50 to-white shadow-md ${compact ? "h-36 p-4" : "h-56 p-6"}`}
+        className={`flex w-full max-w-md items-center justify-center rounded-2xl border-2 border-slate-200 bg-gradient-to-b from-sky-50 to-white shadow-md dark:border-slate-700 dark:from-slate-800 dark:to-slate-900 ${compact ? "h-36 p-4" : "h-56 p-6"}`}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={getShapePath(country.code3)}
           alt={`Shape of ${country.name}`}
-          className="max-h-full max-w-full object-contain [filter:brightness(0)]"
+          className="max-h-full max-w-full object-contain [filter:brightness(0)] dark:[filter:brightness(0)_invert(1)]"
         />
       </div>
     </div>

@@ -35,10 +35,10 @@ export default function ProfilesPage() {
     <div className="space-y-6 sm:space-y-8">
       <div>
         <h1 className="font-display text-2xl font-extrabold sm:text-3xl">Profiles</h1>
-        <p className="mt-1 text-sm text-slate-600 sm:text-base">Create and switch between local player profiles. No password needed.</p>
+        <p className="mt-1 text-sm text-slate-600 dark:text-slate-400 sm:text-base">Create and switch between local player profiles. No password needed.</p>
       </div>
 
-      <form onSubmit={handleCreate} className="rounded-[1.75rem] border-2 border-slate-200 bg-white/90 p-4 shadow-md backdrop-blur sm:p-6">
+      <form onSubmit={handleCreate} className="rounded-[1.75rem] border-2 border-slate-200 bg-white/90 p-4 shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90 sm:p-6">
         <h2 className="mb-4 font-semibold">Create a profile</h2>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
           <div className="flex-1">
@@ -46,7 +46,7 @@ export default function ProfilesPage() {
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm"
+              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
               placeholder="Your name"
             />
           </div>
@@ -59,7 +59,7 @@ export default function ProfilesPage() {
                   type="button"
                   onClick={() => setColor(c)}
                   aria-label={`Use profile color ${c}`}
-                  className={`h-11 w-11 rounded-full border-2 ${color === c ? "border-slate-800 ring-2 ring-slate-300 ring-offset-2" : "border-transparent"}`}
+                  className={`h-11 w-11 rounded-full border-2 ${color === c ? "border-slate-800 ring-2 ring-slate-300 ring-offset-2 dark:border-slate-200 dark:ring-slate-600 dark:ring-offset-slate-900" : "border-transparent"}`}
                   style={{ backgroundColor: c }}
                 />
               ))}
@@ -69,23 +69,23 @@ export default function ProfilesPage() {
         </div>
       </form>
 
-      <div className="rounded-[1.75rem] border-2 border-slate-200 bg-white/90 p-4 shadow-md backdrop-blur sm:p-6">
+      <div className="rounded-[1.75rem] border-2 border-slate-200 bg-white/90 p-4 shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90 sm:p-6">
         <h2 className="mb-4 font-semibold">Your profiles</h2>
         {profiles.length === 0 ? (
-          <p className="text-sm text-slate-600">No profiles yet. Create one above.</p>
+          <p className="text-sm text-slate-600 dark:text-slate-400">No profiles yet. Create one above.</p>
         ) : (
           <div className="space-y-3">
             {profiles.map((profile) => (
               <div
                 key={profile.id}
-                className="rounded-2xl border border-slate-200 bg-slate-50/70 p-3 sm:flex sm:flex-wrap sm:items-center sm:justify-between sm:gap-3 sm:bg-transparent sm:px-4 sm:py-3"
+                className="rounded-2xl border border-slate-200 bg-slate-50/70 p-3 dark:border-slate-700 dark:bg-slate-800/70 sm:flex sm:flex-wrap sm:items-center sm:justify-between sm:gap-3 sm:bg-transparent sm:px-4 sm:py-3"
               >
                 <div className="flex items-center gap-3">
                   <span className="h-10 w-10 rounded-full" style={{ backgroundColor: profile.avatarColor }} />
                   <div>
                     <p className="font-medium">{profile.name}</p>
                     {activeProfile?.id === profile.id && (
-                      <p className="text-xs text-emerald-600">Active</p>
+                      <p className="text-xs text-emerald-600 dark:text-emerald-400">Active</p>
                     )}
                   </div>
                 </div>
@@ -139,9 +139,9 @@ export default function ProfilesPage() {
         )}
       </div>
 
-      <div className="rounded-[1.75rem] border-2 border-slate-200 bg-white/90 p-4 shadow-md backdrop-blur sm:p-6">
+      <div className="rounded-[1.75rem] border-2 border-slate-200 bg-white/90 p-4 shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90 sm:p-6">
         <h2 className="mb-2 font-semibold">Import profile</h2>
-        <p className="mb-4 text-sm text-slate-600">Restore a profile from a backup JSON file.</p>
+        <p className="mb-4 text-sm text-slate-600 dark:text-slate-400">Restore a profile from a backup JSON file.</p>
         <input
           ref={fileRef}
           type="file"
@@ -161,19 +161,19 @@ export default function ProfilesPage() {
             aria-modal="true"
             aria-labelledby="delete-profile-title"
             aria-describedby="delete-profile-description"
-            className="animate-card-pop-in w-full max-w-sm rounded-[2rem] border-2 border-rose-100 bg-white p-5 shadow-2xl sm:p-6"
+            className="animate-card-pop-in w-full max-w-sm rounded-[2rem] border-2 border-rose-100 bg-white p-5 shadow-2xl dark:border-rose-900 dark:bg-slate-900 sm:p-6"
           >
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-rose-100 text-rose-600">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-rose-100 text-rose-600 dark:bg-rose-950/50 dark:text-rose-400">
               <svg aria-hidden="true" className="h-8 w-8" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M8.25 4.5A2.25 2.25 0 0 1 10.5 2.25h3A2.25 2.25 0 0 1 15.75 4.5v.75h3a.75.75 0 0 1 0 1.5H5.25a.75.75 0 0 1 0-1.5h3V4.5Zm1.5.75h4.5V4.5a.75.75 0 0 0-.75-.75h-3a.75.75 0 0 0-.75.75v.75ZM6.75 8.25h10.5l-.64 11.02A2.625 2.625 0 0 1 13.99 21.75H10a2.625 2.625 0 0 1-2.62-2.48L6.75 8.25Zm3.75 2.25a.75.75 0 0 0-.75.75v6a.75.75 0 0 0 1.5 0v-6a.75.75 0 0 0-.75-.75Zm3.75.75a.75.75 0 0 0-1.5 0v6a.75.75 0 0 0 1.5 0v-6Z" />
               </svg>
             </div>
             <div className="text-center">
-              <h3 id="delete-profile-title" className="font-display text-2xl font-extrabold text-slate-900">
+              <h3 id="delete-profile-title" className="font-display text-2xl font-extrabold text-slate-900 dark:text-slate-100">
                 Delete profile?
               </h3>
-              <p id="delete-profile-description" className="mt-2 text-sm leading-6 text-slate-600">
-                This will permanently delete <span className="font-bold text-slate-800">{profileToDelete.name}</span> and all saved progress.
+              <p id="delete-profile-description" className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">
+                This will permanently delete <span className="font-bold text-slate-800 dark:text-slate-200">{profileToDelete.name}</span> and all saved progress.
               </p>
             </div>
             <div className="mt-6 grid grid-cols-2 gap-3">

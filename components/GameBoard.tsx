@@ -141,8 +141,8 @@ export function GameBoard({
 
   if (!activeProfile) {
     return (
-      <div className="rounded-3xl border-2 border-slate-200 bg-white/90 p-8 text-center shadow-md backdrop-blur">
-        <p className="mb-4 text-slate-600">Create a profile to start playing.</p>
+      <div className="rounded-3xl border-2 border-slate-200 bg-white/90 p-8 text-center shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90">
+        <p className="mb-4 text-slate-600 dark:text-slate-400">Create a profile to start playing.</p>
         <Button onClick={() => router.push("/profiles")}>Create profile</Button>
       </div>
     );
@@ -150,8 +150,8 @@ export function GameBoard({
 
   if (engine.getPoolSize() === 0) {
     return (
-      <div className="rounded-3xl border-2 border-slate-200 bg-white/90 p-8 text-center shadow-md backdrop-blur">
-        <p className="text-slate-600">No countries match your filters for this mode.</p>
+      <div className="rounded-3xl border-2 border-slate-200 bg-white/90 p-8 text-center shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90">
+        <p className="text-slate-600 dark:text-slate-400">No countries match your filters for this mode.</p>
         <Button className="mt-4" onClick={() => router.push("/")}>Back home</Button>
       </div>
     );
@@ -263,22 +263,22 @@ export function GameBoard({
     return (
       <>
         <AnswerFeedbackLayer bursts={bursts} onDone={removeBurst} />
-        <div className="animate-card-pop-in my-auto rounded-[1.75rem] border-2 border-slate-200 bg-white/90 p-5 text-center shadow-md backdrop-blur sm:p-8">
+        <div className="animate-card-pop-in my-auto rounded-[1.75rem] border-2 border-slate-200 bg-white/90 p-5 text-center shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90 sm:p-8">
           <p className="text-4xl">{challengeComplete ? "🎉" : "🧭"}</p>
           <h2 className="mt-2 font-display text-3xl font-extrabold">{title}</h2>
-          <p className="mt-2 text-slate-600">{description}</p>
+          <p className="mt-2 text-slate-600 dark:text-slate-400">{description}</p>
           <div className="mx-auto mt-6 grid max-w-sm grid-cols-3 gap-3">
-            <div className="rounded-2xl bg-emerald-50 p-3">
-              <p className="font-display text-2xl font-extrabold text-emerald-700">{correctAnswers}</p>
-              <p className="text-xs font-semibold text-emerald-800">Correct</p>
+            <div className="rounded-2xl bg-emerald-50 p-3 dark:bg-emerald-950/50">
+              <p className="font-display text-2xl font-extrabold text-emerald-700 dark:text-emerald-400">{correctAnswers}</p>
+              <p className="text-xs font-semibold text-emerald-800 dark:text-emerald-300">Correct</p>
             </div>
-            <div className="rounded-2xl bg-sky-50 p-3">
-              <p className="font-display text-2xl font-extrabold text-sky-700">{accuracy}%</p>
-              <p className="text-xs font-semibold text-sky-800">Accuracy</p>
+            <div className="rounded-2xl bg-sky-50 p-3 dark:bg-sky-950/50">
+              <p className="font-display text-2xl font-extrabold text-sky-700 dark:text-sky-400">{accuracy}%</p>
+              <p className="text-xs font-semibold text-sky-800 dark:text-sky-300">Accuracy</p>
             </div>
-            <div className="rounded-2xl bg-slate-100 p-3">
-              <p className="font-display text-2xl font-extrabold text-slate-700">{skippedAnswers}</p>
-              <p className="text-xs font-semibold text-slate-600">Skipped</p>
+            <div className="rounded-2xl bg-slate-100 p-3 dark:bg-slate-800">
+              <p className="font-display text-2xl font-extrabold text-slate-700 dark:text-slate-200">{skippedAnswers}</p>
+              <p className="text-xs font-semibold text-slate-600 dark:text-slate-400">Skipped</p>
             </div>
           </div>
           <div className="mt-6 grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:justify-center">
@@ -310,21 +310,21 @@ export function GameBoard({
           <p className="text-[9px] font-black uppercase tracking-[0.18em] text-teal-700/70 sm:text-[10px]">
             Your task
           </p>
-          <p className="truncate font-display text-sm font-extrabold text-slate-700 sm:text-base">
+          <p className="truncate font-display text-sm font-extrabold text-slate-700 dark:text-slate-200 sm:text-base">
             {roundTaskLabel}
           </p>
         </div>
         <div className="flex items-center justify-end gap-1.5 sm:gap-2">
           <StreakCounter streak={streak} compact />
           {timed && (
-            <div className={`rounded-xl border-2 px-2 py-1 text-center sm:rounded-2xl sm:px-3 sm:py-1.5 ${timeLeft <= 10 ? "border-rose-300 bg-rose-50" : "border-slate-200 bg-white/90"}`}>
-              <p className={`game-stat-label text-[9px] font-semibold uppercase ${timeLeft <= 10 ? "text-rose-500" : "text-slate-500"}`}>Time</p>
+            <div className={`rounded-xl border-2 px-2 py-1 text-center sm:rounded-2xl sm:px-3 sm:py-1.5 ${timeLeft <= 10 ? "border-rose-300 bg-rose-50 dark:border-rose-700 dark:bg-rose-950/50" : "border-slate-200 bg-white/90 dark:border-slate-700 dark:bg-slate-900/90"}`}>
+              <p className={`game-stat-label text-[9px] font-semibold uppercase ${timeLeft <= 10 ? "text-rose-500 dark:text-rose-400" : "text-slate-500 dark:text-slate-400"}`}>Time</p>
               <p className={`font-display text-base font-extrabold leading-none sm:text-lg ${timeLeft <= 10 ? "text-rose-600" : ""}`}>{timeLeft}s</p>
             </div>
           )}
           {sessionQuestionLimit && (
-            <div className="rounded-xl border-2 border-slate-200 bg-white/90 px-2 py-1 text-center sm:rounded-2xl sm:px-3 sm:py-1.5">
-              <p className="game-stat-label text-[9px] font-semibold uppercase text-slate-500">Question</p>
+            <div className="rounded-xl border-2 border-slate-200 bg-white/90 px-2 py-1 text-center dark:border-slate-700 dark:bg-slate-900/90 sm:rounded-2xl sm:px-3 sm:py-1.5">
+              <p className="game-stat-label text-[9px] font-semibold uppercase text-slate-500 dark:text-slate-400">Question</p>
               <p className="font-display text-base font-extrabold leading-none sm:text-lg">{questionCount + 1}/{sessionQuestionLimit}</p>
             </div>
           )}
@@ -332,13 +332,13 @@ export function GameBoard({
       </div>
 
       {newAchievements.length > 0 && (
-        <div className="shrink-0 rounded-xl border border-amber-200 bg-amber-50 px-4 py-2 text-sm text-amber-900">
+        <div className="shrink-0 rounded-xl border border-amber-200 bg-amber-50 px-4 py-2 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950/50 dark:text-amber-200">
           🏆 Achievement unlocked:{" "}
           {newAchievements.map((id) => ACHIEVEMENTS.find((a) => a.id === id)?.title).join(", ")}
         </div>
       )}
 
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border-2 border-slate-200 bg-white/90 p-3 shadow-md backdrop-blur sm:rounded-3xl sm:p-4">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border-2 border-slate-200 bg-white/90 p-3 shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90 sm:rounded-3xl sm:p-4">
         <h2 className="mb-2 shrink-0 text-center font-display text-base font-extrabold leading-tight sm:mb-3 sm:text-xl">{question.prompt}</h2>
 
         <div

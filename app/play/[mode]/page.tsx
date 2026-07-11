@@ -63,19 +63,19 @@ export default function PlayPage() {
           <button
             type="button"
             onClick={() => router.push("/")}
-            className="-ml-2 inline-flex min-h-11 items-center rounded-xl px-2 text-sm font-semibold text-slate-500 hover:text-slate-800 active:bg-slate-200/60"
+            className="-ml-2 inline-flex min-h-11 items-center rounded-xl px-2 text-sm font-semibold text-slate-500 hover:text-slate-800 active:bg-slate-200/60 dark:text-slate-400 dark:hover:text-slate-200 dark:active:bg-slate-700/60"
           >
             ← Back
           </button>
           <h1 className="font-display text-2xl font-extrabold sm:mt-2 sm:text-3xl">{modeInfo.icon} {modeInfo.title}</h1>
-          <p className="mt-1 text-sm text-slate-600 sm:text-base">{modeInfo.description}</p>
+          <p className="mt-1 text-sm text-slate-600 dark:text-slate-400 sm:text-base">{modeInfo.description}</p>
         </div>
       )}
 
       {!started ? (
         <>
           {mode === "weak-spots" && (!weakSpotCodes || weakSpotCodes.length === 0) && (
-            <p className="rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-900">
+            <p className="rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:bg-amber-950/50 dark:text-amber-200">
               Play some games first to build a list of countries to practice.
             </p>
           )}
@@ -99,7 +99,7 @@ export default function PlayPage() {
             </button>
           </div>
 
-          <div className="space-y-5 rounded-[1.75rem] border-2 border-slate-200 bg-white/90 p-4 shadow-md backdrop-blur sm:space-y-6 sm:p-6">
+          <div className="space-y-5 rounded-[1.75rem] border-2 border-slate-200 bg-white/90 p-4 shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90 sm:space-y-6 sm:p-6">
             <div>
               <h2 className="mb-3 font-semibold">Difficulty</h2>
               <div className="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap">
@@ -111,7 +111,7 @@ export default function PlayPage() {
                     className={`min-h-12 rounded-2xl border-2 px-4 py-2 text-left text-sm font-semibold capitalize transition-all duration-100 sm:text-center ${
                       difficulty === level
                         ? "border-emerald-600 bg-emerald-500 text-white shadow-[0_3px_0_var(--color-emerald-700)]"
-                        : "border-slate-200 bg-white text-slate-700 shadow-[0_3px_0_var(--color-slate-200)] hover:border-sky-300 active:translate-y-[3px] active:shadow-none"
+                        : "border-slate-200 bg-white text-slate-700 shadow-[0_3px_0_var(--color-slate-200)] hover:border-sky-300 active:translate-y-[3px] active:shadow-none dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:shadow-[0_3px_0_var(--color-slate-700)] dark:hover:border-sky-500"
                     }`}
                   >
                     {level}

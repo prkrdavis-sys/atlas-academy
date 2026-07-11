@@ -26,7 +26,7 @@ export function AnswerTypeIn({ onSubmit, disabled, placeholder = "Type your answ
         onChange={(e) => setValue(e.target.value)}
         disabled={disabled}
         placeholder={placeholder}
-        className="min-w-0 rounded-2xl border-2 border-slate-200 bg-white px-4 py-3 text-base shadow-sm focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-200 sm:text-sm"
+        className="min-w-0 rounded-2xl border-2 border-slate-200 bg-white px-4 py-3 text-base shadow-sm focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-emerald-500 dark:focus:ring-emerald-900 sm:text-sm"
         autoComplete="off"
       />
       <Button type="submit" disabled={disabled || !value.trim()}>

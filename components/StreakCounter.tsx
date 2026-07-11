@@ -13,21 +13,21 @@ export function StreakCounter({ streak, compact = false }: { streak: number; com
         "border-2 text-center shadow-sm transition-transform",
         compact ? "rounded-xl px-2 py-1 sm:rounded-2xl sm:px-3 sm:py-1.5" : "rounded-2xl px-4 py-3",
         milestone
-          ? "scale-105 border-amber-300 bg-gradient-to-b from-amber-50 to-orange-100"
-          : "border-slate-200 bg-white/90",
+          ? "scale-105 border-amber-300 bg-gradient-to-b from-amber-50 to-orange-100 dark:border-amber-700 dark:from-amber-950/50 dark:to-orange-950/50"
+          : "border-slate-200 bg-white/90 dark:border-slate-700 dark:bg-slate-900/90",
       )}
     >
       <p
         className={cn(
           "font-semibold uppercase tracking-wide",
-          milestone ? "text-orange-600" : "text-slate-500",
+          milestone ? "text-orange-600 dark:text-orange-400" : "text-slate-500 dark:text-slate-400",
           compact ? "game-stat-label text-[9px] sm:text-[10px]" : "text-xs",
         )}
       >
         {milestone ? "🔥 " : ""}
         {label}
       </p>
-      <p className={cn("font-display font-extrabold text-slate-900", compact ? "text-base leading-none sm:text-lg" : "text-3xl")}>
+      <p className={cn("font-display font-extrabold text-slate-900 dark:text-slate-100", compact ? "text-base leading-none sm:text-lg" : "text-3xl")}>
         {streak}
       </p>
     </div>

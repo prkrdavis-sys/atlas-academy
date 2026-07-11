@@ -1,9 +1,17 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #f2f8f4;
   --foreground: #1e293b;
   color-scheme: light;
+}
+
+.dark {
+  --background: #0f172a;
+  --foreground: #e2e8f0;
+  color-scheme: dark;
 }
 
 @theme inline {
@@ -30,6 +38,14 @@ body {
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior-y: none;
   text-rendering: optimizeLegibility;
+}
+
+.dark body {
+  background-image:
+    radial-gradient(ellipse 900px 520px at 12% -8%, rgb(16 185 129 / 0.08), transparent 62%),
+    radial-gradient(ellipse 820px 480px at 92% 4%, rgb(56 189 248 / 0.08), transparent 60%),
+    radial-gradient(ellipse 760px 520px at 50% 108%, rgb(251 191 36 / 0.05), transparent 58%),
+    radial-gradient(rgb(148 163 184 / 0.06) 1px, transparent 1px);
 }
 
 button,

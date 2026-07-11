@@ -8,7 +8,7 @@ export function FlagDisplay({ code, size = "lg" }: { code: string; size?: "sm" |
     size === "lg" ? { w: 320, h: 213 } : size === "md" ? { w: 240, h: 160 } : { w: 120, h: 80 };
   return (
     <div className="flex justify-center">
-      <div className="overflow-hidden rounded-2xl border-2 border-slate-200 bg-white shadow-md">
+      <div className="overflow-hidden rounded-2xl border-2 border-slate-200 bg-white shadow-md dark:border-slate-700 dark:bg-slate-800">
         <Image
           src={getFlagPath(code)}
           alt={`Flag of ${code}`}
@@ -42,7 +42,7 @@ export function FlagGrid({
             key={code}
             type="button"
             onClick={() => onSelect(code)}
-            className="aspect-[4/3] overflow-hidden rounded-xl border-2 border-slate-200 bg-white shadow-[0_3px_0_var(--color-slate-200)] transition-all duration-100 hover:border-sky-300 active:translate-y-[3px] active:shadow-none"
+            className="aspect-[4/3] overflow-hidden rounded-xl border-2 border-slate-200 bg-white shadow-[0_3px_0_var(--color-slate-200)] transition-all duration-100 hover:border-sky-300 active:translate-y-[3px] active:shadow-none dark:border-slate-600 dark:bg-slate-800 dark:shadow-[0_3px_0_var(--color-slate-700)] dark:hover:border-sky-500"
           >
             <Image
               src={getFlagPath(code)}

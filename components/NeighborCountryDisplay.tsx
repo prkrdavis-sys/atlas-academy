@@ -22,13 +22,13 @@ export function NeighborCountryDisplay({ code }: { code: string }) {
           <img
             src={getShapePath(country.code3)}
             alt={`Outline of ${country.name}`}
-            className="max-h-[min(30dvh,15rem)] w-full object-contain [filter:brightness(0)_saturate(100%)_invert(17%)_sepia(13%)_saturate(1146%)_hue-rotate(179deg)_brightness(93%)_contrast(91%)]"
+            className="max-h-[min(30dvh,15rem)] w-full object-contain [filter:brightness(0)_saturate(100%)_invert(17%)_sepia(13%)_saturate(1146%)_hue-rotate(179deg)_brightness(93%)_contrast(91%)] dark:[filter:brightness(0)_invert(1)]"
           />
         )}
       </div>
 
       <div className="flex flex-col gap-4 sm:gap-5">
-        <div className="w-fit overflow-hidden rounded-xl border-2 border-slate-200 bg-white shadow-sm">
+        <div className="w-fit overflow-hidden rounded-xl border-2 border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
           <Image
             src={getFlagPath(country.code)}
             alt={`Flag of ${country.name}`}
@@ -44,7 +44,7 @@ export function NeighborCountryDisplay({ code }: { code: string }) {
             <dt className="text-[10px] font-black uppercase tracking-[0.16em] text-teal-700/70">
               Capital
             </dt>
-            <dd className="mt-0.5 font-display text-lg font-extrabold leading-tight text-slate-800 sm:text-2xl">
+            <dd className="mt-0.5 font-display text-lg font-extrabold leading-tight text-slate-800 dark:text-slate-200 sm:text-2xl">
               {country.capital || "No official capital"}
             </dd>
           </div>
