@@ -10,10 +10,10 @@ export function StreakCounter({ streak, compact = false }: { streak: number; com
   return (
     <div
       className={cn(
-        "border-2 text-center shadow-sm transition-transform",
+        "border-2 text-center shadow-sm",
         compact ? "rounded-xl px-2 py-1 sm:rounded-2xl sm:px-3 sm:py-1.5" : "rounded-2xl px-4 py-3",
         milestone
-          ? "scale-105 border-amber-300 bg-gradient-to-b from-amber-50 to-orange-100 dark:border-amber-700 dark:from-amber-950/50 dark:to-orange-950/50"
+          ? "border-amber-300 bg-gradient-to-b from-amber-50 to-orange-100 shadow-[0_0_0_1px_rgb(251_191_36_/_0.35)] dark:border-amber-700 dark:from-amber-950/50 dark:to-orange-950/50 dark:shadow-[0_0_0_1px_rgb(245_158_11_/_0.25)]"
           : "border-slate-200 bg-white/90 dark:border-slate-700 dark:bg-slate-900/90",
       )}
     >

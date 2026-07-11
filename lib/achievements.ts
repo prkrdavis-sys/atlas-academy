@@ -12,10 +12,7 @@ function sumStat(profile: Profile, field: "totalCorrect" | "totalPlayed"): numbe
 }
 
 function maxBestStreak(profile: Profile): number {
-  return GAME_MODES.reduce(
-    (max, mode) => Math.max(max, profile.stats[mode.id].bestStreak),
-    0,
-  );
+  return profile.globalBestStreak;
 }
 
 function modeCorrectCount(profile: Profile, mode: GameMode): number {
@@ -59,22 +56,23 @@ export function buildAchievementChecks(
   session?: AchievementSessionContext,
 ): Record<string, boolean> {
   const stats = profile.stats[mode];
+  const globalStreak = profile.globalCurrentStreak ?? 0;
   const totalCorrect = sumStat(profile, "totalCorrect");
   const totalPlayed = sumStat(profile, "totalPlayed");
   const overallAccuracy = totalPlayed > 0 ? totalCorrect / totalPlayed : 0;
-  const dailyPlayed = profile.stats["daily-challenge"].totalPlayed;
+  const dailyCompletions = profile.dailyChallengeCompletions?.length ?? 0;
   const sessionCorrect = session?.sessionCorrect ?? 0;
   const sessionTotal = session?.sessionTotal ?? 0;
   const sessionEnded = session?.sessionEnded ?? false;
 
   return {
     "first-steps": totalPlayed >= 1,
-    "streak-5": stats.currentStreak >= 5,
-    "streak-10": stats.currentStreak >= 10,
-    "streak-25": stats.currentStreak >= 25,
-    "streak-50": stats.currentStreak >= 50,
-    "streak-75": stats.currentStreak >= 75,
-    "streak-100": stats.currentStreak >= 100,
+    "streak-5": globalStreak >= 5,
+    "streak-10": globalStreak >= 10,
+    "streak-25": globalStreak >= 25,
+    "streak-50": globalStreak >= 50,
+    "streak-75": globalStreak >= 75,
+    "streak-100": globalStreak >= 100,
     "best-streak-20": maxBestStreak(profile) >= 20,
     "best-streak-40": maxBestStreak(profile) >= 40,
     "played-50": totalPlayed >= 50,
@@ -104,9 +102,9 @@ export function buildAchievementChecks(
       mode === "speed-round" && sessionEnded && sessionCorrect >= 15,
     "speed-frenzy":
       mode === "speed-round" && sessionEnded && sessionCorrect >= 25,
-    "daily-devotee": dailyPlayed >= 10,
-    "daily-regular": dailyPlayed >= 50,
-    "daily-veteran": dailyPlayed >= 200,
+    "daily-devotee": dailyCompletions >= 1,
+    "daily-regular": dailyCompletions >= 5,
+    "daily-veteran": dailyCompletions >= 20,
     "weak-spots-warrior": modeCorrectCount(profile, "weak-spots") >= 15,
     "accuracy-sharp": totalPlayed >= 75 && overallAccuracy >= 0.8,
     "perfect-session":

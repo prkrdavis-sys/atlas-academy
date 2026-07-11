@@ -10,6 +10,7 @@ export function Button({
   className,
   variant = "primary",
   size = "md",
+  type = "button",
   ...props
 }: ButtonProps) {
   return (
@@ -32,6 +33,7 @@ export function Button({
         className,
       )}
       {...props}
+      type={type}
     />
   );
 }

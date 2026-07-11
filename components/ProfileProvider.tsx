@@ -13,6 +13,7 @@ import type { Profile } from "@/lib/types";
 type ProfileContextValue = {
   profiles: Profile[];
   activeProfile: Profile | null;
+  hydrated: boolean;
   refresh: () => void;
   addProfile: (name: string, color: string) => Profile;
   switchProfile: (id: string) => void;
@@ -28,9 +29,11 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
   // Start with the same empty state on server and client, then hydrate from
   // localStorage after mount to avoid SSR/client markup mismatches.
   const [state, setState] = useState(EMPTY_STATE);
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
     setState(loadState());
+    setHydrated(true);
   }, []);
 
   const refresh = useCallback(() => {
@@ -49,6 +52,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     () => ({
       profiles,
       activeProfile,
+      hydrated,
       refresh,
       addProfile: (name, color) => {
         const profile = createProfile(name, color);
@@ -69,7 +73,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
         setState(loadState());
       },
     }),
-    [profiles, activeProfile, refresh],
+    [profiles, activeProfile, hydrated, refresh],
   );
 
   return <ProfileContext.Provider value={value}>{children}</ProfileContext.Provider>;

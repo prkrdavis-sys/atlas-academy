@@ -1,6 +1,6 @@
 import { filterCountries, getCountryByCode, getCountryName } from "@/lib/countries";
 import { validateAnswer } from "@/lib/answer-matcher";
-import type { Continent, Country, Difficulty, GameMode, Question } from "@/lib/types";
+import { DEFAULT_ROUND_QUESTION_COUNT, type Continent, type CoreQuestionType, type Country, type Difficulty, type GameMode, type Question } from "@/lib/types";
 import { pickRandom, shuffle, uniqueBy } from "@/lib/utils";
 
 function seededRandom(seed: number) {
@@ -46,10 +46,10 @@ function buildMcOptions(
 
 export class GameEngine {
   private pool: Country[];
-  private recentCodes: string[] = [];
   private random: () => number;
   private questionIndex = 0;
   private dailyQuestions: Question[] = [];
+  private roundCountries: Country[] = [];
 
   constructor(
     private mode: GameMode,
@@ -57,12 +57,17 @@ export class GameEngine {
     private difficulty: Difficulty,
     weakSpotCodes?: string[],
     seed?: number,
+    private questionType?: CoreQuestionType,
+    private maxQuestions: number = DEFAULT_ROUND_QUESTION_COUNT,
   ) {
-    this.pool = filterCountries({ continents, mode, weakSpotCodes });
+    const filterMode = mode === "speed-round" && questionType ? questionType : mode;
+    this.pool = filterCountries({ continents, mode: filterMode, weakSpotCodes });
     this.random = seed !== undefined ? seededRandom(seed) : Math.random;
 
     if (this.mode === "daily-challenge") {
       this.dailyQuestions = this.buildDailyQuestions();
+    } else {
+      this.roundCountries = this.buildShuffledRoundCountries();
     }
   }
 
@@ -73,7 +78,7 @@ export class GameEngine {
   private buildDailyQuestions(): Question[] {
     const questions: Question[] = [];
     const used = new Set<string>();
-    for (let i = 0; i < 10 && i < this.pool.length; i += 1) {
+    for (let i = 0; i < this.maxQuestions && i < this.pool.length; i += 1) {
       let country = pickFromPool(this.pool, this.random);
       let attempts = 0;
       while (used.has(country.code) && attempts < 20) {
@@ -86,6 +91,11 @@ export class GameEngine {
     return questions;
   }
 
+  private buildShuffledRoundCountries(): Country[] {
+    const limit = Math.min(this.maxQuestions, this.pool.length);
+    return shuffle(this.pool).slice(0, limit);
+  }
+
   nextQuestion(): Question | null {
     if (this.pool.length === 0) return null;
 
@@ -95,18 +105,13 @@ export class GameEngine {
       return q ?? null;
     }
 
-    let country = pickFromPool(
-      this.pool.filter((c) => !this.recentCodes.includes(c.code)),
-      this.random,
-    );
-    if (!country) {
-      this.recentCodes = [];
-      country = pickFromPool(this.pool, this.random);
-    }
-    this.recentCodes.push(country.code);
-    if (this.recentCodes.length > 5) this.recentCodes.shift();
+    const country = this.roundCountries[this.questionIndex];
+    if (!country) return null;
+    this.questionIndex += 1;
 
-    return this.buildQuestion(country, this.mode);
+    const questionMode =
+      this.mode === "speed-round" && this.questionType ? this.questionType : this.mode;
+    return this.buildQuestion(country, questionMode);
   }
 
   private buildQuestion(country: Country, mode: GameMode): Question {
@@ -115,7 +120,6 @@ export class GameEngine {
     switch (mode) {
       case "flag-to-country":
       case "marathon":
-      case "speed-round":
       case "weak-spots": {
         const mc =
           this.difficulty !== "hard"
@@ -123,7 +127,7 @@ export class GameEngine {
             : undefined;
         return {
           id,
-          mode: mode === "marathon" || mode === "speed-round" || mode === "weak-spots" ? mode : "flag-to-country",
+          mode: mode === "marathon" || mode === "weak-spots" ? mode : "flag-to-country",
           countryCode: country.code,
           prompt: "Which country does this flag belong to?",
           correctAnswer: country.name,
@@ -256,10 +260,40 @@ export class GameEngine {
   }
 }
 
-export function getDailySeed(): number {
-  const today = new Date();
-  return today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+const DAILY_TIMEZONE = "America/New_York";
+
+export function getDailyDateKey(date = new Date()): string {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: DAILY_TIMEZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(date);
 }
+
+export function getDailySeed(date = new Date()): number {
+  const [year, month, day] = getDailyDateKey(date).split("-").map(Number);
+  return year * 10000 + month * 100 + day;
+}
+
+export function formatDailyDate(date = new Date()): string {
+  return new Intl.DateTimeFormat("en-US", {
+    timeZone: DAILY_TIMEZONE,
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  }).format(date);
+}
+
+export function hasPlayedDailyToday(
+  playedDates: string[] | undefined,
+  date = new Date(),
+): boolean {
+  return (playedDates ?? []).includes(getDailyDateKey(date));
+}
+
+export const DAILY_COUNTING_SESSION_KEY = "daily-counting-session";
 
 export function getWeakSpotCodes(codes: string[]): string[] {
   const counts = new Map<string, number>();

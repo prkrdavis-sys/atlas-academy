@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { getCountryByCode, getFlagPath, formatPopulation } from "@/lib/countries";
+import { getCountryByCode, getFlagPath, getShapePath, formatPopulation } from "@/lib/countries";
 import Image from "next/image";
 
 type LearnCardProps = {
@@ -96,6 +96,18 @@ export function LearnCard({ countryCode, wasCorrect, compareCountryCode, heading
             countryCode={countryCode}
             compareCountryCode={compareCountryCode}
           />
+        )}
+        {country.hasShape && (
+          <div className="mb-4 flex justify-center">
+            <div className="flex h-28 w-full max-w-xs items-center justify-center rounded-2xl border border-slate-200 bg-gradient-to-b from-sky-50 to-white p-4 dark:border-slate-700 dark:from-slate-800 dark:to-slate-900 sm:h-32">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={getShapePath(country.code3)}
+                alt={`Outline of ${country.name}`}
+                className="max-h-full max-w-full object-contain [filter:brightness(0)] dark:[filter:brightness(0)_invert(1)]"
+              />
+            </div>
+          </div>
         )}
         <div
           className={

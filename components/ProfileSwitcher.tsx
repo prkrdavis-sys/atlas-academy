@@ -8,7 +8,8 @@ import { AVATAR_COLORS } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 export function ProfileSwitcher({ compact = false }: { compact?: boolean }) {
-  const { profiles, activeProfile, switchProfile, addProfile } = useProfiles();
+  const { profiles, activeProfile, switchProfile, addProfile, hydrated } = useProfiles();
+  const displayProfile = hydrated ? activeProfile : null;
   const [open, setOpen] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
   const [name, setName] = useState("");
@@ -37,7 +38,7 @@ export function ProfileSwitcher({ compact = false }: { compact?: boolean }) {
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        aria-label={activeProfile ? `Switch profile. Current profile: ${activeProfile.name}` : "Choose a profile"}
+        aria-label={displayProfile ? `Switch profile. Current profile: ${displayProfile.name}` : "Choose a profile"}
         className={cn(
           "flex min-h-11 items-center gap-2 rounded-full border border-slate-200 bg-white text-sm font-medium shadow-sm transition-colors hover:bg-slate-50 active:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:active:bg-slate-600",
           compact ? "px-2" : "px-3",
@@ -45,9 +46,9 @@ export function ProfileSwitcher({ compact = false }: { compact?: boolean }) {
       >
         <span
           className="h-7 w-7 shrink-0 rounded-full"
-          style={{ backgroundColor: activeProfile?.avatarColor ?? "#94a3b8" }}
+          style={{ backgroundColor: displayProfile?.avatarColor ?? "#94a3b8" }}
         />
-        <span className={cn(compact && "sr-only")}>{activeProfile?.name ?? "No profile"}</span>
+        <span className={cn(compact && "sr-only")}>{displayProfile?.name ?? "No profile"}</span>
       </button>
 
       {open && (

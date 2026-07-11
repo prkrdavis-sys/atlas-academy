@@ -12,6 +12,30 @@ export type Continent = (typeof CONTINENTS)[number];
 
 export type Difficulty = "easy" | "medium" | "hard";
 
+export const ROUND_QUESTION_OPTIONS = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50] as const;
+export type RoundQuestionCount = (typeof ROUND_QUESTION_OPTIONS)[number];
+export const DEFAULT_ROUND_QUESTION_COUNT: RoundQuestionCount = 10;
+
+export function normalizeRoundQuestionCount(value: number | undefined): RoundQuestionCount {
+  if (value !== undefined && (ROUND_QUESTION_OPTIONS as readonly number[]).includes(value)) {
+    return value as RoundQuestionCount;
+  }
+  return DEFAULT_ROUND_QUESTION_COUNT;
+}
+
+export type CoreQuestionType =
+  | "flag-to-country"
+  | "capital-to-country"
+  | "country-to-capital"
+  | "shape-to-country";
+
+export const CORE_QUESTION_TYPES: CoreQuestionType[] = [
+  "flag-to-country",
+  "capital-to-country",
+  "country-to-capital",
+  "shape-to-country",
+];
+
 export type GameMode =
   | "flag-to-country"
   | "capital-to-country"
@@ -56,13 +80,21 @@ export type Profile = {
   name: string;
   avatarColor: string;
   createdAt: string;
+  globalCurrentStreak: number;
+  globalBestStreak: number;
   stats: Record<GameMode, ModeStats>;
   settings: {
     difficulty: Difficulty;
     lastContinentFilter: Continent[];
+    speedRoundQuestionType: CoreQuestionType;
+    roundQuestionCount: RoundQuestionCount;
   };
   achievements: string[];
   countryProgress?: Record<string, { correct: number; total: number }>;
+  /** EST date keys (YYYY-MM-DD) when the daily challenge was first played with stats */
+  dailyChallengePlayedDates?: string[];
+  /** EST date keys (YYYY-MM-DD) when the daily challenge was fully completed */
+  dailyChallengeCompletions?: string[];
 };
 
 export type AchievementSessionContext = {
@@ -155,7 +187,7 @@ export const GAME_MODES: {
   {
     id: "daily-challenge",
     title: "Daily Challenge",
-    description: "10 questions seeded by today's date",
+    description: "10 questions — resets at midnight Eastern",
     icon: "📅",
     phase: 2,
   },
@@ -201,8 +233,8 @@ export const ACHIEVEMENTS = [
   { id: "streak-50", title: "Geography Legend", description: "Reach a 50-question streak" },
   { id: "streak-75", title: "Globe Runner", description: "Reach a 75-question streak" },
   { id: "streak-100", title: "World Dominator", description: "Reach a 100-question streak" },
-  { id: "best-streak-20", title: "High Water Mark", description: "Reach a best streak of 20 in any mode" },
-  { id: "best-streak-40", title: "Peak Performer", description: "Reach a best streak of 40 in any mode" },
+  { id: "best-streak-20", title: "High Water Mark", description: "Reach an all-time best streak of 20" },
+  { id: "best-streak-40", title: "Peak Performer", description: "Reach an all-time best streak of 40" },
   { id: "played-50", title: "Warming Up", description: "Play 50 questions total" },
   { id: "played-250", title: "Dedicated Learner", description: "Play 250 questions total" },
   { id: "correct-25", title: "Quick Learner", description: "Answer 25 questions correctly total" },

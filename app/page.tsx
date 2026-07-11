@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useProfiles } from "@/components/ProfileProvider";
 import { GAME_MODES, type GameMode } from "@/lib/types";
+import { formatDailyDate, hasPlayedDailyToday } from "@/lib/game-engine";
 import { cn } from "@/lib/utils";
 
 const CORE_MODE_STYLES: Record<
@@ -35,11 +36,15 @@ const CHALLENGE_MODES: GameMode[] = ["daily-challenge", "speed-round", "marathon
 const EXTRA_QUIZ_MODES: GameMode[] = ["country-to-flag", "neighbor-quiz", "population-showdown"];
 
 export default function HomePage() {
-  const { activeProfile } = useProfiles();
+  const { activeProfile, hydrated } = useProfiles();
+  const profile = hydrated ? activeProfile : null;
 
-  const bestStreak = activeProfile
-    ? Math.max(0, ...Object.values(activeProfile.stats).map((s) => s.bestStreak))
-    : 0;
+  const currentStreak = profile?.globalCurrentStreak ?? 0;
+  const bestStreak = profile?.globalBestStreak ?? 0;
+  const dailyDateLabel = formatDailyDate();
+  const dailyCompletedToday = profile
+    ? hasPlayedDailyToday(profile.dailyChallengePlayedDates)
+    : false;
 
   return (
     <div className="space-y-7 sm:space-y-10">
@@ -58,12 +63,15 @@ export default function HomePage() {
             Flags, capitals, and country shapes. Build a streak and beat your best.
           </p>
           <div className="mt-5 flex flex-col items-stretch gap-3 sm:mt-6 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
-            {activeProfile ? (
+            {profile ? (
               <Link
                 href="/play/daily-challenge"
                 className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 font-display text-sm font-extrabold text-teal-800 shadow-[0_3px_0_rgb(255_255_255_/_0.45)] transition-transform hover:scale-[1.03] active:translate-y-[3px] active:shadow-none sm:text-base"
               >
-                📅 Play today&apos;s challenge
+                <span className="flex flex-col items-center leading-tight sm:flex-row sm:gap-2">
+                  <span>📅 {dailyCompletedToday ? "Review today's challenge" : "Play today's challenge"}</span>
+                  <span className="text-xs font-semibold text-teal-700/80">{dailyDateLabel}</span>
+                </span>
               </Link>
             ) : (
               <Link
@@ -73,10 +81,17 @@ export default function HomePage() {
                 Create your first profile
               </Link>
             )}
-            {bestStreak > 0 && (
-              <span className="self-center rounded-full bg-white/15 px-4 py-2 text-sm font-semibold backdrop-blur">
-                🔥 Best streak: {bestStreak}
-              </span>
+            {profile && (
+              <div className="flex flex-wrap items-center gap-2 self-center">
+                <span className="rounded-full bg-white/20 px-4 py-2 text-sm font-bold backdrop-blur">
+                  🔥 Current streak: {currentStreak}
+                </span>
+                {bestStreak > 0 && (
+                  <span className="rounded-full bg-white/15 px-4 py-2 text-sm font-semibold backdrop-blur">
+                    🏆 Best streak: {bestStreak}
+                  </span>
+                )}
+              </div>
             )}
           </div>
         </div>
@@ -86,7 +101,6 @@ export default function HomePage() {
         <h2 className="mb-3 font-display text-xl font-extrabold text-slate-800 dark:text-slate-100 sm:mb-4">Play</h2>
         <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
           {GAME_MODES.filter((m) => m.phase === 1).map((mode) => {
-            const streak = activeProfile?.stats[mode.id]?.currentStreak ?? 0;
             const style = CORE_MODE_STYLES[mode.id];
             return (
               <Link
@@ -110,11 +124,6 @@ export default function HomePage() {
                   <h3 className="font-display font-extrabold text-slate-900 dark:text-slate-100">{mode.title}</h3>
                   <p className="mt-0.5 line-clamp-2 text-xs leading-snug text-slate-600 dark:text-slate-400 sm:truncate sm:text-sm">{mode.description}</p>
                 </div>
-                {streak > 0 && (
-                  <span className="shrink-0 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-bold text-amber-800 dark:bg-amber-900/50 dark:text-amber-300">
-                    🔥 {streak}
-                  </span>
-                )}
               </Link>
             );
           })}
@@ -127,6 +136,7 @@ export default function HomePage() {
           {CHALLENGE_MODES.map((id) => {
             const mode = GAME_MODES.find((m) => m.id === id);
             if (!mode) return null;
+            const isDaily = mode.id === "daily-challenge";
             return (
               <Link
                 key={mode.id}
@@ -139,6 +149,11 @@ export default function HomePage() {
                 <h3 className="mt-2 font-display text-sm font-extrabold text-slate-900 dark:text-slate-100">
                   {mode.title}
                 </h3>
+                {isDaily ? (
+                  <p className="mt-0.5 text-xs font-semibold text-teal-700 dark:text-teal-400">
+                    {dailyDateLabel}
+                  </p>
+                ) : null}
                 <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{mode.description}</p>
               </Link>
             );

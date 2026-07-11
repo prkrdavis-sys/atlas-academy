@@ -1,9 +1,54 @@
-import type { Continent, Difficulty, GameMode, ModeStats, Profile, AchievementSessionContext } from "@/lib/types";
-import { AVATAR_COLORS, GAME_MODES } from "@/lib/types";
+import type {
+  Continent,
+  CoreQuestionType,
+  Difficulty,
+  GameMode,
+  ModeStats,
+  Profile,
+  AchievementSessionContext,
+  RoundQuestionCount,
+} from "@/lib/types";
+import { AVATAR_COLORS, DEFAULT_ROUND_QUESTION_COUNT, GAME_MODES, normalizeRoundQuestionCount } from "@/lib/types";
 import { checkAchievements as evaluateAchievements } from "@/lib/achievements";
+import { getDailyDateKey } from "@/lib/game-engine";
 
 const STORAGE_KEY = "atlas-academy";
 const LEGACY_STORAGE_KEY = "geography-game";
+
+function maxModeBestStreak(profile: Profile): number {
+  return Math.max(0, ...Object.values(profile.stats).map((s) => s.bestStreak));
+}
+
+export function normalizeProfile(profile: Profile): Profile {
+  if (profile.globalCurrentStreak === undefined) {
+    profile.globalCurrentStreak = 0;
+  }
+  if (profile.globalBestStreak === undefined) {
+    profile.globalBestStreak = maxModeBestStreak(profile);
+  }
+  if (!profile.settings.speedRoundQuestionType) {
+    profile.settings.speedRoundQuestionType = "flag-to-country";
+  }
+  profile.settings.roundQuestionCount = normalizeRoundQuestionCount(profile.settings.roundQuestionCount);
+  if (!profile.dailyChallengePlayedDates) {
+    profile.dailyChallengePlayedDates = [];
+  }
+  if (!profile.dailyChallengeCompletions) {
+    profile.dailyChallengeCompletions = [];
+  }
+  for (const mode of GAME_MODES) {
+    if (!profile.stats[mode.id]) {
+      profile.stats[mode.id] = {
+        currentStreak: 0,
+        bestStreak: 0,
+        totalCorrect: 0,
+        totalPlayed: 0,
+        missedCountries: [],
+      };
+    }
+  }
+  return profile;
+}
 
 function createEmptyStats(): Record<GameMode, ModeStats> {
   const stats = {} as Record<GameMode, ModeStats>;
@@ -27,6 +72,8 @@ export function createProfile(name: string, avatarColor: string): Profile {
       ? avatarColor
       : AVATAR_COLORS[0],
     createdAt: new Date().toISOString(),
+    globalCurrentStreak: 0,
+    globalBestStreak: 0,
     stats: createEmptyStats(),
     settings: {
       difficulty: "easy",
@@ -38,6 +85,8 @@ export function createProfile(name: string, avatarColor: string): Profile {
         "Oceania",
         "South America",
       ],
+      speedRoundQuestionType: "flag-to-country",
+      roundQuestionCount: DEFAULT_ROUND_QUESTION_COUNT,
     },
     achievements: [],
   };
@@ -61,7 +110,7 @@ export function loadState() {
     if (!raw) return getDefaultState();
     const parsed = JSON.parse(raw) as ReturnType<typeof getDefaultState>;
     return {
-      profiles: parsed.profiles ?? [],
+      profiles: (parsed.profiles ?? []).map(normalizeProfile),
       activeProfileId: parsed.activeProfileId ?? null,
     };
   } catch {
@@ -110,7 +159,12 @@ export function deleteProfile(profileId: string) {
 
 export function updateProfileSettings(
   profileId: string,
-  settings: Partial<{ difficulty: Difficulty; lastContinentFilter: Continent[] }>,
+  settings: Partial<{
+    difficulty: Difficulty;
+    lastContinentFilter: Continent[];
+    speedRoundQuestionType: CoreQuestionType;
+    roundQuestionCount: RoundQuestionCount;
+  }>,
 ) {
   const state = loadState();
   const profile = state.profiles.find((p) => p.id === profileId);
@@ -138,8 +192,11 @@ export function recordAnswer(
     stats.totalCorrect += 1;
     stats.currentStreak += 1;
     stats.bestStreak = Math.max(stats.bestStreak, stats.currentStreak);
+    profile.globalCurrentStreak += 1;
+    profile.globalBestStreak = Math.max(profile.globalBestStreak, profile.globalCurrentStreak);
   } else if (!skipped) {
     stats.currentStreak = 0;
+    profile.globalCurrentStreak = 0;
     if (!stats.missedCountries.includes(countryCode)) {
       stats.missedCountries.push(countryCode);
     }
@@ -157,6 +214,38 @@ export function recordAnswer(
   return { state, stats };
 }
 
+export function recordDailyChallengeCompletion(profileId: string) {
+  const state = loadState();
+  const profile = state.profiles.find((p) => p.id === profileId);
+  if (!profile) return state;
+
+  const today = getDailyDateKey();
+  if (!profile.dailyChallengeCompletions) {
+    profile.dailyChallengeCompletions = [];
+  }
+  if (!profile.dailyChallengeCompletions.includes(today)) {
+    profile.dailyChallengeCompletions.push(today);
+    saveState(state);
+  }
+  return state;
+}
+
+export function markDailyChallengePlayed(profileId: string) {
+  const state = loadState();
+  const profile = state.profiles.find((p) => p.id === profileId);
+  if (!profile) return state;
+
+  const today = getDailyDateKey();
+  if (!profile.dailyChallengePlayedDates) {
+    profile.dailyChallengePlayedDates = [];
+  }
+  if (!profile.dailyChallengePlayedDates.includes(today)) {
+    profile.dailyChallengePlayedDates.push(today);
+    saveState(state);
+  }
+  return state;
+}
+
 export function exportProfile(profileId: string): string | null {
   const profile = loadState().profiles.find((p) => p.id === profileId);
   if (!profile) return null;
@@ -165,7 +254,7 @@ export function exportProfile(profileId: string): string | null {
 
 export function importProfile(json: string): Profile | null {
   try {
-    const profile = JSON.parse(json) as Profile;
+    const profile = normalizeProfile(JSON.parse(json) as Profile);
     if (!profile.id || !profile.name) return null;
     profile.id = crypto.randomUUID();
     upsertProfile(profile);
