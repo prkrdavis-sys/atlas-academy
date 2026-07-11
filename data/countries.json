@@ -1,0 +1,5789 @@
+[
+  {
+    "code": "AF",
+    "code3": "AFG",
+    "name": "Afghanistan",
+    "officialName": "Islamic Republic of Afghanistan",
+    "capital": "Kabul",
+    "continent": "Asia",
+    "subregion": "Southern Asia",
+    "population": 41454761,
+    "area": 652230,
+    "borders": [
+      "IRN",
+      "PAK",
+      "TKM",
+      "UZB",
+      "TJK",
+      "CHN"
+    ],
+    "aliases": [
+      "afghanistan",
+      "islamic republic of afghanistan"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "AX",
+    "code3": "ALA",
+    "name": "Åland Islands",
+    "officialName": "Åland Islands",
+    "capital": "Mariehamn",
+    "continent": "Europe",
+    "subregion": "Northern Europe",
+    "population": 30000,
+    "area": 1580,
+    "borders": [],
+    "aliases": [
+      "åland islands"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It has fewer than 100,000 people."
+  },
+  {
+    "code": "AL",
+    "code3": "ALB",
+    "name": "Albania",
+    "officialName": "Republic of Albania",
+    "capital": "Tirana",
+    "continent": "Europe",
+    "subregion": "Southeast Europe",
+    "population": 2411658,
+    "area": 28748,
+    "borders": [
+      "MNE",
+      "GRC",
+      "MKD",
+      "UNK"
+    ],
+    "aliases": [
+      "albania",
+      "republic of albania"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 4 countries."
+  },
+  {
+    "code": "DZ",
+    "code3": "DZA",
+    "name": "Algeria",
+    "officialName": "People's Democratic Republic of Algeria",
+    "capital": "Algiers",
+    "continent": "Africa",
+    "subregion": "Northern Africa",
+    "population": 46164219,
+    "area": 2381741,
+    "borders": [
+      "TUN",
+      "LBY",
+      "NER",
+      "ESH",
+      "MRT",
+      "MLI",
+      "MAR"
+    ],
+    "aliases": [
+      "algeria",
+      "people's democratic republic of algeria"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 7 countries."
+  },
+  {
+    "code": "AS",
+    "code3": "ASM",
+    "name": "American Samoa",
+    "officialName": "American Samoa",
+    "capital": "Pago Pago",
+    "continent": "Oceania",
+    "subregion": "Polynesia",
+    "population": 47521,
+    "area": 199,
+    "borders": [],
+    "aliases": [
+      "american samoa"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It has fewer than 100,000 people."
+  },
+  {
+    "code": "AD",
+    "code3": "AND",
+    "name": "Andorra",
+    "officialName": "Principality of Andorra",
+    "capital": "Andorra la Vella",
+    "continent": "Europe",
+    "subregion": "Southern Europe",
+    "population": 80856,
+    "area": 468,
+    "borders": [
+      "FRA",
+      "ESP"
+    ],
+    "aliases": [
+      "andorra",
+      "principality of andorra"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "AO",
+    "code3": "AGO",
+    "name": "Angola",
+    "officialName": "Republic of Angola",
+    "capital": "Luanda",
+    "continent": "Africa",
+    "subregion": "Middle Africa",
+    "population": 36749906,
+    "area": 1246700,
+    "borders": [
+      "COG",
+      "COD",
+      "ZMB",
+      "NAM"
+    ],
+    "aliases": [
+      "angola",
+      "republic of angola"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 4 countries."
+  },
+  {
+    "code": "AI",
+    "code3": "AIA",
+    "name": "Anguilla",
+    "officialName": "Anguilla",
+    "capital": "The Valley",
+    "continent": "North America",
+    "subregion": "Caribbean",
+    "population": 15000,
+    "area": 91,
+    "borders": [],
+    "aliases": [
+      "anguilla"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It has fewer than 100,000 people."
+  },
+  {
+    "code": "AQ",
+    "code3": "ATA",
+    "name": "Antarctica",
+    "officialName": "Antarctica",
+    "capital": "",
+    "continent": "Antarctica",
+    "subregion": "",
+    "population": 1500,
+    "area": 14000000,
+    "borders": [],
+    "aliases": [
+      "antarctica"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It has fewer than 100,000 people."
+  },
+  {
+    "code": "AG",
+    "code3": "ATG",
+    "name": "Antigua and Barbuda",
+    "officialName": "Antigua and Barbuda",
+    "capital": "Saint John's",
+    "continent": "North America",
+    "subregion": "Caribbean",
+    "population": 93316,
+    "area": 442,
+    "borders": [],
+    "aliases": [
+      "antigua and barbuda"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It has fewer than 100,000 people."
+  },
+  {
+    "code": "AR",
+    "code3": "ARG",
+    "name": "Argentina",
+    "officialName": "Argentine Republic",
+    "capital": "Buenos Aires",
+    "continent": "South America",
+    "subregion": "South America",
+    "population": 45538401,
+    "area": 2780400,
+    "borders": [
+      "BOL",
+      "BRA",
+      "CHL",
+      "PRY",
+      "URY"
+    ],
+    "aliases": [
+      "argentina",
+      "argentine republic"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 5 countries."
+  },
+  {
+    "code": "AM",
+    "code3": "ARM",
+    "name": "Armenia",
+    "officialName": "Republic of Armenia",
+    "capital": "Yerevan",
+    "continent": "Asia",
+    "subregion": "Western Asia",
+    "population": 2964300,
+    "area": 29743,
+    "borders": [
+      "AZE",
+      "GEO",
+      "IRN",
+      "TUR"
+    ],
+    "aliases": [
+      "armenia",
+      "republic of armenia"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "AW",
+    "code3": "ABW",
+    "name": "Aruba",
+    "officialName": "Aruba",
+    "capital": "Oranjestad",
+    "continent": "North America",
+    "subregion": "Caribbean",
+    "population": 107359,
+    "area": 180,
+    "borders": [],
+    "aliases": [
+      "aruba"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "Located in North America."
+  },
+  {
+    "code": "AU",
+    "code3": "AUS",
+    "name": "Australia",
+    "officialName": "Commonwealth of Australia",
+    "capital": "Canberra",
+    "continent": "Oceania",
+    "subregion": "Australia and New Zealand",
+    "population": 26659922,
+    "area": 7692024,
+    "borders": [],
+    "aliases": [
+      "australia",
+      "commonwealth of australia"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "Located in Oceania."
+  },
+  {
+    "code": "AT",
+    "code3": "AUT",
+    "name": "Austria",
+    "officialName": "Republic of Austria",
+    "capital": "Vienna",
+    "continent": "Europe",
+    "subregion": "Central Europe",
+    "population": 9131761,
+    "area": 83871,
+    "borders": [
+      "CZE",
+      "DEU",
+      "HUN",
+      "ITA",
+      "LIE",
+      "SVK",
+      "SVN",
+      "CHE"
+    ],
+    "aliases": [
+      "austria",
+      "republic of austria"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "AZ",
+    "code3": "AZE",
+    "name": "Azerbaijan",
+    "officialName": "Republic of Azerbaijan",
+    "capital": "Baku",
+    "continent": "Asia",
+    "subregion": "Western Asia",
+    "population": 10153958,
+    "area": 86600,
+    "borders": [
+      "ARM",
+      "GEO",
+      "IRN",
+      "RUS",
+      "TUR"
+    ],
+    "aliases": [
+      "azerbaijan",
+      "republic of azerbaijan"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "BS",
+    "code3": "BHS",
+    "name": "Bahamas",
+    "officialName": "Commonwealth of the Bahamas",
+    "capital": "Nassau",
+    "continent": "North America",
+    "subregion": "Caribbean",
+    "population": 399440,
+    "area": 13943,
+    "borders": [],
+    "aliases": [
+      "bahamas",
+      "commonwealth of the bahamas"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "Located in North America."
+  },
+  {
+    "code": "BH",
+    "code3": "BHR",
+    "name": "Bahrain",
+    "officialName": "Kingdom of Bahrain",
+    "capital": "Manama",
+    "continent": "Asia",
+    "subregion": "Western Asia",
+    "population": 1577059,
+    "area": 765,
+    "borders": [],
+    "aliases": [
+      "bahrain",
+      "kingdom of bahrain"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "Located in Asia."
+  },
+  {
+    "code": "BD",
+    "code3": "BGD",
+    "name": "Bangladesh",
+    "officialName": "People's Republic of Bangladesh",
+    "capital": "Dhaka",
+    "continent": "Asia",
+    "subregion": "Southern Asia",
+    "population": 171466990,
+    "area": 147570,
+    "borders": [
+      "MMR",
+      "IND"
+    ],
+    "aliases": [
+      "bangladesh",
+      "people's republic of bangladesh"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 2 countries."
+  },
+  {
+    "code": "BB",
+    "code3": "BRB",
+    "name": "Barbados",
+    "officialName": "Barbados",
+    "capital": "Bridgetown",
+    "continent": "North America",
+    "subregion": "Caribbean",
+    "population": 282336,
+    "area": 430,
+    "borders": [],
+    "aliases": [
+      "barbados"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "Located in North America."
+  },
+  {
+    "code": "BY",
+    "code3": "BLR",
+    "name": "Belarus",
+    "officialName": "Republic of Belarus",
+    "capital": "Minsk",
+    "continent": "Europe",
+    "subregion": "Eastern Europe",
+    "population": 9178298,
+    "area": 207600,
+    "borders": [
+      "LVA",
+      "LTU",
+      "POL",
+      "RUS",
+      "UKR"
+    ],
+    "aliases": [
+      "belarus",
+      "republic of belarus"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "BE",
+    "code3": "BEL",
+    "name": "Belgium",
+    "officialName": "Kingdom of Belgium",
+    "capital": "Brussels",
+    "continent": "Europe",
+    "subregion": "Western Europe",
+    "population": 11779946,
+    "area": 30528,
+    "borders": [
+      "FRA",
+      "DEU",
+      "LUX",
+      "NLD"
+    ],
+    "aliases": [
+      "belgium",
+      "kingdom of belgium"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 4 countries."
+  },
+  {
+    "code": "BZ",
+    "code3": "BLZ",
+    "name": "Belize",
+    "officialName": "Belize",
+    "capital": "Belmopan",
+    "continent": "North America",
+    "subregion": "Central America",
+    "population": 411106,
+    "area": 22966,
+    "borders": [
+      "GTM",
+      "MEX"
+    ],
+    "aliases": [
+      "belize"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 2 countries."
+  },
+  {
+    "code": "BJ",
+    "code3": "BEN",
+    "name": "Benin",
+    "officialName": "Republic of Benin",
+    "capital": "Porto-Novo",
+    "continent": "Africa",
+    "subregion": "Western Africa",
+    "population": 14111034,
+    "area": 112622,
+    "borders": [
+      "BFA",
+      "NER",
+      "NGA",
+      "TGO"
+    ],
+    "aliases": [
+      "benin",
+      "republic of benin"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 4 countries."
+  },
+  {
+    "code": "BM",
+    "code3": "BMU",
+    "name": "Bermuda",
+    "officialName": "Bermuda",
+    "capital": "Hamilton",
+    "continent": "North America",
+    "subregion": "North America",
+    "population": 64698,
+    "area": 54,
+    "borders": [],
+    "aliases": [
+      "bermuda"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It has fewer than 100,000 people."
+  },
+  {
+    "code": "BT",
+    "code3": "BTN",
+    "name": "Bhutan",
+    "officialName": "Kingdom of Bhutan",
+    "capital": "Thimphu",
+    "continent": "Asia",
+    "subregion": "Southern Asia",
+    "population": 786385,
+    "area": 38394,
+    "borders": [
+      "CHN",
+      "IND"
+    ],
+    "aliases": [
+      "bhutan",
+      "kingdom of bhutan"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "BO",
+    "code3": "BOL",
+    "name": "Bolivia",
+    "officialName": "Plurinational State of Bolivia",
+    "capital": "Sucre",
+    "continent": "South America",
+    "subregion": "South America",
+    "population": 12244159,
+    "area": 1098581,
+    "borders": [
+      "ARG",
+      "BRA",
+      "CHL",
+      "PRY",
+      "PER"
+    ],
+    "aliases": [
+      "bolivia",
+      "plurinational state of bolivia"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "BA",
+    "code3": "BIH",
+    "name": "Bosnia and Herzegovina",
+    "officialName": "Bosnia and Herzegovina",
+    "capital": "Sarajevo",
+    "continent": "Europe",
+    "subregion": "Southeast Europe",
+    "population": 3185073,
+    "area": 51209,
+    "borders": [
+      "HRV",
+      "MNE",
+      "SRB"
+    ],
+    "aliases": [
+      "bosnia and herzegovina"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 3 countries."
+  },
+  {
+    "code": "BW",
+    "code3": "BWA",
+    "name": "Botswana",
+    "officialName": "Republic of Botswana",
+    "capital": "Gaborone",
+    "continent": "Africa",
+    "subregion": "Southern Africa",
+    "population": 2480244,
+    "area": 582000,
+    "borders": [
+      "NAM",
+      "ZAF",
+      "ZMB",
+      "ZWE"
+    ],
+    "aliases": [
+      "botswana",
+      "republic of botswana"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "BV",
+    "code3": "BVT",
+    "name": "Bouvet Island",
+    "officialName": "Bouvet Island",
+    "capital": "",
+    "continent": "Antarctica",
+    "subregion": "",
+    "population": 0,
+    "area": 49,
+    "borders": [],
+    "aliases": [
+      "bouvet island"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "Located in Antarctica."
+  },
+  {
+    "code": "BR",
+    "code3": "BRA",
+    "name": "Brazil",
+    "officialName": "Federative Republic of Brazil",
+    "capital": "Brasília",
+    "continent": "South America",
+    "subregion": "South America",
+    "population": 211140729,
+    "area": 8515767,
+    "borders": [
+      "ARG",
+      "BOL",
+      "COL",
+      "GUF",
+      "GUY",
+      "PRY",
+      "PER",
+      "SUR",
+      "URY",
+      "VEN"
+    ],
+    "aliases": [
+      "brazil",
+      "federative republic of brazil"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 10 countries."
+  },
+  {
+    "code": "IO",
+    "code3": "IOT",
+    "name": "British Indian Ocean Territory",
+    "officialName": "British Indian Ocean Territory",
+    "capital": "Diego Garcia",
+    "continent": "Africa",
+    "subregion": "Eastern Africa",
+    "population": 3000,
+    "area": 60,
+    "borders": [],
+    "aliases": [
+      "british indian ocean territory"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It has fewer than 100,000 people."
+  },
+  {
+    "code": "VG",
+    "code3": "VGB",
+    "name": "British Virgin Islands",
+    "officialName": "Virgin Islands",
+    "capital": "Road Town",
+    "continent": "North America",
+    "subregion": "Caribbean",
+    "population": 38985,
+    "area": 151,
+    "borders": [],
+    "aliases": [
+      "british virgin islands",
+      "virgin islands"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It has fewer than 100,000 people."
+  },
+  {
+    "code": "BN",
+    "code3": "BRN",
+    "name": "Brunei",
+    "officialName": "Nation of Brunei, Abode of Peace",
+    "capital": "Bandar Seri Begawan",
+    "continent": "Asia",
+    "subregion": "South-Eastern Asia",
+    "population": 458949,
+    "area": 5765,
+    "borders": [
+      "MYS"
+    ],
+    "aliases": [
+      "brunei",
+      "nation of brunei, abode of peace"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 1 country."
+  },
+  {
+    "code": "BG",
+    "code3": "BGR",
+    "name": "Bulgaria",
+    "officialName": "Republic of Bulgaria",
+    "capital": "Sofia",
+    "continent": "Europe",
+    "subregion": "Southeast Europe",
+    "population": 6446596,
+    "area": 110879,
+    "borders": [
+      "GRC",
+      "MKD",
+      "ROU",
+      "SRB",
+      "TUR"
+    ],
+    "aliases": [
+      "bulgaria",
+      "republic of bulgaria"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 5 countries."
+  },
+  {
+    "code": "BF",
+    "code3": "BFA",
+    "name": "Burkina Faso",
+    "officialName": "Burkina Faso",
+    "capital": "Ouagadougou",
+    "continent": "Africa",
+    "subregion": "Western Africa",
+    "population": 23025776,
+    "area": 272967,
+    "borders": [
+      "BEN",
+      "CIV",
+      "GHA",
+      "MLI",
+      "NER",
+      "TGO"
+    ],
+    "aliases": [
+      "burkina faso"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "BI",
+    "code3": "BDI",
+    "name": "Burundi",
+    "officialName": "Republic of Burundi",
+    "capital": "Gitega",
+    "continent": "Africa",
+    "subregion": "Eastern Africa",
+    "population": 13689450,
+    "area": 27834,
+    "borders": [
+      "COD",
+      "RWA",
+      "TZA"
+    ],
+    "aliases": [
+      "burundi",
+      "republic of burundi"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "KH",
+    "code3": "KHM",
+    "name": "Cambodia",
+    "officialName": "Kingdom of Cambodia",
+    "capital": "Phnom Penh",
+    "continent": "Asia",
+    "subregion": "South-Eastern Asia",
+    "population": 17423880,
+    "area": 181035,
+    "borders": [
+      "LAO",
+      "THA",
+      "VNM"
+    ],
+    "aliases": [
+      "cambodia",
+      "kingdom of cambodia"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 3 countries."
+  },
+  {
+    "code": "CM",
+    "code3": "CMR",
+    "name": "Cameroon",
+    "officialName": "Republic of Cameroon",
+    "capital": "Yaoundé",
+    "continent": "Africa",
+    "subregion": "Middle Africa",
+    "population": 28372687,
+    "area": 475442,
+    "borders": [
+      "CAF",
+      "TCD",
+      "COG",
+      "GNQ",
+      "GAB",
+      "NGA"
+    ],
+    "aliases": [
+      "cameroon",
+      "republic of cameroon"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 6 countries."
+  },
+  {
+    "code": "CA",
+    "code3": "CAN",
+    "name": "Canada",
+    "officialName": "Canada",
+    "capital": "Ottawa",
+    "continent": "North America",
+    "subregion": "North America",
+    "population": 40049088,
+    "area": 9984670,
+    "borders": [
+      "USA"
+    ],
+    "aliases": [
+      "canada"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 1 country."
+  },
+  {
+    "code": "CV",
+    "code3": "CPV",
+    "name": "Cape Verde",
+    "officialName": "Republic of Cabo Verde",
+    "capital": "Praia",
+    "continent": "Africa",
+    "subregion": "Western Africa",
+    "population": 522331,
+    "area": 4033,
+    "borders": [],
+    "aliases": [
+      "cape verde",
+      "republic of cabo verde",
+      "cabo verde"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "Located in Africa."
+  },
+  {
+    "code": "BQ",
+    "code3": "BES",
+    "name": "Caribbean Netherlands",
+    "officialName": "Bonaire, Sint Eustatius and Saba",
+    "capital": "Kralendijk",
+    "continent": "North America",
+    "subregion": "Caribbean",
+    "population": 26000,
+    "area": 328,
+    "borders": [],
+    "aliases": [
+      "caribbean netherlands",
+      "bonaire, sint eustatius and saba"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It has fewer than 100,000 people."
+  },
+  {
+    "code": "KY",
+    "code3": "CYM",
+    "name": "Cayman Islands",
+    "officialName": "Cayman Islands",
+    "capital": "George Town",
+    "continent": "North America",
+    "subregion": "Caribbean",
+    "population": 73038,
+    "area": 264,
+    "borders": [],
+    "aliases": [
+      "cayman islands"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It has fewer than 100,000 people."
+  },
+  {
+    "code": "CF",
+    "code3": "CAF",
+    "name": "Central African Republic",
+    "officialName": "Central African Republic",
+    "capital": "Bangui",
+    "continent": "Africa",
+    "subregion": "Middle Africa",
+    "population": 5152421,
+    "area": 622984,
+    "borders": [
+      "CMR",
+      "TCD",
+      "COD",
+      "COG",
+      "SSD",
+      "SDN"
+    ],
+    "aliases": [
+      "central african republic"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "TD",
+    "code3": "TCD",
+    "name": "Chad",
+    "officialName": "Republic of Chad",
+    "capital": "N'Djamena",
+    "continent": "Africa",
+    "subregion": "Middle Africa",
+    "population": 19319064,
+    "area": 1284000,
+    "borders": [
+      "CMR",
+      "CAF",
+      "LBY",
+      "NER",
+      "NGA",
+      "SDN"
+    ],
+    "aliases": [
+      "chad",
+      "republic of chad"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "CL",
+    "code3": "CHL",
+    "name": "Chile",
+    "officialName": "Republic of Chile",
+    "capital": "Santiago",
+    "continent": "South America",
+    "subregion": "South America",
+    "population": 19658835,
+    "area": 756102,
+    "borders": [
+      "ARG",
+      "BOL",
+      "PER"
+    ],
+    "aliases": [
+      "chile",
+      "republic of chile"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 3 countries."
+  },
+  {
+    "code": "CN",
+    "code3": "CHN",
+    "name": "China",
+    "officialName": "People's Republic of China",
+    "capital": "Beijing",
+    "continent": "Asia",
+    "subregion": "Eastern Asia",
+    "population": 1410710000,
+    "area": 9706961,
+    "borders": [
+      "AFG",
+      "BTN",
+      "MMR",
+      "HKG",
+      "IND",
+      "KAZ",
+      "NPL",
+      "PRK",
+      "KGZ",
+      "LAO",
+      "MAC",
+      "MNG",
+      "PAK",
+      "RUS",
+      "TJK",
+      "VNM"
+    ],
+    "aliases": [
+      "china",
+      "people's republic of china"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 16 countries."
+  },
+  {
+    "code": "CX",
+    "code3": "CXR",
+    "name": "Christmas Island",
+    "officialName": "Territory of Christmas Island",
+    "capital": "Flying Fish Cove",
+    "continent": "Oceania",
+    "subregion": "Australia and New Zealand",
+    "population": 1800,
+    "area": 135,
+    "borders": [],
+    "aliases": [
+      "christmas island",
+      "territory of christmas island"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It has fewer than 100,000 people."
+  },
+  {
+    "code": "CC",
+    "code3": "CCK",
+    "name": "Cocos (Keeling) Islands",
+    "officialName": "Territory of the Cocos (Keeling) Islands",
+    "capital": "West Island",
+    "continent": "Oceania",
+    "subregion": "Australia and New Zealand",
+    "population": 600,
+    "area": 14,
+    "borders": [],
+    "aliases": [
+      "cocos (keeling) islands",
+      "territory of the cocos (keeling) islands"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It has fewer than 100,000 people."
+  },
+  {
+    "code": "CO",
+    "code3": "COL",
+    "name": "Colombia",
+    "officialName": "Republic of Colombia",
+    "capital": "Bogotá",
+    "continent": "South America",
+    "subregion": "South America",
+    "population": 52321152,
+    "area": 1141748,
+    "borders": [
+      "BRA",
+      "ECU",
+      "PAN",
+      "PER",
+      "VEN"
+    ],
+    "aliases": [
+      "colombia",
+      "republic of colombia"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 5 countries."
+  },
+  {
+    "code": "KM",
+    "code3": "COM",
+    "name": "Comoros",
+    "officialName": "Union of the Comoros",
+    "capital": "Moroni",
+    "continent": "Africa",
+    "subregion": "Eastern Africa",
+    "population": 850387,
+    "area": 1862,
+    "borders": [],
+    "aliases": [
+      "comoros",
+      "union of the comoros"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "Located in Africa."
+  },
+  {
+    "code": "CG",
+    "code3": "COG",
+    "name": "Congo",
+    "officialName": "Republic of the Congo",
+    "capital": "Brazzaville",
+    "continent": "Africa",
+    "subregion": "Middle Africa",
+    "population": 6182885,
+    "area": 342000,
+    "borders": [
+      "AGO",
+      "CMR",
+      "CAF",
+      "COD",
+      "GAB"
+    ],
+    "aliases": [
+      "congo",
+      "republic of the congo",
+      "republic of congo",
+      "congo-brazzaville"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 5 countries."
+  },
+  {
+    "code": "CK",
+    "code3": "COK",
+    "name": "Cook Islands",
+    "officialName": "Cook Islands",
+    "capital": "Avarua",
+    "continent": "Oceania",
+    "subregion": "Polynesia",
+    "population": 17000,
+    "area": 236,
+    "borders": [],
+    "aliases": [
+      "cook islands"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It has fewer than 100,000 people."
+  },
+  {
+    "code": "CR",
+    "code3": "CRI",
+    "name": "Costa Rica",
+    "officialName": "Republic of Costa Rica",
+    "capital": "San José",
+    "continent": "North America",
+    "subregion": "Central America",
+    "population": 5105525,
+    "area": 51100,
+    "borders": [
+      "NIC",
+      "PAN"
+    ],
+    "aliases": [
+      "costa rica",
+      "republic of costa rica"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 2 countries."
+  },
+  {
+    "code": "HR",
+    "code3": "HRV",
+    "name": "Croatia",
+    "officialName": "Republic of Croatia",
+    "capital": "Zagreb",
+    "continent": "Europe",
+    "subregion": "Southeast Europe",
+    "population": 3859686,
+    "area": 56594,
+    "borders": [
+      "BIH",
+      "HUN",
+      "MNE",
+      "SRB",
+      "SVN"
+    ],
+    "aliases": [
+      "croatia",
+      "republic of croatia"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 5 countries."
+  },
+  {
+    "code": "CU",
+    "code3": "CUB",
+    "name": "Cuba",
+    "officialName": "Republic of Cuba",
+    "capital": "Havana",
+    "continent": "North America",
+    "subregion": "Caribbean",
+    "population": 11019931,
+    "area": 109884,
+    "borders": [],
+    "aliases": [
+      "cuba",
+      "republic of cuba"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "Located in North America."
+  },
+  {
+    "code": "CW",
+    "code3": "CUW",
+    "name": "Curaçao",
+    "officialName": "Country of Curaçao",
+    "capital": "Willemstad",
+    "continent": "North America",
+    "subregion": "Caribbean",
+    "population": 154654,
+    "area": 444,
+    "borders": [],
+    "aliases": [
+      "curaçao",
+      "country of curaçao"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "Located in North America."
+  },
+  {
+    "code": "CY",
+    "code3": "CYP",
+    "name": "Cyprus",
+    "officialName": "Republic of Cyprus",
+    "capital": "Nicosia",
+    "continent": "Europe",
+    "subregion": "Southern Europe",
+    "population": 1344976,
+    "area": 9251,
+    "borders": [],
+    "aliases": [
+      "cyprus",
+      "republic of cyprus"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "Located in Europe."
+  },
+  {
+    "code": "CZ",
+    "code3": "CZE",
+    "name": "Czechia",
+    "officialName": "Czech Republic",
+    "capital": "Prague",
+    "continent": "Europe",
+    "subregion": "Central Europe",
+    "population": 10864042,
+    "area": 78865,
+    "borders": [
+      "AUT",
+      "DEU",
+      "POL",
+      "SVK"
+    ],
+    "aliases": [
+      "czechia",
+      "czech republic"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "DK",
+    "code3": "DNK",
+    "name": "Denmark",
+    "officialName": "Kingdom of Denmark",
+    "capital": "Copenhagen",
+    "continent": "Europe",
+    "subregion": "Northern Europe",
+    "population": 5946952,
+    "area": 43094,
+    "borders": [
+      "DEU"
+    ],
+    "aliases": [
+      "denmark",
+      "kingdom of denmark"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 1 country."
+  },
+  {
+    "code": "DJ",
+    "code3": "DJI",
+    "name": "Djibouti",
+    "officialName": "Republic of Djibouti",
+    "capital": "Djibouti",
+    "continent": "Africa",
+    "subregion": "Eastern Africa",
+    "population": 1152944,
+    "area": 23200,
+    "borders": [
+      "ERI",
+      "ETH",
+      "SOM"
+    ],
+    "aliases": [
+      "djibouti",
+      "republic of djibouti"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 3 countries."
+  },
+  {
+    "code": "DM",
+    "code3": "DMA",
+    "name": "Dominica",
+    "officialName": "Commonwealth of Dominica",
+    "capital": "Roseau",
+    "continent": "North America",
+    "subregion": "Caribbean",
+    "population": 66510,
+    "area": 751,
+    "borders": [],
+    "aliases": [
+      "dominica",
+      "commonwealth of dominica"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It has fewer than 100,000 people."
+  },
+  {
+    "code": "DO",
+    "code3": "DOM",
+    "name": "Dominican Republic",
+    "officialName": "Dominican Republic",
+    "capital": "Santo Domingo",
+    "continent": "North America",
+    "subregion": "Caribbean",
+    "population": 11331265,
+    "area": 48671,
+    "borders": [
+      "HTI"
+    ],
+    "aliases": [
+      "dominican republic"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 1 country."
+  },
+  {
+    "code": "CD",
+    "code3": "COD",
+    "name": "DR Congo",
+    "officialName": "Democratic Republic of the Congo",
+    "capital": "Kinshasa",
+    "continent": "Africa",
+    "subregion": "Middle Africa",
+    "population": 105789731,
+    "area": 2344858,
+    "borders": [
+      "AGO",
+      "BDI",
+      "CAF",
+      "COG",
+      "RWA",
+      "SSD",
+      "TZA",
+      "UGA",
+      "ZMB"
+    ],
+    "aliases": [
+      "dr congo",
+      "democratic republic of the congo",
+      "drc",
+      "democratic republic of congo"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 9 countries."
+  },
+  {
+    "code": "EC",
+    "code3": "ECU",
+    "name": "Ecuador",
+    "officialName": "Republic of Ecuador",
+    "capital": "Quito",
+    "continent": "South America",
+    "subregion": "South America",
+    "population": 17980083,
+    "area": 276841,
+    "borders": [
+      "COL",
+      "PER"
+    ],
+    "aliases": [
+      "ecuador",
+      "republic of ecuador"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 2 countries."
+  },
+  {
+    "code": "EG",
+    "code3": "EGY",
+    "name": "Egypt",
+    "officialName": "Arab Republic of Egypt",
+    "capital": "Cairo",
+    "continent": "Africa",
+    "subregion": "Northern Africa",
+    "population": 114535772,
+    "area": 1002450,
+    "borders": [
+      "ISR",
+      "LBY",
+      "PSE",
+      "SDN"
+    ],
+    "aliases": [
+      "egypt",
+      "arab republic of egypt"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 4 countries."
+  },
+  {
+    "code": "SV",
+    "code3": "SLV",
+    "name": "El Salvador",
+    "officialName": "Republic of El Salvador",
+    "capital": "San Salvador",
+    "continent": "North America",
+    "subregion": "Central America",
+    "population": 6309624,
+    "area": 21041,
+    "borders": [
+      "GTM",
+      "HND"
+    ],
+    "aliases": [
+      "el salvador",
+      "republic of el salvador"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 2 countries."
+  },
+  {
+    "code": "GQ",
+    "code3": "GNQ",
+    "name": "Equatorial Guinea",
+    "officialName": "Republic of Equatorial Guinea",
+    "capital": "Malabo",
+    "continent": "Africa",
+    "subregion": "Middle Africa",
+    "population": 1847549,
+    "area": 28051,
+    "borders": [
+      "CMR",
+      "GAB"
+    ],
+    "aliases": [
+      "equatorial guinea",
+      "republic of equatorial guinea"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 2 countries."
+  },
+  {
+    "code": "ER",
+    "code3": "ERI",
+    "name": "Eritrea",
+    "officialName": "State of Eritrea",
+    "capital": "Asmara",
+    "continent": "Africa",
+    "subregion": "Eastern Africa",
+    "population": 3470390,
+    "area": 117600,
+    "borders": [
+      "DJI",
+      "ETH",
+      "SDN"
+    ],
+    "aliases": [
+      "eritrea",
+      "state of eritrea"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 3 countries."
+  },
+  {
+    "code": "EE",
+    "code3": "EST",
+    "name": "Estonia",
+    "officialName": "Republic of Estonia",
+    "capital": "Tallinn",
+    "continent": "Europe",
+    "subregion": "Northern Europe",
+    "population": 1370286,
+    "area": 45227,
+    "borders": [
+      "LVA",
+      "RUS"
+    ],
+    "aliases": [
+      "estonia",
+      "republic of estonia"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 2 countries."
+  },
+  {
+    "code": "SZ",
+    "code3": "SWZ",
+    "name": "Eswatini",
+    "officialName": "Kingdom of Eswatini",
+    "capital": "Lobamba",
+    "continent": "Africa",
+    "subregion": "Southern Africa",
+    "population": 1230506,
+    "area": 17364,
+    "borders": [
+      "MOZ",
+      "ZAF"
+    ],
+    "aliases": [
+      "eswatini",
+      "kingdom of eswatini",
+      "swaziland"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "ET",
+    "code3": "ETH",
+    "name": "Ethiopia",
+    "officialName": "Federal Democratic Republic of Ethiopia",
+    "capital": "Addis Ababa",
+    "continent": "Africa",
+    "subregion": "Eastern Africa",
+    "population": 128691692,
+    "area": 1104300,
+    "borders": [
+      "DJI",
+      "ERI",
+      "KEN",
+      "SOM",
+      "SSD",
+      "SDN"
+    ],
+    "aliases": [
+      "ethiopia",
+      "federal democratic republic of ethiopia"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "FK",
+    "code3": "FLK",
+    "name": "Falkland Islands",
+    "officialName": "Falkland Islands",
+    "capital": "Stanley",
+    "continent": "South America",
+    "subregion": "South America",
+    "population": 3500,
+    "area": 12173,
+    "borders": [],
+    "aliases": [
+      "falkland islands",
+      "falklands"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It has fewer than 100,000 people."
+  },
+  {
+    "code": "FO",
+    "code3": "FRO",
+    "name": "Faroe Islands",
+    "officialName": "Faroe Islands",
+    "capital": "Tórshavn",
+    "continent": "Europe",
+    "subregion": "Northern Europe",
+    "population": 54398,
+    "area": 1393,
+    "borders": [],
+    "aliases": [
+      "faroe islands"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It has fewer than 100,000 people."
+  },
+  {
+    "code": "FJ",
+    "code3": "FJI",
+    "name": "Fiji",
+    "officialName": "Republic of Fiji",
+    "capital": "Suva",
+    "continent": "Oceania",
+    "subregion": "Melanesia",
+    "population": 924145,
+    "area": 18272,
+    "borders": [],
+    "aliases": [
+      "fiji",
+      "republic of fiji"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "Located in Oceania."
+  },
+  {
+    "code": "FI",
+    "code3": "FIN",
+    "name": "Finland",
+    "officialName": "Republic of Finland",
+    "capital": "Helsinki",
+    "continent": "Europe",
+    "subregion": "Northern Europe",
+    "population": 5583911,
+    "area": 338424,
+    "borders": [
+      "NOR",
+      "SWE",
+      "RUS"
+    ],
+    "aliases": [
+      "finland",
+      "republic of finland"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 3 countries."
+  },
+  {
+    "code": "FR",
+    "code3": "FRA",
+    "name": "France",
+    "officialName": "French Republic",
+    "capital": "Paris",
+    "continent": "Europe",
+    "subregion": "Western Europe",
+    "population": 68372286,
+    "area": 551695,
+    "borders": [
+      "AND",
+      "BEL",
+      "DEU",
+      "ITA",
+      "LUX",
+      "MCO",
+      "ESP",
+      "CHE"
+    ],
+    "aliases": [
+      "france",
+      "french republic"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 8 countries."
+  },
+  {
+    "code": "GF",
+    "code3": "GUF",
+    "name": "French Guiana",
+    "officialName": "Guiana",
+    "capital": "Cayenne",
+    "continent": "South America",
+    "subregion": "South America",
+    "population": 300000,
+    "area": 83534,
+    "borders": [
+      "BRA",
+      "SUR"
+    ],
+    "aliases": [
+      "french guiana",
+      "guiana"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 2 countries."
+  },
+  {
+    "code": "PF",
+    "code3": "PYF",
+    "name": "French Polynesia",
+    "officialName": "French Polynesia",
+    "capital": "Papeetē",
+    "continent": "Oceania",
+    "subregion": "Polynesia",
+    "population": 281118,
+    "area": 4167,
+    "borders": [],
+    "aliases": [
+      "french polynesia"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "Located in Oceania."
+  },
+  {
+    "code": "TF",
+    "code3": "ATF",
+    "name": "French Southern and Antarctic Lands",
+    "officialName": "Territory of the French Southern and Antarctic Lands",
+    "capital": "Port-aux-Français",
+    "continent": "Antarctica",
+    "subregion": "",
+    "population": 400,
+    "area": 7747,
+    "borders": [],
+    "aliases": [
+      "french southern and antarctic lands",
+      "territory of the french southern and antarctic lands"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It has fewer than 100,000 people."
+  },
+  {
+    "code": "GA",
+    "code3": "GAB",
+    "name": "Gabon",
+    "officialName": "Gabonese Republic",
+    "capital": "Libreville",
+    "continent": "Africa",
+    "subregion": "Middle Africa",
+    "population": 2484789,
+    "area": 267668,
+    "borders": [
+      "CMR",
+      "COG",
+      "GNQ"
+    ],
+    "aliases": [
+      "gabon",
+      "gabonese republic"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 3 countries."
+  },
+  {
+    "code": "GM",
+    "code3": "GMB",
+    "name": "Gambia",
+    "officialName": "Republic of the Gambia",
+    "capital": "Banjul",
+    "continent": "Africa",
+    "subregion": "Western Africa",
+    "population": 2697845,
+    "area": 10689,
+    "borders": [
+      "SEN"
+    ],
+    "aliases": [
+      "gambia",
+      "republic of the gambia"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 1 country."
+  },
+  {
+    "code": "GE",
+    "code3": "GEO",
+    "name": "Georgia",
+    "officialName": "Georgia",
+    "capital": "Tbilisi",
+    "continent": "Asia",
+    "subregion": "Western Asia",
+    "population": 3715483,
+    "area": 69700,
+    "borders": [
+      "ARM",
+      "AZE",
+      "RUS",
+      "TUR"
+    ],
+    "aliases": [
+      "georgia"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 4 countries."
+  },
+  {
+    "code": "DE",
+    "code3": "DEU",
+    "name": "Germany",
+    "officialName": "Federal Republic of Germany",
+    "capital": "Berlin",
+    "continent": "Europe",
+    "subregion": "Western Europe",
+    "population": 83287273,
+    "area": 357114,
+    "borders": [
+      "AUT",
+      "BEL",
+      "CZE",
+      "DNK",
+      "FRA",
+      "LUX",
+      "NLD",
+      "POL",
+      "CHE"
+    ],
+    "aliases": [
+      "germany",
+      "federal republic of germany"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 9 countries."
+  },
+  {
+    "code": "GH",
+    "code3": "GHA",
+    "name": "Ghana",
+    "officialName": "Republic of Ghana",
+    "capital": "Accra",
+    "continent": "Africa",
+    "subregion": "Western Africa",
+    "population": 33787914,
+    "area": 238533,
+    "borders": [
+      "BFA",
+      "CIV",
+      "TGO"
+    ],
+    "aliases": [
+      "ghana",
+      "republic of ghana"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 3 countries."
+  },
+  {
+    "code": "GI",
+    "code3": "GIB",
+    "name": "Gibraltar",
+    "officialName": "Gibraltar",
+    "capital": "Gibraltar",
+    "continent": "Europe",
+    "subregion": "Southern Europe",
+    "population": 38471,
+    "area": 6,
+    "borders": [
+      "ESP"
+    ],
+    "aliases": [
+      "gibraltar"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 1 country."
+  },
+  {
+    "code": "GR",
+    "code3": "GRC",
+    "name": "Greece",
+    "officialName": "Hellenic Republic",
+    "capital": "Athens",
+    "continent": "Europe",
+    "subregion": "Southern Europe",
+    "population": 10407351,
+    "area": 131990,
+    "borders": [
+      "ALB",
+      "BGR",
+      "TUR",
+      "MKD"
+    ],
+    "aliases": [
+      "greece",
+      "hellenic republic"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 4 countries."
+  },
+  {
+    "code": "GL",
+    "code3": "GRL",
+    "name": "Greenland",
+    "officialName": "Greenland",
+    "capital": "Nuuk",
+    "continent": "North America",
+    "subregion": "North America",
+    "population": 56865,
+    "area": 2166086,
+    "borders": [],
+    "aliases": [
+      "greenland"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It has fewer than 100,000 people."
+  },
+  {
+    "code": "GD",
+    "code3": "GRD",
+    "name": "Grenada",
+    "officialName": "Grenada",
+    "capital": "St. George's",
+    "continent": "North America",
+    "subregion": "Caribbean",
+    "population": 117081,
+    "area": 344,
+    "borders": [],
+    "aliases": [
+      "grenada"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "Located in North America."
+  },
+  {
+    "code": "GP",
+    "code3": "GLP",
+    "name": "Guadeloupe",
+    "officialName": "Guadeloupe",
+    "capital": "Basse-Terre",
+    "continent": "North America",
+    "subregion": "Caribbean",
+    "population": 400000,
+    "area": 1628,
+    "borders": [],
+    "aliases": [
+      "guadeloupe"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "Located in North America."
+  },
+  {
+    "code": "GU",
+    "code3": "GUM",
+    "name": "Guam",
+    "officialName": "Guam",
+    "capital": "Hagåtña",
+    "continent": "Oceania",
+    "subregion": "Micronesia",
+    "population": 166506,
+    "area": 549,
+    "borders": [],
+    "aliases": [
+      "guam"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "Located in Oceania."
+  },
+  {
+    "code": "GT",
+    "code3": "GTM",
+    "name": "Guatemala",
+    "officialName": "Republic of Guatemala",
+    "capital": "Guatemala City",
+    "continent": "North America",
+    "subregion": "Central America",
+    "population": 18124838,
+    "area": 108889,
+    "borders": [
+      "BLZ",
+      "SLV",
+      "HND",
+      "MEX"
+    ],
+    "aliases": [
+      "guatemala",
+      "republic of guatemala"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 4 countries."
+  },
+  {
+    "code": "GG",
+    "code3": "GGY",
+    "name": "Guernsey",
+    "officialName": "Bailiwick of Guernsey",
+    "capital": "St. Peter Port",
+    "continent": "Europe",
+    "subregion": "Northern Europe",
+    "population": 63000,
+    "area": 78,
+    "borders": [],
+    "aliases": [
+      "guernsey",
+      "bailiwick of guernsey"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It has fewer than 100,000 people."
+  },
+  {
+    "code": "GN",
+    "code3": "GIN",
+    "name": "Guinea",
+    "officialName": "Republic of Guinea",
+    "capital": "Conakry",
+    "continent": "Africa",
+    "subregion": "Western Africa",
+    "population": 14405468,
+    "area": 245857,
+    "borders": [
+      "CIV",
+      "GNB",
+      "LBR",
+      "MLI",
+      "SEN",
+      "SLE"
+    ],
+    "aliases": [
+      "guinea",
+      "republic of guinea"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 6 countries."
+  },
+  {
+    "code": "GW",
+    "code3": "GNB",
+    "name": "Guinea-Bissau",
+    "officialName": "Republic of Guinea-Bissau",
+    "capital": "Bissau",
+    "continent": "Africa",
+    "subregion": "Western Africa",
+    "population": 2153339,
+    "area": 36125,
+    "borders": [
+      "GIN",
+      "SEN"
+    ],
+    "aliases": [
+      "guinea-bissau",
+      "republic of guinea-bissau"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 2 countries."
+  },
+  {
+    "code": "GY",
+    "code3": "GUY",
+    "name": "Guyana",
+    "officialName": "Co-operative Republic of Guyana",
+    "capital": "Georgetown",
+    "continent": "South America",
+    "subregion": "South America",
+    "population": 826353,
+    "area": 214969,
+    "borders": [
+      "BRA",
+      "SUR",
+      "VEN"
+    ],
+    "aliases": [
+      "guyana",
+      "co-operative republic of guyana"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 3 countries."
+  },
+  {
+    "code": "HT",
+    "code3": "HTI",
+    "name": "Haiti",
+    "officialName": "Republic of Haiti",
+    "capital": "Port-au-Prince",
+    "continent": "North America",
+    "subregion": "Caribbean",
+    "population": 11637398,
+    "area": 27750,
+    "borders": [
+      "DOM"
+    ],
+    "aliases": [
+      "haiti",
+      "republic of haiti"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 1 country."
+  },
+  {
+    "code": "HM",
+    "code3": "HMD",
+    "name": "Heard Island and McDonald Islands",
+    "officialName": "Heard Island and McDonald Islands",
+    "capital": "",
+    "continent": "Antarctica",
+    "subregion": "",
+    "population": 0,
+    "area": 412,
+    "borders": [],
+    "aliases": [
+      "heard island and mcdonald islands"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "Located in Antarctica."
+  },
+  {
+    "code": "HN",
+    "code3": "HND",
+    "name": "Honduras",
+    "officialName": "Republic of Honduras",
+    "capital": "Tegucigalpa",
+    "continent": "North America",
+    "subregion": "Central America",
+    "population": 10644851,
+    "area": 112492,
+    "borders": [
+      "GTM",
+      "SLV",
+      "NIC"
+    ],
+    "aliases": [
+      "honduras",
+      "republic of honduras"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 3 countries."
+  },
+  {
+    "code": "HK",
+    "code3": "HKG",
+    "name": "Hong Kong",
+    "officialName": "Hong Kong Special Administrative Region of the People's Republic of China",
+    "capital": "City of Victoria",
+    "continent": "Asia",
+    "subregion": "Eastern Asia",
+    "population": 7536100,
+    "area": 1104,
+    "borders": [
+      "CHN"
+    ],
+    "aliases": [
+      "hong kong",
+      "hong kong special administrative region of the people's republic of china"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 1 country."
+  },
+  {
+    "code": "HU",
+    "code3": "HUN",
+    "name": "Hungary",
+    "officialName": "Hungary",
+    "capital": "Budapest",
+    "continent": "Europe",
+    "subregion": "Central Europe",
+    "population": 9592186,
+    "area": 93028,
+    "borders": [
+      "AUT",
+      "HRV",
+      "ROU",
+      "SRB",
+      "SVK",
+      "SVN",
+      "UKR"
+    ],
+    "aliases": [
+      "hungary"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "IS",
+    "code3": "ISL",
+    "name": "Iceland",
+    "officialName": "Iceland",
+    "capital": "Reykjavik",
+    "continent": "Europe",
+    "subregion": "Northern Europe",
+    "population": 385663,
+    "area": 103000,
+    "borders": [],
+    "aliases": [
+      "iceland"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "Located in Europe."
+  },
+  {
+    "code": "IN",
+    "code3": "IND",
+    "name": "India",
+    "officialName": "Republic of India",
+    "capital": "New Delhi",
+    "continent": "Asia",
+    "subregion": "Southern Asia",
+    "population": 1438069596,
+    "area": 3287590,
+    "borders": [
+      "BGD",
+      "BTN",
+      "MMR",
+      "CHN",
+      "NPL",
+      "PAK"
+    ],
+    "aliases": [
+      "india",
+      "republic of india"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 6 countries."
+  },
+  {
+    "code": "ID",
+    "code3": "IDN",
+    "name": "Indonesia",
+    "officialName": "Republic of Indonesia",
+    "capital": "Jakarta",
+    "continent": "Asia",
+    "subregion": "South-Eastern Asia",
+    "population": 281190067,
+    "area": 1904569,
+    "borders": [
+      "TLS",
+      "MYS",
+      "PNG"
+    ],
+    "aliases": [
+      "indonesia",
+      "republic of indonesia"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 3 countries."
+  },
+  {
+    "code": "IR",
+    "code3": "IRN",
+    "name": "Iran",
+    "officialName": "Islamic Republic of Iran",
+    "capital": "Tehran",
+    "continent": "Asia",
+    "subregion": "Southern Asia",
+    "population": 90608707,
+    "area": 1648195,
+    "borders": [
+      "AFG",
+      "ARM",
+      "AZE",
+      "IRQ",
+      "PAK",
+      "TUR",
+      "TKM"
+    ],
+    "aliases": [
+      "iran",
+      "islamic republic of iran"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 7 countries."
+  },
+  {
+    "code": "IQ",
+    "code3": "IRQ",
+    "name": "Iraq",
+    "officialName": "Republic of Iraq",
+    "capital": "Baghdad",
+    "continent": "Asia",
+    "subregion": "Western Asia",
+    "population": 45074049,
+    "area": 438317,
+    "borders": [
+      "IRN",
+      "JOR",
+      "KWT",
+      "SAU",
+      "SYR",
+      "TUR"
+    ],
+    "aliases": [
+      "iraq",
+      "republic of iraq"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 6 countries."
+  },
+  {
+    "code": "IE",
+    "code3": "IRL",
+    "name": "Ireland",
+    "officialName": "Republic of Ireland",
+    "capital": "Dublin",
+    "continent": "Europe",
+    "subregion": "Northern Europe",
+    "population": 5311538,
+    "area": 70273,
+    "borders": [
+      "GBR"
+    ],
+    "aliases": [
+      "ireland",
+      "republic of ireland"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 1 country."
+  },
+  {
+    "code": "IM",
+    "code3": "IMN",
+    "name": "Isle of Man",
+    "officialName": "Isle of Man",
+    "capital": "Douglas",
+    "continent": "Europe",
+    "subregion": "Northern Europe",
+    "population": 84165,
+    "area": 572,
+    "borders": [],
+    "aliases": [
+      "isle of man"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It has fewer than 100,000 people."
+  },
+  {
+    "code": "IL",
+    "code3": "ISR",
+    "name": "Israel",
+    "officialName": "State of Israel",
+    "capital": "Jerusalem",
+    "continent": "Asia",
+    "subregion": "Western Asia",
+    "population": 9849000,
+    "area": 20770,
+    "borders": [
+      "EGY",
+      "JOR",
+      "LBN",
+      "PSE",
+      "SYR"
+    ],
+    "aliases": [
+      "israel",
+      "state of israel"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 5 countries."
+  },
+  {
+    "code": "IT",
+    "code3": "ITA",
+    "name": "Italy",
+    "officialName": "Italian Republic",
+    "capital": "Rome",
+    "continent": "Europe",
+    "subregion": "Southern Europe",
+    "population": 58984216,
+    "area": 301336,
+    "borders": [
+      "AUT",
+      "FRA",
+      "SMR",
+      "SVN",
+      "CHE",
+      "VAT"
+    ],
+    "aliases": [
+      "italy",
+      "italian republic"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 6 countries."
+  },
+  {
+    "code": "CI",
+    "code3": "CIV",
+    "name": "Ivory Coast",
+    "officialName": "Republic of Côte d'Ivoire",
+    "capital": "Yamoussoukro",
+    "continent": "Africa",
+    "subregion": "Western Africa",
+    "population": 31165654,
+    "area": 322463,
+    "borders": [
+      "BFA",
+      "GHA",
+      "GIN",
+      "LBR",
+      "MLI"
+    ],
+    "aliases": [
+      "ivory coast",
+      "republic of côte d'ivoire",
+      "cote d'ivoire",
+      "côte d'ivoire"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 5 countries."
+  },
+  {
+    "code": "JM",
+    "code3": "JAM",
+    "name": "Jamaica",
+    "officialName": "Jamaica",
+    "capital": "Kingston",
+    "continent": "North America",
+    "subregion": "Caribbean",
+    "population": 2839786,
+    "area": 10991,
+    "borders": [],
+    "aliases": [
+      "jamaica"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "Located in North America."
+  },
+  {
+    "code": "JP",
+    "code3": "JPN",
+    "name": "Japan",
+    "officialName": "Japan",
+    "capital": "Tokyo",
+    "continent": "Asia",
+    "subregion": "Eastern Asia",
+    "population": 124516650,
+    "area": 377930,
+    "borders": [],
+    "aliases": [
+      "japan"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It has over 100 million people."
+  },
+  {
+    "code": "JE",
+    "code3": "JEY",
+    "name": "Jersey",
+    "officialName": "Bailiwick of Jersey",
+    "capital": "Saint Helier",
+    "continent": "Europe",
+    "subregion": "Northern Europe",
+    "population": 100000,
+    "area": 116,
+    "borders": [],
+    "aliases": [
+      "jersey",
+      "bailiwick of jersey"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": false,
+    "fact": "Located in Europe."
+  },
+  {
+    "code": "JO",
+    "code3": "JOR",
+    "name": "Jordan",
+    "officialName": "Hashemite Kingdom of Jordan",
+    "capital": "Amman",
+    "continent": "Asia",
+    "subregion": "Western Asia",
+    "population": 11439213,
+    "area": 89342,
+    "borders": [
+      "IRQ",
+      "ISR",
+      "PSE",
+      "SAU",
+      "SYR"
+    ],
+    "aliases": [
+      "jordan",
+      "hashemite kingdom of jordan"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 5 countries."
+  },
+  {
+    "code": "KZ",
+    "code3": "KAZ",
+    "name": "Kazakhstan",
+    "officialName": "Republic of Kazakhstan",
+    "capital": "Astana",
+    "continent": "Asia",
+    "subregion": "Central Asia",
+    "population": 20330104,
+    "area": 2724900,
+    "borders": [
+      "CHN",
+      "KGZ",
+      "RUS",
+      "TKM",
+      "UZB"
+    ],
+    "aliases": [
+      "kazakhstan",
+      "republic of kazakhstan"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "KE",
+    "code3": "KEN",
+    "name": "Kenya",
+    "officialName": "Republic of Kenya",
+    "capital": "Nairobi",
+    "continent": "Africa",
+    "subregion": "Eastern Africa",
+    "population": 55339003,
+    "area": 580367,
+    "borders": [
+      "ETH",
+      "SOM",
+      "SSD",
+      "TZA",
+      "UGA"
+    ],
+    "aliases": [
+      "kenya",
+      "republic of kenya"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 5 countries."
+  },
+  {
+    "code": "KI",
+    "code3": "KIR",
+    "name": "Kiribati",
+    "officialName": "Independent and Sovereign Republic of Kiribati",
+    "capital": "South Tarawa",
+    "continent": "Oceania",
+    "subregion": "Micronesia",
+    "population": 132530,
+    "area": 811,
+    "borders": [],
+    "aliases": [
+      "kiribati",
+      "independent and sovereign republic of kiribati"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "Located in Oceania."
+  },
+  {
+    "code": "XK",
+    "code3": "UNK",
+    "name": "Kosovo",
+    "officialName": "Republic of Kosovo",
+    "capital": "Pristina",
+    "continent": "Europe",
+    "subregion": "Southeast Europe",
+    "population": 1682668,
+    "area": 10908,
+    "borders": [
+      "ALB",
+      "MKD",
+      "MNE",
+      "SRB"
+    ],
+    "aliases": [
+      "kosovo",
+      "republic of kosovo"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": false,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "KW",
+    "code3": "KWT",
+    "name": "Kuwait",
+    "officialName": "State of Kuwait",
+    "capital": "Kuwait City",
+    "continent": "Asia",
+    "subregion": "Western Asia",
+    "population": 4853420,
+    "area": 17818,
+    "borders": [
+      "IRQ",
+      "SAU"
+    ],
+    "aliases": [
+      "kuwait",
+      "state of kuwait"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 2 countries."
+  },
+  {
+    "code": "KG",
+    "code3": "KGZ",
+    "name": "Kyrgyzstan",
+    "officialName": "Kyrgyz Republic",
+    "capital": "Bishkek",
+    "continent": "Asia",
+    "subregion": "Central Asia",
+    "population": 7099750,
+    "area": 199951,
+    "borders": [
+      "CHN",
+      "KAZ",
+      "TJK",
+      "UZB"
+    ],
+    "aliases": [
+      "kyrgyzstan",
+      "kyrgyz republic"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "LA",
+    "code3": "LAO",
+    "name": "Laos",
+    "officialName": "Lao People's Democratic Republic",
+    "capital": "Vientiane",
+    "continent": "Asia",
+    "subregion": "South-Eastern Asia",
+    "population": 7664993,
+    "area": 236800,
+    "borders": [
+      "MMR",
+      "KHM",
+      "CHN",
+      "THA",
+      "VNM"
+    ],
+    "aliases": [
+      "laos",
+      "lao people's democratic republic"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "LV",
+    "code3": "LVA",
+    "name": "Latvia",
+    "officialName": "Republic of Latvia",
+    "capital": "Riga",
+    "continent": "Europe",
+    "subregion": "Northern Europe",
+    "population": 1883710,
+    "area": 64559,
+    "borders": [
+      "BLR",
+      "EST",
+      "LTU",
+      "RUS"
+    ],
+    "aliases": [
+      "latvia",
+      "republic of latvia"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 4 countries."
+  },
+  {
+    "code": "LB",
+    "code3": "LBN",
+    "name": "Lebanon",
+    "officialName": "Lebanese Republic",
+    "capital": "Beirut",
+    "continent": "Asia",
+    "subregion": "Western Asia",
+    "population": 5773493,
+    "area": 10452,
+    "borders": [
+      "ISR",
+      "SYR"
+    ],
+    "aliases": [
+      "lebanon",
+      "lebanese republic"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 2 countries."
+  },
+  {
+    "code": "LS",
+    "code3": "LSO",
+    "name": "Lesotho",
+    "officialName": "Kingdom of Lesotho",
+    "capital": "Maseru",
+    "continent": "Africa",
+    "subregion": "Southern Africa",
+    "population": 2311472,
+    "area": 30355,
+    "borders": [
+      "ZAF"
+    ],
+    "aliases": [
+      "lesotho",
+      "kingdom of lesotho"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "LR",
+    "code3": "LBR",
+    "name": "Liberia",
+    "officialName": "Republic of Liberia",
+    "capital": "Monrovia",
+    "continent": "Africa",
+    "subregion": "Western Africa",
+    "population": 5493031,
+    "area": 111369,
+    "borders": [
+      "GIN",
+      "CIV",
+      "SLE"
+    ],
+    "aliases": [
+      "liberia",
+      "republic of liberia"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 3 countries."
+  },
+  {
+    "code": "LY",
+    "code3": "LBY",
+    "name": "Libya",
+    "officialName": "State of Libya",
+    "capital": "Tripoli",
+    "continent": "Africa",
+    "subregion": "Northern Africa",
+    "population": 7305659,
+    "area": 1759540,
+    "borders": [
+      "DZA",
+      "TCD",
+      "EGY",
+      "NER",
+      "SDN",
+      "TUN"
+    ],
+    "aliases": [
+      "libya",
+      "state of libya"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 6 countries."
+  },
+  {
+    "code": "LI",
+    "code3": "LIE",
+    "name": "Liechtenstein",
+    "officialName": "Principality of Liechtenstein",
+    "capital": "Vaduz",
+    "continent": "Europe",
+    "subregion": "Western Europe",
+    "population": 39846,
+    "area": 160,
+    "borders": [
+      "AUT",
+      "CHE"
+    ],
+    "aliases": [
+      "liechtenstein",
+      "principality of liechtenstein"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "LT",
+    "code3": "LTU",
+    "name": "Lithuania",
+    "officialName": "Republic of Lithuania",
+    "capital": "Vilnius",
+    "continent": "Europe",
+    "subregion": "Northern Europe",
+    "population": 2871585,
+    "area": 65300,
+    "borders": [
+      "BLR",
+      "LVA",
+      "POL",
+      "RUS"
+    ],
+    "aliases": [
+      "lithuania",
+      "republic of lithuania"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 4 countries."
+  },
+  {
+    "code": "LU",
+    "code3": "LUX",
+    "name": "Luxembourg",
+    "officialName": "Grand Duchy of Luxembourg",
+    "capital": "Luxembourg",
+    "continent": "Europe",
+    "subregion": "Western Europe",
+    "population": 666430,
+    "area": 2586,
+    "borders": [
+      "BEL",
+      "FRA",
+      "DEU"
+    ],
+    "aliases": [
+      "luxembourg",
+      "grand duchy of luxembourg"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "MO",
+    "code3": "MAC",
+    "name": "Macau",
+    "officialName": "Macao Special Administrative Region of the People's Republic of China",
+    "capital": "",
+    "continent": "Asia",
+    "subregion": "Eastern Asia",
+    "population": 678800,
+    "area": 30,
+    "borders": [
+      "CHN"
+    ],
+    "aliases": [
+      "macau",
+      "macao special administrative region of the people's republic of china"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 1 country."
+  },
+  {
+    "code": "MG",
+    "code3": "MDG",
+    "name": "Madagascar",
+    "officialName": "Republic of Madagascar",
+    "capital": "Antananarivo",
+    "continent": "Africa",
+    "subregion": "Eastern Africa",
+    "population": 31195932,
+    "area": 587041,
+    "borders": [],
+    "aliases": [
+      "madagascar",
+      "republic of madagascar"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "Located in Africa."
+  },
+  {
+    "code": "MW",
+    "code3": "MWI",
+    "name": "Malawi",
+    "officialName": "Republic of Malawi",
+    "capital": "Lilongwe",
+    "continent": "Africa",
+    "subregion": "Eastern Africa",
+    "population": 21104482,
+    "area": 118484,
+    "borders": [
+      "MOZ",
+      "TZA",
+      "ZMB"
+    ],
+    "aliases": [
+      "malawi",
+      "republic of malawi"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "MY",
+    "code3": "MYS",
+    "name": "Malaysia",
+    "officialName": "Malaysia",
+    "capital": "Kuala Lumpur",
+    "continent": "Asia",
+    "subregion": "South-Eastern Asia",
+    "population": 35126298,
+    "area": 330803,
+    "borders": [
+      "BRN",
+      "IDN",
+      "THA"
+    ],
+    "aliases": [
+      "malaysia"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 3 countries."
+  },
+  {
+    "code": "MV",
+    "code3": "MDV",
+    "name": "Maldives",
+    "officialName": "Republic of the Maldives",
+    "capital": "Malé",
+    "continent": "Asia",
+    "subregion": "Southern Asia",
+    "population": 525994,
+    "area": 300,
+    "borders": [],
+    "aliases": [
+      "maldives",
+      "republic of the maldives"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "Located in Asia."
+  },
+  {
+    "code": "ML",
+    "code3": "MLI",
+    "name": "Mali",
+    "officialName": "Republic of Mali",
+    "capital": "Bamako",
+    "continent": "Africa",
+    "subregion": "Western Africa",
+    "population": 23769127,
+    "area": 1240192,
+    "borders": [
+      "DZA",
+      "BFA",
+      "GIN",
+      "CIV",
+      "MRT",
+      "NER",
+      "SEN"
+    ],
+    "aliases": [
+      "mali",
+      "republic of mali"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "MT",
+    "code3": "MLT",
+    "name": "Malta",
+    "officialName": "Republic of Malta",
+    "capital": "Valletta",
+    "continent": "Europe",
+    "subregion": "Southern Europe",
+    "population": 552747,
+    "area": 316,
+    "borders": [],
+    "aliases": [
+      "malta",
+      "republic of malta"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "Located in Europe."
+  },
+  {
+    "code": "MH",
+    "code3": "MHL",
+    "name": "Marshall Islands",
+    "officialName": "Republic of the Marshall Islands",
+    "capital": "Majuro",
+    "continent": "Oceania",
+    "subregion": "Micronesia",
+    "population": 38827,
+    "area": 181,
+    "borders": [],
+    "aliases": [
+      "marshall islands",
+      "republic of the marshall islands"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": false,
+    "fact": "It has fewer than 100,000 people."
+  },
+  {
+    "code": "MQ",
+    "code3": "MTQ",
+    "name": "Martinique",
+    "officialName": "Martinique",
+    "capital": "Fort-de-France",
+    "continent": "North America",
+    "subregion": "Caribbean",
+    "population": 360000,
+    "area": 1128,
+    "borders": [],
+    "aliases": [
+      "martinique"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "Located in North America."
+  },
+  {
+    "code": "MR",
+    "code3": "MRT",
+    "name": "Mauritania",
+    "officialName": "Islamic Republic of Mauritania",
+    "capital": "Nouakchott",
+    "continent": "Africa",
+    "subregion": "Western Africa",
+    "population": 5022441,
+    "area": 1030700,
+    "borders": [
+      "DZA",
+      "MLI",
+      "SEN",
+      "ESH"
+    ],
+    "aliases": [
+      "mauritania",
+      "islamic republic of mauritania"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 4 countries."
+  },
+  {
+    "code": "MU",
+    "code3": "MUS",
+    "name": "Mauritius",
+    "officialName": "Republic of Mauritius",
+    "capital": "Port Louis",
+    "continent": "Africa",
+    "subregion": "Eastern Africa",
+    "population": 1248647,
+    "area": 2040,
+    "borders": [],
+    "aliases": [
+      "mauritius",
+      "republic of mauritius"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "Located in Africa."
+  },
+  {
+    "code": "YT",
+    "code3": "MYT",
+    "name": "Mayotte",
+    "officialName": "Department of Mayotte",
+    "capital": "Mamoudzou",
+    "continent": "Africa",
+    "subregion": "Eastern Africa",
+    "population": 320000,
+    "area": 374,
+    "borders": [],
+    "aliases": [
+      "mayotte",
+      "department of mayotte"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "Located in Africa."
+  },
+  {
+    "code": "MX",
+    "code3": "MEX",
+    "name": "Mexico",
+    "officialName": "United Mexican States",
+    "capital": "Mexico City",
+    "continent": "North America",
+    "subregion": "North America",
+    "population": 129739759,
+    "area": 1964375,
+    "borders": [
+      "BLZ",
+      "GTM",
+      "USA"
+    ],
+    "aliases": [
+      "mexico",
+      "united mexican states"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 3 countries."
+  },
+  {
+    "code": "FM",
+    "code3": "FSM",
+    "name": "Micronesia",
+    "officialName": "Federated States of Micronesia",
+    "capital": "Palikir",
+    "continent": "Oceania",
+    "subregion": "Micronesia",
+    "population": 112630,
+    "area": 702,
+    "borders": [],
+    "aliases": [
+      "micronesia",
+      "federated states of micronesia"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": false,
+    "fact": "Located in Oceania."
+  },
+  {
+    "code": "MD",
+    "code3": "MDA",
+    "name": "Moldova",
+    "officialName": "Republic of Moldova",
+    "capital": "Chișinău",
+    "continent": "Europe",
+    "subregion": "Eastern Europe",
+    "population": 2457783,
+    "area": 33846,
+    "borders": [
+      "ROU",
+      "UKR"
+    ],
+    "aliases": [
+      "moldova",
+      "republic of moldova"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "MC",
+    "code3": "MCO",
+    "name": "Monaco",
+    "officialName": "Principality of Monaco",
+    "capital": "Monaco",
+    "continent": "Europe",
+    "subregion": "Western Europe",
+    "population": 38956,
+    "area": 2.02,
+    "borders": [
+      "FRA"
+    ],
+    "aliases": [
+      "monaco",
+      "principality of monaco"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 1 country."
+  },
+  {
+    "code": "MN",
+    "code3": "MNG",
+    "name": "Mongolia",
+    "officialName": "Mongolia",
+    "capital": "Ulan Bator",
+    "continent": "Asia",
+    "subregion": "Eastern Asia",
+    "population": 3481145,
+    "area": 1564110,
+    "borders": [
+      "CHN",
+      "RUS"
+    ],
+    "aliases": [
+      "mongolia"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "ME",
+    "code3": "MNE",
+    "name": "Montenegro",
+    "officialName": "Montenegro",
+    "capital": "Podgorica",
+    "continent": "Europe",
+    "subregion": "Southeast Europe",
+    "population": 623529,
+    "area": 13812,
+    "borders": [
+      "ALB",
+      "BIH",
+      "HRV",
+      "UNK",
+      "SRB"
+    ],
+    "aliases": [
+      "montenegro"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 5 countries."
+  },
+  {
+    "code": "MS",
+    "code3": "MSR",
+    "name": "Montserrat",
+    "officialName": "Montserrat",
+    "capital": "Plymouth",
+    "continent": "North America",
+    "subregion": "Caribbean",
+    "population": 5000,
+    "area": 102,
+    "borders": [],
+    "aliases": [
+      "montserrat"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It has fewer than 100,000 people."
+  },
+  {
+    "code": "MA",
+    "code3": "MAR",
+    "name": "Morocco",
+    "officialName": "Kingdom of Morocco",
+    "capital": "Rabat",
+    "continent": "Africa",
+    "subregion": "Northern Africa",
+    "population": 37712505,
+    "area": 446550,
+    "borders": [
+      "DZA",
+      "ESH",
+      "ESP"
+    ],
+    "aliases": [
+      "morocco",
+      "kingdom of morocco"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 3 countries."
+  },
+  {
+    "code": "MZ",
+    "code3": "MOZ",
+    "name": "Mozambique",
+    "officialName": "Republic of Mozambique",
+    "capital": "Maputo",
+    "continent": "Africa",
+    "subregion": "Eastern Africa",
+    "population": 33635160,
+    "area": 801590,
+    "borders": [
+      "MWI",
+      "ZAF",
+      "SWZ",
+      "TZA",
+      "ZMB",
+      "ZWE"
+    ],
+    "aliases": [
+      "mozambique",
+      "republic of mozambique"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 6 countries."
+  },
+  {
+    "code": "MM",
+    "code3": "MMR",
+    "name": "Myanmar",
+    "officialName": "Republic of the Union of Myanmar",
+    "capital": "Naypyidaw",
+    "continent": "Asia",
+    "subregion": "South-Eastern Asia",
+    "population": 54133798,
+    "area": 676578,
+    "borders": [
+      "BGD",
+      "CHN",
+      "IND",
+      "LAO",
+      "THA"
+    ],
+    "aliases": [
+      "myanmar",
+      "republic of the union of myanmar",
+      "burma"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 5 countries."
+  },
+  {
+    "code": "NA",
+    "code3": "NAM",
+    "name": "Namibia",
+    "officialName": "Republic of Namibia",
+    "capital": "Windhoek",
+    "continent": "Africa",
+    "subregion": "Southern Africa",
+    "population": 2963095,
+    "area": 825615,
+    "borders": [
+      "AGO",
+      "BWA",
+      "ZAF",
+      "ZMB"
+    ],
+    "aliases": [
+      "namibia",
+      "republic of namibia"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 4 countries."
+  },
+  {
+    "code": "NR",
+    "code3": "NRU",
+    "name": "Nauru",
+    "officialName": "Republic of Nauru",
+    "capital": "Yaren",
+    "continent": "Oceania",
+    "subregion": "Micronesia",
+    "population": 11875,
+    "area": 21,
+    "borders": [],
+    "aliases": [
+      "nauru",
+      "republic of nauru"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It has fewer than 100,000 people."
+  },
+  {
+    "code": "NP",
+    "code3": "NPL",
+    "name": "Nepal",
+    "officialName": "Federal Democratic Republic of Nepal",
+    "capital": "Kathmandu",
+    "continent": "Asia",
+    "subregion": "Southern Asia",
+    "population": 29694614,
+    "area": 147181,
+    "borders": [
+      "CHN",
+      "IND"
+    ],
+    "aliases": [
+      "nepal",
+      "federal democratic republic of nepal"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "NL",
+    "code3": "NLD",
+    "name": "Netherlands",
+    "officialName": "Kingdom of the Netherlands",
+    "capital": "Amsterdam",
+    "continent": "Europe",
+    "subregion": "Western Europe",
+    "population": 17877117,
+    "area": 41850,
+    "borders": [
+      "BEL",
+      "DEU"
+    ],
+    "aliases": [
+      "netherlands",
+      "kingdom of the netherlands",
+      "holland",
+      "the netherlands"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 2 countries."
+  },
+  {
+    "code": "NC",
+    "code3": "NCL",
+    "name": "New Caledonia",
+    "officialName": "New Caledonia",
+    "capital": "Nouméa",
+    "continent": "Oceania",
+    "subregion": "Melanesia",
+    "population": 289870,
+    "area": 18575,
+    "borders": [],
+    "aliases": [
+      "new caledonia"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "Located in Oceania."
+  },
+  {
+    "code": "NZ",
+    "code3": "NZL",
+    "name": "New Zealand",
+    "officialName": "New Zealand",
+    "capital": "Wellington",
+    "continent": "Oceania",
+    "subregion": "Australia and New Zealand",
+    "population": 5200000,
+    "area": 270467,
+    "borders": [],
+    "aliases": [
+      "new zealand"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "Located in Oceania."
+  },
+  {
+    "code": "NI",
+    "code3": "NIC",
+    "name": "Nicaragua",
+    "officialName": "Republic of Nicaragua",
+    "capital": "Managua",
+    "continent": "North America",
+    "subregion": "Central America",
+    "population": 6823613,
+    "area": 130373,
+    "borders": [
+      "CRI",
+      "HND"
+    ],
+    "aliases": [
+      "nicaragua",
+      "republic of nicaragua"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 2 countries."
+  },
+  {
+    "code": "NE",
+    "code3": "NER",
+    "name": "Niger",
+    "officialName": "Republic of Niger",
+    "capital": "Niamey",
+    "continent": "Africa",
+    "subregion": "Western Africa",
+    "population": 26159867,
+    "area": 1267000,
+    "borders": [
+      "DZA",
+      "BEN",
+      "BFA",
+      "TCD",
+      "LBY",
+      "MLI",
+      "NGA"
+    ],
+    "aliases": [
+      "niger",
+      "republic of niger"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "NG",
+    "code3": "NGA",
+    "name": "Nigeria",
+    "officialName": "Federal Republic of Nigeria",
+    "capital": "Abuja",
+    "continent": "Africa",
+    "subregion": "Western Africa",
+    "population": 227882945,
+    "area": 923768,
+    "borders": [
+      "BEN",
+      "CMR",
+      "TCD",
+      "NER"
+    ],
+    "aliases": [
+      "nigeria",
+      "federal republic of nigeria"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 4 countries."
+  },
+  {
+    "code": "NU",
+    "code3": "NIU",
+    "name": "Niue",
+    "officialName": "Niue",
+    "capital": "Alofi",
+    "continent": "Oceania",
+    "subregion": "Polynesia",
+    "population": 1600,
+    "area": 260,
+    "borders": [],
+    "aliases": [
+      "niue"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It has fewer than 100,000 people."
+  },
+  {
+    "code": "NF",
+    "code3": "NFK",
+    "name": "Norfolk Island",
+    "officialName": "Territory of Norfolk Island",
+    "capital": "Kingston",
+    "continent": "Oceania",
+    "subregion": "Australia and New Zealand",
+    "population": 2000,
+    "area": 36,
+    "borders": [],
+    "aliases": [
+      "norfolk island",
+      "territory of norfolk island"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It has fewer than 100,000 people."
+  },
+  {
+    "code": "KP",
+    "code3": "PRK",
+    "name": "North Korea",
+    "officialName": "Democratic People's Republic of Korea",
+    "capital": "Pyongyang",
+    "continent": "Asia",
+    "subregion": "Eastern Asia",
+    "population": 26418204,
+    "area": 120538,
+    "borders": [
+      "CHN",
+      "KOR",
+      "RUS"
+    ],
+    "aliases": [
+      "north korea",
+      "democratic people's republic of korea",
+      "dprk"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 3 countries."
+  },
+  {
+    "code": "MK",
+    "code3": "MKD",
+    "name": "North Macedonia",
+    "officialName": "Republic of North Macedonia",
+    "capital": "Skopje",
+    "continent": "Europe",
+    "subregion": "Southeast Europe",
+    "population": 1827816,
+    "area": 25713,
+    "borders": [
+      "ALB",
+      "BGR",
+      "GRC",
+      "UNK",
+      "SRB"
+    ],
+    "aliases": [
+      "north macedonia",
+      "republic of north macedonia",
+      "macedonia"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "MP",
+    "code3": "MNP",
+    "name": "Northern Mariana Islands",
+    "officialName": "Commonwealth of the Northern Mariana Islands",
+    "capital": "Saipan",
+    "continent": "Oceania",
+    "subregion": "Micronesia",
+    "population": 45143,
+    "area": 464,
+    "borders": [],
+    "aliases": [
+      "northern mariana islands",
+      "commonwealth of the northern mariana islands"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": false,
+    "fact": "It has fewer than 100,000 people."
+  },
+  {
+    "code": "NO",
+    "code3": "NOR",
+    "name": "Norway",
+    "officialName": "Kingdom of Norway",
+    "capital": "Oslo",
+    "continent": "Europe",
+    "subregion": "Northern Europe",
+    "population": 5519601,
+    "area": 323802,
+    "borders": [
+      "FIN",
+      "SWE",
+      "RUS"
+    ],
+    "aliases": [
+      "norway",
+      "kingdom of norway"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 3 countries."
+  },
+  {
+    "code": "OM",
+    "code3": "OMN",
+    "name": "Oman",
+    "officialName": "Sultanate of Oman",
+    "capital": "Muscat",
+    "continent": "Asia",
+    "subregion": "Western Asia",
+    "population": 5049269,
+    "area": 309500,
+    "borders": [
+      "SAU",
+      "ARE",
+      "YEM"
+    ],
+    "aliases": [
+      "oman",
+      "sultanate of oman"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 3 countries."
+  },
+  {
+    "code": "PK",
+    "code3": "PAK",
+    "name": "Pakistan",
+    "officialName": "Islamic Republic of Pakistan",
+    "capital": "Islamabad",
+    "continent": "Asia",
+    "subregion": "Southern Asia",
+    "population": 247504495,
+    "area": 881912,
+    "borders": [
+      "AFG",
+      "CHN",
+      "IND",
+      "IRN"
+    ],
+    "aliases": [
+      "pakistan",
+      "islamic republic of pakistan"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 4 countries."
+  },
+  {
+    "code": "PW",
+    "code3": "PLW",
+    "name": "Palau",
+    "officialName": "Republic of Palau",
+    "capital": "Ngerulmud",
+    "continent": "Oceania",
+    "subregion": "Micronesia",
+    "population": 17727,
+    "area": 459,
+    "borders": [],
+    "aliases": [
+      "palau",
+      "republic of palau"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It has fewer than 100,000 people."
+  },
+  {
+    "code": "PS",
+    "code3": "PSE",
+    "name": "Palestine",
+    "officialName": "State of Palestine",
+    "capital": "Ramallah",
+    "continent": "Asia",
+    "subregion": "Western Asia",
+    "population": 5165775,
+    "area": 6220,
+    "borders": [
+      "ISR",
+      "EGY",
+      "JOR"
+    ],
+    "aliases": [
+      "palestine",
+      "state of palestine"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": false,
+    "fact": "It borders 3 countries."
+  },
+  {
+    "code": "PA",
+    "code3": "PAN",
+    "name": "Panama",
+    "officialName": "Republic of Panama",
+    "capital": "Panama City",
+    "continent": "North America",
+    "subregion": "Central America",
+    "population": 4458759,
+    "area": 75417,
+    "borders": [
+      "COL",
+      "CRI"
+    ],
+    "aliases": [
+      "panama",
+      "republic of panama"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 2 countries."
+  },
+  {
+    "code": "PG",
+    "code3": "PNG",
+    "name": "Papua New Guinea",
+    "officialName": "Independent State of Papua New Guinea",
+    "capital": "Port Moresby",
+    "continent": "Oceania",
+    "subregion": "Melanesia",
+    "population": 10389635,
+    "area": 462840,
+    "borders": [
+      "IDN"
+    ],
+    "aliases": [
+      "papua new guinea",
+      "independent state of papua new guinea"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 1 country."
+  },
+  {
+    "code": "PY",
+    "code3": "PRY",
+    "name": "Paraguay",
+    "officialName": "Republic of Paraguay",
+    "capital": "Asunción",
+    "continent": "South America",
+    "subregion": "South America",
+    "population": 6844146,
+    "area": 406752,
+    "borders": [
+      "ARG",
+      "BOL",
+      "BRA"
+    ],
+    "aliases": [
+      "paraguay",
+      "republic of paraguay"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "PE",
+    "code3": "PER",
+    "name": "Peru",
+    "officialName": "Republic of Peru",
+    "capital": "Lima",
+    "continent": "South America",
+    "subregion": "South America",
+    "population": 33845617,
+    "area": 1285216,
+    "borders": [
+      "BOL",
+      "BRA",
+      "CHL",
+      "COL",
+      "ECU"
+    ],
+    "aliases": [
+      "peru",
+      "republic of peru"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 5 countries."
+  },
+  {
+    "code": "PH",
+    "code3": "PHL",
+    "name": "Philippines",
+    "officialName": "Republic of the Philippines",
+    "capital": "Manila",
+    "continent": "Asia",
+    "subregion": "South-Eastern Asia",
+    "population": 114891199,
+    "area": 342353,
+    "borders": [],
+    "aliases": [
+      "philippines",
+      "republic of the philippines"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It has over 100 million people."
+  },
+  {
+    "code": "PN",
+    "code3": "PCN",
+    "name": "Pitcairn Islands",
+    "officialName": "Pitcairn Group of Islands",
+    "capital": "Adamstown",
+    "continent": "Oceania",
+    "subregion": "Polynesia",
+    "population": 50,
+    "area": 47,
+    "borders": [],
+    "aliases": [
+      "pitcairn islands",
+      "pitcairn group of islands"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It has fewer than 100,000 people."
+  },
+  {
+    "code": "PL",
+    "code3": "POL",
+    "name": "Poland",
+    "officialName": "Republic of Poland",
+    "capital": "Warsaw",
+    "continent": "Europe",
+    "subregion": "Central Europe",
+    "population": 36687353,
+    "area": 312679,
+    "borders": [
+      "BLR",
+      "CZE",
+      "DEU",
+      "LTU",
+      "RUS",
+      "SVK",
+      "UKR"
+    ],
+    "aliases": [
+      "poland",
+      "republic of poland"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 7 countries."
+  },
+  {
+    "code": "PT",
+    "code3": "PRT",
+    "name": "Portugal",
+    "officialName": "Portuguese Republic",
+    "capital": "Lisbon",
+    "continent": "Europe",
+    "subregion": "Southern Europe",
+    "population": 10578174,
+    "area": 92090,
+    "borders": [
+      "ESP"
+    ],
+    "aliases": [
+      "portugal",
+      "portuguese republic"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 1 country."
+  },
+  {
+    "code": "PR",
+    "code3": "PRI",
+    "name": "Puerto Rico",
+    "officialName": "Commonwealth of Puerto Rico",
+    "capital": "San Juan",
+    "continent": "North America",
+    "subregion": "Caribbean",
+    "population": 3203794,
+    "area": 8870,
+    "borders": [],
+    "aliases": [
+      "puerto rico",
+      "commonwealth of puerto rico"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "Located in North America."
+  },
+  {
+    "code": "QA",
+    "code3": "QAT",
+    "name": "Qatar",
+    "officialName": "State of Qatar",
+    "capital": "Doha",
+    "continent": "Asia",
+    "subregion": "Western Asia",
+    "population": 2656032,
+    "area": 11586,
+    "borders": [
+      "SAU"
+    ],
+    "aliases": [
+      "qatar",
+      "state of qatar"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 1 country."
+  },
+  {
+    "code": "RE",
+    "code3": "REU",
+    "name": "Réunion",
+    "officialName": "Réunion Island",
+    "capital": "Saint-Denis",
+    "continent": "Africa",
+    "subregion": "Eastern Africa",
+    "population": 870000,
+    "area": 2511,
+    "borders": [],
+    "aliases": [
+      "réunion",
+      "réunion island"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "Located in Africa."
+  },
+  {
+    "code": "RO",
+    "code3": "ROU",
+    "name": "Romania",
+    "officialName": "Romania",
+    "capital": "Bucharest",
+    "continent": "Europe",
+    "subregion": "Southeast Europe",
+    "population": 19061062,
+    "area": 238391,
+    "borders": [
+      "BGR",
+      "HUN",
+      "MDA",
+      "SRB",
+      "UKR"
+    ],
+    "aliases": [
+      "romania"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 5 countries."
+  },
+  {
+    "code": "RU",
+    "code3": "RUS",
+    "name": "Russia",
+    "officialName": "Russian Federation",
+    "capital": "Moscow",
+    "continent": "Europe",
+    "subregion": "Eastern Europe",
+    "population": 143826130,
+    "area": 17098242,
+    "borders": [
+      "AZE",
+      "BLR",
+      "CHN",
+      "EST",
+      "FIN",
+      "GEO",
+      "KAZ",
+      "PRK",
+      "LVA",
+      "LTU",
+      "MNG",
+      "NOR",
+      "POL",
+      "UKR"
+    ],
+    "aliases": [
+      "russia",
+      "russian federation"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 14 countries."
+  },
+  {
+    "code": "RW",
+    "code3": "RWA",
+    "name": "Rwanda",
+    "officialName": "Republic of Rwanda",
+    "capital": "Kigali",
+    "continent": "Africa",
+    "subregion": "Eastern Africa",
+    "population": 13954471,
+    "area": 26338,
+    "borders": [
+      "BDI",
+      "COD",
+      "TZA",
+      "UGA"
+    ],
+    "aliases": [
+      "rwanda",
+      "republic of rwanda"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "BL",
+    "code3": "BLM",
+    "name": "Saint Barthélemy",
+    "officialName": "Collectivity of Saint Barthélemy",
+    "capital": "Gustavia",
+    "continent": "North America",
+    "subregion": "Caribbean",
+    "population": 10000,
+    "area": 21,
+    "borders": [],
+    "aliases": [
+      "saint barthélemy",
+      "collectivity of saint barthélemy"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It has fewer than 100,000 people."
+  },
+  {
+    "code": "SH",
+    "code3": "SHN",
+    "name": "Saint Helena, Ascension and Tristan da Cunha",
+    "officialName": "Saint Helena, Ascension and Tristan da Cunha",
+    "capital": "Jamestown",
+    "continent": "Africa",
+    "subregion": "Western Africa",
+    "population": 5600,
+    "area": 394,
+    "borders": [],
+    "aliases": [
+      "saint helena, ascension and tristan da cunha"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It has fewer than 100,000 people."
+  },
+  {
+    "code": "KN",
+    "code3": "KNA",
+    "name": "Saint Kitts and Nevis",
+    "officialName": "Federation of Saint Christopher and Nevis",
+    "capital": "Basseterre",
+    "continent": "North America",
+    "subregion": "Caribbean",
+    "population": 46758,
+    "area": 261,
+    "borders": [],
+    "aliases": [
+      "saint kitts and nevis",
+      "federation of saint christopher and nevis"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It has fewer than 100,000 people."
+  },
+  {
+    "code": "LC",
+    "code3": "LCA",
+    "name": "Saint Lucia",
+    "officialName": "Saint Lucia",
+    "capital": "Castries",
+    "continent": "North America",
+    "subregion": "Caribbean",
+    "population": 179285,
+    "area": 616,
+    "borders": [],
+    "aliases": [
+      "saint lucia"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "Located in North America."
+  },
+  {
+    "code": "MF",
+    "code3": "MAF",
+    "name": "Saint Martin",
+    "officialName": "Saint Martin",
+    "capital": "Marigot",
+    "continent": "North America",
+    "subregion": "Caribbean",
+    "population": 27515,
+    "area": 53,
+    "borders": [
+      "SXM"
+    ],
+    "aliases": [
+      "saint martin"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 1 country."
+  },
+  {
+    "code": "PM",
+    "code3": "SPM",
+    "name": "Saint Pierre and Miquelon",
+    "officialName": "Saint Pierre and Miquelon",
+    "capital": "Saint-Pierre",
+    "continent": "North America",
+    "subregion": "North America",
+    "population": 6000,
+    "area": 242,
+    "borders": [],
+    "aliases": [
+      "saint pierre and miquelon"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It has fewer than 100,000 people."
+  },
+  {
+    "code": "VC",
+    "code3": "VCT",
+    "name": "Saint Vincent and the Grenadines",
+    "officialName": "Saint Vincent and the Grenadines",
+    "capital": "Kingstown",
+    "continent": "North America",
+    "subregion": "Caribbean",
+    "population": 101323,
+    "area": 389,
+    "borders": [],
+    "aliases": [
+      "saint vincent and the grenadines"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "Located in North America."
+  },
+  {
+    "code": "WS",
+    "code3": "WSM",
+    "name": "Samoa",
+    "officialName": "Independent State of Samoa",
+    "capital": "Apia",
+    "continent": "Oceania",
+    "subregion": "Polynesia",
+    "population": 216663,
+    "area": 2842,
+    "borders": [],
+    "aliases": [
+      "samoa",
+      "independent state of samoa"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "Located in Oceania."
+  },
+  {
+    "code": "SM",
+    "code3": "SMR",
+    "name": "San Marino",
+    "officialName": "Most Serene Republic of San Marino",
+    "capital": "City of San Marino",
+    "continent": "Europe",
+    "subregion": "Southern Europe",
+    "population": 33860,
+    "area": 61,
+    "borders": [
+      "ITA"
+    ],
+    "aliases": [
+      "san marino",
+      "most serene republic of san marino"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "ST",
+    "code3": "STP",
+    "name": "São Tomé and Príncipe",
+    "officialName": "Democratic Republic of São Tomé and Príncipe",
+    "capital": "São Tomé",
+    "continent": "Africa",
+    "subregion": "Middle Africa",
+    "population": 230871,
+    "area": 964,
+    "borders": [],
+    "aliases": [
+      "são tomé and príncipe",
+      "democratic republic of são tomé and príncipe"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "Located in Africa."
+  },
+  {
+    "code": "SA",
+    "code3": "SAU",
+    "name": "Saudi Arabia",
+    "officialName": "Kingdom of Saudi Arabia",
+    "capital": "Riyadh",
+    "continent": "Asia",
+    "subregion": "Western Asia",
+    "population": 33702731,
+    "area": 2149690,
+    "borders": [
+      "IRQ",
+      "JOR",
+      "KWT",
+      "OMN",
+      "QAT",
+      "ARE",
+      "YEM"
+    ],
+    "aliases": [
+      "saudi arabia",
+      "kingdom of saudi arabia"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 7 countries."
+  },
+  {
+    "code": "SN",
+    "code3": "SEN",
+    "name": "Senegal",
+    "officialName": "Republic of Senegal",
+    "capital": "Dakar",
+    "continent": "Africa",
+    "subregion": "Western Africa",
+    "population": 18077573,
+    "area": 196722,
+    "borders": [
+      "GMB",
+      "GIN",
+      "GNB",
+      "MLI",
+      "MRT"
+    ],
+    "aliases": [
+      "senegal",
+      "republic of senegal"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 5 countries."
+  },
+  {
+    "code": "RS",
+    "code3": "SRB",
+    "name": "Serbia",
+    "officialName": "Republic of Serbia",
+    "capital": "Belgrade",
+    "continent": "Europe",
+    "subregion": "Southeast Europe",
+    "population": 6623183,
+    "area": 88361,
+    "borders": [
+      "BIH",
+      "BGR",
+      "HRV",
+      "HUN",
+      "UNK",
+      "MKD",
+      "MNE",
+      "ROU"
+    ],
+    "aliases": [
+      "serbia",
+      "republic of serbia"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "SC",
+    "code3": "SYC",
+    "name": "Seychelles",
+    "officialName": "Republic of Seychelles",
+    "capital": "Victoria",
+    "continent": "Africa",
+    "subregion": "Eastern Africa",
+    "population": 119773,
+    "area": 452,
+    "borders": [],
+    "aliases": [
+      "seychelles",
+      "republic of seychelles"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "Located in Africa."
+  },
+  {
+    "code": "SL",
+    "code3": "SLE",
+    "name": "Sierra Leone",
+    "officialName": "Republic of Sierra Leone",
+    "capital": "Freetown",
+    "continent": "Africa",
+    "subregion": "Western Africa",
+    "population": 8460512,
+    "area": 71740,
+    "borders": [
+      "GIN",
+      "LBR"
+    ],
+    "aliases": [
+      "sierra leone",
+      "republic of sierra leone"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 2 countries."
+  },
+  {
+    "code": "SG",
+    "code3": "SGP",
+    "name": "Singapore",
+    "officialName": "Republic of Singapore",
+    "capital": "Singapore",
+    "continent": "Asia",
+    "subregion": "South-Eastern Asia",
+    "population": 5917648,
+    "area": 710,
+    "borders": [],
+    "aliases": [
+      "singapore",
+      "republic of singapore"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "Located in Asia."
+  },
+  {
+    "code": "SX",
+    "code3": "SXM",
+    "name": "Sint Maarten",
+    "officialName": "Sint Maarten",
+    "capital": "Philipsburg",
+    "continent": "North America",
+    "subregion": "Caribbean",
+    "population": 42749,
+    "area": 34,
+    "borders": [
+      "MAF"
+    ],
+    "aliases": [
+      "sint maarten"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 1 country."
+  },
+  {
+    "code": "SK",
+    "code3": "SVK",
+    "name": "Slovakia",
+    "officialName": "Slovak Republic",
+    "capital": "Bratislava",
+    "continent": "Europe",
+    "subregion": "Central Europe",
+    "population": 5426740,
+    "area": 49037,
+    "borders": [
+      "AUT",
+      "CZE",
+      "HUN",
+      "POL",
+      "UKR"
+    ],
+    "aliases": [
+      "slovakia",
+      "slovak republic"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "SI",
+    "code3": "SVN",
+    "name": "Slovenia",
+    "officialName": "Republic of Slovenia",
+    "capital": "Ljubljana",
+    "continent": "Europe",
+    "subregion": "Central Europe",
+    "population": 2120461,
+    "area": 20273,
+    "borders": [
+      "AUT",
+      "HRV",
+      "ITA",
+      "HUN"
+    ],
+    "aliases": [
+      "slovenia",
+      "republic of slovenia"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 4 countries."
+  },
+  {
+    "code": "SB",
+    "code3": "SLB",
+    "name": "Solomon Islands",
+    "officialName": "Solomon Islands",
+    "capital": "Honiara",
+    "continent": "Oceania",
+    "subregion": "Melanesia",
+    "population": 800005,
+    "area": 28896,
+    "borders": [],
+    "aliases": [
+      "solomon islands"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "Located in Oceania."
+  },
+  {
+    "code": "SO",
+    "code3": "SOM",
+    "name": "Somalia",
+    "officialName": "Federal Republic of Somalia",
+    "capital": "Mogadishu",
+    "continent": "Africa",
+    "subregion": "Eastern Africa",
+    "population": 18358615,
+    "area": 637657,
+    "borders": [
+      "DJI",
+      "ETH",
+      "KEN"
+    ],
+    "aliases": [
+      "somalia",
+      "federal republic of somalia"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 3 countries."
+  },
+  {
+    "code": "ZA",
+    "code3": "ZAF",
+    "name": "South Africa",
+    "officialName": "Republic of South Africa",
+    "capital": "Pretoria",
+    "continent": "Africa",
+    "subregion": "Southern Africa",
+    "population": 63212384,
+    "area": 1221037,
+    "borders": [
+      "BWA",
+      "LSO",
+      "MOZ",
+      "NAM",
+      "SWZ",
+      "ZWE"
+    ],
+    "aliases": [
+      "south africa",
+      "republic of south africa"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 6 countries."
+  },
+  {
+    "code": "GS",
+    "code3": "SGS",
+    "name": "South Georgia",
+    "officialName": "South Georgia and the South Sandwich Islands",
+    "capital": "King Edward Point",
+    "continent": "Antarctica",
+    "subregion": "",
+    "population": 30,
+    "area": 3903,
+    "borders": [],
+    "aliases": [
+      "south georgia",
+      "south georgia and the south sandwich islands"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It has fewer than 100,000 people."
+  },
+  {
+    "code": "KR",
+    "code3": "KOR",
+    "name": "South Korea",
+    "officialName": "Republic of Korea",
+    "capital": "Seoul",
+    "continent": "Asia",
+    "subregion": "Eastern Asia",
+    "population": 51712619,
+    "area": 100210,
+    "borders": [
+      "PRK"
+    ],
+    "aliases": [
+      "south korea",
+      "republic of korea"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 1 country."
+  },
+  {
+    "code": "SS",
+    "code3": "SSD",
+    "name": "South Sudan",
+    "officialName": "Republic of South Sudan",
+    "capital": "Juba",
+    "continent": "Africa",
+    "subregion": "Middle Africa",
+    "population": 11483374,
+    "area": 619745,
+    "borders": [
+      "CAF",
+      "COD",
+      "ETH",
+      "KEN",
+      "SDN",
+      "UGA"
+    ],
+    "aliases": [
+      "south sudan",
+      "republic of south sudan"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "ES",
+    "code3": "ESP",
+    "name": "Spain",
+    "officialName": "Kingdom of Spain",
+    "capital": "Madrid",
+    "continent": "Europe",
+    "subregion": "Southern Europe",
+    "population": 48352528,
+    "area": 505992,
+    "borders": [
+      "AND",
+      "FRA",
+      "GIB",
+      "PRT",
+      "MAR"
+    ],
+    "aliases": [
+      "spain",
+      "kingdom of spain"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 5 countries."
+  },
+  {
+    "code": "LK",
+    "code3": "LKA",
+    "name": "Sri Lanka",
+    "officialName": "Democratic Socialist Republic of Sri Lanka",
+    "capital": "Colombo",
+    "continent": "Asia",
+    "subregion": "Southern Asia",
+    "population": 22037000,
+    "area": 65610,
+    "borders": [
+      "IND"
+    ],
+    "aliases": [
+      "sri lanka",
+      "democratic socialist republic of sri lanka"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 1 country."
+  },
+  {
+    "code": "SD",
+    "code3": "SDN",
+    "name": "Sudan",
+    "officialName": "Republic of the Sudan",
+    "capital": "Khartoum",
+    "continent": "Africa",
+    "subregion": "Northern Africa",
+    "population": 50042791,
+    "area": 1886068,
+    "borders": [
+      "CAF",
+      "TCD",
+      "EGY",
+      "ERI",
+      "ETH",
+      "LBY",
+      "SSD"
+    ],
+    "aliases": [
+      "sudan",
+      "republic of the sudan"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 7 countries."
+  },
+  {
+    "code": "SR",
+    "code3": "SUR",
+    "name": "Suriname",
+    "officialName": "Republic of Suriname",
+    "capital": "Paramaribo",
+    "continent": "South America",
+    "subregion": "South America",
+    "population": 628886,
+    "area": 163820,
+    "borders": [
+      "BRA",
+      "GUF",
+      "GUY"
+    ],
+    "aliases": [
+      "suriname",
+      "republic of suriname"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 3 countries."
+  },
+  {
+    "code": "SJ",
+    "code3": "SJM",
+    "name": "Svalbard and Jan Mayen",
+    "officialName": "Svalbard og Jan Mayen",
+    "capital": "Longyearbyen",
+    "continent": "Europe",
+    "subregion": "Northern Europe",
+    "population": 2500,
+    "area": -1,
+    "borders": [],
+    "aliases": [
+      "svalbard and jan mayen",
+      "svalbard og jan mayen"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It has fewer than 100,000 people."
+  },
+  {
+    "code": "SE",
+    "code3": "SWE",
+    "name": "Sweden",
+    "officialName": "Kingdom of Sweden",
+    "capital": "Stockholm",
+    "continent": "Europe",
+    "subregion": "Northern Europe",
+    "population": 10536632,
+    "area": 450295,
+    "borders": [
+      "FIN",
+      "NOR"
+    ],
+    "aliases": [
+      "sweden",
+      "kingdom of sweden"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 2 countries."
+  },
+  {
+    "code": "CH",
+    "code3": "CHE",
+    "name": "Switzerland",
+    "officialName": "Swiss Confederation",
+    "capital": "Bern",
+    "continent": "Europe",
+    "subregion": "Western Europe",
+    "population": 8888822,
+    "area": 41284,
+    "borders": [
+      "AUT",
+      "FRA",
+      "ITA",
+      "LIE",
+      "DEU"
+    ],
+    "aliases": [
+      "switzerland",
+      "swiss confederation"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "SY",
+    "code3": "SYR",
+    "name": "Syria",
+    "officialName": "Syrian Arab Republic",
+    "capital": "Damascus",
+    "continent": "Asia",
+    "subregion": "Western Asia",
+    "population": 23594623,
+    "area": 185180,
+    "borders": [
+      "IRQ",
+      "ISR",
+      "JOR",
+      "LBN",
+      "TUR"
+    ],
+    "aliases": [
+      "syria",
+      "syrian arab republic"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 5 countries."
+  },
+  {
+    "code": "TW",
+    "code3": "TWN",
+    "name": "Taiwan",
+    "officialName": "Republic of China (Taiwan)",
+    "capital": "Taipei",
+    "continent": "Asia",
+    "subregion": "Eastern Asia",
+    "population": 23000000,
+    "area": 36193,
+    "borders": [],
+    "aliases": [
+      "taiwan",
+      "republic of china (taiwan)"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "Located in Asia."
+  },
+  {
+    "code": "TJ",
+    "code3": "TJK",
+    "name": "Tajikistan",
+    "officialName": "Republic of Tajikistan",
+    "capital": "Dushanbe",
+    "continent": "Asia",
+    "subregion": "Central Asia",
+    "population": 10389799,
+    "area": 143100,
+    "borders": [
+      "AFG",
+      "CHN",
+      "KGZ",
+      "UZB"
+    ],
+    "aliases": [
+      "tajikistan",
+      "republic of tajikistan"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "TZ",
+    "code3": "TZA",
+    "name": "Tanzania",
+    "officialName": "United Republic of Tanzania",
+    "capital": "Dodoma",
+    "continent": "Africa",
+    "subregion": "Eastern Africa",
+    "population": 66617606,
+    "area": 945087,
+    "borders": [
+      "BDI",
+      "COD",
+      "KEN",
+      "MWI",
+      "MOZ",
+      "RWA",
+      "UGA",
+      "ZMB"
+    ],
+    "aliases": [
+      "tanzania",
+      "united republic of tanzania"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 8 countries."
+  },
+  {
+    "code": "TH",
+    "code3": "THA",
+    "name": "Thailand",
+    "officialName": "Kingdom of Thailand",
+    "capital": "Bangkok",
+    "continent": "Asia",
+    "subregion": "South-Eastern Asia",
+    "population": 71702435,
+    "area": 513120,
+    "borders": [
+      "MMR",
+      "KHM",
+      "LAO",
+      "MYS"
+    ],
+    "aliases": [
+      "thailand",
+      "kingdom of thailand"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 4 countries."
+  },
+  {
+    "code": "TL",
+    "code3": "TLS",
+    "name": "Timor-Leste",
+    "officialName": "Democratic Republic of Timor-Leste",
+    "capital": "Dili",
+    "continent": "Asia",
+    "subregion": "South-Eastern Asia",
+    "population": 1384286,
+    "area": 14874,
+    "borders": [
+      "IDN"
+    ],
+    "aliases": [
+      "timor-leste",
+      "democratic republic of timor-leste"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 1 country."
+  },
+  {
+    "code": "TG",
+    "code3": "TGO",
+    "name": "Togo",
+    "officialName": "Togolese Republic",
+    "capital": "Lomé",
+    "continent": "Africa",
+    "subregion": "Western Africa",
+    "population": 8223850,
+    "area": 56785,
+    "borders": [
+      "BEN",
+      "BFA",
+      "GHA"
+    ],
+    "aliases": [
+      "togo",
+      "togolese republic"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 3 countries."
+  },
+  {
+    "code": "TK",
+    "code3": "TKL",
+    "name": "Tokelau",
+    "officialName": "Tokelau",
+    "capital": "Fakaofo",
+    "continent": "Oceania",
+    "subregion": "Polynesia",
+    "population": 1400,
+    "area": 12,
+    "borders": [],
+    "aliases": [
+      "tokelau"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It has fewer than 100,000 people."
+  },
+  {
+    "code": "TO",
+    "code3": "TON",
+    "name": "Tonga",
+    "officialName": "Kingdom of Tonga",
+    "capital": "Nuku'alofa",
+    "continent": "Oceania",
+    "subregion": "Polynesia",
+    "population": 104597,
+    "area": 747,
+    "borders": [],
+    "aliases": [
+      "tonga",
+      "kingdom of tonga"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "Located in Oceania."
+  },
+  {
+    "code": "TT",
+    "code3": "TTO",
+    "name": "Trinidad and Tobago",
+    "officialName": "Republic of Trinidad and Tobago",
+    "capital": "Port of Spain",
+    "continent": "North America",
+    "subregion": "Caribbean",
+    "population": 1367510,
+    "area": 5130,
+    "borders": [],
+    "aliases": [
+      "trinidad and tobago",
+      "republic of trinidad and tobago"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "Located in North America."
+  },
+  {
+    "code": "TN",
+    "code3": "TUN",
+    "name": "Tunisia",
+    "officialName": "Tunisian Republic",
+    "capital": "Tunis",
+    "continent": "Africa",
+    "subregion": "Northern Africa",
+    "population": 12200431,
+    "area": 163610,
+    "borders": [
+      "DZA",
+      "LBY"
+    ],
+    "aliases": [
+      "tunisia",
+      "tunisian republic"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 2 countries."
+  },
+  {
+    "code": "TR",
+    "code3": "TUR",
+    "name": "Türkiye",
+    "officialName": "Republic of Türkiye",
+    "capital": "Ankara",
+    "continent": "Asia",
+    "subregion": "Western Asia",
+    "population": 85325965,
+    "area": 783562,
+    "borders": [
+      "ARM",
+      "AZE",
+      "BGR",
+      "GEO",
+      "GRC",
+      "IRN",
+      "IRQ",
+      "SYR"
+    ],
+    "aliases": [
+      "türkiye",
+      "republic of türkiye",
+      "turkiye",
+      "turkey"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 8 countries."
+  },
+  {
+    "code": "TM",
+    "code3": "TKM",
+    "name": "Turkmenistan",
+    "officialName": "Turkmenistan",
+    "capital": "Ashgabat",
+    "continent": "Asia",
+    "subregion": "Central Asia",
+    "population": 7364438,
+    "area": 488100,
+    "borders": [
+      "AFG",
+      "IRN",
+      "KAZ",
+      "UZB"
+    ],
+    "aliases": [
+      "turkmenistan"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "TC",
+    "code3": "TCA",
+    "name": "Turks and Caicos Islands",
+    "officialName": "Turks and Caicos Islands",
+    "capital": "Cockburn Town",
+    "continent": "North America",
+    "subregion": "Caribbean",
+    "population": 46198,
+    "area": 948,
+    "borders": [],
+    "aliases": [
+      "turks and caicos islands"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It has fewer than 100,000 people."
+  },
+  {
+    "code": "TV",
+    "code3": "TUV",
+    "name": "Tuvalu",
+    "officialName": "Tuvalu",
+    "capital": "Funafuti",
+    "continent": "Oceania",
+    "subregion": "Polynesia",
+    "population": 9816,
+    "area": 26,
+    "borders": [],
+    "aliases": [
+      "tuvalu"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": false,
+    "fact": "It has fewer than 100,000 people."
+  },
+  {
+    "code": "UG",
+    "code3": "UGA",
+    "name": "Uganda",
+    "officialName": "Republic of Uganda",
+    "capital": "Kampala",
+    "continent": "Africa",
+    "subregion": "Eastern Africa",
+    "population": 48656601,
+    "area": 241550,
+    "borders": [
+      "COD",
+      "KEN",
+      "RWA",
+      "SSD",
+      "TZA"
+    ],
+    "aliases": [
+      "uganda",
+      "republic of uganda"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "UA",
+    "code3": "UKR",
+    "name": "Ukraine",
+    "officialName": "Ukraine",
+    "capital": "Kyiv",
+    "continent": "Europe",
+    "subregion": "Eastern Europe",
+    "population": 37732836,
+    "area": 603500,
+    "borders": [
+      "BLR",
+      "HUN",
+      "MDA",
+      "POL",
+      "ROU",
+      "RUS",
+      "SVK"
+    ],
+    "aliases": [
+      "ukraine"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 7 countries."
+  },
+  {
+    "code": "AE",
+    "code3": "ARE",
+    "name": "United Arab Emirates",
+    "officialName": "United Arab Emirates",
+    "capital": "Abu Dhabi",
+    "continent": "Asia",
+    "subregion": "Western Asia",
+    "population": 10483751,
+    "area": 83600,
+    "borders": [
+      "OMN",
+      "SAU"
+    ],
+    "aliases": [
+      "united arab emirates",
+      "uae",
+      "u.a.e."
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 2 countries."
+  },
+  {
+    "code": "GB",
+    "code3": "GBR",
+    "name": "United Kingdom",
+    "officialName": "United Kingdom of Great Britain and Northern Ireland",
+    "capital": "London",
+    "continent": "Europe",
+    "subregion": "Northern Europe",
+    "population": 68526000,
+    "area": 242900,
+    "borders": [
+      "IRL"
+    ],
+    "aliases": [
+      "united kingdom",
+      "united kingdom of great britain and northern ireland",
+      "uk",
+      "u.k.",
+      "britain",
+      "great britain",
+      "england"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 1 country."
+  },
+  {
+    "code": "US",
+    "code3": "USA",
+    "name": "United States",
+    "officialName": "United States of America",
+    "capital": "Washington D.C.",
+    "continent": "North America",
+    "subregion": "North America",
+    "population": 336755052,
+    "area": 9372610,
+    "borders": [
+      "CAN",
+      "MEX"
+    ],
+    "aliases": [
+      "united states",
+      "united states of america",
+      "usa",
+      "u.s.a.",
+      "u.s.",
+      "america"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 2 countries."
+  },
+  {
+    "code": "UM",
+    "code3": "UMI",
+    "name": "United States Minor Outlying Islands",
+    "officialName": "United States Minor Outlying Islands",
+    "capital": "",
+    "continent": "North America",
+    "subregion": "North America",
+    "population": 300,
+    "area": 34.2,
+    "borders": [],
+    "aliases": [
+      "united states minor outlying islands"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": false,
+    "fact": "It has fewer than 100,000 people."
+  },
+  {
+    "code": "VI",
+    "code3": "VIR",
+    "name": "United States Virgin Islands",
+    "officialName": "Virgin Islands of the United States",
+    "capital": "Charlotte Amalie",
+    "continent": "North America",
+    "subregion": "Caribbean",
+    "population": 104917,
+    "area": 347,
+    "borders": [],
+    "aliases": [
+      "united states virgin islands",
+      "virgin islands of the united states"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "Located in North America."
+  },
+  {
+    "code": "UY",
+    "code3": "URY",
+    "name": "Uruguay",
+    "officialName": "Oriental Republic of Uruguay",
+    "capital": "Montevideo",
+    "continent": "South America",
+    "subregion": "South America",
+    "population": 3388081,
+    "area": 181034,
+    "borders": [
+      "ARG",
+      "BRA"
+    ],
+    "aliases": [
+      "uruguay",
+      "oriental republic of uruguay"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 2 countries."
+  },
+  {
+    "code": "UZ",
+    "code3": "UZB",
+    "name": "Uzbekistan",
+    "officialName": "Republic of Uzbekistan",
+    "capital": "Tashkent",
+    "continent": "Asia",
+    "subregion": "Central Asia",
+    "population": 35652307,
+    "area": 447400,
+    "borders": [
+      "AFG",
+      "KAZ",
+      "KGZ",
+      "TJK",
+      "TKM"
+    ],
+    "aliases": [
+      "uzbekistan",
+      "republic of uzbekistan"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "VU",
+    "code3": "VUT",
+    "name": "Vanuatu",
+    "officialName": "Republic of Vanuatu",
+    "capital": "Port Vila",
+    "continent": "Oceania",
+    "subregion": "Melanesia",
+    "population": 320409,
+    "area": 12189,
+    "borders": [],
+    "aliases": [
+      "vanuatu",
+      "republic of vanuatu"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "Located in Oceania."
+  },
+  {
+    "code": "VA",
+    "code3": "VAT",
+    "name": "Vatican City",
+    "officialName": "Vatican City State",
+    "capital": "Vatican City",
+    "continent": "Europe",
+    "subregion": "Southern Europe",
+    "population": 500,
+    "area": 0.44,
+    "borders": [
+      "ITA"
+    ],
+    "aliases": [
+      "vatican city",
+      "vatican city state",
+      "vatican"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "VE",
+    "code3": "VEN",
+    "name": "Venezuela",
+    "officialName": "Bolivarian Republic of Venezuela",
+    "capital": "Caracas",
+    "continent": "South America",
+    "subregion": "South America",
+    "population": 28300854,
+    "area": 916445,
+    "borders": [
+      "BRA",
+      "COL",
+      "GUY"
+    ],
+    "aliases": [
+      "venezuela",
+      "bolivarian republic of venezuela"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 3 countries."
+  },
+  {
+    "code": "VN",
+    "code3": "VNM",
+    "name": "Vietnam",
+    "officialName": "Socialist Republic of Vietnam",
+    "capital": "Hanoi",
+    "continent": "Asia",
+    "subregion": "South-Eastern Asia",
+    "population": 100352192,
+    "area": 331212,
+    "borders": [
+      "KHM",
+      "CHN",
+      "LAO"
+    ],
+    "aliases": [
+      "vietnam",
+      "socialist republic of vietnam",
+      "viet nam"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 3 countries."
+  },
+  {
+    "code": "WF",
+    "code3": "WLF",
+    "name": "Wallis and Futuna",
+    "officialName": "Territory of the Wallis and Futuna Islands",
+    "capital": "Mata-Utu",
+    "continent": "Oceania",
+    "subregion": "Polynesia",
+    "population": 11000,
+    "area": 142,
+    "borders": [],
+    "aliases": [
+      "wallis and futuna",
+      "territory of the wallis and futuna islands"
+    ],
+    "shapeQuizEligible": false,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It has fewer than 100,000 people."
+  },
+  {
+    "code": "EH",
+    "code3": "ESH",
+    "name": "Western Sahara",
+    "officialName": "Sahrawi Arab Democratic Republic",
+    "capital": "El Aaiún",
+    "continent": "Africa",
+    "subregion": "Northern Africa",
+    "population": 600000,
+    "area": 266000,
+    "borders": [
+      "DZA",
+      "MRT",
+      "MAR"
+    ],
+    "aliases": [
+      "western sahara",
+      "sahrawi arab democratic republic"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 3 countries."
+  },
+  {
+    "code": "YE",
+    "code3": "YEM",
+    "name": "Yemen",
+    "officialName": "Republic of Yemen",
+    "capital": "Sana'a",
+    "continent": "Asia",
+    "subregion": "Western Asia",
+    "population": 39390799,
+    "area": 527968,
+    "borders": [
+      "OMN",
+      "SAU"
+    ],
+    "aliases": [
+      "yemen",
+      "republic of yemen"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "It borders 2 countries."
+  },
+  {
+    "code": "ZM",
+    "code3": "ZMB",
+    "name": "Zambia",
+    "officialName": "Republic of Zambia",
+    "capital": "Lusaka",
+    "continent": "Africa",
+    "subregion": "Eastern Africa",
+    "population": 20723965,
+    "area": 752612,
+    "borders": [
+      "AGO",
+      "BWA",
+      "COD",
+      "MWI",
+      "MOZ",
+      "NAM",
+      "TZA",
+      "ZWE"
+    ],
+    "aliases": [
+      "zambia",
+      "republic of zambia"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  },
+  {
+    "code": "ZW",
+    "code3": "ZWE",
+    "name": "Zimbabwe",
+    "officialName": "Republic of Zimbabwe",
+    "capital": "Harare",
+    "continent": "Africa",
+    "subregion": "Eastern Africa",
+    "population": 16340822,
+    "area": 390757,
+    "borders": [
+      "BWA",
+      "MOZ",
+      "ZAF",
+      "ZMB"
+    ],
+    "aliases": [
+      "zimbabwe",
+      "republic of zimbabwe"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "fact": "This country is landlocked."
+  }
+]

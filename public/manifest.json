@@ -1,0 +1,23 @@
+{
+  "name": "Atlas Academy",
+  "short_name": "Atlas",
+  "description": "Learn world geography with flags, capitals, and country shapes at Atlas Academy.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f2f8f4",
+  "theme_color": "#0f9f9b",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

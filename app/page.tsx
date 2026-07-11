@@ -1,0 +1,167 @@
+"use client";
+
+import Link from "next/link";
+import { useProfiles } from "@/components/ProfileProvider";
+import { GAME_MODES, type GameMode } from "@/lib/types";
+import { cn } from "@/lib/utils";
+
+const CORE_MODE_STYLES: Record<
+  string,
+  { tile: string; iconBg: string; hover: string }
+> = {
+  "flag-to-country": {
+    tile: "border-sky-200 bg-sky-50/80",
+    iconBg: "bg-sky-100",
+    hover: "hover:border-sky-400",
+  },
+  "capital-to-country": {
+    tile: "border-violet-200 bg-violet-50/80",
+    iconBg: "bg-violet-100",
+    hover: "hover:border-violet-400",
+  },
+  "country-to-capital": {
+    tile: "border-rose-200 bg-rose-50/80",
+    iconBg: "bg-rose-100",
+    hover: "hover:border-rose-400",
+  },
+  "shape-to-country": {
+    tile: "border-amber-200 bg-amber-50/80",
+    iconBg: "bg-amber-100",
+    hover: "hover:border-amber-400",
+  },
+};
+
+const CHALLENGE_MODES: GameMode[] = ["daily-challenge", "speed-round", "marathon", "weak-spots"];
+const EXTRA_QUIZ_MODES: GameMode[] = ["country-to-flag", "neighbor-quiz", "population-showdown"];
+
+export default function HomePage() {
+  const { activeProfile } = useProfiles();
+
+  const bestStreak = activeProfile
+    ? Math.max(0, ...Object.values(activeProfile.stats).map((s) => s.bestStreak))
+    : 0;
+
+  return (
+    <div className="space-y-7 sm:space-y-10">
+      <section className="relative overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-emerald-500 via-teal-600 to-sky-700 p-5 text-white shadow-[0_16px_40px_rgb(15_118_110_/_0.22)] sm:p-10">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-8 -top-8 select-none text-[8rem] opacity-15 sm:-right-10 sm:-top-14 sm:text-[11rem]"
+        >
+          🌍
+        </div>
+        <div className="relative">
+          <h1 className="font-display text-3xl font-extrabold tracking-tight sm:text-5xl">
+            Atlas Academy
+          </h1>
+          <p className="mt-2 max-w-[18rem] text-sm leading-relaxed text-emerald-50 sm:mt-3 sm:max-w-md sm:text-base">
+            Flags, capitals, and country shapes. Build a streak and beat your best.
+          </p>
+          <div className="mt-5 flex flex-col items-stretch gap-3 sm:mt-6 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
+            {activeProfile ? (
+              <Link
+                href="/play/daily-challenge"
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 font-display text-sm font-extrabold text-teal-800 shadow-[0_3px_0_rgb(255_255_255_/_0.45)] transition-transform hover:scale-[1.03] active:translate-y-[3px] active:shadow-none sm:text-base"
+              >
+                📅 Play today&apos;s challenge
+              </Link>
+            ) : (
+              <Link
+                href="/profiles"
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 font-display text-sm font-extrabold text-teal-800 shadow-[0_3px_0_rgb(255_255_255_/_0.45)] transition-transform hover:scale-[1.03] active:translate-y-[3px] active:shadow-none sm:text-base"
+              >
+                Create your first profile
+              </Link>
+            )}
+            {bestStreak > 0 && (
+              <span className="self-center rounded-full bg-white/15 px-4 py-2 text-sm font-semibold backdrop-blur">
+                🔥 Best streak: {bestStreak}
+              </span>
+            )}
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2 className="mb-3 font-display text-xl font-extrabold text-slate-800 sm:mb-4">Play</h2>
+        <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
+          {GAME_MODES.filter((m) => m.phase === 1).map((mode) => {
+            const streak = activeProfile?.stats[mode.id]?.currentStreak ?? 0;
+            const style = CORE_MODE_STYLES[mode.id];
+            return (
+              <Link
+                key={mode.id}
+                href={`/play/${mode.id}`}
+                className={cn(
+                  "group flex min-h-[5.25rem] items-center gap-3 rounded-2xl border-2 p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md sm:gap-4 sm:p-5",
+                  style?.tile ?? "border-slate-200 bg-white",
+                  style?.hover,
+                )}
+              >
+                <span
+                  className={cn(
+                    "flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-2xl transition-transform group-hover:scale-110 sm:h-14 sm:w-14 sm:text-3xl",
+                    style?.iconBg ?? "bg-slate-100",
+                  )}
+                >
+                  {mode.icon}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <h3 className="font-display font-extrabold text-slate-900">{mode.title}</h3>
+                  <p className="mt-0.5 line-clamp-2 text-xs leading-snug text-slate-600 sm:truncate sm:text-sm">{mode.description}</p>
+                </div>
+                {streak > 0 && (
+                  <span className="shrink-0 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-bold text-amber-800">
+                    🔥 {streak}
+                  </span>
+                )}
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+
+      <section>
+        <h2 className="mb-3 font-display text-xl font-extrabold text-slate-800 sm:mb-4">Challenges</h2>
+        <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-4">
+          {CHALLENGE_MODES.map((id) => {
+            const mode = GAME_MODES.find((m) => m.id === id);
+            if (!mode) return null;
+            return (
+              <Link
+                key={mode.id}
+                href={`/play/${mode.id}`}
+                className="group min-h-[8.75rem] min-w-[9.5rem] snap-start rounded-2xl border-2 border-slate-200 bg-white/80 p-4 shadow-sm backdrop-blur transition-all hover:-translate-y-0.5 hover:border-teal-400 hover:shadow-md sm:min-w-0"
+              >
+                <span className="text-2xl transition-transform group-hover:scale-110">
+                  {mode.icon}
+                </span>
+                <h3 className="mt-2 font-display text-sm font-extrabold text-slate-900">
+                  {mode.title}
+                </h3>
+                <p className="mt-0.5 text-xs text-slate-500">{mode.description}</p>
+              </Link>
+            );
+          })}
+        </div>
+
+        <div className="-mx-4 mt-3 flex items-center gap-2 overflow-x-auto px-4 py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:mt-4 sm:flex-wrap sm:overflow-visible sm:px-0">
+          <span className="shrink-0 text-sm font-medium text-slate-500">More:</span>
+          {EXTRA_QUIZ_MODES.map((id) => {
+            const mode = GAME_MODES.find((m) => m.id === id);
+            if (!mode) return null;
+            return (
+              <Link
+                key={mode.id}
+                href={`/play/${mode.id}`}
+                className="min-h-11 shrink-0 rounded-full border-2 border-slate-200 bg-white/80 px-3.5 py-2 text-sm font-semibold text-slate-700 transition-colors hover:border-teal-400 hover:text-teal-700"
+              >
+                {mode.icon} {mode.title}
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+    </div>
+  );
+}
