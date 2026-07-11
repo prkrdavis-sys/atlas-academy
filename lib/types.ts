@@ -31,11 +31,30 @@ export function normalizeRoundQuestionSetting(
   return DEFAULT_ROUND_QUESTION_COUNT;
 }
 
+export function getRoundQuestionOptions(poolSize: number): RoundQuestionCount[] {
+  const maxOption = Math.floor(poolSize / 5) * 5;
+  return ROUND_QUESTION_OPTIONS.filter((count) => count <= maxOption);
+}
+
+export function clampRoundQuestionSetting(
+  setting: RoundQuestionSetting,
+  poolSize: number,
+): RoundQuestionSetting {
+  if (setting === ROUND_ALL_QUESTIONS) return ROUND_ALL_QUESTIONS;
+  const options = getRoundQuestionOptions(poolSize);
+  if (options.includes(setting)) return setting;
+  const fallback = [...options].reverse().find((count) => count <= setting);
+  return fallback ?? ROUND_ALL_QUESTIONS;
+}
+
 export function resolveRoundQuestionLimit(
   setting: RoundQuestionSetting | undefined,
   poolSize: number,
 ): number {
-  const normalized = normalizeRoundQuestionSetting(setting);
+  const normalized = clampRoundQuestionSetting(
+    normalizeRoundQuestionSetting(setting),
+    poolSize,
+  );
   if (normalized === ROUND_ALL_QUESTIONS) return poolSize;
   return Math.min(normalized, poolSize);
 }

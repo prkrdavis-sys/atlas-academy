@@ -5,6 +5,7 @@
 :root {
   --background: #f2f8f4;
   --foreground: #1e293b;
+  --app-header-offset: calc(3.5rem + env(safe-area-inset-top));
   color-scheme: light;
 }
 
@@ -68,6 +69,10 @@ input:focus-visible {
 }
 
 @media (min-width: 640px) {
+  :root {
+    --app-header-offset: calc(4rem + env(safe-area-inset-top));
+  }
+
   body {
     background-attachment: fixed;
   }

@@ -1,5 +1,21 @@
-import type { Difficulty, GameMode, ModeStats, Profile } from "@/lib/types";
+import type { Difficulty, GameMode, GlobalStreakSnapshot, ModeStats, Profile } from "@/lib/types";
 import { DIFFICULTIES, GAME_MODES } from "@/lib/types";
+
+const ZERO_GLOBAL_STREAK: GlobalStreakSnapshot = { currentStreak: 0, bestStreak: 0 };
+
+export function getGlobalStreak(
+  profile: Profile,
+  difficulty: Difficulty,
+): GlobalStreakSnapshot {
+  return profile.globalStreaks[difficulty];
+}
+
+export function getGlobalStreakOrZero(
+  profile: Profile | null | undefined,
+  difficulty: Difficulty,
+): GlobalStreakSnapshot {
+  return profile?.globalStreaks[difficulty] ?? ZERO_GLOBAL_STREAK;
+}
 
 export function emptyModeStats(): ModeStats {
   return {

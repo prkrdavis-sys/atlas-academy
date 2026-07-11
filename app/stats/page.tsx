@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useProfiles } from "@/components/ProfileProvider";
 import { cn } from "@/lib/utils";
 import { ACHIEVEMENTS, DIFFICULTIES, GAME_MODES, type Difficulty } from "@/lib/types";
+import { getGlobalStreak } from "@/lib/stats-helpers";
 
 const DIFFICULTY_LABELS: Record<Difficulty, string> = {
   easy: "Easy",
@@ -68,7 +69,7 @@ export default function StatsPage() {
     );
   }
 
-  const globalStreak = profile.globalStreaks[difficulty];
+  const globalStreak = getGlobalStreak(profile, difficulty);
   const difficultyLabel = DIFFICULTY_LABELS[difficulty];
 
   return (
@@ -169,7 +170,7 @@ export default function StatsPage() {
             <p className="mt-0.5 text-sm text-slate-600 dark:text-slate-400">{difficultyLabel} difficulty</p>
           </div>
           <table className="min-w-full text-sm">
-            <thead className="border-b border-slate-200 dark:border-slate-700 [&_th]:sticky [&_th]:top-[calc(4rem+env(safe-area-inset-top))] [&_th]:z-10 [&_th]:bg-slate-50 [&_th]:shadow-[0_1px_0_0_rgb(226_232_240)] dark:[&_th]:bg-slate-800 dark:[&_th]:shadow-[0_1px_0_0_rgb(51_65_85)]">
+            <thead className="border-b border-slate-200 dark:border-slate-700 [&_th]:sticky [&_th]:top-[var(--app-header-offset)] [&_th]:z-10 [&_th]:bg-slate-50 [&_th]:shadow-[0_1px_0_0_rgb(226_232_240)] dark:[&_th]:bg-slate-800 dark:[&_th]:shadow-[0_1px_0_0_rgb(51_65_85)]">
               <tr>
                 <th className="px-4 py-3 text-left font-semibold">Mode</th>
                 <th className="px-4 py-3 text-right font-semibold">Mode Streak</th>
@@ -203,33 +204,35 @@ export default function StatsPage() {
         </div>
       </section>
 
-      <section className="rounded-[1.75rem] border-2 border-slate-200 bg-white/90 shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90 sm:p-6">
-        <div className="sticky top-[calc(3.5rem+env(safe-area-inset-top))] z-10 -mx-4 mb-4 flex items-baseline justify-between gap-3 border-b border-slate-200 bg-white/95 px-4 py-4 backdrop-blur-xl shadow-[0_1px_0_0_rgb(226_232_240)] dark:border-slate-700 dark:bg-slate-900/95 dark:shadow-[0_1px_0_0_rgb(51_65_85)] sm:top-[calc(4rem+env(safe-area-inset-top))] sm:-mx-6 sm:px-6">
+      <section className="overflow-hidden rounded-[1.75rem] border-2 border-slate-200 bg-white/90 shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90">
+        <div className="sticky top-[var(--app-header-offset)] z-10 flex items-baseline justify-between gap-3 border-b border-slate-200 bg-white px-4 py-4 dark:border-slate-700 dark:bg-slate-900 sm:px-6">
           <h2 className="font-display text-base font-extrabold text-slate-800 dark:text-slate-100 sm:font-semibold">Achievements</h2>
           <p className="text-xs text-slate-600 dark:text-slate-400 sm:text-sm">
             {profile.achievements.length} / {ACHIEVEMENTS.length} unlocked
           </p>
         </div>
-        <p className="mb-3 px-4 text-xs text-slate-500 dark:text-slate-400 sm:mb-4 sm:px-0 sm:text-sm">
-          Achievements count progress across all difficulties.
-        </p>
-        <div className="grid grid-cols-1 gap-2 px-4 sm:grid-cols-2 sm:gap-3 sm:px-0 lg:grid-cols-3">
-          {ACHIEVEMENTS.map((achievement) => {
-            const earned = profile.achievements.includes(achievement.id);
-            return (
-              <div
-                key={achievement.id}
-                className={`rounded-xl border px-3.5 py-3 sm:px-4 ${earned ? "border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/50" : "border-slate-200 bg-slate-50 opacity-60 dark:border-slate-700 dark:bg-slate-800"}`}
-              >
-                <p className="text-sm font-medium leading-snug sm:text-base">
-                  {earned ? "🏆" : "🔒"} {achievement.title}
-                </p>
-                <p className="mt-0.5 text-xs leading-relaxed text-slate-600 dark:text-slate-400 sm:mt-1 sm:text-sm">
-                  {achievement.description}
-                </p>
-              </div>
-            );
-          })}
+        <div className="p-4 sm:p-6">
+          <p className="mb-3 text-xs text-slate-500 dark:text-slate-400 sm:mb-4 sm:text-sm">
+            Achievements count progress across all difficulties.
+          </p>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3 lg:grid-cols-3">
+            {ACHIEVEMENTS.map((achievement) => {
+              const earned = profile.achievements.includes(achievement.id);
+              return (
+                <div
+                  key={achievement.id}
+                  className={`rounded-xl border px-3.5 py-3 sm:px-4 ${earned ? "border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/50" : "border-slate-200 bg-slate-50 opacity-60 dark:border-slate-700 dark:bg-slate-800"}`}
+                >
+                  <p className="text-sm font-medium leading-snug sm:text-base">
+                    {earned ? "🏆" : "🔒"} {achievement.title}
+                  </p>
+                  <p className="mt-0.5 text-xs leading-relaxed text-slate-600 dark:text-slate-400 sm:mt-1 sm:text-sm">
+                    {achievement.description}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </section>
     </div>

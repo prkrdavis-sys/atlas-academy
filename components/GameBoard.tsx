@@ -23,6 +23,7 @@ import {
   recordAnswer,
   recordDailyChallengeCompletion,
 } from "@/lib/storage";
+import { getGlobalStreakOrZero } from "@/lib/stats-helpers";
 import type { Continent, CoreQuestionType, Difficulty, GameMode, Question, RoundQuestionSetting } from "@/lib/types";
 
 const ROUND_TASK_LABELS: Record<GameMode, string> = {
@@ -87,7 +88,7 @@ export function GameBoard({
   const [question, setQuestion] = useState<Question | null>(initialQuestion);
   const [streak, setStreak] = useState(() => {
     if (mode === "daily-challenge" && !countStats) return 0;
-    return activeProfile?.globalStreaks[difficulty]?.currentStreak ?? 0;
+    return getGlobalStreakOrZero(activeProfile, difficulty).currentStreak;
   });
   const [showLearnCard, setShowLearnCard] = useState(false);
   const [lastCorrect, setLastCorrect] = useState(true);

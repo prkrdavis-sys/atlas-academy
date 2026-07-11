@@ -8,6 +8,7 @@ import type {
 } from "@/lib/types";
 import { ACHIEVEMENTS, GAME_MODES } from "@/lib/types";
 import {
+  getGlobalStreak,
   maxGlobalBestStreak,
   modeCorrectCount,
   modePlayedCount,
@@ -57,7 +58,7 @@ export function buildAchievementChecks(
   session?: AchievementSessionContext,
 ): Record<string, boolean> {
   const stats = profile.stats[mode][difficulty];
-  const globalStreak = profile.globalStreaks[difficulty].currentStreak;
+  const globalStreak = getGlobalStreak(profile, difficulty).currentStreak;
   const totalCorrect = sumStat(profile, "totalCorrect");
   const totalPlayed = sumStat(profile, "totalPlayed");
   const overallAccuracy = totalPlayed > 0 ? totalCorrect / totalPlayed : 0;

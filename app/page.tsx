@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import { useProfiles } from "@/components/ProfileProvider";
+import { StreakSummaryLink } from "@/components/StreakSummaryLink";
 import { GAME_MODES, type GameMode } from "@/lib/types";
 import { formatDailyDate, hasPlayedDailyToday } from "@/lib/game-engine";
+import { getGlobalStreakOrZero } from "@/lib/stats-helpers";
 import { cn } from "@/lib/utils";
 
 const CORE_MODE_STYLES: Record<
@@ -40,8 +42,7 @@ export default function HomePage() {
   const profile = hydrated ? activeProfile : null;
 
   const difficulty = profile?.settings.difficulty ?? "easy";
-  const currentStreak = profile?.globalStreaks[difficulty]?.currentStreak ?? 0;
-  const bestStreak = profile?.globalStreaks[difficulty]?.bestStreak ?? 0;
+  const globalStreak = getGlobalStreakOrZero(profile, difficulty);
   const dailyDateLabel = formatDailyDate();
   const dailyCompletedToday = profile
     ? hasPlayedDailyToday(profile.dailyChallengePlayedDates)
@@ -56,14 +57,17 @@ export default function HomePage() {
         >
           🌍
         </div>
-        <div className="relative">
+        <div className="relative max-w-xl">
           <h1 className="font-display text-3xl font-extrabold tracking-tight sm:text-5xl">
             Atlas Academy
           </h1>
           <p className="mt-2 max-w-[18rem] text-sm leading-relaxed text-emerald-50 sm:mt-3 sm:max-w-md sm:text-base">
             Flags, capitals, and country shapes. Build a streak and beat your best.
           </p>
-          <div className="mt-5 flex flex-col items-stretch gap-3 sm:mt-6 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
+          {profile && (
+            <StreakSummaryLink streak={globalStreak} className="mt-4 sm:mt-5" />
+          )}
+          <div className="mt-5 sm:mt-6">
             {profile ? (
               <Link
                 href="/play/daily-challenge"
@@ -81,18 +85,6 @@ export default function HomePage() {
               >
                 Create your first profile
               </Link>
-            )}
-            {profile && (
-              <div className="flex flex-wrap items-center gap-2 self-center">
-                <span className="rounded-full bg-white/20 px-4 py-2 text-sm font-bold backdrop-blur">
-                  🔥 Current streak: {currentStreak}
-                </span>
-                {bestStreak > 0 && (
-                  <span className="rounded-full bg-white/15 px-4 py-2 text-sm font-semibold backdrop-blur">
-                    🏆 Best streak: {bestStreak}
-                  </span>
-                )}
-              </div>
             )}
           </div>
         </div>

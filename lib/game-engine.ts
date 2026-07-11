@@ -1,4 +1,4 @@
-import { filterCountries, getCountryByCode, getCountryName } from "@/lib/countries";
+import { getCountryByCode, getCountryName, getPlayablePool } from "@/lib/countries";
 import { validateAnswer } from "@/lib/answer-matcher";
 import {
   DAILY_CHALLENGE_QUESTION_COUNT,
@@ -71,8 +71,12 @@ export class GameEngine {
     private questionType?: CoreQuestionType,
     private questionLimit: RoundQuestionSetting = DEFAULT_ROUND_QUESTION_COUNT,
   ) {
-    const filterMode = mode === "speed-round" && questionType ? questionType : mode;
-    this.pool = filterCountries({ continents, mode: filterMode, weakSpotCodes });
+    this.pool = getPlayablePool({
+      continents,
+      mode,
+      questionType,
+      weakSpotCodes,
+    });
     this.random = seed !== undefined ? seededRandom(seed) : Math.random;
 
     if (this.mode === "daily-challenge") {

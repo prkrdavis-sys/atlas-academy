@@ -1,5 +1,5 @@
 import countriesData from "@/data/countries.json";
-import type { Continent, Country, GameMode } from "@/lib/types";
+import type { Continent, CoreQuestionType, Country, GameMode } from "@/lib/types";
 
 export const countries = countriesData as Country[];
 
@@ -48,6 +48,33 @@ export function filterCountries(options: {
 
 export function countCountriesByContinents(continents: Continent[]): number {
   return filterCountries({ continents }).length;
+}
+
+export function getPlayablePool(options: {
+  continents: Continent[];
+  mode: GameMode;
+  questionType?: CoreQuestionType;
+  weakSpotCodes?: string[];
+}): Country[] {
+  const filterMode =
+    options.mode === "speed-round" && options.questionType
+      ? options.questionType
+      : options.mode;
+
+  return filterCountries({
+    continents: options.continents,
+    mode: filterMode,
+    weakSpotCodes: options.weakSpotCodes,
+  });
+}
+
+export function getPlayablePoolSize(options: {
+  continents: Continent[];
+  mode: GameMode;
+  questionType?: CoreQuestionType;
+  weakSpotCodes?: string[];
+}): number {
+  return getPlayablePool(options).length;
 }
 
 export function getFlagPath(code: string): string {
