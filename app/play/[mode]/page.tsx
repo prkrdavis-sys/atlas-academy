@@ -6,19 +6,23 @@ import { ContinentFilter } from "@/components/ContinentFilter";
 import { GameBoard } from "@/components/GameBoard";
 import { useProfiles } from "@/components/ProfileProvider";
 import { Select } from "@/components/ui/Select";
+import { filterCountries } from "@/lib/countries";
 import { aggregateMissedCountries, DAILY_COUNTING_SESSION_KEY, formatDailyDate, getDailyDateKey, getDailySeed, hasPlayedDailyToday } from "@/lib/game-engine";
+import { collectMissedCountries } from "@/lib/stats-helpers";
 import { updateProfileSettings } from "@/lib/storage";
 import {
   CONTINENTS,
   CORE_QUESTION_TYPES,
+  DAILY_CHALLENGE_QUESTION_COUNT,
   GAME_MODES,
+  ROUND_ALL_QUESTIONS,
   ROUND_QUESTION_OPTIONS,
-  normalizeRoundQuestionCount,
+  normalizeRoundQuestionSetting,
   type Continent,
   type CoreQuestionType,
   type Difficulty,
   type GameMode,
-  type RoundQuestionCount,
+  type RoundQuestionSetting,
 } from "@/lib/types";
 
 export default function PlayPage() {
@@ -38,8 +42,8 @@ export default function PlayPage() {
   const [questionType, setQuestionType] = useState<CoreQuestionType>(
     () => profile?.settings.speedRoundQuestionType ?? "flag-to-country",
   );
-  const [roundQuestionCount, setRoundQuestionCount] = useState<RoundQuestionCount>(() =>
-    normalizeRoundQuestionCount(profile?.settings.roundQuestionCount),
+  const [roundQuestionCount, setRoundQuestionCount] = useState<RoundQuestionSetting>(() =>
+    normalizeRoundQuestionSetting(profile?.settings.roundQuestionCount),
   );
   const [started, setStarted] = useState(false);
   const [sessionKey, setSessionKey] = useState(0);
@@ -60,7 +64,7 @@ export default function PlayPage() {
     updateProfileSettings(activeProfile.id, {
       lastContinentFilter: continents,
       difficulty,
-      roundQuestionCount,
+      ...(mode !== "daily-challenge" ? { roundQuestionCount } : {}),
       ...(mode === "speed-round" ? { speedRoundQuestionType: questionType } : {}),
     });
     refresh();
@@ -86,8 +90,15 @@ export default function PlayPage() {
 
   const weakSpotCodes =
     mode === "weak-spots" && profile
-      ? aggregateMissedCountries(profile.stats)
+      ? aggregateMissedCountries(collectMissedCountries(profile))
       : undefined;
+
+  const filterMode = mode === "speed-round" ? questionType : mode;
+  const availableCountryCount = filterCountries({
+    continents,
+    mode: filterMode,
+    weakSpotCodes,
+  }).length;
 
   const gameProps = {
     mode,
@@ -97,7 +108,8 @@ export default function PlayPage() {
     seed: mode === "daily-challenge" ? getDailySeed() : undefined,
     timed: mode === "speed-round",
     stopOnWrong: mode === "marathon",
-    maxQuestions: roundQuestionCount,
+    maxQuestions:
+      mode === "daily-challenge" ? DAILY_CHALLENGE_QUESTION_COUNT : roundQuestionCount,
     questionType: mode === "speed-round" ? questionType : undefined,
     countStats: mode === "daily-challenge" ? countStats : true,
   };
@@ -183,21 +195,31 @@ export default function PlayPage() {
               </div>
             )}
 
-            <div>
-              <h2 className="mb-3 font-semibold">Questions per round</h2>
-              <Select
-                value={roundQuestionCount}
-                onChange={(event) =>
-                  setRoundQuestionCount(Number(event.target.value) as RoundQuestionCount)
-                }
-              >
-                {ROUND_QUESTION_OPTIONS.map((count) => (
-                  <option key={count} value={count}>
-                    {count} questions
+            {mode !== "daily-challenge" && (
+              <div>
+                <h2 className="mb-3 font-semibold">Questions per round</h2>
+                <Select
+                  value={roundQuestionCount}
+                  onChange={(event) => {
+                    const { value } = event.target;
+                    setRoundQuestionCount(
+                      value === ROUND_ALL_QUESTIONS
+                        ? ROUND_ALL_QUESTIONS
+                        : normalizeRoundQuestionSetting(Number(value)),
+                    );
+                  }}
+                >
+                  {ROUND_QUESTION_OPTIONS.map((count) => (
+                    <option key={count} value={count}>
+                      {count} questions
+                    </option>
+                  ))}
+                  <option value={ROUND_ALL_QUESTIONS}>
+                    All ({availableCountryCount} countries)
                   </option>
-                ))}
-              </Select>
-            </div>
+                </Select>
+              </div>
+            )}
 
             <div>
               <h2 className="mb-3 font-semibold">Difficulty</h2>

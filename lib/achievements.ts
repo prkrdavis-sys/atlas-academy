@@ -2,21 +2,25 @@ import { countries } from "@/lib/countries";
 import type {
   AchievementSessionContext,
   Continent,
+  Difficulty,
   GameMode,
   Profile,
 } from "@/lib/types";
 import { ACHIEVEMENTS, GAME_MODES } from "@/lib/types";
+import {
+  maxGlobalBestStreak,
+  modeCorrectCount,
+  modePlayedCount,
+  modesWithMinCorrect,
+  sumStatAcrossDifficulties,
+} from "@/lib/stats-helpers";
 
 function sumStat(profile: Profile, field: "totalCorrect" | "totalPlayed"): number {
-  return GAME_MODES.reduce((sum, mode) => sum + profile.stats[mode.id][field], 0);
+  return sumStatAcrossDifficulties(profile, field);
 }
 
 function maxBestStreak(profile: Profile): number {
-  return profile.globalBestStreak;
-}
-
-function modeCorrectCount(profile: Profile, mode: GameMode): number {
-  return profile.stats[mode].totalCorrect;
+  return maxGlobalBestStreak(profile);
 }
 
 function continentMastery(
@@ -46,17 +50,14 @@ function countriesAnswered(profile: Profile): number {
   return Object.values(profile.countryProgress ?? {}).filter((entry) => entry.total > 0).length;
 }
 
-function modesWithMinCorrect(profile: Profile, minCorrect: number): number {
-  return GAME_MODES.filter((mode) => profile.stats[mode.id].totalCorrect >= minCorrect).length;
-}
-
 export function buildAchievementChecks(
   profile: Profile,
   mode: GameMode,
+  difficulty: Difficulty,
   session?: AchievementSessionContext,
 ): Record<string, boolean> {
-  const stats = profile.stats[mode];
-  const globalStreak = profile.globalCurrentStreak ?? 0;
+  const stats = profile.stats[mode][difficulty];
+  const globalStreak = profile.globalStreaks[difficulty].currentStreak;
   const totalCorrect = sumStat(profile, "totalCorrect");
   const totalPlayed = sumStat(profile, "totalPlayed");
   const overallAccuracy = totalPlayed > 0 ? totalCorrect / totalPlayed : 0;
@@ -109,7 +110,7 @@ export function buildAchievementChecks(
     "accuracy-sharp": totalPlayed >= 75 && overallAccuracy >= 0.8,
     "perfect-session":
       sessionEnded && sessionTotal >= 10 && sessionCorrect === sessionTotal,
-    "mode-explorer": GAME_MODES.every((gameMode) => profile.stats[gameMode.id].totalPlayed > 0),
+    "mode-explorer": GAME_MODES.every((gameMode) => modePlayedCount(profile, gameMode.id) > 0),
     "mode-master": modesWithMinCorrect(profile, 25) >= 5,
     "africa-master": continentMastery(profile, ["Africa"], 20),
     "asia-master": continentMastery(profile, ["Asia"], 20),
@@ -125,10 +126,11 @@ export function buildAchievementChecks(
 export function checkAchievements(
   profile: Profile,
   mode: GameMode,
+  difficulty: Difficulty,
   session?: AchievementSessionContext,
 ): string[] {
   const newAchievements: string[] = [];
-  const checks = buildAchievementChecks(profile, mode, session);
+  const checks = buildAchievementChecks(profile, mode, difficulty, session);
 
   for (const achievement of ACHIEVEMENTS) {
     if (checks[achievement.id] && !profile.achievements.includes(achievement.id)) {

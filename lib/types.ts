@@ -12,15 +12,32 @@ export type Continent = (typeof CONTINENTS)[number];
 
 export type Difficulty = "easy" | "medium" | "hard";
 
+export const DIFFICULTIES: Difficulty[] = ["easy", "medium", "hard"];
+
 export const ROUND_QUESTION_OPTIONS = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50] as const;
 export type RoundQuestionCount = (typeof ROUND_QUESTION_OPTIONS)[number];
 export const DEFAULT_ROUND_QUESTION_COUNT: RoundQuestionCount = 10;
+export const DAILY_CHALLENGE_QUESTION_COUNT: RoundQuestionCount = 10;
+export const ROUND_ALL_QUESTIONS = "all" as const;
+export type RoundQuestionSetting = RoundQuestionCount | typeof ROUND_ALL_QUESTIONS;
 
-export function normalizeRoundQuestionCount(value: number | undefined): RoundQuestionCount {
-  if (value !== undefined && (ROUND_QUESTION_OPTIONS as readonly number[]).includes(value)) {
+export function normalizeRoundQuestionSetting(
+  value: RoundQuestionSetting | number | string | undefined,
+): RoundQuestionSetting {
+  if (value === ROUND_ALL_QUESTIONS || value === "all") return ROUND_ALL_QUESTIONS;
+  if (typeof value === "number" && (ROUND_QUESTION_OPTIONS as readonly number[]).includes(value)) {
     return value as RoundQuestionCount;
   }
   return DEFAULT_ROUND_QUESTION_COUNT;
+}
+
+export function resolveRoundQuestionLimit(
+  setting: RoundQuestionSetting | undefined,
+  poolSize: number,
+): number {
+  const normalized = normalizeRoundQuestionSetting(setting);
+  if (normalized === ROUND_ALL_QUESTIONS) return poolSize;
+  return Math.min(normalized, poolSize);
 }
 
 export type CoreQuestionType =
@@ -75,19 +92,25 @@ export type ModeStats = {
   missedCountries: string[];
 };
 
+export type ModeStatsByDifficulty = Record<Difficulty, ModeStats>;
+
+export type GlobalStreakSnapshot = {
+  currentStreak: number;
+  bestStreak: number;
+};
+
 export type Profile = {
   id: string;
   name: string;
   avatarColor: string;
   createdAt: string;
-  globalCurrentStreak: number;
-  globalBestStreak: number;
-  stats: Record<GameMode, ModeStats>;
+  globalStreaks: Record<Difficulty, GlobalStreakSnapshot>;
+  stats: Record<GameMode, ModeStatsByDifficulty>;
   settings: {
     difficulty: Difficulty;
     lastContinentFilter: Continent[];
     speedRoundQuestionType: CoreQuestionType;
-    roundQuestionCount: RoundQuestionCount;
+    roundQuestionCount: RoundQuestionSetting;
   };
   achievements: string[];
   countryProgress?: Record<string, { correct: number; total: number }>;

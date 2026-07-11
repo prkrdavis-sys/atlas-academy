@@ -39,8 +39,9 @@ export default function HomePage() {
   const { activeProfile, hydrated } = useProfiles();
   const profile = hydrated ? activeProfile : null;
 
-  const currentStreak = profile?.globalCurrentStreak ?? 0;
-  const bestStreak = profile?.globalBestStreak ?? 0;
+  const difficulty = profile?.settings.difficulty ?? "easy";
+  const currentStreak = profile?.globalStreaks[difficulty]?.currentStreak ?? 0;
+  const bestStreak = profile?.globalStreaks[difficulty]?.bestStreak ?? 0;
   const dailyDateLabel = formatDailyDate();
   const dailyCompletedToday = profile
     ? hasPlayedDailyToday(profile.dailyChallengePlayedDates)

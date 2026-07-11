@@ -1,6 +1,17 @@
 import { filterCountries, getCountryByCode, getCountryName } from "@/lib/countries";
 import { validateAnswer } from "@/lib/answer-matcher";
-import { DEFAULT_ROUND_QUESTION_COUNT, type Continent, type CoreQuestionType, type Country, type Difficulty, type GameMode, type Question } from "@/lib/types";
+import {
+  DAILY_CHALLENGE_QUESTION_COUNT,
+  DEFAULT_ROUND_QUESTION_COUNT,
+  resolveRoundQuestionLimit,
+  type Continent,
+  type CoreQuestionType,
+  type Country,
+  type Difficulty,
+  type GameMode,
+  type Question,
+  type RoundQuestionSetting,
+} from "@/lib/types";
 import { pickRandom, shuffle, uniqueBy } from "@/lib/utils";
 
 function seededRandom(seed: number) {
@@ -58,7 +69,7 @@ export class GameEngine {
     weakSpotCodes?: string[],
     seed?: number,
     private questionType?: CoreQuestionType,
-    private maxQuestions: number = DEFAULT_ROUND_QUESTION_COUNT,
+    private questionLimit: RoundQuestionSetting = DEFAULT_ROUND_QUESTION_COUNT,
   ) {
     const filterMode = mode === "speed-round" && questionType ? questionType : mode;
     this.pool = filterCountries({ continents, mode: filterMode, weakSpotCodes });
@@ -71,6 +82,13 @@ export class GameEngine {
     }
   }
 
+  getRoundQuestionLimit(): number {
+    if (this.mode === "daily-challenge") {
+      return Math.min(DAILY_CHALLENGE_QUESTION_COUNT, this.pool.length);
+    }
+    return resolveRoundQuestionLimit(this.questionLimit, this.pool.length);
+  }
+
   getPoolSize(): number {
     return this.pool.length;
   }
@@ -78,7 +96,7 @@ export class GameEngine {
   private buildDailyQuestions(): Question[] {
     const questions: Question[] = [];
     const used = new Set<string>();
-    for (let i = 0; i < this.maxQuestions && i < this.pool.length; i += 1) {
+    for (let i = 0; i < DAILY_CHALLENGE_QUESTION_COUNT && i < this.pool.length; i += 1) {
       let country = pickFromPool(this.pool, this.random);
       let attempts = 0;
       while (used.has(country.code) && attempts < 20) {
@@ -92,7 +110,7 @@ export class GameEngine {
   }
 
   private buildShuffledRoundCountries(): Country[] {
-    const limit = Math.min(this.maxQuestions, this.pool.length);
+    const limit = resolveRoundQuestionLimit(this.questionLimit, this.pool.length);
     return shuffle(this.pool).slice(0, limit);
   }
 
@@ -304,9 +322,8 @@ export function getWeakSpotCodes(codes: string[]): string[] {
     .map(([code]) => code);
 }
 
-export function aggregateMissedCountries(stats: Record<string, { missedCountries: string[] }>): string[] {
-  const all = Object.values(stats).flatMap((s) => s.missedCountries);
-  return getWeakSpotCodes(all);
+export function aggregateMissedCountries(missedCountryCodes: string[]): string[] {
+  return getWeakSpotCodes(missedCountryCodes);
 }
 
 export function uniqueCountryNames(codes: string[]): string[] {

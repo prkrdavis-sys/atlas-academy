@@ -23,7 +23,7 @@ import {
   recordAnswer,
   recordDailyChallengeCompletion,
 } from "@/lib/storage";
-import type { Continent, CoreQuestionType, Difficulty, GameMode, Question } from "@/lib/types";
+import type { Continent, CoreQuestionType, Difficulty, GameMode, Question, RoundQuestionSetting } from "@/lib/types";
 
 const ROUND_TASK_LABELS: Record<GameMode, string> = {
   "flag-to-country": "Name the country",
@@ -47,7 +47,7 @@ type GameBoardProps = {
   seed?: number;
   timed?: boolean;
   stopOnWrong?: boolean;
-  maxQuestions?: number;
+  maxQuestions?: RoundQuestionSetting;
   questionType?: CoreQuestionType;
   countStats?: boolean;
 };
@@ -82,10 +82,12 @@ export function GameBoard({
     };
   });
 
+  const sessionQuestionLimit = engine.getRoundQuestionLimit();
+
   const [question, setQuestion] = useState<Question | null>(initialQuestion);
   const [streak, setStreak] = useState(() => {
     if (mode === "daily-challenge" && !countStats) return 0;
-    return activeProfile?.globalCurrentStreak ?? 0;
+    return activeProfile?.globalStreaks[difficulty]?.currentStreak ?? 0;
   });
   const [showLearnCard, setShowLearnCard] = useState(false);
   const [lastCorrect, setLastCorrect] = useState(true);
@@ -121,10 +123,6 @@ export function GameBoard({
     setNewAchievements([]);
   }, []);
 
-  const sessionQuestionLimit = maxQuestions
-    ? Math.min(maxQuestions, engine.getPoolSize())
-    : undefined;
-
   useEffect(() => {
     if (!timed || gameOver) return;
     const timer = setTimeout(() => {
@@ -147,7 +145,7 @@ export function GameBoard({
     const state = loadState();
     const updatedProfile = state.profiles.find((p) => p.id === activeProfile.id);
     if (!updatedProfile) return;
-    const earned = checkAchievements(updatedProfile, mode, {
+    const earned = checkAchievements(updatedProfile, mode, difficulty, {
       sessionCorrect: correctAnswers,
       sessionTotal: questionCount,
       sessionEnded: true,
@@ -194,7 +192,7 @@ export function GameBoard({
     spawnBurst(correct);
 
     if (countStats) {
-      recordAnswer(activeProfile.id, mode, correct, question.countryCode);
+      recordAnswer(activeProfile.id, mode, difficulty, correct, question.countryCode);
       if (mode === "daily-challenge") {
         markDailyChallengePlayed(activeProfile.id);
       }
@@ -209,7 +207,7 @@ export function GameBoard({
       const state = loadState();
       const updatedProfile = state.profiles.find((p) => p.id === activeProfile.id);
       if (updatedProfile) {
-        const earned = checkAchievements(updatedProfile, mode, {
+        const earned = checkAchievements(updatedProfile, mode, difficulty, {
           sessionCorrect,
           sessionTotal: completedQuestions,
           sessionEnded,
@@ -267,7 +265,7 @@ export function GameBoard({
       }
     }
     if (countStats) {
-      recordAnswer(activeProfile!.id, mode, false, question.countryCode, true);
+      recordAnswer(activeProfile!.id, mode, difficulty, false, question.countryCode, true);
       refresh();
     }
   }

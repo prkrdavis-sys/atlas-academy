@@ -1,0 +1,72 @@
+import type { Difficulty, GameMode, ModeStats, Profile } from "@/lib/types";
+import { DIFFICULTIES, GAME_MODES } from "@/lib/types";
+
+export function emptyModeStats(): ModeStats {
+  return {
+    currentStreak: 0,
+    bestStreak: 0,
+    totalCorrect: 0,
+    totalPlayed: 0,
+    missedCountries: [],
+  };
+}
+
+export function createEmptyModeStatsByDifficulty(): Record<Difficulty, ModeStats> {
+  return {
+    easy: emptyModeStats(),
+    medium: emptyModeStats(),
+    hard: emptyModeStats(),
+  };
+}
+
+export function isLegacyFlatModeStats(value: unknown): value is ModeStats {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "totalPlayed" in value &&
+    !("easy" in value)
+  );
+}
+
+export function sumStatAcrossDifficulties(
+  profile: Profile,
+  field: "totalCorrect" | "totalPlayed",
+): number {
+  return GAME_MODES.reduce(
+    (sum, mode) =>
+      sum + DIFFICULTIES.reduce((dSum, difficulty) => dSum + profile.stats[mode.id][difficulty][field], 0),
+    0,
+  );
+}
+
+export function modeCorrectCount(profile: Profile, mode: GameMode): number {
+  return DIFFICULTIES.reduce(
+    (sum, difficulty) => sum + profile.stats[mode][difficulty].totalCorrect,
+    0,
+  );
+}
+
+export function modePlayedCount(profile: Profile, mode: GameMode): number {
+  return DIFFICULTIES.reduce(
+    (sum, difficulty) => sum + profile.stats[mode][difficulty].totalPlayed,
+    0,
+  );
+}
+
+export function maxGlobalBestStreak(profile: Profile): number {
+  return Math.max(...DIFFICULTIES.map((difficulty) => profile.globalStreaks[difficulty].bestStreak));
+}
+
+export function collectMissedCountries(profile: Profile): string[] {
+  const codes: string[] = [];
+  for (const mode of GAME_MODES) {
+    for (const difficulty of DIFFICULTIES) {
+      codes.push(...profile.stats[mode.id][difficulty].missedCountries);
+    }
+  }
+  return codes;
+}
+
+export function modesWithMinCorrect(profile: Profile, minCorrect: number): number {
+  return GAME_MODES.filter((mode) => modeCorrectCount(profile, mode.id) >= minCorrect).length;
+}

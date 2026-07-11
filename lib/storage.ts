@@ -6,62 +6,107 @@ import type {
   ModeStats,
   Profile,
   AchievementSessionContext,
-  RoundQuestionCount,
+  RoundQuestionSetting,
 } from "@/lib/types";
-import { AVATAR_COLORS, DEFAULT_ROUND_QUESTION_COUNT, GAME_MODES, normalizeRoundQuestionCount } from "@/lib/types";
+import {
+  AVATAR_COLORS,
+  DEFAULT_ROUND_QUESTION_COUNT,
+  DIFFICULTIES,
+  GAME_MODES,
+  normalizeRoundQuestionSetting,
+} from "@/lib/types";
 import { checkAchievements as evaluateAchievements } from "@/lib/achievements";
 import { getDailyDateKey } from "@/lib/game-engine";
+import {
+  createEmptyModeStatsByDifficulty,
+  emptyModeStats,
+  isLegacyFlatModeStats,
+} from "@/lib/stats-helpers";
 
 const STORAGE_KEY = "atlas-academy";
 const LEGACY_STORAGE_KEY = "geography-game";
 
-function maxModeBestStreak(profile: Profile): number {
-  return Math.max(0, ...Object.values(profile.stats).map((s) => s.bestStreak));
+type LegacyProfile = Profile & {
+  globalCurrentStreak?: number;
+  globalBestStreak?: number;
+};
+
+function createEmptyStats(): Record<GameMode, ReturnType<typeof createEmptyModeStatsByDifficulty>> {
+  const stats = {} as Record<GameMode, ReturnType<typeof createEmptyModeStatsByDifficulty>>;
+  for (const mode of GAME_MODES) {
+    stats[mode.id] = createEmptyModeStatsByDifficulty();
+  }
+  return stats;
 }
 
-export function normalizeProfile(profile: Profile): Profile {
-  if (profile.globalCurrentStreak === undefined) {
-    profile.globalCurrentStreak = 0;
-  }
-  if (profile.globalBestStreak === undefined) {
-    profile.globalBestStreak = maxModeBestStreak(profile);
-  }
-  if (!profile.settings.speedRoundQuestionType) {
-    profile.settings.speedRoundQuestionType = "flag-to-country";
-  }
-  profile.settings.roundQuestionCount = normalizeRoundQuestionCount(profile.settings.roundQuestionCount);
-  if (!profile.dailyChallengePlayedDates) {
-    profile.dailyChallengePlayedDates = [];
-  }
-  if (!profile.dailyChallengeCompletions) {
-    profile.dailyChallengeCompletions = [];
-  }
+function createEmptyGlobalStreaks(): Profile["globalStreaks"] {
+  return {
+    easy: { currentStreak: 0, bestStreak: 0 },
+    medium: { currentStreak: 0, bestStreak: 0 },
+    hard: { currentStreak: 0, bestStreak: 0 },
+  };
+}
+
+function migrateLegacyStats(profile: LegacyProfile): Profile {
   for (const mode of GAME_MODES) {
-    if (!profile.stats[mode.id]) {
+    const modeStats = profile.stats[mode.id] as unknown;
+    if (isLegacyFlatModeStats(modeStats)) {
       profile.stats[mode.id] = {
-        currentStreak: 0,
-        bestStreak: 0,
-        totalCorrect: 0,
-        totalPlayed: 0,
-        missedCountries: [],
+        easy: {
+          ...modeStats,
+          missedCountries: [...modeStats.missedCountries],
+        },
+        medium: emptyModeStats(),
+        hard: emptyModeStats(),
       };
+    } else {
+      for (const difficulty of DIFFICULTIES) {
+        if (!profile.stats[mode.id][difficulty]) {
+          profile.stats[mode.id][difficulty] = emptyModeStats();
+        }
+      }
     }
   }
+
+  if (!profile.globalStreaks) {
+    const legacyCurrent = profile.globalCurrentStreak ?? 0;
+    const legacyBest = profile.globalBestStreak ?? 0;
+    profile.globalStreaks = {
+      easy: { currentStreak: legacyCurrent, bestStreak: legacyBest },
+      medium: { currentStreak: 0, bestStreak: 0 },
+      hard: { currentStreak: 0, bestStreak: 0 },
+    };
+    delete profile.globalCurrentStreak;
+    delete profile.globalBestStreak;
+  }
+
+  for (const difficulty of DIFFICULTIES) {
+    if (!profile.globalStreaks[difficulty]) {
+      profile.globalStreaks[difficulty] = { currentStreak: 0, bestStreak: 0 };
+    }
+  }
+
   return profile;
 }
 
-function createEmptyStats(): Record<GameMode, ModeStats> {
-  const stats = {} as Record<GameMode, ModeStats>;
-  for (const mode of GAME_MODES) {
-    stats[mode.id] = {
-      currentStreak: 0,
-      bestStreak: 0,
-      totalCorrect: 0,
-      totalPlayed: 0,
-      missedCountries: [],
-    };
+export function normalizeProfile(profile: Profile): Profile {
+  const normalized = migrateLegacyStats(profile as LegacyProfile);
+  if (!normalized.settings.speedRoundQuestionType) {
+    normalized.settings.speedRoundQuestionType = "flag-to-country";
   }
-  return stats;
+  normalized.settings.roundQuestionCount = normalizeRoundQuestionSetting(normalized.settings.roundQuestionCount);
+  if (!normalized.dailyChallengePlayedDates) {
+    normalized.dailyChallengePlayedDates = [];
+  }
+  if (!normalized.dailyChallengeCompletions) {
+    normalized.dailyChallengeCompletions = [];
+  }
+  for (const mode of GAME_MODES) {
+    if (!normalized.stats[mode.id]) {
+      normalized.stats[mode.id] = createEmptyModeStatsByDifficulty();
+    }
+  }
+  return normalized;
 }
 
 export function createProfile(name: string, avatarColor: string): Profile {
@@ -72,8 +117,7 @@ export function createProfile(name: string, avatarColor: string): Profile {
       ? avatarColor
       : AVATAR_COLORS[0],
     createdAt: new Date().toISOString(),
-    globalCurrentStreak: 0,
-    globalBestStreak: 0,
+    globalStreaks: createEmptyGlobalStreaks(),
     stats: createEmptyStats(),
     settings: {
       difficulty: "easy",
@@ -163,7 +207,7 @@ export function updateProfileSettings(
     difficulty: Difficulty;
     lastContinentFilter: Continent[];
     speedRoundQuestionType: CoreQuestionType;
-    roundQuestionCount: RoundQuestionCount;
+    roundQuestionCount: RoundQuestionSetting;
   }>,
 ) {
   const state = loadState();
@@ -177,6 +221,7 @@ export function updateProfileSettings(
 export function recordAnswer(
   profileId: string,
   mode: GameMode,
+  difficulty: Difficulty,
   correct: boolean,
   countryCode: string,
   skipped = false,
@@ -185,18 +230,19 @@ export function recordAnswer(
   const profile = state.profiles.find((p) => p.id === profileId);
   if (!profile) return state;
 
-  const stats = profile.stats[mode];
+  const stats = profile.stats[mode][difficulty];
+  const globalStreak = profile.globalStreaks[difficulty];
   stats.totalPlayed += 1;
 
   if (correct && !skipped) {
     stats.totalCorrect += 1;
     stats.currentStreak += 1;
     stats.bestStreak = Math.max(stats.bestStreak, stats.currentStreak);
-    profile.globalCurrentStreak += 1;
-    profile.globalBestStreak = Math.max(profile.globalBestStreak, profile.globalCurrentStreak);
+    globalStreak.currentStreak += 1;
+    globalStreak.bestStreak = Math.max(globalStreak.bestStreak, globalStreak.currentStreak);
   } else if (!skipped) {
     stats.currentStreak = 0;
-    profile.globalCurrentStreak = 0;
+    globalStreak.currentStreak = 0;
     if (!stats.missedCountries.includes(countryCode)) {
       stats.missedCountries.push(countryCode);
     }
@@ -267,9 +313,10 @@ export function importProfile(json: string): Profile | null {
 export function checkAchievements(
   profile: Profile,
   mode: GameMode,
+  difficulty: Difficulty,
   session?: AchievementSessionContext,
 ): string[] {
-  const newAchievements = evaluateAchievements(profile, mode, session);
+  const newAchievements = evaluateAchievements(profile, mode, difficulty, session);
 
   if (newAchievements.length > 0) {
     profile.achievements = [...profile.achievements, ...newAchievements];
