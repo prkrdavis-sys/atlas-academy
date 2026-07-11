@@ -96,32 +96,26 @@ export default function StatsPage() {
         />
       </div>
 
-      <section className="rounded-[1.75rem] border-2 border-slate-200 bg-white/90 p-4 shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90 sm:p-5">
-        <div className="grid grid-cols-2 gap-3">
-          <div className="rounded-2xl border-2 border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50 p-4 dark:border-amber-800 dark:from-amber-950/50 dark:to-orange-950/50 sm:p-5">
-            <p className="text-[11px] font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-400 sm:text-xs">
-              Current streak
-            </p>
-            <p className="mt-0.5 font-display text-3xl font-extrabold text-amber-900 dark:text-amber-200 sm:mt-1 sm:text-4xl">
-              {globalStreak.currentStreak}
-            </p>
-            <p className="mt-1 hidden text-sm text-amber-800/80 dark:text-amber-300/80 sm:block">
-              Carries across modes at {difficultyLabel.toLowerCase()} difficulty
-            </p>
-          </div>
-          <div className="rounded-2xl border-2 border-emerald-200 bg-gradient-to-br from-emerald-50 to-teal-50 p-4 dark:border-emerald-800 dark:from-emerald-950/50 dark:to-teal-950/50 sm:p-5">
-            <p className="text-[11px] font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-400 sm:text-xs">
-              All-time best
-            </p>
-            <p className="mt-0.5 font-display text-3xl font-extrabold text-emerald-900 dark:text-emerald-200 sm:mt-1 sm:text-4xl">
-              {globalStreak.bestStreak}
-            </p>
-            <p className="mt-1 hidden text-sm text-emerald-800/80 dark:text-emerald-300/80 sm:block">
-              Your longest {difficultyLabel.toLowerCase()} run across every mode
-            </p>
-          </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div className="rounded-2xl border-2 border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50 p-5 shadow-sm dark:border-amber-800 dark:from-amber-950/50 dark:to-orange-950/50">
+          <p className="text-xs font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-400">Current streak</p>
+          <p className="mt-1 font-display text-4xl font-extrabold text-amber-900 dark:text-amber-200">
+            {globalStreak.currentStreak}
+          </p>
+          <p className="mt-1 hidden text-sm text-amber-800/80 dark:text-amber-300/80 sm:block">
+            Carries across modes and rounds
+          </p>
         </div>
-      </section>
+        <div className="rounded-2xl border-2 border-emerald-200 bg-gradient-to-br from-emerald-50 to-teal-50 p-5 shadow-sm dark:border-emerald-800 dark:from-emerald-950/50 dark:to-teal-950/50">
+          <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-400">All-time best streak</p>
+          <p className="mt-1 font-display text-4xl font-extrabold text-emerald-900 dark:text-emerald-200">
+            {globalStreak.bestStreak}
+          </p>
+          <p className="mt-1 hidden text-sm text-emerald-800/80 dark:text-emerald-300/80 sm:block">
+            Your longest run across every mode
+          </p>
+        </div>
+      </div>
 
       <section className="overflow-hidden rounded-[1.75rem] border-2 border-slate-200 bg-white/90 shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90 sm:hidden">
         <div className="border-b border-slate-200 bg-slate-50/80 px-4 py-3 dark:border-slate-700 dark:bg-slate-800/80">
