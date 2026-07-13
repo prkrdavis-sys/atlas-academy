@@ -1,7 +1,13 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { getCountryByCode, getFlagPath, getShapePath, formatPopulation } from "@/lib/countries";
+import {
+  getCountryByCode,
+  getFlagPath,
+  getShapePath,
+  formatBorderFact,
+  formatPopulation,
+} from "@/lib/countries";
 import Image from "next/image";
 
 type LearnCardProps = {
@@ -46,8 +52,8 @@ function PopulationComparison({
                   src={getFlagPath(country.code)}
                   alt=""
                   width={48}
-                  height={32}
-                  className="h-8 w-12 shrink-0 rounded border border-slate-200 object-cover dark:border-slate-600"
+                  height={36}
+                  className="h-9 w-12 shrink-0 rounded border border-slate-200 object-contain dark:border-slate-600"
                 />
               )}
               <div className="min-w-0 flex-1">
@@ -121,8 +127,8 @@ export function LearnCard({ countryCode, wasCorrect, compareCountryCode, heading
               src={getFlagPath(country.code)}
               alt={country.name}
               width={120}
-              height={80}
-              className="h-auto w-full rounded-lg border border-slate-200 dark:border-slate-600 sm:w-[120px]"
+              height={90}
+              className="h-auto w-full rounded-lg border border-slate-200 object-contain dark:border-slate-600 sm:w-[120px]"
             />
           )}
           <div className="min-w-0 space-y-1 text-xs leading-relaxed sm:text-sm">
@@ -131,7 +137,9 @@ export function LearnCard({ countryCode, wasCorrect, compareCountryCode, heading
             {!compareCountryCode && (
               <p><span className="font-semibold">Population:</span> {formatPopulation(country.population)}</p>
             )}
-            <p className="text-slate-600 dark:text-slate-400">{country.fact}</p>
+            <p className="text-slate-600 dark:text-slate-400">
+              {formatBorderFact(country.borders.length)}
+            </p>
           </div>
         </div>
         <p className="mt-3 text-center text-xs font-medium text-slate-400 dark:text-slate-500 sm:mt-4 sm:text-sm">Tap anywhere to continue</p>

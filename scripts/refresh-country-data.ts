@@ -109,20 +109,9 @@ function mapContinent(region: string, subregion?: string): string {
   return "Asia";
 }
 
-function buildFact(
-  country: RawCountry,
-  continent: string,
-  population: number,
-): string {
-  const facts: string[] = [];
-  if (country.landlocked) facts.push("This country is landlocked.");
-  if (country.borders && country.borders.length > 0) {
-    facts.push(`It borders ${country.borders.length} countr${country.borders.length === 1 ? "y" : "ies"}.`);
-  }
-  if (population > 100_000_000) facts.push("It has over 100 million people.");
-  else if (population > 0 && population < 100_000) facts.push("It has fewer than 100,000 people.");
-  facts.push(`Located in ${continent}.`);
-  return facts[0] ?? `Located in ${continent}.`;
+function buildFact(country: RawCountry): string {
+  const borderCount = country.borders?.length ?? 0;
+  return `It borders ${borderCount} countr${borderCount === 1 ? "y" : "ies"}.`;
 }
 
 async function fetchPopulationByCode3(): Promise<Map<string, number>> {
@@ -237,7 +226,8 @@ async function main() {
       shapeQuizEligible,
       hasFlag,
       hasShape,
-      fact: buildFact(raw, continent, population),
+      isTerritory: raw.independent === false,
+      fact: buildFact(raw),
     });
   }
 

@@ -4,8 +4,9 @@ import Image from "next/image";
 import { getFlagPath } from "@/lib/countries";
 
 export function FlagDisplay({ code, size = "lg" }: { code: string; size?: "sm" | "md" | "lg" }) {
+  // All flag assets share a 4:3 viewBox, so keep the box 4:3 to avoid cropping.
   const dimensions =
-    size === "lg" ? { w: 320, h: 213 } : size === "md" ? { w: 240, h: 160 } : { w: 120, h: 80 };
+    size === "lg" ? { w: 320, h: 240 } : size === "md" ? { w: 240, h: 180 } : { w: 120, h: 90 };
   return (
     <div className="flex justify-center">
       <div className="overflow-hidden rounded-2xl border-2 border-slate-200 bg-white shadow-md dark:border-slate-700 dark:bg-slate-800">
@@ -14,7 +15,7 @@ export function FlagDisplay({ code, size = "lg" }: { code: string; size?: "sm" |
           alt={`Flag of ${code}`}
           width={dimensions.w}
           height={dimensions.h}
-          className="object-cover"
+          className="object-contain"
           priority
         />
       </div>

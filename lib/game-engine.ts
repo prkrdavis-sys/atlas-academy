@@ -1,16 +1,22 @@
-import { getCountryByCode, getCountryName, getPlayablePool } from "@/lib/countries";
-import { validateAnswer } from "@/lib/answer-matcher";
+import {
+  getCountryByCode,
+  getCountryName,
+  getEligibleCoreQuestionTypes,
+  getPlayablePool,
+} from "@/lib/countries";
+import { isSameCountry, normalizeAnswerText, validateAnswer } from "@/lib/answer-matcher";
 import {
   DAILY_CHALLENGE_QUESTION_COUNT,
   DEFAULT_ROUND_QUESTION_COUNT,
   resolveRoundQuestionLimit,
   type Continent,
-  type CoreQuestionType,
+  SPEED_ROUND_ALL_TYPES,
   type Country,
   type Difficulty,
   type GameMode,
   type Question,
   type RoundQuestionSetting,
+  type SpeedRoundQuestionType,
 } from "@/lib/types";
 import { pickRandom, shuffle, uniqueBy } from "@/lib/utils";
 
@@ -31,19 +37,45 @@ function buildMcOptions(
   pool: Country[],
   difficulty: Difficulty,
   field: "name" | "capital" = "name",
+  promptCapital?: string,
 ): { options: string[]; optionCodes: string[] } {
   const getValue = (c: Country) => (field === "capital" ? c.capital : c.name);
+  const correctLabel = normalizeAnswerText(getValue(correct));
+  const normalizedPromptCapital = promptCapital ? normalizeAnswerText(promptCapital) : "";
+
+  // A distractor is ambiguous if its label reads the same as the correct
+  // answer (e.g. two countries whose capital is "Kingston"), or — for
+  // capital prompts — if it shares the prompt capital and is therefore also
+  // a right answer.
+  const isValidDistractor = (c: Country) =>
+    c.code !== correct.code &&
+    normalizeAnswerText(getValue(c)) !== correctLabel &&
+    (!normalizedPromptCapital || normalizeAnswerText(c.capital) !== normalizedPromptCapital);
+
   const distractorPool =
     difficulty === "easy"
-      ? pool.filter((c) => c.code !== correct.code)
-      : pool.filter((c) => c.code !== correct.code && c.continent === correct.continent);
+      ? pool.filter(isValidDistractor)
+      : pool.filter((c) => isValidDistractor(c) && c.continent === correct.continent);
 
-  const distractors = shuffle(distractorPool)
-    .slice(0, 3)
-    .map((c) => ({ label: getValue(c), code: c.code }));
+  const distractors: { label: string; code: string }[] = [];
+  for (const c of shuffle(distractorPool)) {
+    if (distractors.length >= 3) break;
+    if (distractors.some((d) => normalizeAnswerText(d.label) === normalizeAnswerText(getValue(c)))) continue;
+    distractors.push({ label: getValue(c), code: c.code });
+  }
 
   while (distractors.length < 3) {
-    const extra = pickRandom(pool.filter((c) => c.code !== correct.code && !distractors.some((d) => d.code === c.code)));
+    const extra = pickRandom(
+      pool.filter(
+        (c) =>
+          isValidDistractor(c) &&
+          !distractors.some(
+            (d) =>
+              d.code === c.code ||
+              normalizeAnswerText(d.label) === normalizeAnswerText(getValue(c)),
+          ),
+      ),
+    );
     if (!extra) break;
     distractors.push({ label: getValue(extra), code: extra.code });
   }
@@ -68,11 +100,13 @@ export class GameEngine {
     private difficulty: Difficulty,
     weakSpotCodes?: string[],
     seed?: number,
-    private questionType?: CoreQuestionType,
+    private questionType?: SpeedRoundQuestionType,
     private questionLimit: RoundQuestionSetting = DEFAULT_ROUND_QUESTION_COUNT,
+    territoryContinents: Continent[] = [],
   ) {
     this.pool = getPlayablePool({
       continents,
+      territoryContinents,
       mode,
       questionType,
       weakSpotCodes,
@@ -131,8 +165,25 @@ export class GameEngine {
     if (!country) return null;
     this.questionIndex += 1;
 
-    const questionMode =
-      this.mode === "speed-round" && this.questionType ? this.questionType : this.mode;
+    let questionMode: GameMode;
+    if (
+      this.mode === "mixed" ||
+      (this.mode === "speed-round" && this.questionType === SPEED_ROUND_ALL_TYPES)
+    ) {
+      const eligibleTypes = getEligibleCoreQuestionTypes(country);
+      questionMode =
+        eligibleTypes.length > 0
+          ? pickFromPool(eligibleTypes, this.random)
+          : "flag-to-country";
+    } else if (
+      this.mode === "speed-round" &&
+      this.questionType &&
+      this.questionType !== SPEED_ROUND_ALL_TYPES
+    ) {
+      questionMode = this.questionType;
+    } else {
+      questionMode = this.mode;
+    }
     return this.buildQuestion(country, questionMode);
   }
 
@@ -161,7 +212,7 @@ export class GameEngine {
       case "capital-to-country": {
         const mc =
           this.difficulty !== "hard"
-            ? buildMcOptions(country, this.pool, this.difficulty, "name")
+            ? buildMcOptions(country, this.pool, this.difficulty, "name", country.capital)
             : undefined;
         return {
           id,
@@ -241,7 +292,13 @@ export class GameEngine {
         };
       }
       case "population-showdown": {
-        let other = pickFromPool(this.pool.filter((c) => c.code !== country.code), this.random);
+        const opponents = this.pool.filter(
+          (c) => c.code !== country.code && c.population !== country.population,
+        );
+        if (opponents.length === 0) {
+          return this.buildQuestion(country, "flag-to-country");
+        }
+        let other = pickFromPool(opponents, this.random);
         if (country.population > other.population) {
           [country, other] = [other, country];
         }
@@ -266,18 +323,30 @@ export class GameEngine {
     }
   }
 
-  checkAnswer(question: Question, answer: string): boolean {
+  /**
+   * @param isCodeSelection true when `answer` is a country code picked from
+   * multiple choice / the flag grid, false when it is free-typed text.
+   */
+  checkAnswer(question: Question, answer: string, isCodeSelection = false): boolean {
+    const correctCode = question.correctCode ?? question.countryCode;
+
+    if (isCodeSelection) {
+      return isSameCountry(answer, correctCode);
+    }
+
     if (question.mode === "country-to-capital") {
       return validateAnswer(answer, question.countryCode, "capital");
     }
-    if (question.mode === "country-to-flag" || question.mode === "population-showdown") {
-      return answer === question.correctCode;
+
+    if (question.mode === "neighbor-quiz") {
+      // Any bordering country is a legitimate typed answer, not just the one
+      // we happened to pick for the multiple-choice version.
+      const country = getCountryByCode(question.countryCode);
+      const acceptedCodes = country?.borders?.length ? country.borders : [correctCode];
+      return acceptedCodes.some((code) => validateAnswer(answer, code, "name"));
     }
-    if (question.correctCode) {
-      const country = getCountryByCode(question.correctCode);
-      if (country && validateAnswer(answer, question.correctCode, "name")) return true;
-      return answer === question.correctAnswer || answer === question.correctCode;
-    }
+
+    if (validateAnswer(answer, correctCode, "name")) return true;
     return answer === question.correctAnswer;
   }
 }

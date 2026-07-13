@@ -24,7 +24,7 @@ import {
   recordDailyChallengeCompletion,
 } from "@/lib/storage";
 import { getGlobalStreakOrZero } from "@/lib/stats-helpers";
-import type { Continent, CoreQuestionType, Difficulty, GameMode, Question, RoundQuestionSetting } from "@/lib/types";
+import type { Continent, Difficulty, GameMode, Question, RoundQuestionSetting, SpeedRoundQuestionType } from "@/lib/types";
 
 const ROUND_TASK_LABELS: Record<GameMode, string> = {
   "flag-to-country": "Name the country",
@@ -37,25 +37,28 @@ const ROUND_TASK_LABELS: Record<GameMode, string> = {
   "daily-challenge": "Daily challenge",
   marathon: "Keep your streak alive",
   "speed-round": "Beat the clock",
+  mixed: "All types, shuffled",
   "weak-spots": "Practice missed countries",
 };
 
 type GameBoardProps = {
   mode: GameMode;
   continents: Continent[];
+  territoryContinents?: Continent[];
   difficulty: Difficulty;
   weakSpotCodes?: string[];
   seed?: number;
   timed?: boolean;
   stopOnWrong?: boolean;
   maxQuestions?: RoundQuestionSetting;
-  questionType?: CoreQuestionType;
+  questionType?: SpeedRoundQuestionType;
   countStats?: boolean;
 };
 
 export function GameBoard({
   mode,
   continents,
+  territoryContinents = [],
   difficulty,
   weakSpotCodes,
   seed,
@@ -67,29 +70,11 @@ export function GameBoard({
 }: GameBoardProps) {
   const router = useRouter();
   const { activeProfile, refresh } = useProfiles();
-  const [{ engine, initialQuestion }] = useState(() => {
-    const gameEngine = new GameEngine(
-      mode,
-      continents,
-      difficulty,
-      weakSpotCodes,
-      seed,
-      questionType,
-      maxQuestions,
-    );
-    return {
-      engine: gameEngine,
-      initialQuestion: gameEngine.nextQuestion(),
-    };
-  });
-
-  const sessionQuestionLimit = engine.getRoundQuestionLimit();
-
-  const [question, setQuestion] = useState<Question | null>(initialQuestion);
-  const [streak, setStreak] = useState(() => {
-    if (mode === "daily-challenge" && !countStats) return 0;
-    return getGlobalStreakOrZero(activeProfile, difficulty).currentStreak;
-  });
+  const engineRef = useRef<GameEngine | null>(null);
+  const [engineReady, setEngineReady] = useState(false);
+  const [sessionQuestionLimit, setSessionQuestionLimit] = useState(0);
+  const [question, setQuestion] = useState<Question | null>(null);
+  const [streak, setStreak] = useState(0);
   const [showLearnCard, setShowLearnCard] = useState(false);
   const [lastCorrect, setLastCorrect] = useState(true);
   const [disabled, setDisabled] = useState(false);
@@ -119,6 +104,28 @@ export function GameBoard({
   const removeBurst = useCallback((id: number) => {
     setBursts((prev) => prev.filter((b) => b.id !== id));
   }, []);
+
+  useEffect(() => {
+    const gameEngine = new GameEngine(
+      mode,
+      continents,
+      difficulty,
+      weakSpotCodes,
+      seed,
+      questionType,
+      maxQuestions,
+      territoryContinents,
+    );
+    engineRef.current = gameEngine;
+    setSessionQuestionLimit(gameEngine.getRoundQuestionLimit());
+    setQuestion(gameEngine.nextQuestion());
+    setStreak(
+      mode === "daily-challenge" && !countStats
+        ? 0
+        : getGlobalStreakOrZero(activeProfile, difficulty).currentStreak,
+    );
+    setEngineReady(true);
+  }, [mode, continents, territoryContinents, difficulty, weakSpotCodes, seed, questionType, maxQuestions, countStats]);
 
   const dismissAchievements = useCallback(() => {
     setNewAchievements([]);
@@ -174,6 +181,18 @@ export function GameBoard({
     );
   }
 
+  if (!engineReady || !engineRef.current) {
+    return (
+      <div className="flex flex-1 items-center justify-center rounded-3xl border-2 border-slate-200 bg-white/90 p-8 text-center shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90">
+        <p className="font-display text-lg font-extrabold text-slate-600 dark:text-slate-400">
+          Loading round...
+        </p>
+      </div>
+    );
+  }
+
+  const engine = engineRef.current;
+
   if (engine.getPoolSize() === 0) {
     return (
       <div className="rounded-3xl border-2 border-slate-200 bg-white/90 p-8 text-center shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90">
@@ -187,8 +206,8 @@ export function GameBoard({
     if (!question || !activeProfile || disabled) return;
     setDisabled(true);
 
-    const resolvedAnswer = code ?? answer;
-    const correct = engine.checkAnswer(question, resolvedAnswer);
+    const isCodeSelection = code !== undefined;
+    const correct = engine.checkAnswer(question, code ?? answer, isCodeSelection);
     setLastCorrect(correct);
     spawnBurst(correct);
 
@@ -285,7 +304,11 @@ export function GameBoard({
     setUsedFiftyFifty(false);
     setUsedSkip(false);
 
-    if (sessionComplete || (sessionQuestionLimit && questionCount >= sessionQuestionLimit)) {
+    if (
+      gameOver ||
+      sessionComplete ||
+      (sessionQuestionLimit && questionCount >= sessionQuestionLimit)
+    ) {
       setSessionComplete(true);
       return;
     }
@@ -302,7 +325,9 @@ export function GameBoard({
   const hasReachedQuestionLimit = Boolean(
     sessionQuestionLimit && questionCount >= sessionQuestionLimit,
   );
-  const showSummary = gameOver || sessionComplete || hasFinishedQuestions || hasReachedQuestionLimit;
+  const roundEnded =
+    gameOver || sessionComplete || hasFinishedQuestions || hasReachedQuestionLimit;
+  const showSummary = roundEnded && !showLearnCard;
 
   if (showSummary) {
     const accuracy = questionCount > 0
@@ -356,56 +381,69 @@ export function GameBoard({
     );
   }
 
+  if (!question && questionCount === 0) {
+    return (
+      <div className="rounded-3xl border-2 border-slate-200 bg-white/90 p-8 text-center shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90">
+        <p className="text-slate-600 dark:text-slate-400">Could not load the first question for this round.</p>
+        <Button className="mt-4" onClick={() => router.push("/")}>Back home</Button>
+      </div>
+    );
+  }
+
   if (!question) return null;
 
   const roundTaskLabel =
-    mode === "speed-round" ? ROUND_TASK_LABELS[question.mode] : ROUND_TASK_LABELS[mode];
+    mode === "speed-round" || mode === "mixed"
+      ? ROUND_TASK_LABELS[question.mode]
+      : ROUND_TASK_LABELS[mode];
   const dailyDateLabel = mode === "daily-challenge" ? formatDailyDate() : null;
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-2 sm:gap-3">
+    <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden sm:gap-3">
       <AchievementToast
         achievementIds={newAchievements}
         onDismiss={dismissAchievements}
       />
 
-      <div className="grid shrink-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 overflow-visible py-0.5">
-        <button
-          type="button"
-          onClick={() => router.push("/")}
-          aria-label="Exit this round and return home"
-          className="inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-2xl border-2 border-slate-800 bg-slate-800 px-3 py-1.5 text-sm font-extrabold text-white shadow-[0_3px_0_var(--color-slate-950)] transition-all duration-100 hover:border-slate-700 hover:bg-slate-700 active:translate-y-[3px] active:shadow-none sm:px-4"
-        >
-          <span aria-hidden>←</span>
-          <span>Exit</span>
-        </button>
-        <div className="min-w-0 px-1 text-center leading-tight">
-          <p className="text-[9px] font-black uppercase tracking-[0.18em] text-teal-700/70 sm:text-[10px]">
-            {dailyDateLabel ?? "Your task"}
-          </p>
-          <p className="truncate font-display text-sm font-extrabold text-slate-700 dark:text-slate-200 sm:text-base">
-            {roundTaskLabel}
-          </p>
-          {mode === "daily-challenge" && !countStats && (
-            <p className="mt-0.5 text-[10px] font-semibold text-amber-600 dark:text-amber-400">
-              Review — stats won&apos;t count
+      <div className="shrink-0 px-0.5 py-1.5 sm:px-1 sm:py-2">
+        <div className="grid grid-cols-[auto_minmax(0,1fr)_minmax(0,auto)] items-center gap-1.5 sm:gap-2">
+          <button
+            type="button"
+            onClick={() => router.push("/")}
+            aria-label="Exit this round and return home"
+            className="inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-2xl border-2 border-slate-800 bg-slate-800 px-3 py-1.5 text-sm font-extrabold text-white shadow-[0_3px_0_var(--color-slate-950)] transition-all duration-100 hover:border-slate-700 hover:bg-slate-700 active:translate-y-[3px] active:shadow-none sm:px-4"
+          >
+            <span aria-hidden>←</span>
+            <span>Exit</span>
+          </button>
+          <div className="min-w-0 px-1 text-center leading-tight">
+            <p className="text-[9px] font-black uppercase tracking-[0.18em] text-teal-700/70 sm:text-[10px]">
+              {dailyDateLabel ?? "Your task"}
             </p>
-          )}
-        </div>
-        <div className="flex items-stretch justify-end gap-1.5 overflow-visible sm:gap-2">
-          <StreakCounter streak={streak} compact />
-          {timed && (
-            <div className={`rounded-xl border-2 px-2 py-1 text-center sm:rounded-2xl sm:px-3 sm:py-1.5 ${timeLeft <= 10 ? "border-rose-300 bg-rose-50 dark:border-rose-700 dark:bg-rose-950/50" : "border-slate-200 bg-white/90 dark:border-slate-700 dark:bg-slate-900/90"}`}>
-              <p className={`game-stat-label text-[9px] font-semibold uppercase ${timeLeft <= 10 ? "text-rose-500 dark:text-rose-400" : "text-slate-500 dark:text-slate-400"}`}>Time</p>
-              <p className={`font-display text-base font-extrabold leading-none sm:text-lg ${timeLeft <= 10 ? "text-rose-600" : ""}`}>{timeLeft}s</p>
-            </div>
-          )}
-          {sessionQuestionLimit && (
-            <div className="rounded-xl border-2 border-slate-200 bg-white/90 px-2 py-1 text-center dark:border-slate-700 dark:bg-slate-900/90 sm:rounded-2xl sm:px-3 sm:py-1.5">
-              <p className="game-stat-label text-[9px] font-semibold uppercase text-slate-500 dark:text-slate-400">Question</p>
-              <p className="font-display text-base font-extrabold leading-none sm:text-lg">{questionCount + 1}/{sessionQuestionLimit}</p>
-            </div>
-          )}
+            <p className="truncate font-display text-sm font-extrabold text-slate-700 dark:text-slate-200 sm:text-base">
+              {roundTaskLabel}
+            </p>
+            {mode === "daily-challenge" && !countStats && (
+              <p className="mt-0.5 text-[10px] font-semibold text-amber-600 dark:text-amber-400">
+                Review — stats won&apos;t count
+              </p>
+            )}
+          </div>
+          <div className="flex min-w-0 shrink-0 items-stretch justify-end gap-1 sm:gap-1.5">
+            <StreakCounter streak={streak} compact />
+            {timed && (
+              <div className={`shrink-0 rounded-xl border-2 px-1.5 py-1 text-center sm:rounded-2xl sm:px-3 sm:py-1.5 ${timeLeft <= 10 ? "border-rose-300 bg-rose-50 dark:border-rose-700 dark:bg-rose-950/50" : "border-slate-200 bg-white/90 dark:border-slate-700 dark:bg-slate-900/90"}`}>
+                <p className={`game-stat-label text-[9px] font-semibold uppercase ${timeLeft <= 10 ? "text-rose-500 dark:text-rose-400" : "text-slate-500 dark:text-slate-400"}`}>Time</p>
+                <p className={`font-display text-base font-extrabold leading-none sm:text-lg ${timeLeft <= 10 ? "text-rose-600" : ""}`}>{timeLeft}s</p>
+              </div>
+            )}
+            {sessionQuestionLimit && (
+              <div className="shrink-0 rounded-xl border-2 border-slate-200 bg-white/90 px-1.5 py-1 text-center dark:border-slate-700 dark:bg-slate-900/90 sm:rounded-2xl sm:px-3 sm:py-1.5">
+                <p className="game-stat-label text-[9px] font-semibold uppercase text-slate-500 dark:text-slate-400">Question</p>
+                <p className="font-display text-base font-extrabold leading-none sm:text-lg">{questionCount + 1}/{sessionQuestionLimit}</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -415,16 +453,24 @@ export function GameBoard({
         <div
           className={`@container/size flex min-h-0 flex-1 flex-col overflow-hidden ${question.displayType === "flags-grid" ? "" : "justify-center"}`}
         >
-          {question.displayType === "flag" && <FlagDisplay code={question.countryCode} size="md" />}
-          {question.displayType === "shape" && <ShapeDisplay code={question.countryCode} compact />}
-          {question.mode === "neighbor-quiz" && (
+          {!showLearnCard && question.displayType === "flag" && (
+            <FlagDisplay code={question.countryCode} size="md" />
+          )}
+          {!showLearnCard && question.displayType === "shape" && (
+            <ShapeDisplay code={question.countryCode} compact />
+          )}
+          {!showLearnCard && question.mode === "neighbor-quiz" && (
             <NeighborCountryDisplay code={question.countryCode} />
           )}
-          {question.displayType === "population" && question.optionCodes && (
+          {!showLearnCard && question.displayType === "population" && question.optionCodes && (
             <PopulationMatchupDisplay codes={question.optionCodes} />
           )}
           {!showLearnCard && question.displayType === "flags-grid" && question.optionCodes && (
-            <FlagGrid codes={question.optionCodes} onSelect={(code) => handleAnswer(code, code)} compact />
+            <FlagGrid
+              codes={question.optionCodes.filter((c) => !hiddenOptions.includes(c))}
+              onSelect={(code) => handleAnswer(code, code)}
+              compact
+            />
           )}
         </div>
 

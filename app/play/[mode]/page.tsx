@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ContinentFilter } from "@/components/ContinentFilter";
+import { TerritoryFilter } from "@/components/TerritoryFilter";
 import { GameBoard } from "@/components/GameBoard";
 import { useProfiles } from "@/components/ProfileProvider";
 import { Select } from "@/components/ui/Select";
@@ -14,16 +15,18 @@ import {
   CONTINENTS,
   CORE_QUESTION_TYPES,
   DAILY_CHALLENGE_QUESTION_COUNT,
+  DIFFICULTY_LABELS,
   GAME_MODES,
   ROUND_ALL_QUESTIONS,
+  SPEED_ROUND_ALL_TYPES,
   clampRoundQuestionSetting,
   getRoundQuestionOptions,
   normalizeRoundQuestionSetting,
   type Continent,
-  type CoreQuestionType,
   type Difficulty,
   type GameMode,
   type RoundQuestionSetting,
+  type SpeedRoundQuestionType,
 } from "@/lib/types";
 
 export default function PlayPage() {
@@ -37,10 +40,13 @@ export default function PlayPage() {
   const [continents, setContinents] = useState<Continent[]>(
     () => profile?.settings.lastContinentFilter ?? [...CONTINENTS],
   );
+  const [territoryContinents, setTerritoryContinents] = useState<Continent[]>(
+    () => profile?.settings.lastTerritoryFilter ?? [],
+  );
   const [difficulty, setDifficulty] = useState<Difficulty>(
     () => profile?.settings.difficulty ?? "easy",
   );
-  const [questionType, setQuestionType] = useState<CoreQuestionType>(
+  const [questionType, setQuestionType] = useState<SpeedRoundQuestionType>(
     () => profile?.settings.speedRoundQuestionType ?? "flag-to-country",
   );
   const [roundQuestionCount, setRoundQuestionCount] = useState<RoundQuestionSetting>(() =>
@@ -50,11 +56,25 @@ export default function PlayPage() {
   const [sessionKey, setSessionKey] = useState(0);
   const [countStats, setCountStats] = useState(true);
 
-  const dailyDateLabel = mode === "daily-challenge" ? formatDailyDate() : null;
+  useEffect(() => {
+    if (!profile) return;
+    setContinents(profile.settings.lastContinentFilter);
+    setTerritoryContinents(profile.settings.lastTerritoryFilter ?? []);
+    setDifficulty(profile.settings.difficulty);
+    setRoundQuestionCount(normalizeRoundQuestionSetting(profile.settings.roundQuestionCount));
+    if (mode === "speed-round") {
+      setQuestionType(profile.settings.speedRoundQuestionType);
+    }
+  }, [profile, mode]);
+
+  const isDailyChallenge = mode === "daily-challenge";
+  const dailyDateLabel = isDailyChallenge ? formatDailyDate() : null;
   const dailyAlreadyPlayed =
-    mode === "daily-challenge" && profile
+    isDailyChallenge && profile
       ? hasPlayedDailyToday(profile.dailyChallengePlayedDates)
       : false;
+  const dailyContinents: Continent[] = [...CONTINENTS];
+  const dailyDifficulty: Difficulty = "medium";
 
   const weakSpotCodes =
     mode === "weak-spots" && profile
@@ -64,6 +84,7 @@ export default function PlayPage() {
   const availableCountryCount = modeInfo
     ? getPlayablePoolSize({
         continents,
+        territoryContinents,
         mode,
         questionType: mode === "speed-round" ? questionType : undefined,
         weakSpotCodes,
@@ -87,16 +108,21 @@ export default function PlayPage() {
   }
 
   function handleStart() {
-    if (!activeProfile || continents.length === 0) return;
-    updateProfileSettings(activeProfile.id, {
-      lastContinentFilter: continents,
-      difficulty,
-      ...(mode !== "daily-challenge" ? { roundQuestionCount: effectiveRoundQuestionCount } : {}),
-      ...(mode === "speed-round" ? { speedRoundQuestionType: questionType } : {}),
-    });
-    refresh();
+    if (!hydrated || !activeProfile) return;
+    if (!isDailyChallenge && availableCountryCount === 0) return;
 
-    if (mode === "daily-challenge") {
+    if (!isDailyChallenge) {
+      updateProfileSettings(activeProfile.id, {
+        lastContinentFilter: continents,
+        lastTerritoryFilter: territoryContinents,
+        difficulty,
+        roundQuestionCount: effectiveRoundQuestionCount,
+        ...(mode === "speed-round" ? { speedRoundQuestionType: questionType } : {}),
+      });
+      refresh();
+    }
+
+    if (isDailyChallenge) {
       const today = getDailyDateKey();
       const playedToday = hasPlayedDailyToday(activeProfile.dailyChallengePlayedDates);
       const activeSession =
@@ -117,22 +143,20 @@ export default function PlayPage() {
 
   const gameProps = {
     mode,
-    continents,
-    difficulty,
+    continents: isDailyChallenge ? dailyContinents : continents,
+    territoryContinents: isDailyChallenge ? [] : territoryContinents,
+    difficulty: isDailyChallenge ? dailyDifficulty : difficulty,
     weakSpotCodes,
-    seed: mode === "daily-challenge" ? getDailySeed() : undefined,
+    seed: isDailyChallenge ? getDailySeed() : undefined,
     timed: mode === "speed-round",
     stopOnWrong: mode === "marathon",
-    maxQuestions:
-      mode === "daily-challenge"
-        ? DAILY_CHALLENGE_QUESTION_COUNT
-        : effectiveRoundQuestionCount,
+    maxQuestions: isDailyChallenge ? DAILY_CHALLENGE_QUESTION_COUNT : effectiveRoundQuestionCount,
     questionType: mode === "speed-round" ? questionType : undefined,
-    countStats: mode === "daily-challenge" ? countStats : true,
+    countStats: isDailyChallenge ? countStats : true,
   };
 
   return (
-    <div className={started ? "flex h-full flex-col overflow-hidden" : "space-y-5 sm:space-y-6"}>
+    <div className={started ? "flex h-full min-h-0 flex-col" : "space-y-5 sm:space-y-6"}>
       {!started && (
         <div>
           <button
@@ -149,9 +173,14 @@ export default function PlayPage() {
             </p>
           )}
           <p className="mt-1 text-sm text-slate-600 dark:text-slate-400 sm:text-base">{modeInfo.description}</p>
-          {mode === "daily-challenge" && dailyAlreadyPlayed && (
+          {isDailyChallenge && dailyAlreadyPlayed && (
             <p className="mt-2 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:bg-amber-950/50 dark:text-amber-200">
               You already played today&apos;s challenge. Play again to review — stats won&apos;t count.
+            </p>
+          )}
+          {isDailyChallenge && (
+            <p className="mt-3 text-sm text-slate-600 dark:text-slate-400">
+              {DAILY_CHALLENGE_QUESTION_COUNT} questions · {DIFFICULTY_LABELS.medium} difficulty · All continents
             </p>
           )}
         </div>
@@ -169,7 +198,12 @@ export default function PlayPage() {
             <button
               type="button"
               onClick={handleStart}
-              disabled={continents.length === 0 || (mode === "weak-spots" && !weakSpotCodes?.length)}
+              disabled={
+                !hydrated ||
+                !activeProfile ||
+                (!isDailyChallenge && availableCountryCount === 0) ||
+                (mode === "weak-spots" && !weakSpotCodes?.length)
+              }
               className="group relative w-full overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-emerald-500 via-teal-600 to-sky-700 p-4 text-left text-white shadow-[0_5px_14px_-8px_rgb(15_118_110_/_0.55)] transition-all duration-150 ease-out hover:-translate-y-px hover:shadow-[0_7px_18px_-9px_rgb(15_118_110_/_0.6)] active:translate-y-px active:shadow-[0_2px_8px_-6px_rgb(15_118_110_/_0.45)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-[0_5px_14px_-8px_rgb(15_118_110_/_0.55)] disabled:active:translate-y-0 sm:p-5"
             >
               <span
@@ -179,11 +213,12 @@ export default function PlayPage() {
                 🌍
               </span>
               <span className="relative font-display text-xl font-extrabold tracking-tight transition-transform duration-150 group-active:translate-y-px sm:text-2xl">
-                {mode === "daily-challenge" && dailyAlreadyPlayed ? "Review challenge" : "Start Game"}
+                {isDailyChallenge && dailyAlreadyPlayed ? "Review challenge" : "Start Game"}
               </span>
             </button>
           </div>
 
+          {!isDailyChallenge && (
           <div className="space-y-5 rounded-[1.75rem] border-2 border-slate-200 bg-white/90 p-4 shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90 sm:space-y-6 sm:p-6">
             {mode === "speed-round" && (
               <div>
@@ -208,35 +243,48 @@ export default function PlayPage() {
                       </button>
                     );
                   })}
+                  <button
+                    type="button"
+                    onClick={() => setQuestionType(SPEED_ROUND_ALL_TYPES)}
+                    className={`min-h-12 rounded-2xl border-2 px-4 py-2 text-left text-sm font-semibold transition-all duration-100 sm:col-span-2 ${
+                      questionType === SPEED_ROUND_ALL_TYPES
+                        ? "border-emerald-600 bg-emerald-500 text-white shadow-[0_3px_0_var(--color-emerald-700)]"
+                        : "border-slate-200 bg-white text-slate-700 shadow-[0_3px_0_var(--color-slate-200)] hover:border-sky-300 active:translate-y-[3px] active:shadow-none dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:shadow-[0_3px_0_var(--color-slate-700)] dark:hover:border-sky-500"
+                    }`}
+                  >
+                    <span className="mr-1.5">🎲</span>
+                    Mixed
+                    <span className="mt-0.5 block text-xs font-normal opacity-80">
+                      All four types, shuffled
+                    </span>
+                  </button>
                 </div>
               </div>
             )}
 
-            {mode !== "daily-challenge" && (
-              <div>
-                <h2 className="mb-3 font-semibold">Questions per round</h2>
-                <Select
-                  value={effectiveRoundQuestionCount}
-                  onChange={(event) => {
-                    const { value } = event.target;
-                    setRoundQuestionCount(
-                      value === ROUND_ALL_QUESTIONS
-                        ? ROUND_ALL_QUESTIONS
-                        : normalizeRoundQuestionSetting(Number(value)),
-                    );
-                  }}
-                >
-                  {roundQuestionOptions.map((count) => (
-                    <option key={count} value={count}>
-                      {count} questions
-                    </option>
-                  ))}
-                  <option value={ROUND_ALL_QUESTIONS}>
-                    All ({availableCountryCount} countries)
+            <div>
+              <h2 className="mb-3 font-semibold">Questions per round</h2>
+              <Select
+                value={effectiveRoundQuestionCount}
+                onChange={(event) => {
+                  const { value } = event.target;
+                  setRoundQuestionCount(
+                    value === ROUND_ALL_QUESTIONS
+                      ? ROUND_ALL_QUESTIONS
+                      : normalizeRoundQuestionSetting(Number(value)),
+                  );
+                }}
+              >
+                {roundQuestionOptions.map((count) => (
+                  <option key={count} value={count}>
+                    {count} questions
                   </option>
-                </Select>
-              </div>
-            )}
+                ))}
+                <option value={ROUND_ALL_QUESTIONS}>
+                  All ({availableCountryCount} countries)
+                </option>
+              </Select>
+            </div>
 
             <div>
               <h2 className="mb-3 font-semibold">Difficulty</h2>
@@ -246,14 +294,14 @@ export default function PlayPage() {
                     key={level}
                     type="button"
                     onClick={() => setDifficulty(level)}
-                    className={`min-h-12 rounded-2xl border-2 px-4 py-2 text-left text-sm font-semibold capitalize transition-all duration-100 sm:text-center ${
+                    className={`min-h-12 rounded-2xl border-2 px-4 py-2 text-left text-sm font-semibold transition-all duration-100 sm:text-center ${
                       difficulty === level
                         ? "border-emerald-600 bg-emerald-500 text-white shadow-[0_3px_0_var(--color-emerald-700)]"
                         : "border-slate-200 bg-white text-slate-700 shadow-[0_3px_0_var(--color-slate-200)] hover:border-sky-300 active:translate-y-[3px] active:shadow-none dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:shadow-[0_3px_0_var(--color-slate-700)] dark:hover:border-sky-500"
                     }`}
                   >
-                    {level}
-                    {level === "easy" && " - multiple choice + lifelines"}
+                    {DIFFICULTY_LABELS[level]}
+                    {level === "easy" && " - multiple choice + boosts"}
                     {level === "medium" && " - multiple choice"}
                     {level === "hard" && " - type your answer"}
                   </button>
@@ -265,7 +313,16 @@ export default function PlayPage() {
               <h2 className="mb-3 font-semibold">Continents</h2>
               <ContinentFilter selected={continents} onChange={setContinents} />
             </div>
+
+            <div>
+              <h2 className="mb-3 font-semibold">Territories</h2>
+              <p className="mb-3 text-sm text-slate-600 dark:text-slate-400">
+                Optional — add territories separately from sovereign countries.
+              </p>
+              <TerritoryFilter selected={territoryContinents} onChange={setTerritoryContinents} />
+            </div>
           </div>
+          )}
         </>
       ) : (
         <GameBoard key={sessionKey} {...gameProps} />

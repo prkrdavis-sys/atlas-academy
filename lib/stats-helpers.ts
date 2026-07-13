@@ -86,3 +86,19 @@ export function collectMissedCountries(profile: Profile): string[] {
 export function modesWithMinCorrect(profile: Profile, minCorrect: number): number {
   return GAME_MODES.filter((mode) => modeCorrectCount(profile, mode.id) >= minCorrect).length;
 }
+
+export function sortGameModesByMostPlayed<T extends { id: GameMode }>(
+  modes: readonly T[],
+  profile: Profile,
+  difficulty: Difficulty,
+): T[] {
+  const defaultOrder = new Map(modes.map((mode, index) => [mode.id, index]));
+
+  return [...modes].sort((a, b) => {
+    const playedDiff =
+      profile.stats[b.id][difficulty].totalPlayed -
+      profile.stats[a.id][difficulty].totalPlayed;
+    if (playedDiff !== 0) return playedDiff;
+    return (defaultOrder.get(a.id) ?? 0) - (defaultOrder.get(b.id) ?? 0);
+  });
+}

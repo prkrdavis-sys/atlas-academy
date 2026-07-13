@@ -14,6 +14,12 @@ export type Difficulty = "easy" | "medium" | "hard";
 
 export const DIFFICULTIES: Difficulty[] = ["easy", "medium", "hard"];
 
+export const DIFFICULTY_LABELS: Record<Difficulty, string> = {
+  easy: "Easy",
+  medium: "Normal",
+  hard: "Hard",
+};
+
 export const ROUND_QUESTION_OPTIONS = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50] as const;
 export type RoundQuestionCount = (typeof ROUND_QUESTION_OPTIONS)[number];
 export const DEFAULT_ROUND_QUESTION_COUNT: RoundQuestionCount = 10;
@@ -72,6 +78,9 @@ export const CORE_QUESTION_TYPES: CoreQuestionType[] = [
   "shape-to-country",
 ];
 
+export const SPEED_ROUND_ALL_TYPES = "all-types" as const;
+export type SpeedRoundQuestionType = CoreQuestionType | typeof SPEED_ROUND_ALL_TYPES;
+
 export type GameMode =
   | "flag-to-country"
   | "capital-to-country"
@@ -83,7 +92,8 @@ export type GameMode =
   | "daily-challenge"
   | "marathon"
   | "speed-round"
-  | "weak-spots";
+  | "weak-spots"
+  | "mixed";
 
 export type Country = {
   code: string;
@@ -100,6 +110,7 @@ export type Country = {
   shapeQuizEligible: boolean;
   hasFlag: boolean;
   hasShape: boolean;
+  isTerritory: boolean;
   fact: string;
 };
 
@@ -128,7 +139,8 @@ export type Profile = {
   settings: {
     difficulty: Difficulty;
     lastContinentFilter: Continent[];
-    speedRoundQuestionType: CoreQuestionType;
+    lastTerritoryFilter: Continent[];
+    speedRoundQuestionType: SpeedRoundQuestionType;
     roundQuestionCount: RoundQuestionSetting;
   };
   achievements: string[];
@@ -245,6 +257,13 @@ export const GAME_MODES: {
     title: "Speed Round",
     description: "60 seconds — how many can you get?",
     icon: "⚡",
+    phase: 2,
+  },
+  {
+    id: "mixed",
+    title: "Mixed",
+    description: "Flags, capitals, and shapes — shuffled",
+    icon: "🎲",
     phase: 2,
   },
   {

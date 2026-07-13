@@ -2,14 +2,17 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useProfiles } from "@/components/ProfileProvider";
 import { Button } from "@/components/ui/Button";
 import { AVATAR_COLORS } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 export function ProfileSwitcher({ compact = false }: { compact?: boolean }) {
+  const router = useRouter();
   const { profiles, activeProfile, switchProfile, addProfile, hydrated } = useProfiles();
   const displayProfile = hydrated ? activeProfile : null;
+  const inactiveProfiles = profiles.filter((profile) => profile.id !== activeProfile?.id);
   const [open, setOpen] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
   const [name, setName] = useState("");
@@ -30,6 +33,7 @@ export function ProfileSwitcher({ compact = false }: { compact?: boolean }) {
     setName("");
     setShowCreate(false);
     setOpen(false);
+    router.push("/");
   }
 
   return (
@@ -53,23 +57,42 @@ export function ProfileSwitcher({ compact = false }: { compact?: boolean }) {
 
       {open && (
         <div className="absolute right-0 z-50 mt-2 w-[min(18rem,calc(100vw-2rem))] rounded-2xl border border-slate-200 bg-white p-2 shadow-xl dark:border-slate-700 dark:bg-slate-900">
-          {profiles.map((profile) => (
-            <button
-              key={profile.id}
-              type="button"
-              onClick={() => {
-                switchProfile(profile.id);
-                setOpen(false);
-              }}
-              className={cn(
-                "flex min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-800",
-                activeProfile?.id === profile.id && "bg-emerald-50 dark:bg-emerald-950/50",
-              )}
-            >
-              <span className="h-8 w-8 rounded-full" style={{ backgroundColor: profile.avatarColor }} />
-              <span className="font-medium">{profile.name}</span>
-            </button>
-          ))}
+          {displayProfile && (
+            <div className="mb-1 rounded-xl bg-emerald-50 px-3 py-2 dark:bg-emerald-950/50">
+              <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-400">
+                Active profile
+              </p>
+              <div className="mt-1 flex min-h-11 items-center gap-3 text-sm">
+                <span
+                  className="h-8 w-8 rounded-full"
+                  style={{ backgroundColor: displayProfile.avatarColor }}
+                />
+                <span className="font-medium">{displayProfile.name}</span>
+              </div>
+            </div>
+          )}
+
+          {inactiveProfiles.length > 0 && (
+            <div className="mb-1">
+              <p className="px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                Profiles
+              </p>
+              {inactiveProfiles.map((profile) => (
+                <button
+                  key={profile.id}
+                  type="button"
+                  onClick={() => {
+                    switchProfile(profile.id);
+                    setOpen(false);
+                  }}
+                  className="flex min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-800"
+                >
+                  <span className="h-8 w-8 rounded-full" style={{ backgroundColor: profile.avatarColor }} />
+                  <span className="font-medium">{profile.name}</span>
+                </button>
+              ))}
+            </div>
+          )}
 
           {!showCreate ? (
             <button
@@ -77,10 +100,13 @@ export function ProfileSwitcher({ compact = false }: { compact?: boolean }) {
               onClick={() => setShowCreate(true)}
               className="mt-1 min-h-11 w-full rounded-xl px-3 py-2 text-left text-sm text-emerald-700 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950/50"
             >
-              + Add profile
+              + Create profile
             </button>
           ) : (
             <div className="mt-2 space-y-2 border-t border-slate-100 pt-2 dark:border-slate-800">
+              <p className="px-1 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                Create a profile
+              </p>
               <input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -102,7 +128,7 @@ export function ProfileSwitcher({ compact = false }: { compact?: boolean }) {
                 ))}
               </div>
               <Button size="sm" className="w-full" onClick={handleCreate}>
-                Create
+                Create profile
               </Button>
             </div>
           )}

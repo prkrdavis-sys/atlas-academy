@@ -8,7 +8,7 @@ A web-based geography quiz game with flags, capitals, country shapes, and bonus 
 - **Bonus modes:** Country → Flag, Neighbor Quiz, Population Showdown, Daily Challenge, Marathon, Speed Round, Practice Weak Spots
 - **Local profiles** with streak tracking and best-streak records
 - **Continent filters** with checkbox selection
-- **Three difficulty levels:** easy (MC + lifelines), medium (MC), hard (type answer)
+- **Three difficulty levels:** easy (MC + boosts), medium (MC), hard (type answer)
 - **250 countries & territories** with up-to-date ISO 3166 data
 
 ## Getting started

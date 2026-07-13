@@ -34,8 +34,8 @@ export function PopulationMatchupDisplay({ codes }: PopulationMatchupDisplayProp
                 src={getFlagPath(country.code)}
                 alt=""
                 width={120}
-                height={80}
-                className="h-12 w-[4.5rem] object-cover sm:h-14 sm:w-24"
+                height={90}
+                className="h-12 w-16 object-contain sm:h-[4.5rem] sm:w-24"
               />
             </div>
           </div>

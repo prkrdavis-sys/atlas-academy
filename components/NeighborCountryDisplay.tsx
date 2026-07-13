@@ -33,8 +33,8 @@ export function NeighborCountryDisplay({ code }: { code: string }) {
             src={getFlagPath(country.code)}
             alt={`Flag of ${country.name}`}
             width={180}
-            height={120}
-            className="h-auto w-28 object-cover sm:w-36"
+            height={135}
+            className="h-auto w-28 object-contain sm:w-36"
             priority
           />
         </div>

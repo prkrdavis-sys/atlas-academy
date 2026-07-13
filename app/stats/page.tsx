@@ -3,14 +3,15 @@
 import { useEffect, useState } from "react";
 import { useProfiles } from "@/components/ProfileProvider";
 import { cn } from "@/lib/utils";
-import { ACHIEVEMENTS, DIFFICULTIES, GAME_MODES, type Difficulty } from "@/lib/types";
-import { getGlobalStreak } from "@/lib/stats-helpers";
+import { ACHIEVEMENTS, DIFFICULTIES, DIFFICULTY_LABELS, GAME_MODES, type Difficulty } from "@/lib/types";
+import { getGlobalStreak, sortGameModesByMostPlayed } from "@/lib/stats-helpers";
 
-const DIFFICULTY_LABELS: Record<Difficulty, string> = {
-  easy: "Easy",
-  medium: "Medium",
-  hard: "Hard",
-};
+type AchievementSort = "default" | "unlocked";
+
+const ACHIEVEMENT_SORT_OPTIONS: { value: AchievementSort; label: string }[] = [
+  { value: "default", label: "Default" },
+  { value: "unlocked", label: "Unlocked" },
+];
 
 function DifficultySelector({
   value,
@@ -50,10 +51,49 @@ function DifficultySelector({
   );
 }
 
+function AchievementSortSelector({
+  value,
+  onChange,
+  className,
+}: {
+  value: AchievementSort;
+  onChange: (sort: AchievementSort) => void;
+  className?: string;
+}) {
+  return (
+    <div
+      className={cn("grid grid-cols-2 gap-2", className)}
+      role="group"
+      aria-label="Achievement sort"
+    >
+      {ACHIEVEMENT_SORT_OPTIONS.map((option) => {
+        const selected = value === option.value;
+        return (
+          <button
+            key={option.value}
+            type="button"
+            aria-pressed={selected}
+            onClick={() => onChange(option.value)}
+            className={cn(
+              "min-h-10 rounded-xl border-2 px-3 py-2 text-sm font-semibold transition-all duration-100",
+              selected
+                ? "border-emerald-600 bg-emerald-500 text-white shadow-[0_3px_0_var(--color-emerald-700)]"
+                : "border-slate-200 bg-white text-slate-700 shadow-[0_3px_0_var(--color-slate-200)] hover:border-sky-300 active:translate-y-[3px] active:shadow-none dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:shadow-[0_3px_0_var(--color-slate-700)] dark:hover:border-sky-500",
+            )}
+          >
+            {option.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function StatsPage() {
   const { activeProfile, hydrated } = useProfiles();
   const profile = hydrated ? activeProfile : null;
   const [difficulty, setDifficulty] = useState<Difficulty>("easy");
+  const [achievementSort, setAchievementSort] = useState<AchievementSort>("default");
 
   useEffect(() => {
     if (profile) {
@@ -71,6 +111,18 @@ export default function StatsPage() {
 
   const globalStreak = getGlobalStreak(profile, difficulty);
   const difficultyLabel = DIFFICULTY_LABELS[difficulty];
+  const modesByMostPlayed = sortGameModesByMostPlayed(GAME_MODES, profile, difficulty);
+  const sortedAchievements =
+    achievementSort === "default"
+      ? ACHIEVEMENTS
+      : [...ACHIEVEMENTS].sort((a, b) => {
+          const aEarned = profile.achievements.includes(a.id);
+          const bEarned = profile.achievements.includes(b.id);
+          if (aEarned === bEarned) {
+            return ACHIEVEMENTS.indexOf(a) - ACHIEVEMENTS.indexOf(b);
+          }
+          return aEarned ? -1 : 1;
+        });
 
   return (
     <div className="space-y-5 sm:space-y-8">
@@ -124,7 +176,7 @@ export default function StatsPage() {
           <p className="mt-0.5 text-xs text-slate-600 dark:text-slate-400">{difficultyLabel} difficulty</p>
         </div>
         <ul className="divide-y divide-slate-100 dark:divide-slate-800">
-          {GAME_MODES.map((mode) => {
+          {modesByMostPlayed.map((mode) => {
             const stats = profile.stats[mode.id][difficulty];
             const accuracy =
               stats.totalPlayed > 0
@@ -180,7 +232,7 @@ export default function StatsPage() {
               </tr>
             </thead>
             <tbody>
-              {GAME_MODES.map((mode) => {
+              {modesByMostPlayed.map((mode) => {
                 const stats = profile.stats[mode.id][difficulty];
                 const accuracy =
                   stats.totalPlayed > 0
@@ -205,18 +257,27 @@ export default function StatsPage() {
       </section>
 
       <section className="overflow-hidden rounded-[1.75rem] border-2 border-slate-200 bg-white/90 shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90">
-        <div className="sticky top-[var(--app-header-offset)] z-10 flex items-baseline justify-between gap-3 border-b border-slate-200 bg-white px-4 py-4 dark:border-slate-700 dark:bg-slate-900 sm:px-6">
-          <h2 className="font-display text-base font-extrabold text-slate-800 dark:text-slate-100 sm:font-semibold">Achievements</h2>
-          <p className="text-xs text-slate-600 dark:text-slate-400 sm:text-sm">
-            {profile.achievements.length} / {ACHIEVEMENTS.length} unlocked
-          </p>
+        <div className="sticky top-[var(--app-header-offset)] z-10 border-b border-slate-200 bg-white px-4 py-4 dark:border-slate-700 dark:bg-slate-900 sm:px-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="font-display text-base font-extrabold text-slate-800 dark:text-slate-100 sm:font-semibold">Achievements</h2>
+              <p className="mt-0.5 text-xs text-slate-600 dark:text-slate-400 sm:text-sm">
+                {profile.achievements.length} / {ACHIEVEMENTS.length} unlocked
+              </p>
+            </div>
+            <AchievementSortSelector
+              value={achievementSort}
+              onChange={setAchievementSort}
+              className="sm:max-w-xs sm:flex-1"
+            />
+          </div>
         </div>
         <div className="p-4 sm:p-6">
           <p className="mb-3 text-xs text-slate-500 dark:text-slate-400 sm:mb-4 sm:text-sm">
             Achievements count progress across all difficulties.
           </p>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3 lg:grid-cols-3">
-            {ACHIEVEMENTS.map((achievement) => {
+            {sortedAchievements.map((achievement) => {
               const earned = profile.achievements.includes(achievement.id);
               return (
                 <div

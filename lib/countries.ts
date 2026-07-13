@@ -1,5 +1,13 @@
 import countriesData from "@/data/countries.json";
-import type { Continent, CoreQuestionType, Country, GameMode } from "@/lib/types";
+import {
+  CORE_QUESTION_TYPES,
+  SPEED_ROUND_ALL_TYPES,
+  type Continent,
+  type CoreQuestionType,
+  type Country,
+  type GameMode,
+  type SpeedRoundQuestionType,
+} from "@/lib/types";
 
 export const countries = countriesData as Country[];
 
@@ -13,10 +21,25 @@ export function getCountryName(code: string): string {
 
 export function filterCountries(options: {
   continents: Continent[];
+  territoryContinents?: Continent[];
   mode?: GameMode;
   weakSpotCodes?: string[];
 }): Country[] {
-  let pool = countries.filter((c) => options.continents.includes(c.continent as Continent));
+  const territoryContinents = options.territoryContinents ?? [];
+  const sovereignPool = options.continents.length > 0
+    ? countries.filter(
+        (c) =>
+          !c.isTerritory && options.continents.includes(c.continent as Continent),
+      )
+    : [];
+  const territoryPool = territoryContinents.length > 0
+    ? countries.filter(
+        (c) =>
+          c.isTerritory && territoryContinents.includes(c.continent as Continent),
+      )
+    : [];
+
+  let pool = [...sovereignPool, ...territoryPool];
 
   if (options.mode === "shape-to-country") {
     pool = pool.filter((c) => c.shapeQuizEligible);
@@ -46,23 +69,86 @@ export function filterCountries(options: {
   return pool;
 }
 
-export function countCountriesByContinents(continents: Continent[]): number {
-  return filterCountries({ continents }).length;
+export function countSovereignCountriesByContinents(continents: Continent[]): number {
+  return countries.filter(
+    (c) => !c.isTerritory && continents.includes(c.continent as Continent),
+  ).length;
+}
+
+export function countTerritoriesByContinents(continents: Continent[]): number {
+  if (continents.length === 0) return 0;
+
+  return countries.filter(
+    (c) => c.isTerritory && continents.includes(c.continent as Continent),
+  ).length;
+}
+
+export function countPlayableCountries(options: {
+  continents: Continent[];
+  territoryContinents?: Continent[];
+  mode?: GameMode;
+  weakSpotCodes?: string[];
+}): number {
+  return filterCountries(options).length;
+}
+
+export function getEligibleCoreQuestionTypes(country: Country): CoreQuestionType[] {
+  const types: CoreQuestionType[] = [];
+  if (country.hasFlag) types.push("flag-to-country");
+  if (country.capital.length > 0) {
+    types.push("capital-to-country", "country-to-capital");
+  }
+  if (country.shapeQuizEligible) types.push("shape-to-country");
+  return types;
+}
+
+export function getMixedCoreQuestionPool(options: {
+  continents: Continent[];
+  territoryContinents?: Continent[];
+  weakSpotCodes?: string[];
+}): Country[] {
+  const byCode = new Map<string, Country>();
+  for (const type of CORE_QUESTION_TYPES) {
+    for (const country of filterCountries({
+      continents: options.continents,
+      territoryContinents: options.territoryContinents,
+      mode: type,
+      weakSpotCodes: options.weakSpotCodes,
+    })) {
+      byCode.set(country.code, country);
+    }
+  }
+  return [...byCode.values()];
 }
 
 export function getPlayablePool(options: {
   continents: Continent[];
+  territoryContinents?: Continent[];
   mode: GameMode;
-  questionType?: CoreQuestionType;
+  questionType?: SpeedRoundQuestionType;
   weakSpotCodes?: string[];
 }): Country[] {
-  const filterMode =
-    options.mode === "speed-round" && options.questionType
+  if (
+    options.mode === "mixed" ||
+    (options.mode === "speed-round" && options.questionType === SPEED_ROUND_ALL_TYPES)
+  ) {
+    return getMixedCoreQuestionPool({
+      continents: options.continents,
+      territoryContinents: options.territoryContinents,
+      weakSpotCodes: options.weakSpotCodes,
+    });
+  }
+
+  const filterMode: GameMode =
+    options.mode === "speed-round" &&
+    options.questionType &&
+    options.questionType !== SPEED_ROUND_ALL_TYPES
       ? options.questionType
       : options.mode;
 
   return filterCountries({
     continents: options.continents,
+    territoryContinents: options.territoryContinents,
     mode: filterMode,
     weakSpotCodes: options.weakSpotCodes,
   });
@@ -70,8 +156,9 @@ export function getPlayablePool(options: {
 
 export function getPlayablePoolSize(options: {
   continents: Continent[];
+  territoryContinents?: Continent[];
   mode: GameMode;
-  questionType?: CoreQuestionType;
+  questionType?: SpeedRoundQuestionType;
   weakSpotCodes?: string[];
 }): number {
   return getPlayablePool(options).length;
@@ -87,4 +174,8 @@ export function getShapePath(code3: string): string {
 
 export function formatPopulation(population: number): string {
   return new Intl.NumberFormat("en-US").format(population);
+}
+
+export function formatBorderFact(borderCount: number): string {
+  return `It borders ${borderCount} countr${borderCount === 1 ? "y" : "ies"}.`;
 }

@@ -1,17 +1,17 @@
 "use client";
 
 import { CONTINENTS, type Continent } from "@/lib/types";
-import { countSovereignCountriesByContinents } from "@/lib/countries";
+import { countTerritoriesByContinents } from "@/lib/countries";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 
-type ContinentFilterProps = {
+type TerritoryFilterProps = {
   selected: Continent[];
   onChange: (continents: Continent[]) => void;
 };
 
-export function ContinentFilter({ selected, onChange }: ContinentFilterProps) {
-  const count = countSovereignCountriesByContinents(selected);
+export function TerritoryFilter({ selected, onChange }: TerritoryFilterProps) {
+  const count = countTerritoriesByContinents(selected);
 
   function toggle(continent: Continent) {
     if (selected.includes(continent)) {
@@ -45,7 +45,9 @@ export function ContinentFilter({ selected, onChange }: ContinentFilterProps) {
               key={continent}
               className={cn(
                 "flex min-h-12 cursor-pointer items-center gap-2 rounded-xl border px-3 py-2.5 transition-colors sm:gap-3 sm:px-4 sm:py-3",
-                checked ? "border-emerald-300 bg-emerald-50 dark:border-emerald-700 dark:bg-emerald-950/50" : "border-slate-200 bg-white hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:hover:bg-slate-700",
+                checked
+                  ? "border-emerald-300 bg-emerald-50 dark:border-emerald-700 dark:bg-emerald-950/50"
+                  : "border-slate-200 bg-white hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:hover:bg-slate-700",
               )}
             >
               <input
@@ -62,8 +64,8 @@ export function ContinentFilter({ selected, onChange }: ContinentFilterProps) {
 
       <p className="text-sm text-slate-600 dark:text-slate-400">
         {selected.length === 0
-          ? "Select at least one continent for sovereign countries."
-          : `${count} countr${count === 1 ? "y" : "ies"} across ${selected.length} continent${selected.length === 1 ? "" : "s"}.`}
+          ? "Territories like Puerto Rico, Hong Kong, and Greenland are excluded. Select continents above to add them."
+          : `${count} territor${count === 1 ? "y" : "ies"} across ${selected.length} continent${selected.length === 1 ? "" : "s"}.`}
       </p>
     </div>
   );

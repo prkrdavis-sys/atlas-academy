@@ -34,8 +34,8 @@ const CORE_MODE_STYLES: Record<
   },
 };
 
-const CHALLENGE_MODES: GameMode[] = ["daily-challenge", "speed-round", "marathon", "weak-spots"];
-const EXTRA_QUIZ_MODES: GameMode[] = ["country-to-flag", "neighbor-quiz", "population-showdown"];
+const CHALLENGE_MODES: GameMode[] = ["daily-challenge", "mixed", "speed-round", "marathon"];
+const EXTRA_QUIZ_MODES: GameMode[] = ["weak-spots", "country-to-flag", "neighbor-quiz", "population-showdown"];
 
 export default function HomePage() {
   const { activeProfile, hydrated } = useProfiles();
@@ -125,7 +125,7 @@ export default function HomePage() {
 
       <section>
         <h2 className="mb-3 font-display text-xl font-extrabold text-slate-800 dark:text-slate-100 sm:mb-4">Challenges</h2>
-        <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-4">
+        <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-3 xl:grid-cols-5">
           {CHALLENGE_MODES.map((id) => {
             const mode = GAME_MODES.find((m) => m.id === id);
             if (!mode) return null;
@@ -168,6 +168,12 @@ export default function HomePage() {
               </Link>
             );
           })}
+          <Link
+            href="/library"
+            className="min-h-11 shrink-0 rounded-full border-2 border-slate-200 bg-white/80 px-3.5 py-2 text-sm font-semibold text-slate-700 transition-colors hover:border-teal-400 hover:text-teal-700 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-300 dark:hover:border-teal-500 dark:hover:text-teal-300"
+          >
+            📚 Country Library
+          </Link>
         </div>
       </section>
     </div>
