@@ -10,6 +10,18 @@ export const CONTINENTS = [
 
 export type Continent = (typeof CONTINENTS)[number];
 
+export const US_REGIONS = ["Midwest", "Northeast", "South", "West"] as const;
+
+export type UsRegion = (typeof US_REGIONS)[number];
+
+/** A continent (world scope) or a US Census region (USA scope). */
+export type Region = Continent | UsRegion;
+
+/** Which geography universe a session runs against. */
+export type GameScope = "world" | "usa";
+
+export const GAME_SCOPES: GameScope[] = ["world", "usa"];
+
 export type Difficulty = "easy" | "medium" | "hard";
 
 export const DIFFICULTIES: Difficulty[] = ["easy", "medium", "hard"];
@@ -78,6 +90,13 @@ export const CORE_QUESTION_TYPES: CoreQuestionType[] = [
   "shape-to-country",
 ];
 
+export const MIXED_QUESTION_TYPES = [
+  ...CORE_QUESTION_TYPES,
+  "country-to-flag",
+] as const;
+
+export type MixedQuestionType = CoreQuestionType | "country-to-flag";
+
 export const SPEED_ROUND_ALL_TYPES = "all-types" as const;
 export type SpeedRoundQuestionType = CoreQuestionType | typeof SPEED_ROUND_ALL_TYPES;
 
@@ -101,7 +120,7 @@ export type Country = {
   name: string;
   officialName: string;
   capital: string;
-  continent: Continent;
+  continent: Region;
   subregion: string;
   population: number;
   area: number;
@@ -139,8 +158,10 @@ export type Profile = {
   settings: {
     difficulty: Difficulty;
     lastContinentFilter: Continent[];
+    lastRegionFilter?: UsRegion[];
     includeTerritories: boolean;
     speedRoundQuestionType: SpeedRoundQuestionType;
+    marathonQuestionType: SpeedRoundQuestionType;
     roundQuestionCount: RoundQuestionSetting;
   };
   achievements: string[];
@@ -149,6 +170,8 @@ export type Profile = {
   dailyChallengePlayedDates?: string[];
   /** EST date keys (YYYY-MM-DD) when the daily challenge was fully completed */
   dailyChallengeCompletions?: string[];
+  /** Highest global streak reached today, per difficulty (resets each EST day) */
+  todayBestStreaks?: Partial<Record<Difficulty, { dateKey: string; value: number }>>;
 };
 
 export type AchievementSessionContext = {
@@ -262,7 +285,7 @@ export const GAME_MODES: {
   {
     id: "mixed",
     title: "Mixed",
-    description: "Flags, capitals, and shapes — shuffled",
+    description: "Flags, capitals, shapes, and flag picking — shuffled",
     icon: "🎲",
     phase: 2,
   },

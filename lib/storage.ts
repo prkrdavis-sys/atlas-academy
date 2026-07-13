@@ -3,19 +3,23 @@ import type {
   SpeedRoundQuestionType,
   Difficulty,
   GameMode,
+  GameScope,
   Profile,
   AchievementSessionContext,
   RoundQuestionSetting,
+  UsRegion,
 } from "@/lib/types";
 import {
   AVATAR_COLORS,
   DEFAULT_ROUND_QUESTION_COUNT,
   DIFFICULTIES,
   GAME_MODES,
+  US_REGIONS,
   normalizeRoundQuestionSetting,
 } from "@/lib/types";
 import { checkAchievements as evaluateAchievements } from "@/lib/achievements";
 import { getDailyDateKey } from "@/lib/game-engine";
+import { scopedDailyKey } from "@/lib/scope";
 import {
   createEmptyModeStatsByDifficulty,
   emptyModeStats,
@@ -101,7 +105,15 @@ export function normalizeProfile(profile: Profile): Profile {
   } else if ((normalized.settings.speedRoundQuestionType as string) === "mixed") {
     normalized.settings.speedRoundQuestionType = "all-types";
   }
+  if (!normalized.settings.marathonQuestionType) {
+    normalized.settings.marathonQuestionType = "flag-to-country";
+  } else if ((normalized.settings.marathonQuestionType as string) === "mixed") {
+    normalized.settings.marathonQuestionType = "all-types";
+  }
   normalized.settings.roundQuestionCount = normalizeRoundQuestionSetting(normalized.settings.roundQuestionCount);
+  if (!normalized.settings.lastRegionFilter) {
+    normalized.settings.lastRegionFilter = [...US_REGIONS];
+  }
   const { lastTerritoryFilter, ...settings } = normalized.settings;
   normalized.settings = {
     ...settings,
@@ -115,6 +127,9 @@ export function normalizeProfile(profile: Profile): Profile {
   }
   if (!normalized.dailyChallengeCompletions) {
     normalized.dailyChallengeCompletions = [];
+  }
+  if (!normalized.todayBestStreaks) {
+    normalized.todayBestStreaks = {};
   }
   for (const mode of GAME_MODES) {
     if (!normalized.stats[mode.id]) {
@@ -143,9 +158,11 @@ export function createProfile(name: string, avatarColor: string): Profile {
         "North America",
         "Oceania",
         "South America",
-      ],
-      includeTerritories: false,
+    ],
+    lastRegionFilter: [...US_REGIONS],
+    includeTerritories: false,
       speedRoundQuestionType: "flag-to-country",
+      marathonQuestionType: "flag-to-country",
       roundQuestionCount: DEFAULT_ROUND_QUESTION_COUNT,
     },
     achievements: [],
@@ -222,8 +239,10 @@ export function updateProfileSettings(
   settings: Partial<{
     difficulty: Difficulty;
     lastContinentFilter: Continent[];
+    lastRegionFilter: UsRegion[];
     includeTerritories: boolean;
     speedRoundQuestionType: SpeedRoundQuestionType;
+    marathonQuestionType: SpeedRoundQuestionType;
     roundQuestionCount: RoundQuestionSetting;
   }>,
 ) {
@@ -257,6 +276,15 @@ export function recordAnswer(
     stats.bestStreak = Math.max(stats.bestStreak, stats.currentStreak);
     globalStreak.currentStreak += 1;
     globalStreak.bestStreak = Math.max(globalStreak.bestStreak, globalStreak.currentStreak);
+
+    const today = getDailyDateKey();
+    if (!profile.todayBestStreaks) profile.todayBestStreaks = {};
+    const todayBest = profile.todayBestStreaks[difficulty];
+    if (!todayBest || todayBest.dateKey !== today) {
+      profile.todayBestStreaks[difficulty] = { dateKey: today, value: globalStreak.currentStreak };
+    } else {
+      todayBest.value = Math.max(todayBest.value, globalStreak.currentStreak);
+    }
   } else if (!skipped) {
     stats.currentStreak = 0;
     globalStreak.currentStreak = 0;
@@ -277,12 +305,12 @@ export function recordAnswer(
   return { state, stats };
 }
 
-export function recordDailyChallengeCompletion(profileId: string) {
+export function recordDailyChallengeCompletion(profileId: string, scope: GameScope = "world") {
   const state = loadState();
   const profile = state.profiles.find((p) => p.id === profileId);
   if (!profile) return state;
 
-  const today = getDailyDateKey();
+  const today = scopedDailyKey(getDailyDateKey(), scope);
   if (!profile.dailyChallengeCompletions) {
     profile.dailyChallengeCompletions = [];
   }
@@ -293,12 +321,12 @@ export function recordDailyChallengeCompletion(profileId: string) {
   return state;
 }
 
-export function markDailyChallengePlayed(profileId: string) {
+export function markDailyChallengePlayed(profileId: string, scope: GameScope = "world") {
   const state = loadState();
   const profile = state.profiles.find((p) => p.id === profileId);
   if (!profile) return state;
 
-  const today = getDailyDateKey();
+  const today = scopedDailyKey(getDailyDateKey(), scope);
   if (!profile.dailyChallengePlayedDates) {
     profile.dailyChallengePlayedDates = [];
   }

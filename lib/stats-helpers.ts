@@ -1,3 +1,4 @@
+import { getDailyDateKey } from "@/lib/game-engine";
 import type { Difficulty, GameMode, GlobalStreakSnapshot, ModeStats, Profile } from "@/lib/types";
 import { DIFFICULTIES, GAME_MODES } from "@/lib/types";
 
@@ -15,6 +16,25 @@ export function getGlobalStreakOrZero(
   difficulty: Difficulty,
 ): GlobalStreakSnapshot {
   return profile?.globalStreaks[difficulty] ?? ZERO_GLOBAL_STREAK;
+}
+
+export function getTodayBestStreakOrZero(
+  profile: Profile | null | undefined,
+  difficulty: Difficulty,
+): number {
+  const today = getDailyDateKey();
+  const entry = profile?.todayBestStreaks?.[difficulty];
+  if (!entry || entry.dateKey !== today) return 0;
+  return entry.value;
+}
+
+export function getTodayBestStreakDisplay(
+  profile: Profile | null | undefined,
+  difficulty: Difficulty,
+): number {
+  const stored = getTodayBestStreakOrZero(profile, difficulty);
+  const current = getGlobalStreakOrZero(profile, difficulty).currentStreak;
+  return Math.max(stored, current);
 }
 
 export function emptyModeStats(): ModeStats {

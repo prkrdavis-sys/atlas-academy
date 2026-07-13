@@ -8,8 +8,15 @@
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { GameEngine } from "../lib/game-engine";
-import { countries, getCountryByCode } from "../lib/countries";
-import { CONTINENTS, type GameMode, type Question } from "../lib/types";
+import { countries, getCountryByCode, usStates } from "../lib/countries";
+import {
+  CONTINENTS,
+  US_REGIONS,
+  type GameMode,
+  type GameScope,
+  type Question,
+  type Region,
+} from "../lib/types";
 
 let failures = 0;
 function fail(message: string) {
@@ -18,7 +25,7 @@ function fail(message: string) {
 }
 
 // Asset checks
-for (const c of countries) {
+for (const c of [...countries, ...usStates]) {
   if (c.hasFlag && !existsSync(join("public", "flags", `${c.code.toLowerCase()}.svg`))) {
     fail(`${c.name}: hasFlag but flag file missing`);
   }
@@ -41,10 +48,16 @@ const MODES: GameMode[] = [
 const RUNS = 200;
 let questionsChecked = 0;
 
+const SCOPE_SETUPS: { scope: GameScope; regions: Region[] }[] = [
+  { scope: "world", regions: [...CONTINENTS] },
+  { scope: "usa", regions: [...US_REGIONS] },
+];
+
+for (const { scope, regions } of SCOPE_SETUPS) {
 for (const mode of MODES) {
   for (const difficulty of ["easy", "medium"] as const) {
     for (let run = 0; run < RUNS; run += 1) {
-      const engine = new GameEngine(mode, [...CONTINENTS], difficulty, undefined, run, undefined, "all", true);
+      const engine = new GameEngine(mode, regions, difficulty, undefined, run, undefined, "all", true, scope);
       let q: Question | null;
       while ((q = engine.nextQuestion())) {
         questionsChecked += 1;
@@ -82,10 +95,11 @@ for (const mode of MODES) {
     }
   }
 }
+}
 
 // Type-in (hard mode) checks on name-answer modes
 const nameEngine = new GameEngine("flag-to-country", [...CONTINENTS], "hard", undefined, 1, undefined, "all", true);
-for (const c of countries.filter((x) => x.hasFlag)) {
+for (const c of [...countries, ...usStates].filter((x) => x.hasFlag)) {
   const q: Question = {
     id: "t",
     mode: "flag-to-country",
@@ -95,7 +109,8 @@ for (const c of countries.filter((x) => x.hasFlag)) {
     correctCode: c.code,
   };
   if (!nameEngine.checkAnswer(q, c.name)) fail(`type-in: "${c.name}" rejected for itself`);
-  for (const other of countries) {
+  const sameScopePool = c.code.startsWith("US-") ? usStates : countries;
+  for (const other of sameScopePool) {
     if (other.code === c.code) continue;
     // Skip names that are genuine aliases of the correct country (e.g. "Taiwan")
     if (c.aliases.includes(other.name.toLowerCase())) continue;

@@ -8,14 +8,18 @@ import {
   getCountryByCode,
   getFlagPath,
   getShapePath,
+  usStates,
 } from "@/lib/countries";
+import { isStateCode } from "@/lib/scope";
 
 type CountryPageProps = {
   params: Promise<{ code: string }>;
 };
 
 export function generateStaticParams() {
-  return countries.map((country) => ({ code: country.code.toLowerCase() }));
+  return [...countries, ...usStates].map((country) => ({
+    code: country.code.toLowerCase(),
+  }));
 }
 
 export async function generateMetadata({ params }: CountryPageProps): Promise<Metadata> {
@@ -24,7 +28,7 @@ export async function generateMetadata({ params }: CountryPageProps): Promise<Me
 
   return country
     ? {
-        title: `${country.name} | Country Library`,
+        title: `${country.name} | ${isStateCode(country.code) ? "State" : "Country"} Library`,
         description: `Learn about ${country.name}, including its flag, shape, capital, population, and neighbors.`,
       }
     : {};
@@ -34,32 +38,46 @@ export default async function CountryPage({ params }: CountryPageProps) {
   const { code } = await params;
   const country = getCountryByCode(code.toUpperCase());
   if (!country) notFound();
+  const isState = isStateCode(country.code);
 
   const neighbors = country.borders
     .map((borderCode) => getCountryByCode(borderCode))
     .filter((neighbor) => neighbor !== undefined)
     .toSorted((a, b) => a.name.localeCompare(b.name));
 
-  const details = [
-    { label: "Capital", value: country.capital || "No official capital" },
-    { label: "Continent", value: country.continent },
-    { label: "Region", value: country.subregion || "Not listed" },
-    { label: "Population", value: country.population > 0 ? formatPopulation(country.population) : "Not available" },
-    {
-      label: "Area",
-      value: country.area > 0 ? `${formatPopulation(country.area)} km²` : "Not available",
-    },
-    { label: "Country codes", value: `${country.code} / ${country.code3}` },
-    { label: "Status", value: country.isTerritory ? "Territory" : "Sovereign country" },
-  ];
+  const details = isState
+    ? [
+        { label: "Capital", value: country.capital || "No official capital" },
+        { label: "Region", value: country.continent },
+        { label: "Division", value: country.subregion || "Not listed" },
+        { label: "Population", value: country.population > 0 ? formatPopulation(country.population) : "Not available" },
+        {
+          label: "Area",
+          value: country.area > 0 ? `${formatPopulation(country.area)} km²` : "Not available",
+        },
+        { label: "State code", value: country.code },
+        { label: "Status", value: "U.S. state" },
+      ]
+    : [
+        { label: "Capital", value: country.capital || "No official capital" },
+        { label: "Continent", value: country.continent },
+        { label: "Region", value: country.subregion || "Not listed" },
+        { label: "Population", value: country.population > 0 ? formatPopulation(country.population) : "Not available" },
+        {
+          label: "Area",
+          value: country.area > 0 ? `${formatPopulation(country.area)} km²` : "Not available",
+        },
+        { label: "Country codes", value: `${country.code} / ${country.code3}` },
+        { label: "Status", value: country.isTerritory ? "Territory" : "Sovereign country" },
+      ];
 
   return (
     <article className="space-y-5 sm:space-y-7">
       <Link
-        href="/library"
+        href={isState ? "/library?scope=usa" : "/library"}
         className="inline-flex min-h-11 items-center rounded-full border-2 border-slate-200 bg-white/80 px-4 py-2 text-sm font-bold text-slate-700 transition-colors hover:border-teal-400 hover:text-teal-700 active:scale-[0.98] dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-300 dark:hover:border-teal-500 dark:hover:text-teal-300"
       >
-        ← All countries
+        {isState ? "← All states" : "← All countries"}
       </Link>
 
       <header className="overflow-hidden rounded-[1.75rem] border-2 border-teal-100 bg-white/85 shadow-sm backdrop-blur dark:border-teal-900/70 dark:bg-slate-900/85">
@@ -111,7 +129,7 @@ export default async function CountryPage({ params }: CountryPageProps) {
 
       <section aria-labelledby="country-details-heading">
         <h2 id="country-details-heading" className="mb-3 font-display text-xl font-extrabold text-slate-800 dark:text-slate-100">
-          Country details
+          {isState ? "State details" : "Country details"}
         </h2>
         <dl className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
           {details.map((detail) => (

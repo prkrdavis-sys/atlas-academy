@@ -2,6 +2,8 @@
 
 This app uses **ISO 3166-1 alpha-2** codes as the canonical identifier for every country and territory (~250 entries from [mledoze/countries](https://github.com/mledoze/countries)).
 
+US states (the "Across America" scope) use **ISO 3166-2:US** codes (`US-AL` … `US-WY`), which never collide with country codes, so code lookups, per-place progress, and weak-spot tracking work across both datasets without a scope tag.
+
 ## Data sources
 
 | Asset | Source | Refresh |
@@ -10,6 +12,9 @@ This app uses **ISO 3166-1 alpha-2** codes as the canonical identifier for every
 | Population | World Bank (2023) + manual overrides for territories | Fetched during refresh |
 | Flag SVGs | [flag-icons](https://github.com/lipis/flag-icons) | Copied during refresh |
 | Shape SVGs | [mapsicon](https://github.com/djaiss/mapsicon) country silhouettes | Downloaded during refresh |
+| US state metadata | Hand-curated (2023 Census population estimates, Census regions/divisions) | `npm run refresh-state-data` |
+| US state flag SVGs | Wikimedia Commons (`public/flags/us-XX.svg`) | `npm run fetch-state-flags` |
+| US state shape SVGs | [@svg-maps/usa](https://www.npmjs.com/package/@svg-maps/usa) paths (`public/shapes/us-XX.svg`) | `npm run generate-state-shapes` |
 
 ## Geopolitical edge cases
 

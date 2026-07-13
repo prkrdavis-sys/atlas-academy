@@ -1,15 +1,21 @@
 "use client";
 
-import { CONTINENTS, type Continent } from "@/lib/types";
-import { countAllTerritories, countSovereignCountriesByContinents } from "@/lib/countries";
+import type { GameScope, Region } from "@/lib/types";
+import {
+  countAllTerritories,
+  countSovereignCountriesByContinents,
+  getRegionsForScope,
+} from "@/lib/countries";
+import { SCOPE_INFO } from "@/lib/scope";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 
 type ContinentFilterProps = {
-  selected: Continent[];
+  selected: Region[];
   includeTerritories: boolean;
-  onContinentsChange: (continents: Continent[]) => void;
+  onContinentsChange: (regions: Region[]) => void;
   onIncludeTerritoriesChange: (includeTerritories: boolean) => void;
+  scope?: GameScope;
 };
 
 export function ContinentFilter({
@@ -17,20 +23,26 @@ export function ContinentFilter({
   includeTerritories,
   onContinentsChange,
   onIncludeTerritoriesChange,
+  scope = "world",
 }: ContinentFilterProps) {
-  const countryCount = countSovereignCountriesByContinents(selected);
+  const regions = getRegionsForScope(scope);
+  const isUsa = scope === "usa";
+  const placeCount = countSovereignCountriesByContinents(selected, scope);
   const territoryCount = countAllTerritories();
+  const noun = SCOPE_INFO[scope].noun;
+  const nounPlural = SCOPE_INFO[scope].nounPlural;
+  const groupNoun = isUsa ? "region" : "continent";
 
-  function toggle(continent: Continent) {
-    if (selected.includes(continent)) {
-      onContinentsChange(selected.filter((c) => c !== continent));
+  function toggle(region: Region) {
+    if (selected.includes(region)) {
+      onContinentsChange(selected.filter((c) => c !== region));
     } else {
-      onContinentsChange([...selected, continent]);
+      onContinentsChange([...selected, region]);
     }
   }
 
   function selectAll() {
-    onContinentsChange([...CONTINENTS]);
+    onContinentsChange([...regions]);
   }
 
   function clearAll() {
@@ -38,16 +50,16 @@ export function ContinentFilter({
   }
 
   const summary = (() => {
-    if (selected.length === 0 && !includeTerritories) {
-      return "Select at least one continent or territories.";
+    if (selected.length === 0 && (isUsa || !includeTerritories)) {
+      return `Select at least one ${groupNoun}${isUsa ? "" : " or territories"}.`;
     }
-    if (selected.length > 0 && includeTerritories) {
-      return `${countryCount} countr${countryCount === 1 ? "y" : "ies"} and ${territoryCount} territor${territoryCount === 1 ? "y" : "ies"}.`;
+    if (!isUsa && selected.length > 0 && includeTerritories) {
+      return `${placeCount} countr${placeCount === 1 ? "y" : "ies"} and ${territoryCount} territor${territoryCount === 1 ? "y" : "ies"}.`;
     }
-    if (includeTerritories) {
+    if (!isUsa && includeTerritories && selected.length === 0) {
       return `${territoryCount} territor${territoryCount === 1 ? "y" : "ies"}.`;
     }
-    return `${countryCount} countr${countryCount === 1 ? "y" : "ies"} across ${selected.length} continent${selected.length === 1 ? "" : "s"}.`;
+    return `${placeCount} ${placeCount === 1 ? noun : nounPlural} across ${selected.length} ${groupNoun}${selected.length === 1 ? "" : "s"}.`;
   })();
 
   return (
@@ -62,11 +74,11 @@ export function ContinentFilter({
       </div>
 
       <div className="grid grid-cols-2 gap-2">
-        {CONTINENTS.map((continent) => {
-          const checked = selected.includes(continent);
+        {regions.map((region) => {
+          const checked = selected.includes(region);
           return (
             <label
-              key={continent}
+              key={region}
               className={cn(
                 "flex min-h-12 cursor-pointer items-center gap-2 rounded-xl border px-3 py-2.5 transition-colors sm:gap-3 sm:px-4 sm:py-3",
                 checked
@@ -77,29 +89,31 @@ export function ContinentFilter({
               <input
                 type="checkbox"
                 checked={checked}
-                onChange={() => toggle(continent)}
+                onChange={() => toggle(region)}
                 className="h-5 w-5 shrink-0 rounded border-slate-300 text-emerald-600"
               />
-              <span className="min-w-0 text-xs font-medium sm:text-sm">{continent}</span>
+              <span className="min-w-0 text-xs font-medium sm:text-sm">{region}</span>
             </label>
           );
         })}
-        <label
-          className={cn(
-            "col-span-2 flex min-h-12 cursor-pointer items-center gap-2 rounded-xl border px-3 py-2.5 transition-colors sm:gap-3 sm:px-4 sm:py-3",
-            includeTerritories
-              ? "border-emerald-300 bg-emerald-50 dark:border-emerald-700 dark:bg-emerald-950/50"
-              : "border-slate-200 bg-white hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:hover:bg-slate-700",
-          )}
-        >
-          <input
-            type="checkbox"
-            checked={includeTerritories}
-            onChange={() => onIncludeTerritoriesChange(!includeTerritories)}
-            className="h-5 w-5 shrink-0 rounded border-slate-300 text-emerald-600"
-          />
-          <span className="min-w-0 text-xs font-medium sm:text-sm">Territories</span>
-        </label>
+        {!isUsa && (
+          <label
+            className={cn(
+              "col-span-2 flex min-h-12 cursor-pointer items-center gap-2 rounded-xl border px-3 py-2.5 transition-colors sm:gap-3 sm:px-4 sm:py-3",
+              includeTerritories
+                ? "border-emerald-300 bg-emerald-50 dark:border-emerald-700 dark:bg-emerald-950/50"
+                : "border-slate-200 bg-white hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:hover:bg-slate-700",
+            )}
+          >
+            <input
+              type="checkbox"
+              checked={includeTerritories}
+              onChange={() => onIncludeTerritoriesChange(!includeTerritories)}
+              className="h-5 w-5 shrink-0 rounded border-slate-300 text-emerald-600"
+            />
+            <span className="min-w-0 text-xs font-medium sm:text-sm">Territories</span>
+          </label>
+        )}
       </div>
 
       <p className="text-sm text-slate-600 dark:text-slate-400">{summary}</p>

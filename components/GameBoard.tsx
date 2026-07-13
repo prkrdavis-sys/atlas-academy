@@ -24,7 +24,8 @@ import {
   recordDailyChallengeCompletion,
 } from "@/lib/storage";
 import { getGlobalStreakOrZero } from "@/lib/stats-helpers";
-import type { Continent, Difficulty, GameMode, Question, RoundQuestionSetting, SpeedRoundQuestionType } from "@/lib/types";
+import { scopeText } from "@/lib/scope";
+import type { Difficulty, GameMode, GameScope, Question, Region, RoundQuestionSetting, SpeedRoundQuestionType } from "@/lib/types";
 
 const ROUND_TASK_LABELS: Record<GameMode, string> = {
   "flag-to-country": "Name the country",
@@ -43,7 +44,8 @@ const ROUND_TASK_LABELS: Record<GameMode, string> = {
 
 type GameBoardProps = {
   mode: GameMode;
-  continents: Continent[];
+  continents: Region[];
+  scope?: GameScope;
   includeTerritories?: boolean;
   difficulty: Difficulty;
   weakSpotCodes?: string[];
@@ -53,11 +55,13 @@ type GameBoardProps = {
   maxQuestions?: RoundQuestionSetting;
   questionType?: SpeedRoundQuestionType;
   countStats?: boolean;
+  onPlayAgain?: () => void;
 };
 
 export function GameBoard({
   mode,
   continents,
+  scope = "world",
   includeTerritories = false,
   difficulty,
   weakSpotCodes,
@@ -67,6 +71,7 @@ export function GameBoard({
   maxQuestions,
   questionType,
   countStats = true,
+  onPlayAgain,
 }: GameBoardProps) {
   const router = useRouter();
   const { refresh } = useProfiles();
@@ -81,6 +86,7 @@ export function GameBoard({
       questionType,
       maxQuestions,
       includeTerritories,
+      scope,
     );
     return {
       engine: gameEngine,
@@ -172,7 +178,7 @@ export function GameBoard({
   if (engine.getPoolSize() === 0) {
     return (
       <div className="rounded-3xl border-2 border-slate-200 bg-white/90 p-8 text-center shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90">
-        <p className="text-slate-600 dark:text-slate-400">No countries match your filters for this mode.</p>
+        <p className="text-slate-600 dark:text-slate-400">{scopeText("No countries match your filters for this mode.", scope)}</p>
         <Button className="mt-4" onClick={() => router.push("/")}>Back home</Button>
       </div>
     );
@@ -190,7 +196,7 @@ export function GameBoard({
     if (countStats) {
       recordAnswer(activeProfile.id, mode, difficulty, correct, question.countryCode);
       if (mode === "daily-challenge") {
-        markDailyChallengePlayed(activeProfile.id);
+        markDailyChallengePlayed(activeProfile.id, scope);
       }
       refresh();
 
@@ -231,7 +237,7 @@ export function GameBoard({
         !dailyCompletionRecordedRef.current
       ) {
         dailyCompletionRecordedRef.current = true;
-        recordDailyChallengeCompletion(activeProfile.id);
+        recordDailyChallengeCompletion(activeProfile.id, scope);
         refresh();
       }
     }
@@ -254,7 +260,7 @@ export function GameBoard({
         !dailyCompletionRecordedRef.current
       ) {
         dailyCompletionRecordedRef.current = true;
-        recordDailyChallengeCompletion(activeProfile.id);
+        recordDailyChallengeCompletion(activeProfile.id, scope);
         refresh();
       }
     }
@@ -346,9 +352,16 @@ export function GameBoard({
               <p className="text-xs font-semibold text-slate-600 dark:text-slate-400">Skipped</p>
             </div>
           </div>
-          <div className="mt-6 grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:justify-center">
-            <Button variant="secondary" className="w-full" onClick={() => router.push("/stats")}>View stats</Button>
-            <Button className="w-full" onClick={() => router.push("/")}>Back home</Button>
+          <div className="mt-6 space-y-3">
+            {onPlayAgain && (
+              <Button className="w-full" onClick={onPlayAgain}>
+                Play again
+              </Button>
+            )}
+            <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:justify-center">
+              <Button variant="secondary" className="w-full" onClick={() => router.push("/stats")}>View stats</Button>
+              <Button className="w-full" onClick={() => router.push("/")}>Back home</Button>
+            </div>
           </div>
         </div>
       </>
@@ -366,10 +379,12 @@ export function GameBoard({
 
   if (!question) return null;
 
-  const roundTaskLabel =
-    mode === "speed-round" || mode === "mixed"
+  const roundTaskLabel = scopeText(
+    mode === "speed-round" || mode === "mixed" || mode === "marathon"
       ? ROUND_TASK_LABELS[question.mode]
-      : ROUND_TASK_LABELS[mode];
+      : ROUND_TASK_LABELS[mode],
+    scope,
+  );
   const dailyDateLabel = mode === "daily-challenge" ? formatDailyDate() : null;
   const isTextOnlyPrompt =
     question.mode === "capital-to-country" || question.mode === "country-to-capital";
@@ -407,6 +422,10 @@ export function GameBoard({
           </div>
           <div className="flex min-w-0 shrink-0 items-stretch justify-end gap-1 sm:gap-1.5">
             <StreakCounter streak={streak} compact />
+            <div className="shrink-0 rounded-xl border-2 border-emerald-200 bg-emerald-50/90 px-1.5 py-1 text-center dark:border-emerald-800 dark:bg-emerald-950/40 sm:rounded-2xl sm:px-3 sm:py-1.5">
+              <p className="game-stat-label text-[9px] font-semibold uppercase text-emerald-600 dark:text-emerald-400">Correct</p>
+              <p className="font-display text-base font-extrabold leading-none text-emerald-700 dark:text-emerald-300 sm:text-lg">{correctAnswers}</p>
+            </div>
             {timed && (
               <div className={`shrink-0 rounded-xl border-2 px-1.5 py-1 text-center sm:rounded-2xl sm:px-3 sm:py-1.5 ${timeLeft <= 10 ? "border-rose-300 bg-rose-50 dark:border-rose-700 dark:bg-rose-950/50" : "border-slate-200 bg-white/90 dark:border-slate-700 dark:bg-slate-900/90"}`}>
                 <p className={`game-stat-label text-[9px] font-semibold uppercase ${timeLeft <= 10 ? "text-rose-500 dark:text-rose-400" : "text-slate-500 dark:text-slate-400"}`}>Time</p>
@@ -481,7 +500,9 @@ export function GameBoard({
                 onSubmit={handleAnswer}
                 disabled={disabled}
                 placeholder={
-                  question.mode === "country-to-capital" ? "Type the capital..." : "Type the country..."
+                  question.mode === "country-to-capital"
+                    ? "Type the capital..."
+                    : scopeText("Type the country...", scope)
                 }
               />
             ) : question.options ? (
@@ -510,7 +531,7 @@ export function GameBoard({
           tabIndex={0}
           aria-label="Continue to next question"
         >
-          <div className="flex h-full items-end justify-center sm:items-center sm:p-4">
+          <div className="flex h-full items-center justify-center p-4">
             <div className="pointer-events-none max-h-[88dvh] w-full max-w-lg overflow-y-auto">
               <LearnCard
                 countryCode={

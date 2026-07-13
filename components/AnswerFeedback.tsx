@@ -16,7 +16,7 @@ function Burst({ burst, onDone }: { burst: FeedbackBurst; onDone: (id: number) =
   }, [burst.id, onDone]);
 
   return (
-    <div className="absolute inset-0 flex items-center justify-center translate-y-[22vh] sm:translate-y-[18vh]">
+    <div className="absolute inset-0 flex items-center justify-center translate-y-[30vh] sm:translate-y-[22vh]">
       {!burst.correct && (
         <div className="animate-screen-flash absolute inset-0 shadow-[inset_0_0_120px_40px_rgb(244_63_94_/_0.35)]" />
       )}
@@ -60,9 +60,9 @@ function Burst({ burst, onDone }: { burst: FeedbackBurst; onDone: (id: number) =
 }
 
 /**
- * Fixed overlay that plays quick correct/incorrect bursts. It lives above the
- * learn-card overlay and ignores pointer events, so clicking through to the
- * next question never interrupts an in-flight animation.
+ * Fixed overlay that plays quick correct/incorrect bursts. It sits just below the
+ * learn-card overlay and ignores pointer events, so the popup stays readable while
+ * the burst plays underneath.
  */
 export function AnswerFeedbackLayer({
   bursts,
@@ -73,7 +73,7 @@ export function AnswerFeedbackLayer({
 }) {
   if (bursts.length === 0) return null;
   return (
-    <div className="pointer-events-none fixed inset-0 z-[60]" aria-hidden>
+    <div className="pointer-events-none fixed inset-0 z-[45]" aria-hidden>
       {bursts.map((burst) => (
         <Burst key={burst.id} burst={burst} onDone={onDone} />
       ))}

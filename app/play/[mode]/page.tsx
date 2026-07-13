@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { ContinentFilter } from "@/components/ContinentFilter";
 import { GameBoard } from "@/components/GameBoard";
 import { useProfiles, useRequiredProfile } from "@/components/ProfileProvider";
 import { Select } from "@/components/ui/Select";
 import { getPlayablePoolSize } from "@/lib/countries";
 import { aggregateMissedCountries, DAILY_COUNTING_SESSION_KEY, formatDailyDate, getDailyDateKey, getDailySeed, hasPlayedDailyToday } from "@/lib/game-engine";
+import { getScopedModeInfo, normalizeScope, SCOPE_INFO, scopedDailyKey, scopeText, isStateCode } from "@/lib/scope";
 import { collectMissedCountries } from "@/lib/stats-helpers";
 import { updateProfileSettings } from "@/lib/storage";
 import {
@@ -15,29 +16,37 @@ import {
   CORE_QUESTION_TYPES,
   DAILY_CHALLENGE_QUESTION_COUNT,
   DIFFICULTY_LABELS,
-  GAME_MODES,
   ROUND_ALL_QUESTIONS,
   SPEED_ROUND_ALL_TYPES,
+  US_REGIONS,
   clampRoundQuestionSetting,
   getRoundQuestionOptions,
   normalizeRoundQuestionSetting,
   type Continent,
   type Difficulty,
   type GameMode,
+  type Region,
   type RoundQuestionSetting,
   type SpeedRoundQuestionType,
+  type UsRegion,
 } from "@/lib/types";
 
-export default function PlayPage() {
+function PlayPageInner() {
   const params = useParams<{ mode: string }>();
+  const searchParams = useSearchParams();
   const router = useRouter();
   const { refresh } = useProfiles();
   const profile = useRequiredProfile();
   const mode = params.mode as GameMode;
-  const modeInfo = GAME_MODES.find((m) => m.id === mode);
+  const scope = normalizeScope(searchParams.get("scope"));
+  const isUsa = scope === "usa";
+  const scopeInfo = SCOPE_INFO[scope];
+  const modeInfo = getScopedModeInfo(mode, scope);
 
-  const [continents, setContinents] = useState<Continent[]>(
-    () => profile?.settings.lastContinentFilter ?? [...CONTINENTS],
+  const [continents, setContinents] = useState<Region[]>(() =>
+    isUsa
+      ? profile?.settings.lastRegionFilter ?? [...US_REGIONS]
+      : profile?.settings.lastContinentFilter ?? [...CONTINENTS],
   );
   const [includeTerritories, setIncludeTerritories] = useState(
     () => profile?.settings.includeTerritories ?? false,
@@ -45,9 +54,15 @@ export default function PlayPage() {
   const [difficulty, setDifficulty] = useState<Difficulty>(
     () => profile?.settings.difficulty ?? "easy",
   );
-  const [questionType, setQuestionType] = useState<SpeedRoundQuestionType>(
-    () => profile?.settings.speedRoundQuestionType ?? "flag-to-country",
-  );
+  const [questionType, setQuestionType] = useState<SpeedRoundQuestionType>(() => {
+    if (mode === "marathon") {
+      return profile?.settings.marathonQuestionType ?? "flag-to-country";
+    }
+    if (mode === "speed-round") {
+      return profile?.settings.speedRoundQuestionType ?? "flag-to-country";
+    }
+    return "flag-to-country";
+  });
   const [roundQuestionCount, setRoundQuestionCount] = useState<RoundQuestionSetting>(() =>
     normalizeRoundQuestionSetting(profile?.settings.roundQuestionCount),
   );
@@ -56,27 +71,35 @@ export default function PlayPage() {
   const [countStats, setCountStats] = useState(true);
 
   useEffect(() => {
-    setContinents(profile.settings.lastContinentFilter);
+    setContinents(
+      isUsa
+        ? profile.settings.lastRegionFilter ?? [...US_REGIONS]
+        : profile.settings.lastContinentFilter,
+    );
     setIncludeTerritories(profile.settings.includeTerritories ?? false);
     setDifficulty(profile.settings.difficulty);
     setRoundQuestionCount(normalizeRoundQuestionSetting(profile.settings.roundQuestionCount));
     if (mode === "speed-round") {
       setQuestionType(profile.settings.speedRoundQuestionType);
+    } else if (mode === "marathon") {
+      setQuestionType(profile.settings.marathonQuestionType);
     }
-  }, [profile, mode]);
+  }, [profile, mode, isUsa]);
 
   const isDailyChallenge = mode === "daily-challenge";
   const dailyDateLabel = isDailyChallenge ? formatDailyDate() : null;
   const dailyAlreadyPlayed =
     isDailyChallenge
-      ? hasPlayedDailyToday(profile.dailyChallengePlayedDates)
+      ? hasPlayedDailyToday(profile.dailyChallengePlayedDates, scope)
       : false;
-  const dailyContinents: Continent[] = [...CONTINENTS];
+  const dailyContinents: Region[] = isUsa ? [...US_REGIONS] : [...CONTINENTS];
   const dailyDifficulty: Difficulty = "medium";
 
   const weakSpotCodes =
     mode === "weak-spots"
-      ? aggregateMissedCountries(collectMissedCountries(profile))
+      ? aggregateMissedCountries(collectMissedCountries(profile)).filter(
+          (code) => isStateCode(code) === isUsa,
+        )
       : undefined;
 
   const availableCountryCount = modeInfo
@@ -84,8 +107,9 @@ export default function PlayPage() {
         continents,
         includeTerritories,
         mode,
-        questionType: mode === "speed-round" ? questionType : undefined,
+        questionType: mode === "speed-round" || mode === "marathon" ? questionType : undefined,
         weakSpotCodes,
+        scope,
       })
     : 0;
   const roundQuestionOptions = getRoundQuestionOptions(availableCountryCount);
@@ -105,23 +129,10 @@ export default function PlayPage() {
     return <p>Unknown game mode.</p>;
   }
 
-  function handleStart() {
-    if (!isDailyChallenge && availableCountryCount === 0) return;
-
-    if (!isDailyChallenge) {
-      updateProfileSettings(profile.id, {
-        lastContinentFilter: continents,
-        includeTerritories,
-        difficulty,
-        roundQuestionCount: effectiveRoundQuestionCount,
-        ...(mode === "speed-round" ? { speedRoundQuestionType: questionType } : {}),
-      });
-      refresh();
-    }
-
+  function beginSession() {
     if (isDailyChallenge) {
-      const today = getDailyDateKey();
-      const playedToday = hasPlayedDailyToday(profile.dailyChallengePlayedDates);
+      const today = scopedDailyKey(getDailyDateKey(), scope);
+      const playedToday = hasPlayedDailyToday(profile.dailyChallengePlayedDates, scope);
       const activeSession =
         typeof window !== "undefined" &&
         sessionStorage.getItem(DAILY_COUNTING_SESSION_KEY) === today;
@@ -135,20 +146,44 @@ export default function PlayPage() {
     }
 
     setSessionKey((k) => k + 1);
+  }
+
+  function handleStart() {
+    if (!isDailyChallenge && availableCountryCount === 0) return;
+
+    if (!isDailyChallenge) {
+      updateProfileSettings(profile.id, {
+        ...(isUsa
+          ? { lastRegionFilter: continents as UsRegion[] }
+          : { lastContinentFilter: continents as Continent[], includeTerritories }),
+        difficulty,
+        roundQuestionCount: effectiveRoundQuestionCount,
+        ...(mode === "speed-round" ? { speedRoundQuestionType: questionType } : {}),
+        ...(mode === "marathon" ? { marathonQuestionType: questionType } : {}),
+      });
+      refresh();
+    }
+
+    beginSession();
     setStarted(true);
+  }
+
+  function handlePlayAgain() {
+    beginSession();
   }
 
   const gameProps = {
     mode,
+    scope,
     continents: isDailyChallenge ? dailyContinents : continents,
     includeTerritories: isDailyChallenge ? false : includeTerritories,
     difficulty: isDailyChallenge ? dailyDifficulty : difficulty,
     weakSpotCodes,
-    seed: isDailyChallenge ? getDailySeed() : undefined,
+    seed: isDailyChallenge ? getDailySeed(scope) : undefined,
     timed: mode === "speed-round",
     stopOnWrong: mode === "marathon",
     maxQuestions: isDailyChallenge ? DAILY_CHALLENGE_QUESTION_COUNT : effectiveRoundQuestionCount,
-    questionType: mode === "speed-round" ? questionType : undefined,
+    questionType: mode === "speed-round" || mode === "marathon" ? questionType : undefined,
     countStats: isDailyChallenge ? countStats : true,
   };
 
@@ -164,6 +199,11 @@ export default function PlayPage() {
             ← Back
           </button>
           <h1 className="font-display text-2xl font-extrabold sm:mt-2 sm:text-3xl">{modeInfo.icon} {modeInfo.title}</h1>
+          {isUsa && (
+            <p className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-sky-100 px-3 py-1 text-xs font-bold text-sky-800 dark:bg-sky-950/60 dark:text-sky-300">
+              🇺🇸 Across America — all 50 states
+            </p>
+          )}
           {dailyDateLabel && (
             <p className="mt-1 font-display text-base font-bold text-teal-700 dark:text-teal-400">
               {dailyDateLabel}
@@ -177,7 +217,7 @@ export default function PlayPage() {
           )}
           {isDailyChallenge && (
             <p className="mt-3 text-sm text-slate-600 dark:text-slate-400">
-              {DAILY_CHALLENGE_QUESTION_COUNT} questions · {DIFFICULTY_LABELS.medium} difficulty · All continents
+              {DAILY_CHALLENGE_QUESTION_COUNT} questions · {DIFFICULTY_LABELS.medium} difficulty · {isUsa ? "All 50 states" : "All continents"}
             </p>
           )}
         </div>
@@ -187,7 +227,7 @@ export default function PlayPage() {
         <>
           {mode === "weak-spots" && (!weakSpotCodes || weakSpotCodes.length === 0) && (
             <p className="rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:bg-amber-950/50 dark:text-amber-200">
-              Play some games first to build a list of countries to practice.
+              {scopeText("Play some games first to build a list of countries to practice.", scope)}
             </p>
           )}
 
@@ -205,7 +245,7 @@ export default function PlayPage() {
                 aria-hidden
                 className="pointer-events-none absolute -right-3 -top-3 select-none text-[4.5rem] opacity-15 transition-transform duration-150 group-hover:scale-110 group-active:scale-95 sm:-right-5 sm:-top-5 sm:text-[5.5rem]"
               >
-                🌍
+                {scopeInfo.icon}
               </span>
               <span className="relative font-display text-xl font-extrabold tracking-tight transition-transform duration-150 group-active:translate-y-px sm:text-2xl">
                 {isDailyChallenge && dailyAlreadyPlayed ? "Review challenge" : "Start Game"}
@@ -215,12 +255,12 @@ export default function PlayPage() {
 
           {!isDailyChallenge && (
           <div className="space-y-5 rounded-[1.75rem] border-2 border-slate-200 bg-white/90 p-4 shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90 sm:space-y-6 sm:p-6">
-            {mode === "speed-round" && (
+            {(mode === "speed-round" || mode === "marathon") && (
               <div>
                 <h2 className="mb-3 font-semibold">Question type</h2>
                 <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                   {CORE_QUESTION_TYPES.map((type) => {
-                    const typeInfo = GAME_MODES.find((m) => m.id === type);
+                    const typeInfo = getScopedModeInfo(type, scope);
                     if (!typeInfo) return null;
                     return (
                       <button
@@ -250,13 +290,16 @@ export default function PlayPage() {
                     <span className="mr-1.5">🎲</span>
                     Mixed
                     <span className="mt-0.5 block text-xs font-normal opacity-80">
-                      All four types, shuffled
+                      {mode === "marathon"
+                        ? "All four types, shuffled until your first miss"
+                        : "All four types, shuffled"}
                     </span>
                   </button>
                 </div>
               </div>
             )}
 
+            {mode !== "marathon" && (
             <div>
               <h2 className="mb-3 font-semibold">Questions per round</h2>
               <Select
@@ -276,10 +319,11 @@ export default function PlayPage() {
                   </option>
                 ))}
                 <option value={ROUND_ALL_QUESTIONS}>
-                  All ({availableCountryCount} countries)
+                  All ({availableCountryCount} {availableCountryCount === 1 ? scopeInfo.noun : scopeInfo.nounPlural})
                 </option>
               </Select>
             </div>
+            )}
 
             <div>
               <h2 className="mb-3 font-semibold">Difficulty</h2>
@@ -305,20 +349,29 @@ export default function PlayPage() {
             </div>
 
             <div>
-              <h2 className="mb-3 font-semibold">Continents</h2>
+              <h2 className="mb-3 font-semibold">{scopeInfo.regionLabel}</h2>
               <ContinentFilter
                 selected={continents}
                 includeTerritories={includeTerritories}
                 onContinentsChange={setContinents}
                 onIncludeTerritoriesChange={setIncludeTerritories}
+                scope={scope}
               />
             </div>
           </div>
           )}
         </>
       ) : (
-        <GameBoard key={sessionKey} {...gameProps} />
+        <GameBoard key={sessionKey} {...gameProps} onPlayAgain={handlePlayAgain} />
       )}
     </div>
+  );
+}
+
+export default function PlayPage() {
+  return (
+    <Suspense>
+      <PlayPageInner />
+    </Suspense>
   );
 }

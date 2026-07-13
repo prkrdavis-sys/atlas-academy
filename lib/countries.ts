@@ -1,39 +1,58 @@
 import countriesData from "@/data/countries.json";
+import statesData from "@/data/states.json";
 import {
-  CORE_QUESTION_TYPES,
+  CONTINENTS,
+  MIXED_QUESTION_TYPES,
   SPEED_ROUND_ALL_TYPES,
-  type Continent,
+  US_REGIONS,
   type CoreQuestionType,
   type Country,
   type GameMode,
+  type GameScope,
+  type MixedQuestionType,
+  type Region,
   type SpeedRoundQuestionType,
 } from "@/lib/types";
 
 export const countries = countriesData as Country[];
+export const usStates = statesData as Country[];
+
+// State codes (US-XX) never collide with ISO country codes, so code lookups
+// search both datasets and don't need a scope.
+const allPlaces = [...countries, ...usStates];
+
+export function getPlacesForScope(scope: GameScope): Country[] {
+  return scope === "usa" ? usStates : countries;
+}
 
 export function getCountryByCode(code: string): Country | undefined {
-  return countries.find((c) => c.code === code || c.code3 === code);
+  return allPlaces.find((c) => c.code === code || c.code3 === code);
 }
 
 export function getCountryName(code: string): string {
   return getCountryByCode(code)?.name ?? code;
 }
 
-export function filterCountries(options: {
-  continents: Continent[];
+type FilterOptions = {
+  continents: Region[];
   includeTerritories?: boolean;
   mode?: GameMode;
   weakSpotCodes?: string[];
-}): Country[] {
-  const includeTerritories = options.includeTerritories ?? false;
+  scope?: GameScope;
+};
+
+export function filterCountries(options: FilterOptions): Country[] {
+  const scope = options.scope ?? "world";
+  const dataset = getPlacesForScope(scope);
+  // The USA scope has no territories; the toggle only applies to the world.
+  const includeTerritories = scope === "world" && (options.includeTerritories ?? false);
   const sovereignPool = options.continents.length > 0
-    ? countries.filter(
-        (c) =>
-          !c.isTerritory && options.continents.includes(c.continent as Continent),
+    ? dataset.filter(
+        (c) => !c.isTerritory && options.continents.includes(c.continent),
       )
     : [];
   const territoryPool = includeTerritories
-    ? countries.filter((c) => c.isTerritory)
+    ? dataset.filter((c) => c.isTerritory)
     : [];
 
   let pool = [...sovereignPool, ...territoryPool];
@@ -66,9 +85,12 @@ export function filterCountries(options: {
   return pool;
 }
 
-export function countSovereignCountriesByContinents(continents: Continent[]): number {
-  return countries.filter(
-    (c) => !c.isTerritory && continents.includes(c.continent as Continent),
+export function countSovereignCountriesByContinents(
+  continents: Region[],
+  scope: GameScope = "world",
+): number {
+  return getPlacesForScope(scope).filter(
+    (c) => !c.isTerritory && continents.includes(c.continent),
   ).length;
 }
 
@@ -76,13 +98,12 @@ export function countAllTerritories(): number {
   return countries.filter((c) => c.isTerritory).length;
 }
 
-export function countPlayableCountries(options: {
-  continents: Continent[];
-  includeTerritories?: boolean;
-  mode?: GameMode;
-  weakSpotCodes?: string[];
-}): number {
+export function countPlayableCountries(options: FilterOptions): number {
   return filterCountries(options).length;
+}
+
+export function getRegionsForScope(scope: GameScope): readonly Region[] {
+  return scope === "usa" ? US_REGIONS : CONTINENTS;
 }
 
 export function getEligibleCoreQuestionTypes(country: Country): CoreQuestionType[] {
@@ -95,18 +116,18 @@ export function getEligibleCoreQuestionTypes(country: Country): CoreQuestionType
   return types;
 }
 
-export function getMixedCoreQuestionPool(options: {
-  continents: Continent[];
-  includeTerritories?: boolean;
-  weakSpotCodes?: string[];
-}): Country[] {
+export function getEligibleMixedQuestionTypes(country: Country): MixedQuestionType[] {
+  const types: MixedQuestionType[] = [...getEligibleCoreQuestionTypes(country)];
+  if (country.hasFlag) types.push("country-to-flag");
+  return types;
+}
+
+export function getMixedCoreQuestionPool(options: Omit<FilterOptions, "mode">): Country[] {
   const byCode = new Map<string, Country>();
-  for (const type of CORE_QUESTION_TYPES) {
+  for (const type of MIXED_QUESTION_TYPES) {
     for (const country of filterCountries({
-      continents: options.continents,
-      includeTerritories: options.includeTerritories,
+      ...options,
       mode: type,
-      weakSpotCodes: options.weakSpotCodes,
     })) {
       byCode.set(country.code, country);
     }
@@ -114,26 +135,27 @@ export function getMixedCoreQuestionPool(options: {
   return [...byCode.values()];
 }
 
-export function getPlayablePool(options: {
-  continents: Continent[];
-  includeTerritories?: boolean;
+type PoolOptions = FilterOptions & {
   mode: GameMode;
   questionType?: SpeedRoundQuestionType;
-  weakSpotCodes?: string[];
-}): Country[] {
+};
+
+export function getPlayablePool(options: PoolOptions): Country[] {
   if (
     options.mode === "mixed" ||
-    (options.mode === "speed-round" && options.questionType === SPEED_ROUND_ALL_TYPES)
+    ((options.mode === "speed-round" || options.mode === "marathon") &&
+      options.questionType === SPEED_ROUND_ALL_TYPES)
   ) {
     return getMixedCoreQuestionPool({
       continents: options.continents,
       includeTerritories: options.includeTerritories,
       weakSpotCodes: options.weakSpotCodes,
+      scope: options.scope,
     });
   }
 
   const filterMode: GameMode =
-    options.mode === "speed-round" &&
+    (options.mode === "speed-round" || options.mode === "marathon") &&
     options.questionType &&
     options.questionType !== SPEED_ROUND_ALL_TYPES
       ? options.questionType
@@ -144,16 +166,11 @@ export function getPlayablePool(options: {
     includeTerritories: options.includeTerritories,
     mode: filterMode,
     weakSpotCodes: options.weakSpotCodes,
+    scope: options.scope,
   });
 }
 
-export function getPlayablePoolSize(options: {
-  continents: Continent[];
-  includeTerritories?: boolean;
-  mode: GameMode;
-  questionType?: SpeedRoundQuestionType;
-  weakSpotCodes?: string[];
-}): number {
+export function getPlayablePoolSize(options: PoolOptions): number {
   return getPlayablePool(options).length;
 }
 
@@ -169,6 +186,9 @@ export function formatPopulation(population: number): string {
   return new Intl.NumberFormat("en-US").format(population);
 }
 
-export function formatBorderFact(borderCount: number): string {
+export function formatBorderFact(borderCount: number, scope: GameScope = "world"): string {
+  if (scope === "usa") {
+    return `It borders ${borderCount} state${borderCount === 1 ? "" : "s"}.`;
+  }
   return `It borders ${borderCount} countr${borderCount === 1 ? "y" : "ies"}.`;
 }

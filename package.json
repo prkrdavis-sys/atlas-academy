@@ -7,7 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "refresh-data": "tsx scripts/refresh-country-data.ts"
+    "refresh-data": "tsx scripts/refresh-country-data.ts",
+    "refresh-state-data": "tsx scripts/refresh-state-data.ts",
+    "fetch-state-flags": "bash scripts/fetch-state-flags.sh",
+    "generate-state-shapes": "tsx scripts/generate-state-shapes.ts",
+    "verify-integrity": "tsx scripts/verify-game-integrity.ts"
   },
   "dependencies": {
     "clsx": "^2.1.1",
@@ -20,6 +24,7 @@
     "uuid": "^14.0.1"
   },
   "devDependencies": {
+    "@svg-maps/usa": "^2.0.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -27,6 +32,7 @@
     "@types/uuid": "^10.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
+    "svg-path-bounds": "^1.0.2",
     "tailwindcss": "^4",
     "tsx": "^4.23.0",
     "typescript": "^5"

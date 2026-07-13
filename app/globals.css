@@ -280,6 +280,21 @@ input:focus-visible {
   animation: achievement-confetti 1.15s 0.25s cubic-bezier(0.2, 0.8, 0.3, 1) both;
 }
 
+@keyframes achievement-toast-dismiss {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-16px) scale(0.97);
+    opacity: 0;
+  }
+}
+
+.animate-achievement-toast-dismiss {
+  animation: achievement-toast-dismiss 0.35s cubic-bezier(0.4, 0, 1, 1) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-feedback-correct,
   .animate-feedback-incorrect {
@@ -303,5 +318,9 @@ input:focus-visible {
   .animate-achievement-trophy,
   .animate-achievement-confetti {
     animation: none;
+  }
+
+  .animate-achievement-toast-dismiss {
+    animation: feedback-fade-out 0.35s ease-out both;
   }
 }

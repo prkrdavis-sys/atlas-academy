@@ -8,6 +8,7 @@ import {
   formatBorderFact,
   formatPopulation,
 } from "@/lib/countries";
+import { isStateCode } from "@/lib/scope";
 import Image from "next/image";
 
 type LearnCardProps = {
@@ -80,10 +81,11 @@ function PopulationComparison({
 export function LearnCard({ countryCode, wasCorrect, compareCountryCode, heading }: LearnCardProps) {
   const country = getCountryByCode(countryCode);
   if (!country) return null;
+  const isState = isStateCode(country.code);
 
   return (
     <div
-      className={`animate-card-pop-in overflow-hidden rounded-t-[1.75rem] border-2 bg-white shadow-xl dark:bg-slate-900 sm:rounded-3xl ${
+      className={`animate-card-pop-in overflow-hidden rounded-[1.75rem] border-2 bg-white shadow-xl dark:bg-slate-900 sm:rounded-3xl ${
         wasCorrect ? "border-emerald-300 dark:border-emerald-700" : "border-rose-300 dark:border-rose-700"
       }`}
     >
@@ -133,12 +135,12 @@ export function LearnCard({ countryCode, wasCorrect, compareCountryCode, heading
           )}
           <div className="min-w-0 space-y-1 text-xs leading-relaxed sm:text-sm">
             <p><span className="font-semibold">Capital:</span> {country.capital || "N/A"}</p>
-            <p><span className="font-semibold">Continent:</span> {country.continent}</p>
+            <p><span className="font-semibold">{isState ? "Region" : "Continent"}:</span> {country.continent}</p>
             {!compareCountryCode && (
               <p><span className="font-semibold">Population:</span> {formatPopulation(country.population)}</p>
             )}
             <p className="text-slate-600 dark:text-slate-400">
-              {formatBorderFact(country.borders.length)}
+              {formatBorderFact(country.borders.length, isState ? "usa" : "world")}
             </p>
           </div>
         </div>

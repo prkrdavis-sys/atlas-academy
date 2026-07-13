@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ACHIEVEMENTS } from "@/lib/types";
 
 const DISPLAY_TIME_MS = 10_000;
+const DISMISS_ANIMATION_MS = 350;
 const CONFETTI = [
   { left: "7%", delay: "0ms", color: "bg-amber-300", rotate: "-18deg" },
   { left: "17%", delay: "90ms", color: "bg-sky-400", rotate: "24deg" },
@@ -27,11 +28,41 @@ export function AchievementToast({
     .map((id) => ACHIEVEMENTS.find((achievement) => achievement.id === id))
     .filter((achievement): achievement is (typeof ACHIEVEMENTS)[number] => Boolean(achievement));
 
+  const [isDismissing, setIsDismissing] = useState(false);
+  const autoDismissTimerRef = useRef<number | null>(null);
+  const exitTimerRef = useRef<number | null>(null);
+
+  const clearTimers = useCallback(() => {
+    if (autoDismissTimerRef.current !== null) {
+      window.clearTimeout(autoDismissTimerRef.current);
+      autoDismissTimerRef.current = null;
+    }
+    if (exitTimerRef.current !== null) {
+      window.clearTimeout(exitTimerRef.current);
+      exitTimerRef.current = null;
+    }
+  }, []);
+
+  const dismissWithAnimation = useCallback(() => {
+    if (isDismissing || achievements.length === 0) return;
+
+    setIsDismissing(true);
+    clearTimers();
+
+    exitTimerRef.current = window.setTimeout(onDismiss, DISMISS_ANIMATION_MS);
+  }, [achievements.length, clearTimers, isDismissing, onDismiss]);
+
+  useEffect(() => {
+    setIsDismissing(false);
+    clearTimers();
+  }, [achievementKey, clearTimers]);
+
   useEffect(() => {
     if (achievements.length === 0) return;
-    const timer = window.setTimeout(onDismiss, DISPLAY_TIME_MS);
-    return () => window.clearTimeout(timer);
-  }, [achievementKey, achievements.length, onDismiss]);
+
+    autoDismissTimerRef.current = window.setTimeout(onDismiss, DISPLAY_TIME_MS);
+    return clearTimers;
+  }, [achievementKey, achievements.length, clearTimers, onDismiss]);
 
   if (achievements.length === 0) return null;
 
@@ -41,9 +72,14 @@ export function AchievementToast({
       role="status"
       aria-live="polite"
     >
-      <div
+      <button
         key={achievementKey}
-        className="animate-achievement-toast relative w-full max-w-xl overflow-hidden rounded-2xl border-2 border-amber-300 bg-amber-50/95 px-4 py-3 shadow-[0_16px_45px_rgb(120_53_15_/_0.28)] backdrop-blur-md dark:border-amber-500/70 dark:bg-slate-900/95 sm:px-5 sm:py-4"
+        type="button"
+        aria-label="Dismiss achievement notification"
+        onClick={dismissWithAnimation}
+        className={`pointer-events-auto relative w-full max-w-xl cursor-pointer overflow-hidden rounded-2xl border-2 border-amber-300 bg-amber-50/95 px-4 py-3 text-left shadow-[0_16px_45px_rgb(120_53_15_/_0.28)] backdrop-blur-md transition-opacity dark:border-amber-500/70 dark:bg-slate-900/95 sm:px-5 sm:py-4 ${
+          isDismissing ? "animate-achievement-toast-dismiss" : "animate-achievement-toast"
+        }`}
       >
         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-amber-400 via-rose-400 to-sky-400" />
         <div className="absolute inset-0 overflow-hidden" aria-hidden>
@@ -85,7 +121,7 @@ export function AchievementToast({
             </div>
           </div>
         </div>
-      </div>
+      </button>
     </div>
   );
 }

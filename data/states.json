@@ -1,0 +1,1314 @@
+[
+  {
+    "code": "US-AL",
+    "code3": "US-AL",
+    "name": "Alabama",
+    "officialName": "State of Alabama",
+    "capital": "Montgomery",
+    "continent": "South",
+    "subregion": "East South Central",
+    "population": 5108468,
+    "area": 135767,
+    "borders": [
+      "US-FL",
+      "US-GA",
+      "US-MS",
+      "US-TN"
+    ],
+    "aliases": [
+      "alabama",
+      "al"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "Alabama is known as the Yellowhammer State."
+  },
+  {
+    "code": "US-AK",
+    "code3": "US-AK",
+    "name": "Alaska",
+    "officialName": "State of Alaska",
+    "capital": "Juneau",
+    "continent": "West",
+    "subregion": "Pacific",
+    "population": 733406,
+    "area": 1723337,
+    "borders": [],
+    "aliases": [
+      "alaska",
+      "ak"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "Alaska is known as the Last Frontier."
+  },
+  {
+    "code": "US-AZ",
+    "code3": "US-AZ",
+    "name": "Arizona",
+    "officialName": "State of Arizona",
+    "capital": "Phoenix",
+    "continent": "West",
+    "subregion": "Mountain",
+    "population": 7431344,
+    "area": 295234,
+    "borders": [
+      "US-CA",
+      "US-CO",
+      "US-NM",
+      "US-NV",
+      "US-UT"
+    ],
+    "aliases": [
+      "arizona",
+      "az"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "Arizona is known as the Grand Canyon State."
+  },
+  {
+    "code": "US-AR",
+    "code3": "US-AR",
+    "name": "Arkansas",
+    "officialName": "State of Arkansas",
+    "capital": "Little Rock",
+    "continent": "South",
+    "subregion": "West South Central",
+    "population": 3067732,
+    "area": 137732,
+    "borders": [
+      "US-LA",
+      "US-MO",
+      "US-MS",
+      "US-OK",
+      "US-TN",
+      "US-TX"
+    ],
+    "aliases": [
+      "arkansas",
+      "ar"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "Arkansas is known as the Natural State."
+  },
+  {
+    "code": "US-CA",
+    "code3": "US-CA",
+    "name": "California",
+    "officialName": "State of California",
+    "capital": "Sacramento",
+    "continent": "West",
+    "subregion": "Pacific",
+    "population": 38965193,
+    "area": 423967,
+    "borders": [
+      "US-AZ",
+      "US-NV",
+      "US-OR"
+    ],
+    "aliases": [
+      "california",
+      "ca"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "California is known as the Golden State."
+  },
+  {
+    "code": "US-CO",
+    "code3": "US-CO",
+    "name": "Colorado",
+    "officialName": "State of Colorado",
+    "capital": "Denver",
+    "continent": "West",
+    "subregion": "Mountain",
+    "population": 5877610,
+    "area": 269601,
+    "borders": [
+      "US-AZ",
+      "US-KS",
+      "US-NE",
+      "US-NM",
+      "US-OK",
+      "US-UT",
+      "US-WY"
+    ],
+    "aliases": [
+      "colorado",
+      "co"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "Colorado is known as the Centennial State."
+  },
+  {
+    "code": "US-CT",
+    "code3": "US-CT",
+    "name": "Connecticut",
+    "officialName": "State of Connecticut",
+    "capital": "Hartford",
+    "continent": "Northeast",
+    "subregion": "New England",
+    "population": 3617176,
+    "area": 14357,
+    "borders": [
+      "US-MA",
+      "US-NY",
+      "US-RI"
+    ],
+    "aliases": [
+      "connecticut",
+      "ct"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "Connecticut is known as the Constitution State."
+  },
+  {
+    "code": "US-DE",
+    "code3": "US-DE",
+    "name": "Delaware",
+    "officialName": "State of Delaware",
+    "capital": "Dover",
+    "continent": "South",
+    "subregion": "South Atlantic",
+    "population": 1031890,
+    "area": 6446,
+    "borders": [
+      "US-MD",
+      "US-NJ",
+      "US-PA"
+    ],
+    "aliases": [
+      "delaware",
+      "de"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "Delaware is known as the First State."
+  },
+  {
+    "code": "US-FL",
+    "code3": "US-FL",
+    "name": "Florida",
+    "officialName": "State of Florida",
+    "capital": "Tallahassee",
+    "continent": "South",
+    "subregion": "South Atlantic",
+    "population": 22610726,
+    "area": 170312,
+    "borders": [
+      "US-AL",
+      "US-GA"
+    ],
+    "aliases": [
+      "florida",
+      "fl"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "Florida is known as the Sunshine State."
+  },
+  {
+    "code": "US-GA",
+    "code3": "US-GA",
+    "name": "Georgia",
+    "officialName": "State of Georgia",
+    "capital": "Atlanta",
+    "continent": "South",
+    "subregion": "South Atlantic",
+    "population": 11029227,
+    "area": 153910,
+    "borders": [
+      "US-AL",
+      "US-FL",
+      "US-NC",
+      "US-SC",
+      "US-TN"
+    ],
+    "aliases": [
+      "georgia",
+      "ga"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "Georgia is known as the Peach State."
+  },
+  {
+    "code": "US-HI",
+    "code3": "US-HI",
+    "name": "Hawaii",
+    "officialName": "State of Hawaii",
+    "capital": "Honolulu",
+    "continent": "West",
+    "subregion": "Pacific",
+    "population": 1435138,
+    "area": 28313,
+    "borders": [],
+    "aliases": [
+      "hawaii",
+      "hi"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "Hawaii is known as the Aloha State."
+  },
+  {
+    "code": "US-ID",
+    "code3": "US-ID",
+    "name": "Idaho",
+    "officialName": "State of Idaho",
+    "capital": "Boise",
+    "continent": "West",
+    "subregion": "Mountain",
+    "population": 1964726,
+    "area": 216443,
+    "borders": [
+      "US-MT",
+      "US-NV",
+      "US-OR",
+      "US-UT",
+      "US-WA",
+      "US-WY"
+    ],
+    "aliases": [
+      "idaho",
+      "id"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "Idaho is known as the Gem State."
+  },
+  {
+    "code": "US-IL",
+    "code3": "US-IL",
+    "name": "Illinois",
+    "officialName": "State of Illinois",
+    "capital": "Springfield",
+    "continent": "Midwest",
+    "subregion": "East North Central",
+    "population": 12549689,
+    "area": 149995,
+    "borders": [
+      "US-IA",
+      "US-IN",
+      "US-KY",
+      "US-MO",
+      "US-WI"
+    ],
+    "aliases": [
+      "illinois",
+      "il"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "Illinois is known as the Prairie State."
+  },
+  {
+    "code": "US-IN",
+    "code3": "US-IN",
+    "name": "Indiana",
+    "officialName": "State of Indiana",
+    "capital": "Indianapolis",
+    "continent": "Midwest",
+    "subregion": "East North Central",
+    "population": 6862199,
+    "area": 94326,
+    "borders": [
+      "US-IL",
+      "US-KY",
+      "US-MI",
+      "US-OH"
+    ],
+    "aliases": [
+      "indiana",
+      "in"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "Indiana is known as the Hoosier State."
+  },
+  {
+    "code": "US-IA",
+    "code3": "US-IA",
+    "name": "Iowa",
+    "officialName": "State of Iowa",
+    "capital": "Des Moines",
+    "continent": "Midwest",
+    "subregion": "West North Central",
+    "population": 3207004,
+    "area": 145746,
+    "borders": [
+      "US-IL",
+      "US-MN",
+      "US-MO",
+      "US-NE",
+      "US-SD",
+      "US-WI"
+    ],
+    "aliases": [
+      "iowa",
+      "ia"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "Iowa is known as the Hawkeye State."
+  },
+  {
+    "code": "US-KS",
+    "code3": "US-KS",
+    "name": "Kansas",
+    "officialName": "State of Kansas",
+    "capital": "Topeka",
+    "continent": "Midwest",
+    "subregion": "West North Central",
+    "population": 2940546,
+    "area": 213100,
+    "borders": [
+      "US-CO",
+      "US-MO",
+      "US-NE",
+      "US-OK"
+    ],
+    "aliases": [
+      "kansas",
+      "ks"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "Kansas is known as the Sunflower State."
+  },
+  {
+    "code": "US-KY",
+    "code3": "US-KY",
+    "name": "Kentucky",
+    "officialName": "State of Kentucky",
+    "capital": "Frankfort",
+    "continent": "South",
+    "subregion": "East South Central",
+    "population": 4526154,
+    "area": 104656,
+    "borders": [
+      "US-IL",
+      "US-IN",
+      "US-MO",
+      "US-OH",
+      "US-TN",
+      "US-VA",
+      "US-WV"
+    ],
+    "aliases": [
+      "kentucky",
+      "ky"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "Kentucky is known as the Bluegrass State."
+  },
+  {
+    "code": "US-LA",
+    "code3": "US-LA",
+    "name": "Louisiana",
+    "officialName": "State of Louisiana",
+    "capital": "Baton Rouge",
+    "continent": "South",
+    "subregion": "West South Central",
+    "population": 4573749,
+    "area": 135659,
+    "borders": [
+      "US-AR",
+      "US-MS",
+      "US-TX"
+    ],
+    "aliases": [
+      "louisiana",
+      "la"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "Louisiana is known as the Pelican State."
+  },
+  {
+    "code": "US-ME",
+    "code3": "US-ME",
+    "name": "Maine",
+    "officialName": "State of Maine",
+    "capital": "Augusta",
+    "continent": "Northeast",
+    "subregion": "New England",
+    "population": 1395722,
+    "area": 91633,
+    "borders": [
+      "US-NH"
+    ],
+    "aliases": [
+      "maine",
+      "me"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "Maine is known as the Pine Tree State."
+  },
+  {
+    "code": "US-MD",
+    "code3": "US-MD",
+    "name": "Maryland",
+    "officialName": "State of Maryland",
+    "capital": "Annapolis",
+    "continent": "South",
+    "subregion": "South Atlantic",
+    "population": 6180253,
+    "area": 32131,
+    "borders": [
+      "US-DE",
+      "US-PA",
+      "US-VA",
+      "US-WV"
+    ],
+    "aliases": [
+      "maryland",
+      "md"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "Maryland is known as the Old Line State."
+  },
+  {
+    "code": "US-MA",
+    "code3": "US-MA",
+    "name": "Massachusetts",
+    "officialName": "State of Massachusetts",
+    "capital": "Boston",
+    "continent": "Northeast",
+    "subregion": "New England",
+    "population": 7001399,
+    "area": 27336,
+    "borders": [
+      "US-CT",
+      "US-NH",
+      "US-NY",
+      "US-RI",
+      "US-VT"
+    ],
+    "aliases": [
+      "massachusetts",
+      "ma"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "Massachusetts is known as the Bay State."
+  },
+  {
+    "code": "US-MI",
+    "code3": "US-MI",
+    "name": "Michigan",
+    "officialName": "State of Michigan",
+    "capital": "Lansing",
+    "continent": "Midwest",
+    "subregion": "East North Central",
+    "population": 10037261,
+    "area": 250487,
+    "borders": [
+      "US-IN",
+      "US-OH",
+      "US-WI"
+    ],
+    "aliases": [
+      "michigan",
+      "mi"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "Michigan is known as the Great Lakes State."
+  },
+  {
+    "code": "US-MN",
+    "code3": "US-MN",
+    "name": "Minnesota",
+    "officialName": "State of Minnesota",
+    "capital": "Saint Paul",
+    "continent": "Midwest",
+    "subregion": "West North Central",
+    "population": 5737915,
+    "area": 225163,
+    "borders": [
+      "US-IA",
+      "US-ND",
+      "US-SD",
+      "US-WI"
+    ],
+    "aliases": [
+      "minnesota",
+      "mn"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "Minnesota is known as the North Star State."
+  },
+  {
+    "code": "US-MS",
+    "code3": "US-MS",
+    "name": "Mississippi",
+    "officialName": "State of Mississippi",
+    "capital": "Jackson",
+    "continent": "South",
+    "subregion": "East South Central",
+    "population": 2939690,
+    "area": 125438,
+    "borders": [
+      "US-AL",
+      "US-AR",
+      "US-LA",
+      "US-TN"
+    ],
+    "aliases": [
+      "mississippi",
+      "ms"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "Mississippi is known as the Magnolia State."
+  },
+  {
+    "code": "US-MO",
+    "code3": "US-MO",
+    "name": "Missouri",
+    "officialName": "State of Missouri",
+    "capital": "Jefferson City",
+    "continent": "Midwest",
+    "subregion": "West North Central",
+    "population": 6196156,
+    "area": 180540,
+    "borders": [
+      "US-AR",
+      "US-IA",
+      "US-IL",
+      "US-KS",
+      "US-KY",
+      "US-NE",
+      "US-OK",
+      "US-TN"
+    ],
+    "aliases": [
+      "missouri",
+      "mo"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "Missouri is known as the Show-Me State."
+  },
+  {
+    "code": "US-MT",
+    "code3": "US-MT",
+    "name": "Montana",
+    "officialName": "State of Montana",
+    "capital": "Helena",
+    "continent": "West",
+    "subregion": "Mountain",
+    "population": 1132812,
+    "area": 380831,
+    "borders": [
+      "US-ID",
+      "US-ND",
+      "US-SD",
+      "US-WY"
+    ],
+    "aliases": [
+      "montana",
+      "mt"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "Montana is known as the Treasure State."
+  },
+  {
+    "code": "US-NE",
+    "code3": "US-NE",
+    "name": "Nebraska",
+    "officialName": "State of Nebraska",
+    "capital": "Lincoln",
+    "continent": "Midwest",
+    "subregion": "West North Central",
+    "population": 1978379,
+    "area": 200330,
+    "borders": [
+      "US-CO",
+      "US-IA",
+      "US-KS",
+      "US-MO",
+      "US-SD",
+      "US-WY"
+    ],
+    "aliases": [
+      "nebraska",
+      "ne"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "Nebraska is known as the Cornhusker State."
+  },
+  {
+    "code": "US-NV",
+    "code3": "US-NV",
+    "name": "Nevada",
+    "officialName": "State of Nevada",
+    "capital": "Carson City",
+    "continent": "West",
+    "subregion": "Mountain",
+    "population": 3194176,
+    "area": 286380,
+    "borders": [
+      "US-AZ",
+      "US-CA",
+      "US-ID",
+      "US-OR",
+      "US-UT"
+    ],
+    "aliases": [
+      "nevada",
+      "nv"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "Nevada is known as the Silver State."
+  },
+  {
+    "code": "US-NH",
+    "code3": "US-NH",
+    "name": "New Hampshire",
+    "officialName": "State of New Hampshire",
+    "capital": "Concord",
+    "continent": "Northeast",
+    "subregion": "New England",
+    "population": 1402054,
+    "area": 24214,
+    "borders": [
+      "US-MA",
+      "US-ME",
+      "US-VT"
+    ],
+    "aliases": [
+      "new hampshire",
+      "nh"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "New Hampshire is known as the Granite State."
+  },
+  {
+    "code": "US-NJ",
+    "code3": "US-NJ",
+    "name": "New Jersey",
+    "officialName": "State of New Jersey",
+    "capital": "Trenton",
+    "continent": "Northeast",
+    "subregion": "Mid-Atlantic",
+    "population": 9290841,
+    "area": 22591,
+    "borders": [
+      "US-DE",
+      "US-NY",
+      "US-PA"
+    ],
+    "aliases": [
+      "new jersey",
+      "nj"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "New Jersey is known as the Garden State."
+  },
+  {
+    "code": "US-NM",
+    "code3": "US-NM",
+    "name": "New Mexico",
+    "officialName": "State of New Mexico",
+    "capital": "Santa Fe",
+    "continent": "West",
+    "subregion": "Mountain",
+    "population": 2114371,
+    "area": 314917,
+    "borders": [
+      "US-AZ",
+      "US-CO",
+      "US-OK",
+      "US-TX",
+      "US-UT"
+    ],
+    "aliases": [
+      "new mexico",
+      "nm"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "New Mexico is known as the Land of Enchantment."
+  },
+  {
+    "code": "US-NY",
+    "code3": "US-NY",
+    "name": "New York",
+    "officialName": "State of New York",
+    "capital": "Albany",
+    "continent": "Northeast",
+    "subregion": "Mid-Atlantic",
+    "population": 19571216,
+    "area": 141297,
+    "borders": [
+      "US-CT",
+      "US-MA",
+      "US-NJ",
+      "US-PA",
+      "US-VT"
+    ],
+    "aliases": [
+      "new york",
+      "ny"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "New York is known as the Empire State."
+  },
+  {
+    "code": "US-NC",
+    "code3": "US-NC",
+    "name": "North Carolina",
+    "officialName": "State of North Carolina",
+    "capital": "Raleigh",
+    "continent": "South",
+    "subregion": "South Atlantic",
+    "population": 10835491,
+    "area": 139391,
+    "borders": [
+      "US-GA",
+      "US-SC",
+      "US-TN",
+      "US-VA"
+    ],
+    "aliases": [
+      "north carolina",
+      "nc"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "North Carolina is known as the Tar Heel State."
+  },
+  {
+    "code": "US-ND",
+    "code3": "US-ND",
+    "name": "North Dakota",
+    "officialName": "State of North Dakota",
+    "capital": "Bismarck",
+    "continent": "Midwest",
+    "subregion": "West North Central",
+    "population": 783926,
+    "area": 183108,
+    "borders": [
+      "US-MN",
+      "US-MT",
+      "US-SD"
+    ],
+    "aliases": [
+      "north dakota",
+      "nd"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "North Dakota is known as the Peace Garden State."
+  },
+  {
+    "code": "US-OH",
+    "code3": "US-OH",
+    "name": "Ohio",
+    "officialName": "State of Ohio",
+    "capital": "Columbus",
+    "continent": "Midwest",
+    "subregion": "East North Central",
+    "population": 11785935,
+    "area": 116098,
+    "borders": [
+      "US-IN",
+      "US-KY",
+      "US-MI",
+      "US-PA",
+      "US-WV"
+    ],
+    "aliases": [
+      "ohio",
+      "oh"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "Ohio is known as the Buckeye State."
+  },
+  {
+    "code": "US-OK",
+    "code3": "US-OK",
+    "name": "Oklahoma",
+    "officialName": "State of Oklahoma",
+    "capital": "Oklahoma City",
+    "continent": "South",
+    "subregion": "West South Central",
+    "population": 4053824,
+    "area": 181037,
+    "borders": [
+      "US-AR",
+      "US-CO",
+      "US-KS",
+      "US-MO",
+      "US-NM",
+      "US-TX"
+    ],
+    "aliases": [
+      "oklahoma",
+      "ok"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "Oklahoma is known as the Sooner State."
+  },
+  {
+    "code": "US-OR",
+    "code3": "US-OR",
+    "name": "Oregon",
+    "officialName": "State of Oregon",
+    "capital": "Salem",
+    "continent": "West",
+    "subregion": "Pacific",
+    "population": 4233358,
+    "area": 254799,
+    "borders": [
+      "US-CA",
+      "US-ID",
+      "US-NV",
+      "US-WA"
+    ],
+    "aliases": [
+      "oregon",
+      "or"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "Oregon is known as the Beaver State."
+  },
+  {
+    "code": "US-PA",
+    "code3": "US-PA",
+    "name": "Pennsylvania",
+    "officialName": "State of Pennsylvania",
+    "capital": "Harrisburg",
+    "continent": "Northeast",
+    "subregion": "Mid-Atlantic",
+    "population": 12961683,
+    "area": 119280,
+    "borders": [
+      "US-DE",
+      "US-MD",
+      "US-NJ",
+      "US-NY",
+      "US-OH",
+      "US-WV"
+    ],
+    "aliases": [
+      "pennsylvania",
+      "pa"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "Pennsylvania is known as the Keystone State."
+  },
+  {
+    "code": "US-RI",
+    "code3": "US-RI",
+    "name": "Rhode Island",
+    "officialName": "State of Rhode Island",
+    "capital": "Providence",
+    "continent": "Northeast",
+    "subregion": "New England",
+    "population": 1095962,
+    "area": 4001,
+    "borders": [
+      "US-CT",
+      "US-MA"
+    ],
+    "aliases": [
+      "rhode island",
+      "ri"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "Rhode Island is known as the Ocean State."
+  },
+  {
+    "code": "US-SC",
+    "code3": "US-SC",
+    "name": "South Carolina",
+    "officialName": "State of South Carolina",
+    "capital": "Columbia",
+    "continent": "South",
+    "subregion": "South Atlantic",
+    "population": 5373555,
+    "area": 82933,
+    "borders": [
+      "US-GA",
+      "US-NC"
+    ],
+    "aliases": [
+      "south carolina",
+      "sc"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "South Carolina is known as the Palmetto State."
+  },
+  {
+    "code": "US-SD",
+    "code3": "US-SD",
+    "name": "South Dakota",
+    "officialName": "State of South Dakota",
+    "capital": "Pierre",
+    "continent": "Midwest",
+    "subregion": "West North Central",
+    "population": 919318,
+    "area": 199729,
+    "borders": [
+      "US-IA",
+      "US-MN",
+      "US-MT",
+      "US-ND",
+      "US-NE",
+      "US-WY"
+    ],
+    "aliases": [
+      "south dakota",
+      "sd"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "South Dakota is known as the Mount Rushmore State."
+  },
+  {
+    "code": "US-TN",
+    "code3": "US-TN",
+    "name": "Tennessee",
+    "officialName": "State of Tennessee",
+    "capital": "Nashville",
+    "continent": "South",
+    "subregion": "East South Central",
+    "population": 7126489,
+    "area": 109153,
+    "borders": [
+      "US-AL",
+      "US-AR",
+      "US-GA",
+      "US-KY",
+      "US-MO",
+      "US-MS",
+      "US-NC",
+      "US-VA"
+    ],
+    "aliases": [
+      "tennessee",
+      "tn"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "Tennessee is known as the Volunteer State."
+  },
+  {
+    "code": "US-TX",
+    "code3": "US-TX",
+    "name": "Texas",
+    "officialName": "State of Texas",
+    "capital": "Austin",
+    "continent": "South",
+    "subregion": "West South Central",
+    "population": 30503301,
+    "area": 695662,
+    "borders": [
+      "US-AR",
+      "US-LA",
+      "US-NM",
+      "US-OK"
+    ],
+    "aliases": [
+      "texas",
+      "tx"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "Texas is known as the Lone Star State."
+  },
+  {
+    "code": "US-UT",
+    "code3": "US-UT",
+    "name": "Utah",
+    "officialName": "State of Utah",
+    "capital": "Salt Lake City",
+    "continent": "West",
+    "subregion": "Mountain",
+    "population": 3417734,
+    "area": 219882,
+    "borders": [
+      "US-AZ",
+      "US-CO",
+      "US-ID",
+      "US-NM",
+      "US-NV",
+      "US-WY"
+    ],
+    "aliases": [
+      "utah",
+      "ut"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "Utah is known as the Beehive State."
+  },
+  {
+    "code": "US-VT",
+    "code3": "US-VT",
+    "name": "Vermont",
+    "officialName": "State of Vermont",
+    "capital": "Montpelier",
+    "continent": "Northeast",
+    "subregion": "New England",
+    "population": 647464,
+    "area": 24906,
+    "borders": [
+      "US-MA",
+      "US-NH",
+      "US-NY"
+    ],
+    "aliases": [
+      "vermont",
+      "vt"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "Vermont is known as the Green Mountain State."
+  },
+  {
+    "code": "US-VA",
+    "code3": "US-VA",
+    "name": "Virginia",
+    "officialName": "State of Virginia",
+    "capital": "Richmond",
+    "continent": "South",
+    "subregion": "South Atlantic",
+    "population": 8715698,
+    "area": 110787,
+    "borders": [
+      "US-KY",
+      "US-MD",
+      "US-NC",
+      "US-TN",
+      "US-WV"
+    ],
+    "aliases": [
+      "virginia",
+      "va"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "Virginia is known as the Old Dominion."
+  },
+  {
+    "code": "US-WA",
+    "code3": "US-WA",
+    "name": "Washington",
+    "officialName": "State of Washington",
+    "capital": "Olympia",
+    "continent": "West",
+    "subregion": "Pacific",
+    "population": 7812880,
+    "area": 184661,
+    "borders": [
+      "US-ID",
+      "US-OR"
+    ],
+    "aliases": [
+      "washington",
+      "wa"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "Washington is known as the Evergreen State."
+  },
+  {
+    "code": "US-WV",
+    "code3": "US-WV",
+    "name": "West Virginia",
+    "officialName": "State of West Virginia",
+    "capital": "Charleston",
+    "continent": "South",
+    "subregion": "South Atlantic",
+    "population": 1770071,
+    "area": 62756,
+    "borders": [
+      "US-KY",
+      "US-MD",
+      "US-OH",
+      "US-PA",
+      "US-VA"
+    ],
+    "aliases": [
+      "west virginia",
+      "wv"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "West Virginia is known as the Mountain State."
+  },
+  {
+    "code": "US-WI",
+    "code3": "US-WI",
+    "name": "Wisconsin",
+    "officialName": "State of Wisconsin",
+    "capital": "Madison",
+    "continent": "Midwest",
+    "subregion": "East North Central",
+    "population": 5910955,
+    "area": 169635,
+    "borders": [
+      "US-IA",
+      "US-IL",
+      "US-MI",
+      "US-MN"
+    ],
+    "aliases": [
+      "wisconsin",
+      "wi"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "Wisconsin is known as the Badger State."
+  },
+  {
+    "code": "US-WY",
+    "code3": "US-WY",
+    "name": "Wyoming",
+    "officialName": "State of Wyoming",
+    "capital": "Cheyenne",
+    "continent": "West",
+    "subregion": "Mountain",
+    "population": 584057,
+    "area": 253335,
+    "borders": [
+      "US-CO",
+      "US-ID",
+      "US-MT",
+      "US-NE",
+      "US-SD",
+      "US-UT"
+    ],
+    "aliases": [
+      "wyoming",
+      "wy"
+    ],
+    "shapeQuizEligible": true,
+    "hasFlag": true,
+    "hasShape": true,
+    "isTerritory": false,
+    "fact": "Wyoming is known as the Equality State."
+  }
+]

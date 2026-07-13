@@ -10,7 +10,7 @@ import type { Profile } from "@/lib/types";
 
 export default function ProfilesPage() {
   const router = useRouter();
-  const { profiles, activeProfile, addProfile, switchProfile, removeProfile } = useProfiles();
+  const { profiles, activeProfile, addProfile, switchProfile, removeProfile, refresh } = useProfiles();
   const [name, setName] = useState("");
   const [color, setColor] = useState<string>(AVATAR_COLORS[0]);
   const [profileToDelete, setProfileToDelete] = useState<Profile | null>(null);
@@ -24,14 +24,30 @@ export default function ProfilesPage() {
     router.push("/");
   }
 
+  function handleExport(profile: Profile) {
+    const data = exportProfile(profile.id);
+    if (!data) return;
+    const blob = new Blob([data], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${profile.name}-atlas-academy-profile.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   function handleImport(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
     reader.onload = () => {
-      if (typeof reader.result === "string") importProfile(reader.result);
+      if (typeof reader.result === "string") {
+        importProfile(reader.result);
+        refresh();
+      }
     };
     reader.readAsText(file);
+    e.target.value = "";
   }
 
   return (
@@ -61,32 +77,12 @@ export default function ProfilesPage() {
                     )}
                   </div>
                 </div>
-                <div className="mt-3 grid grid-cols-2 gap-2 sm:mt-0 sm:flex">
+                <div className="mt-3 flex gap-2 sm:mt-0">
                   {activeProfile?.id !== profile.id && (
-                    <Button
-                      size="sm"
-                      className="col-span-2 sm:col-span-1"
-                      onClick={() => switchProfile(profile.id)}
-                    >
+                    <Button size="sm" onClick={() => switchProfile(profile.id)}>
                       Switch
                     </Button>
                   )}
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => {
-                      const data = exportProfile(profile.id);
-                      if (!data) return;
-                      const blob = new Blob([data], { type: "application/json" });
-                      const url = URL.createObjectURL(blob);
-                      const a = document.createElement("a");
-                      a.href = url;
-                      a.download = `${profile.name}-atlas-academy-profile.json`;
-                      a.click();
-                    }}
-                  >
-                    Export
-                  </Button>
                   <Button
                     variant="danger"
                     size="sm"
@@ -142,20 +138,56 @@ export default function ProfilesPage() {
         </div>
       </form>
 
-      <div className="rounded-[1.75rem] border-2 border-slate-200 bg-white/90 p-4 shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90 sm:p-6">
-        <h2 className="mb-2 font-semibold">Import profile</h2>
-        <p className="mb-4 text-sm text-slate-600 dark:text-slate-400">Restore a profile from a backup JSON file.</p>
-        <input
-          ref={fileRef}
-          type="file"
-          accept="application/json"
-          onChange={handleImport}
-          className="sr-only"
-        />
-        <Button type="button" variant="secondary" className="w-full sm:w-auto" onClick={() => fileRef.current?.click()}>
-          Choose backup file
-        </Button>
-      </div>
+      <details className="group rounded-2xl border border-dashed border-slate-200/90 bg-slate-50/50 px-4 py-3 dark:border-slate-700/80 dark:bg-slate-900/40 sm:px-5 sm:py-4">
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm [&::-webkit-details-marker]:hidden">
+          <span className="font-medium text-slate-600 dark:text-slate-300">Backup & restore</span>
+          <span className="text-xs text-slate-500 dark:text-slate-500">Optional</span>
+        </summary>
+        <div className="mt-4 space-y-4 border-t border-slate-200/80 pt-4 dark:border-slate-700/80">
+          <p className="text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+            Save or move progress between devices. You don&apos;t need this to get started.
+          </p>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                Import
+              </p>
+              <p className="mt-0.5 text-sm text-slate-600 dark:text-slate-400">Restore from a backup file</p>
+            </div>
+            <input
+              ref={fileRef}
+              type="file"
+              accept="application/json"
+              onChange={handleImport}
+              className="sr-only"
+            />
+            <Button type="button" variant="ghost" size="sm" onClick={() => fileRef.current?.click()}>
+              Choose backup file
+            </Button>
+          </div>
+          {profiles.length > 0 && (
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                Export
+              </p>
+              <ul className="mt-2 space-y-1">
+                {profiles.map((profile) => (
+                  <li key={profile.id} className="flex items-center justify-between gap-3 text-sm">
+                    <span className="truncate text-slate-700 dark:text-slate-300">{profile.name}</span>
+                    <button
+                      type="button"
+                      onClick={() => handleExport(profile)}
+                      className="shrink-0 text-slate-500 underline-offset-2 hover:text-sky-700 hover:underline dark:text-slate-400 dark:hover:text-sky-400"
+                    >
+                      Download backup
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      </details>
 
       {profileToDelete && (
         <div className="fixed inset-0 z-[80] flex items-center justify-center bg-slate-950/45 px-4 backdrop-blur-sm">
