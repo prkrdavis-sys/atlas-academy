@@ -44,7 +44,7 @@ const ROUND_TASK_LABELS: Record<GameMode, string> = {
 type GameBoardProps = {
   mode: GameMode;
   continents: Continent[];
-  territoryContinents?: Continent[];
+  includeTerritories?: boolean;
   difficulty: Difficulty;
   weakSpotCodes?: string[];
   seed?: number;
@@ -58,7 +58,7 @@ type GameBoardProps = {
 export function GameBoard({
   mode,
   continents,
-  territoryContinents = [],
+  includeTerritories = false,
   difficulty,
   weakSpotCodes,
   seed,
@@ -114,7 +114,7 @@ export function GameBoard({
       seed,
       questionType,
       maxQuestions,
-      territoryContinents,
+      includeTerritories,
     );
     engineRef.current = gameEngine;
     setSessionQuestionLimit(gameEngine.getRoundQuestionLimit());
@@ -125,7 +125,7 @@ export function GameBoard({
         : getGlobalStreakOrZero(activeProfile, difficulty).currentStreak,
     );
     setEngineReady(true);
-  }, [mode, continents, territoryContinents, difficulty, weakSpotCodes, seed, questionType, maxQuestions, countStats]);
+  }, [mode, continents, includeTerritories, difficulty, weakSpotCodes, seed, questionType, maxQuestions, countStats]);
 
   const dismissAchievements = useCallback(() => {
     setNewAchievements([]);
@@ -397,6 +397,8 @@ export function GameBoard({
       ? ROUND_TASK_LABELS[question.mode]
       : ROUND_TASK_LABELS[mode];
   const dailyDateLabel = mode === "daily-challenge" ? formatDailyDate() : null;
+  const isTextOnlyPrompt =
+    question.mode === "capital-to-country" || question.mode === "country-to-capital";
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden sm:gap-3">
@@ -448,11 +450,22 @@ export function GameBoard({
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border-2 border-slate-200 bg-white/90 p-3 shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90 sm:rounded-3xl sm:p-4">
-        <h2 className="mb-2 shrink-0 text-center font-display text-base font-extrabold leading-tight sm:mb-3 sm:text-xl">{question.prompt}</h2>
+        {!isTextOnlyPrompt && (
+          <h2 className="mb-2 shrink-0 text-center font-display text-base font-extrabold leading-tight sm:mb-3 sm:text-xl">
+            {question.prompt}
+          </h2>
+        )}
 
         <div
           className={`@container/size flex min-h-0 flex-1 flex-col overflow-hidden ${question.displayType === "flags-grid" ? "" : "justify-center"}`}
         >
+          {!showLearnCard && isTextOnlyPrompt && (
+            <div className="flex items-center justify-center px-4 py-6 text-center">
+              <p className="max-w-2xl font-display text-2xl font-extrabold leading-snug text-slate-800 dark:text-slate-100 sm:text-3xl md:text-4xl">
+                {question.prompt}
+              </p>
+            </div>
+          )}
           {!showLearnCard && question.displayType === "flag" && (
             <FlagDisplay code={question.countryCode} size="md" />
           )}

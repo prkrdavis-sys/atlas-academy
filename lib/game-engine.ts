@@ -102,11 +102,11 @@ export class GameEngine {
     seed?: number,
     private questionType?: SpeedRoundQuestionType,
     private questionLimit: RoundQuestionSetting = DEFAULT_ROUND_QUESTION_COUNT,
-    territoryContinents: Continent[] = [],
+    includeTerritories = false,
   ) {
     this.pool = getPlayablePool({
       continents,
-      territoryContinents,
+      includeTerritories,
       mode,
       questionType,
       weakSpotCodes,

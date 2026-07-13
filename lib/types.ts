@@ -139,7 +139,7 @@ export type Profile = {
   settings: {
     difficulty: Difficulty;
     lastContinentFilter: Continent[];
-    lastTerritoryFilter: Continent[];
+    includeTerritories: boolean;
     speedRoundQuestionType: SpeedRoundQuestionType;
     roundQuestionCount: RoundQuestionSetting;
   };

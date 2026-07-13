@@ -97,12 +97,10 @@ export function normalizeProfile(profile: Profile): Profile {
     normalized.settings.speedRoundQuestionType = "all-types";
   }
   normalized.settings.roundQuestionCount = normalizeRoundQuestionSetting(normalized.settings.roundQuestionCount);
-  if (normalized.settings.lastTerritoryFilter === undefined) {
-    const legacyIncludeTerritories = (normalized.settings as { includeTerritories?: boolean }).includeTerritories;
-    normalized.settings.lastTerritoryFilter = legacyIncludeTerritories
-      ? [...normalized.settings.lastContinentFilter]
-      : [];
-    delete (normalized.settings as { includeTerritories?: boolean }).includeTerritories;
+  if (normalized.settings.includeTerritories === undefined) {
+    const legacyTerritoryFilter = (normalized.settings as { lastTerritoryFilter?: Continent[] }).lastTerritoryFilter;
+    normalized.settings.includeTerritories = (legacyTerritoryFilter?.length ?? 0) > 0;
+    delete (normalized.settings as { lastTerritoryFilter?: Continent[] }).lastTerritoryFilter;
   }
   if (!normalized.dailyChallengePlayedDates) {
     normalized.dailyChallengePlayedDates = [];
@@ -138,7 +136,7 @@ export function createProfile(name: string, avatarColor: string): Profile {
         "Oceania",
         "South America",
       ],
-      lastTerritoryFilter: [],
+      includeTerritories: false,
       speedRoundQuestionType: "flag-to-country",
       roundQuestionCount: DEFAULT_ROUND_QUESTION_COUNT,
     },
@@ -216,7 +214,7 @@ export function updateProfileSettings(
   settings: Partial<{
     difficulty: Difficulty;
     lastContinentFilter: Continent[];
-    lastTerritoryFilter: Continent[];
+    includeTerritories: boolean;
     speedRoundQuestionType: SpeedRoundQuestionType;
     roundQuestionCount: RoundQuestionSetting;
   }>,

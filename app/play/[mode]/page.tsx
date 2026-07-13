@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ContinentFilter } from "@/components/ContinentFilter";
-import { TerritoryFilter } from "@/components/TerritoryFilter";
 import { GameBoard } from "@/components/GameBoard";
+import { ProfileRequiredDialog } from "@/components/ProfileRequiredDialog";
 import { useProfiles } from "@/components/ProfileProvider";
 import { Select } from "@/components/ui/Select";
 import { getPlayablePoolSize } from "@/lib/countries";
@@ -40,8 +40,8 @@ export default function PlayPage() {
   const [continents, setContinents] = useState<Continent[]>(
     () => profile?.settings.lastContinentFilter ?? [...CONTINENTS],
   );
-  const [territoryContinents, setTerritoryContinents] = useState<Continent[]>(
-    () => profile?.settings.lastTerritoryFilter ?? [],
+  const [includeTerritories, setIncludeTerritories] = useState(
+    () => profile?.settings.includeTerritories ?? false,
   );
   const [difficulty, setDifficulty] = useState<Difficulty>(
     () => profile?.settings.difficulty ?? "easy",
@@ -59,7 +59,7 @@ export default function PlayPage() {
   useEffect(() => {
     if (!profile) return;
     setContinents(profile.settings.lastContinentFilter);
-    setTerritoryContinents(profile.settings.lastTerritoryFilter ?? []);
+    setIncludeTerritories(profile.settings.includeTerritories ?? false);
     setDifficulty(profile.settings.difficulty);
     setRoundQuestionCount(normalizeRoundQuestionSetting(profile.settings.roundQuestionCount));
     if (mode === "speed-round") {
@@ -84,7 +84,7 @@ export default function PlayPage() {
   const availableCountryCount = modeInfo
     ? getPlayablePoolSize({
         continents,
-        territoryContinents,
+        includeTerritories,
         mode,
         questionType: mode === "speed-round" ? questionType : undefined,
         weakSpotCodes,
@@ -107,6 +107,35 @@ export default function PlayPage() {
     return <p>Unknown game mode.</p>;
   }
 
+  if (!hydrated) {
+    return (
+      <div className="space-y-5 sm:space-y-6">
+        <button
+          type="button"
+          onClick={() => router.push("/")}
+          className="-ml-2 inline-flex min-h-11 items-center rounded-xl px-2 text-sm font-semibold text-slate-500 hover:text-slate-800 active:bg-slate-200/60 dark:text-slate-400 dark:hover:text-slate-200 dark:active:bg-slate-700/60"
+        >
+          ← Back
+        </button>
+      </div>
+    );
+  }
+
+  if (!activeProfile) {
+    return (
+      <div className="space-y-5 sm:space-y-6">
+        <button
+          type="button"
+          onClick={() => router.push("/")}
+          className="-ml-2 inline-flex min-h-11 items-center rounded-xl px-2 text-sm font-semibold text-slate-500 hover:text-slate-800 active:bg-slate-200/60 dark:text-slate-400 dark:hover:text-slate-200 dark:active:bg-slate-700/60"
+        >
+          ← Back
+        </button>
+        <ProfileRequiredDialog open onClose={() => router.push("/")} />
+      </div>
+    );
+  }
+
   function handleStart() {
     if (!hydrated || !activeProfile) return;
     if (!isDailyChallenge && availableCountryCount === 0) return;
@@ -114,7 +143,7 @@ export default function PlayPage() {
     if (!isDailyChallenge) {
       updateProfileSettings(activeProfile.id, {
         lastContinentFilter: continents,
-        lastTerritoryFilter: territoryContinents,
+        includeTerritories,
         difficulty,
         roundQuestionCount: effectiveRoundQuestionCount,
         ...(mode === "speed-round" ? { speedRoundQuestionType: questionType } : {}),
@@ -144,7 +173,7 @@ export default function PlayPage() {
   const gameProps = {
     mode,
     continents: isDailyChallenge ? dailyContinents : continents,
-    territoryContinents: isDailyChallenge ? [] : territoryContinents,
+    includeTerritories: isDailyChallenge ? false : includeTerritories,
     difficulty: isDailyChallenge ? dailyDifficulty : difficulty,
     weakSpotCodes,
     seed: isDailyChallenge ? getDailySeed() : undefined,
@@ -311,15 +340,12 @@ export default function PlayPage() {
 
             <div>
               <h2 className="mb-3 font-semibold">Continents</h2>
-              <ContinentFilter selected={continents} onChange={setContinents} />
-            </div>
-
-            <div>
-              <h2 className="mb-3 font-semibold">Territories</h2>
-              <p className="mb-3 text-sm text-slate-600 dark:text-slate-400">
-                Optional — add territories separately from sovereign countries.
-              </p>
-              <TerritoryFilter selected={territoryContinents} onChange={setTerritoryContinents} />
+              <ContinentFilter
+                selected={continents}
+                includeTerritories={includeTerritories}
+                onContinentsChange={setContinents}
+                onIncludeTerritoriesChange={setIncludeTerritories}
+              />
             </div>
           </div>
           )}
