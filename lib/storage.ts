@@ -3,7 +3,6 @@ import type {
   SpeedRoundQuestionType,
   Difficulty,
   GameMode,
-  ModeStats,
   Profile,
   AchievementSessionContext,
   RoundQuestionSetting,
@@ -26,7 +25,13 @@ import {
 const STORAGE_KEY = "atlas-academy";
 const LEGACY_STORAGE_KEY = "geography-game";
 
-type LegacyProfile = Profile & {
+type LegacyProfileSettings = Omit<Profile["settings"], "includeTerritories"> & {
+  includeTerritories?: boolean;
+  lastTerritoryFilter?: Continent[];
+};
+
+type LegacyProfile = Omit<Profile, "settings"> & {
+  settings: LegacyProfileSettings;
   globalCurrentStreak?: number;
   globalBestStreak?: number;
 };
@@ -47,7 +52,7 @@ function createEmptyGlobalStreaks(): Profile["globalStreaks"] {
   };
 }
 
-function migrateLegacyStats(profile: LegacyProfile): Profile {
+function migrateLegacyStats(profile: LegacyProfile): LegacyProfile {
   for (const mode of GAME_MODES) {
     const modeStats = profile.stats[mode.id] as unknown;
     if (isLegacyFlatModeStats(modeStats)) {
@@ -97,11 +102,14 @@ export function normalizeProfile(profile: Profile): Profile {
     normalized.settings.speedRoundQuestionType = "all-types";
   }
   normalized.settings.roundQuestionCount = normalizeRoundQuestionSetting(normalized.settings.roundQuestionCount);
-  if (normalized.settings.includeTerritories === undefined) {
-    const legacyTerritoryFilter = (normalized.settings as { lastTerritoryFilter?: Continent[] }).lastTerritoryFilter;
-    normalized.settings.includeTerritories = (legacyTerritoryFilter?.length ?? 0) > 0;
-    delete (normalized.settings as { lastTerritoryFilter?: Continent[] }).lastTerritoryFilter;
-  }
+  const { lastTerritoryFilter, ...settings } = normalized.settings;
+  normalized.settings = {
+    ...settings,
+    // Territory selection is intentionally global now. Preserve whether the
+    // player opted into any territories instead of retaining a hidden filter.
+    includeTerritories:
+      settings.includeTerritories ?? (lastTerritoryFilter?.length ?? 0) > 0,
+  };
   if (!normalized.dailyChallengePlayedDates) {
     normalized.dailyChallengePlayedDates = [];
   }
@@ -113,7 +121,7 @@ export function normalizeProfile(profile: Profile): Profile {
       normalized.stats[mode.id] = createEmptyModeStatsByDifficulty();
     }
   }
-  return normalized;
+  return normalized as Profile;
 }
 
 export function createProfile(name: string, avatarColor: string): Profile {

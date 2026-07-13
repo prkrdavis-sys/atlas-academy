@@ -4,8 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ContinentFilter } from "@/components/ContinentFilter";
 import { GameBoard } from "@/components/GameBoard";
-import { ProfileRequiredDialog } from "@/components/ProfileRequiredDialog";
-import { useProfiles } from "@/components/ProfileProvider";
+import { useProfiles, useRequiredProfile } from "@/components/ProfileProvider";
 import { Select } from "@/components/ui/Select";
 import { getPlayablePoolSize } from "@/lib/countries";
 import { aggregateMissedCountries, DAILY_COUNTING_SESSION_KEY, formatDailyDate, getDailyDateKey, getDailySeed, hasPlayedDailyToday } from "@/lib/game-engine";
@@ -32,8 +31,8 @@ import {
 export default function PlayPage() {
   const params = useParams<{ mode: string }>();
   const router = useRouter();
-  const { activeProfile, refresh, hydrated } = useProfiles();
-  const profile = hydrated ? activeProfile : null;
+  const { refresh } = useProfiles();
+  const profile = useRequiredProfile();
   const mode = params.mode as GameMode;
   const modeInfo = GAME_MODES.find((m) => m.id === mode);
 
@@ -57,7 +56,6 @@ export default function PlayPage() {
   const [countStats, setCountStats] = useState(true);
 
   useEffect(() => {
-    if (!profile) return;
     setContinents(profile.settings.lastContinentFilter);
     setIncludeTerritories(profile.settings.includeTerritories ?? false);
     setDifficulty(profile.settings.difficulty);
@@ -70,14 +68,14 @@ export default function PlayPage() {
   const isDailyChallenge = mode === "daily-challenge";
   const dailyDateLabel = isDailyChallenge ? formatDailyDate() : null;
   const dailyAlreadyPlayed =
-    isDailyChallenge && profile
+    isDailyChallenge
       ? hasPlayedDailyToday(profile.dailyChallengePlayedDates)
       : false;
   const dailyContinents: Continent[] = [...CONTINENTS];
   const dailyDifficulty: Difficulty = "medium";
 
   const weakSpotCodes =
-    mode === "weak-spots" && profile
+    mode === "weak-spots"
       ? aggregateMissedCountries(collectMissedCountries(profile))
       : undefined;
 
@@ -107,41 +105,11 @@ export default function PlayPage() {
     return <p>Unknown game mode.</p>;
   }
 
-  if (!hydrated) {
-    return (
-      <div className="space-y-5 sm:space-y-6">
-        <button
-          type="button"
-          onClick={() => router.push("/")}
-          className="-ml-2 inline-flex min-h-11 items-center rounded-xl px-2 text-sm font-semibold text-slate-500 hover:text-slate-800 active:bg-slate-200/60 dark:text-slate-400 dark:hover:text-slate-200 dark:active:bg-slate-700/60"
-        >
-          ← Back
-        </button>
-      </div>
-    );
-  }
-
-  if (!activeProfile) {
-    return (
-      <div className="space-y-5 sm:space-y-6">
-        <button
-          type="button"
-          onClick={() => router.push("/")}
-          className="-ml-2 inline-flex min-h-11 items-center rounded-xl px-2 text-sm font-semibold text-slate-500 hover:text-slate-800 active:bg-slate-200/60 dark:text-slate-400 dark:hover:text-slate-200 dark:active:bg-slate-700/60"
-        >
-          ← Back
-        </button>
-        <ProfileRequiredDialog open onClose={() => router.push("/")} />
-      </div>
-    );
-  }
-
   function handleStart() {
-    if (!hydrated || !activeProfile) return;
     if (!isDailyChallenge && availableCountryCount === 0) return;
 
     if (!isDailyChallenge) {
-      updateProfileSettings(activeProfile.id, {
+      updateProfileSettings(profile.id, {
         lastContinentFilter: continents,
         includeTerritories,
         difficulty,
@@ -153,7 +121,7 @@ export default function PlayPage() {
 
     if (isDailyChallenge) {
       const today = getDailyDateKey();
-      const playedToday = hasPlayedDailyToday(activeProfile.dailyChallengePlayedDates);
+      const playedToday = hasPlayedDailyToday(profile.dailyChallengePlayedDates);
       const activeSession =
         typeof window !== "undefined" &&
         sessionStorage.getItem(DAILY_COUNTING_SESSION_KEY) === today;
@@ -228,8 +196,6 @@ export default function PlayPage() {
               type="button"
               onClick={handleStart}
               disabled={
-                !hydrated ||
-                !activeProfile ||
                 (!isDailyChallenge && availableCountryCount === 0) ||
                 (mode === "weak-spots" && !weakSpotCodes?.length)
               }

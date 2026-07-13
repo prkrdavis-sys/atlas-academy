@@ -31,12 +31,10 @@ export function ContinentFilter({
 
   function selectAll() {
     onContinentsChange([...CONTINENTS]);
-    onIncludeTerritoriesChange(true);
   }
 
   function clearAll() {
     onContinentsChange([]);
-    onIncludeTerritoriesChange(false);
   }
 
   const summary = (() => {

@@ -84,3 +84,13 @@ export function useProfiles() {
   if (!ctx) throw new Error("useProfiles must be used within ProfileProvider");
   return ctx;
 }
+
+export function useRequiredProfile(): Profile {
+  const { activeProfile, hydrated } = useProfiles();
+
+  if (!hydrated || !activeProfile) {
+    throw new Error("useRequiredProfile must be used within a profile-gated route");
+  }
+
+  return activeProfile;
+}

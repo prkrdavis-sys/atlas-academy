@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState, type MouseEvent } from "react";
+import { useCallback, useState } from "react";
+import { PlayModeLink } from "@/components/PlayModeLink";
 import { ProfileRequiredDialog } from "@/components/ProfileRequiredDialog";
 import { useProfiles } from "@/components/ProfileProvider";
 import { StreakSummaryLink } from "@/components/StreakSummaryLink";
@@ -43,13 +44,8 @@ export default function HomePage() {
   const { activeProfile, hydrated } = useProfiles();
   const profile = hydrated ? activeProfile : null;
   const [showProfileDialog, setShowProfileDialog] = useState(false);
-
-  function handlePlayModeClick(event: MouseEvent<HTMLAnchorElement>) {
-    if (hydrated && !activeProfile) {
-      event.preventDefault();
-      setShowProfileDialog(true);
-    }
-  }
+  const showRequiredProfileDialog = useCallback(() => setShowProfileDialog(true), []);
+  const hideRequiredProfileDialog = useCallback(() => setShowProfileDialog(false), []);
 
   const difficulty = profile?.settings.difficulty ?? "easy";
   const globalStreak = getGlobalStreakOrZero(profile, difficulty);
@@ -62,7 +58,7 @@ export default function HomePage() {
     <div className="space-y-7 sm:space-y-10">
       <ProfileRequiredDialog
         open={showProfileDialog}
-        onClose={() => setShowProfileDialog(false)}
+        onClose={hideRequiredProfileDialog}
       />
       <section className="relative overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-emerald-500 via-teal-600 to-sky-700 p-5 text-white shadow-[0_16px_40px_rgb(15_118_110_/_0.22)] sm:p-10">
         <div
@@ -110,10 +106,10 @@ export default function HomePage() {
           {GAME_MODES.filter((m) => m.phase === 1).map((mode) => {
             const style = CORE_MODE_STYLES[mode.id];
             return (
-              <Link
+              <PlayModeLink
                 key={mode.id}
-                href={`/play/${mode.id}`}
-                onClick={handlePlayModeClick}
+                mode={mode.id}
+                onProfileRequired={showRequiredProfileDialog}
                 className={cn(
                   "group flex min-h-[5.25rem] items-center gap-3 rounded-2xl border-2 p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md sm:gap-4 sm:p-5",
                   style?.tile ?? "border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900",
@@ -132,7 +128,7 @@ export default function HomePage() {
                   <h3 className="font-display font-extrabold text-slate-900 dark:text-slate-100">{mode.title}</h3>
                   <p className="mt-0.5 line-clamp-2 text-xs leading-snug text-slate-600 dark:text-slate-400 sm:truncate sm:text-sm">{mode.description}</p>
                 </div>
-              </Link>
+              </PlayModeLink>
             );
           })}
         </div>
@@ -146,10 +142,10 @@ export default function HomePage() {
             if (!mode) return null;
             const isDaily = mode.id === "daily-challenge";
             return (
-              <Link
+              <PlayModeLink
                 key={mode.id}
-                href={`/play/${mode.id}`}
-                onClick={handlePlayModeClick}
+                mode={mode.id}
+                onProfileRequired={showRequiredProfileDialog}
                 className="group min-h-[8.75rem] min-w-[9.5rem] snap-start rounded-2xl border-2 border-slate-200 bg-white/80 p-4 shadow-sm backdrop-blur transition-all hover:-translate-y-0.5 hover:border-teal-400 hover:shadow-md dark:border-slate-700 dark:bg-slate-900/80 dark:hover:border-teal-500 sm:min-w-0"
               >
                 <span className="text-2xl transition-transform group-hover:scale-110">
@@ -164,7 +160,7 @@ export default function HomePage() {
                   </p>
                 ) : null}
                 <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{mode.description}</p>
-              </Link>
+              </PlayModeLink>
             );
           })}
         </div>
@@ -175,14 +171,14 @@ export default function HomePage() {
             const mode = GAME_MODES.find((m) => m.id === id);
             if (!mode) return null;
             return (
-              <Link
+              <PlayModeLink
                 key={mode.id}
-                href={`/play/${mode.id}`}
-                onClick={handlePlayModeClick}
+                mode={mode.id}
+                onProfileRequired={showRequiredProfileDialog}
                 className="min-h-11 shrink-0 rounded-full border-2 border-slate-200 bg-white/80 px-3.5 py-2 text-sm font-semibold text-slate-700 transition-colors hover:border-teal-400 hover:text-teal-700 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-300 dark:hover:border-teal-500 dark:hover:text-teal-300"
               >
                 {mode.icon} {mode.title}
-              </Link>
+              </PlayModeLink>
             );
           })}
           <Link

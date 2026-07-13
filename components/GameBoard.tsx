@@ -13,7 +13,7 @@ import { PopulationMatchupDisplay } from "@/components/PopulationMatchupDisplay"
 import { ShapeDisplay } from "@/components/ShapeDisplay";
 import { StreakCounter } from "@/components/StreakCounter";
 import { Button } from "@/components/ui/Button";
-import { useProfiles } from "@/components/ProfileProvider";
+import { useProfiles, useRequiredProfile } from "@/components/ProfileProvider";
 import { getCountryName } from "@/lib/countries";
 import { GameEngine, formatDailyDate } from "@/lib/game-engine";
 import {
@@ -69,12 +69,31 @@ export function GameBoard({
   countStats = true,
 }: GameBoardProps) {
   const router = useRouter();
-  const { activeProfile, refresh } = useProfiles();
-  const engineRef = useRef<GameEngine | null>(null);
-  const [engineReady, setEngineReady] = useState(false);
-  const [sessionQuestionLimit, setSessionQuestionLimit] = useState(0);
-  const [question, setQuestion] = useState<Question | null>(null);
-  const [streak, setStreak] = useState(0);
+  const { refresh } = useProfiles();
+  const activeProfile = useRequiredProfile();
+  const [{ engine, firstQuestion, sessionQuestionLimit }] = useState(() => {
+    const gameEngine = new GameEngine(
+      mode,
+      continents,
+      difficulty,
+      weakSpotCodes,
+      seed,
+      questionType,
+      maxQuestions,
+      includeTerritories,
+    );
+    return {
+      engine: gameEngine,
+      firstQuestion: gameEngine.nextQuestion(),
+      sessionQuestionLimit: gameEngine.getRoundQuestionLimit(),
+    };
+  });
+  const [question, setQuestion] = useState<Question | null>(firstQuestion);
+  const [streak, setStreak] = useState(() =>
+    mode === "daily-challenge" && !countStats
+      ? 0
+      : getGlobalStreakOrZero(activeProfile, difficulty).currentStreak,
+  );
   const [showLearnCard, setShowLearnCard] = useState(false);
   const [lastCorrect, setLastCorrect] = useState(true);
   const [disabled, setDisabled] = useState(false);
@@ -105,28 +124,6 @@ export function GameBoard({
     setBursts((prev) => prev.filter((b) => b.id !== id));
   }, []);
 
-  useEffect(() => {
-    const gameEngine = new GameEngine(
-      mode,
-      continents,
-      difficulty,
-      weakSpotCodes,
-      seed,
-      questionType,
-      maxQuestions,
-      includeTerritories,
-    );
-    engineRef.current = gameEngine;
-    setSessionQuestionLimit(gameEngine.getRoundQuestionLimit());
-    setQuestion(gameEngine.nextQuestion());
-    setStreak(
-      mode === "daily-challenge" && !countStats
-        ? 0
-        : getGlobalStreakOrZero(activeProfile, difficulty).currentStreak,
-    );
-    setEngineReady(true);
-  }, [mode, continents, includeTerritories, difficulty, weakSpotCodes, seed, questionType, maxQuestions, countStats]);
-
   const dismissAchievements = useCallback(() => {
     setNewAchievements([]);
   }, []);
@@ -146,7 +143,7 @@ export function GameBoard({
   }, [timed, timeLeft, gameOver]);
 
   useEffect(() => {
-    if (!timed || !gameOver || !activeProfile || speedSessionCheckedRef.current || questionCount === 0) {
+    if (!timed || !gameOver || speedSessionCheckedRef.current || questionCount === 0) {
       return;
     }
     speedSessionCheckedRef.current = true;
@@ -172,27 +169,6 @@ export function GameBoard({
     };
   }, [mode, countStats]);
 
-  if (!activeProfile) {
-    return (
-      <div className="rounded-3xl border-2 border-slate-200 bg-white/90 p-8 text-center shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90">
-        <p className="mb-4 text-slate-600 dark:text-slate-400">Create a profile to start playing.</p>
-        <Button onClick={() => router.push("/profiles")}>Create profile</Button>
-      </div>
-    );
-  }
-
-  if (!engineReady || !engineRef.current) {
-    return (
-      <div className="flex flex-1 items-center justify-center rounded-3xl border-2 border-slate-200 bg-white/90 p-8 text-center shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90">
-        <p className="font-display text-lg font-extrabold text-slate-600 dark:text-slate-400">
-          Loading round...
-        </p>
-      </div>
-    );
-  }
-
-  const engine = engineRef.current;
-
   if (engine.getPoolSize() === 0) {
     return (
       <div className="rounded-3xl border-2 border-slate-200 bg-white/90 p-8 text-center shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90">
@@ -203,7 +179,7 @@ export function GameBoard({
   }
 
   function handleAnswer(answer: string, code?: string) {
-    if (!question || !activeProfile || disabled) return;
+    if (!question || disabled) return;
     setDisabled(true);
 
     const isCodeSelection = code !== undefined;
@@ -252,8 +228,7 @@ export function GameBoard({
       if (
         mode === "daily-challenge" &&
         countStats &&
-        !dailyCompletionRecordedRef.current &&
-        activeProfile
+        !dailyCompletionRecordedRef.current
       ) {
         dailyCompletionRecordedRef.current = true;
         recordDailyChallengeCompletion(activeProfile.id);
@@ -276,8 +251,7 @@ export function GameBoard({
       if (
         mode === "daily-challenge" &&
         countStats &&
-        !dailyCompletionRecordedRef.current &&
-        activeProfile
+        !dailyCompletionRecordedRef.current
       ) {
         dailyCompletionRecordedRef.current = true;
         recordDailyChallengeCompletion(activeProfile.id);
@@ -285,7 +259,7 @@ export function GameBoard({
       }
     }
     if (countStats) {
-      recordAnswer(activeProfile!.id, mode, difficulty, false, question.countryCode, true);
+      recordAnswer(activeProfile.id, mode, difficulty, false, question.countryCode, true);
       refresh();
     }
   }
