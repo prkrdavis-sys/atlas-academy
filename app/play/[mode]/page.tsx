@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { ContinentFilter } from "@/components/ContinentFilter";
 import { GameBoard } from "@/components/GameBoard";
@@ -69,6 +69,39 @@ function PlayPageInner() {
   const [started, setStarted] = useState(false);
   const [sessionKey, setSessionKey] = useState(0);
   const [countStats, setCountStats] = useState(true);
+  const [startBarPinned, setStartBarPinned] = useState(false);
+  const [startBarHeight, setStartBarHeight] = useState(0);
+  const startBarRef = useRef<HTMLDivElement>(null);
+  const preRoundHeaderRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const main = document.getElementById("main-content");
+    const header = preRoundHeaderRef.current;
+    if (!main || !header || started) return;
+
+    const updatePinned = () => {
+      setStartBarPinned(header.getBoundingClientRect().bottom <= 0);
+    };
+
+    updatePinned();
+    main.addEventListener("scroll", updatePinned, { passive: true });
+    window.addEventListener("resize", updatePinned);
+    return () => {
+      main.removeEventListener("scroll", updatePinned);
+      window.removeEventListener("resize", updatePinned);
+    };
+  }, [started, mode]);
+
+  useEffect(() => {
+    const bar = startBarRef.current;
+    if (!bar || started) return;
+
+    const updateHeight = () => setStartBarHeight(bar.offsetHeight);
+    updateHeight();
+    const observer = new ResizeObserver(updateHeight);
+    observer.observe(bar);
+    return () => observer.disconnect();
+  }, [started, mode, startBarPinned]);
 
   useEffect(() => {
     setContinents(
@@ -187,10 +220,67 @@ function PlayPageInner() {
     countStats: isDailyChallenge ? countStats : true,
   };
 
+  const startDisabled =
+    (!isDailyChallenge && availableCountryCount === 0) ||
+    (mode === "weak-spots" && !weakSpotCodes?.length);
+
+  const hasExtendedSettings = !isDailyChallenge;
+
+  const startGameButton = (
+    <div className="relative z-40">
+      {startBarPinned && <div style={{ height: startBarHeight }} aria-hidden />}
+      <div
+        ref={startBarRef}
+        className={startBarPinned ? "fixed inset-x-0 top-0 z-40 pt-[env(safe-area-inset-top,0px)]" : undefined}
+      >
+        <div
+          className={
+            startBarPinned
+              ? "mx-auto w-full max-w-5xl px-[max(0.75rem,env(safe-area-inset-left,0px))] sm:px-4"
+              : undefined
+          }
+        >
+          <div
+            className={
+              startBarPinned && hasExtendedSettings
+                ? "border-x-2 border-b-2 border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900"
+                : undefined
+            }
+          >
+            <div className="px-1 pb-1">
+              <button
+                type="button"
+                onClick={handleStart}
+                disabled={startDisabled}
+                className="group relative w-full overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-emerald-500 via-teal-600 to-sky-700 p-4 text-left text-white shadow-[0_5px_14px_-8px_rgb(15_118_110_/_0.55)] transition-all duration-150 ease-out hover:-translate-y-px hover:shadow-[0_7px_18px_-9px_rgb(15_118_110_/_0.6)] active:translate-y-px active:shadow-[0_2px_8px_-6px_rgb(15_118_110_/_0.45)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-[0_5px_14px_-8px_rgb(15_118_110_/_0.55)] disabled:active:translate-y-0 sm:p-5"
+              >
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute -right-3 -top-3 select-none text-[4.5rem] opacity-15 transition-transform duration-150 group-hover:scale-110 group-active:scale-95 sm:-right-5 sm:-top-5 sm:text-[5.5rem]"
+                >
+                  {scopeInfo.icon}
+                </span>
+                <span className="relative font-display text-xl font-extrabold tracking-tight transition-transform duration-150 group-active:translate-y-px sm:text-2xl">
+                  {isDailyChallenge && dailyAlreadyPlayed ? "Review challenge" : "Start Game"}
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
-    <div className={started ? "flex h-full min-h-0 flex-col" : "space-y-5 sm:space-y-6"}>
+    <div
+      className={
+        started
+          ? "flex h-full min-h-0 flex-col pt-[max(0.75rem,env(safe-area-inset-top,0px))] sm:pt-5"
+          : "space-y-5 sm:space-y-6"
+      }
+    >
       {!started && (
-        <div>
+        <div ref={preRoundHeaderRef} className="pt-[max(0.75rem,env(safe-area-inset-top,0px))] sm:pt-5">
           <button
             type="button"
             onClick={() => router.push("/")}
@@ -231,27 +321,7 @@ function PlayPageInner() {
             </p>
           )}
 
-          <div className="px-1 pb-1">
-            <button
-              type="button"
-              onClick={handleStart}
-              disabled={
-                (!isDailyChallenge && availableCountryCount === 0) ||
-                (mode === "weak-spots" && !weakSpotCodes?.length)
-              }
-              className="group relative w-full overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-emerald-500 via-teal-600 to-sky-700 p-4 text-left text-white shadow-[0_5px_14px_-8px_rgb(15_118_110_/_0.55)] transition-all duration-150 ease-out hover:-translate-y-px hover:shadow-[0_7px_18px_-9px_rgb(15_118_110_/_0.6)] active:translate-y-px active:shadow-[0_2px_8px_-6px_rgb(15_118_110_/_0.45)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-[0_5px_14px_-8px_rgb(15_118_110_/_0.55)] disabled:active:translate-y-0 sm:p-5"
-            >
-              <span
-                aria-hidden
-                className="pointer-events-none absolute -right-3 -top-3 select-none text-[4.5rem] opacity-15 transition-transform duration-150 group-hover:scale-110 group-active:scale-95 sm:-right-5 sm:-top-5 sm:text-[5.5rem]"
-              >
-                {scopeInfo.icon}
-              </span>
-              <span className="relative font-display text-xl font-extrabold tracking-tight transition-transform duration-150 group-active:translate-y-px sm:text-2xl">
-                {isDailyChallenge && dailyAlreadyPlayed ? "Review challenge" : "Start Game"}
-              </span>
-            </button>
-          </div>
+          {startGameButton}
 
           {!isDailyChallenge && (
           <div className="space-y-5 rounded-[1.75rem] border-2 border-slate-200 bg-white/90 p-4 shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90 sm:space-y-6 sm:p-6">

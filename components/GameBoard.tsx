@@ -388,6 +388,21 @@ export function GameBoard({
   const dailyDateLabel = mode === "daily-challenge" ? formatDailyDate() : null;
   const isTextOnlyPrompt =
     question.mode === "capital-to-country" || question.mode === "country-to-capital";
+  const roundTitlePanel = (
+    <>
+      <p className="text-[9px] font-black uppercase tracking-[0.18em] text-teal-700/70 sm:text-[10px]">
+        {dailyDateLabel ?? "Your task"}
+      </p>
+      <p className="font-display text-sm font-extrabold leading-snug text-slate-700 dark:text-slate-200 sm:truncate sm:text-base">
+        {roundTaskLabel}
+      </p>
+      {mode === "daily-challenge" && !countStats && (
+        <p className="mt-0.5 text-[10px] font-semibold text-amber-600 dark:text-amber-400">
+          Review — stats won&apos;t count
+        </p>
+      )}
+    </>
+  );
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden sm:gap-3">
@@ -397,7 +412,7 @@ export function GameBoard({
       />
 
       <div className="shrink-0 px-0.5 py-1.5 sm:px-1 sm:py-2">
-        <div className="grid grid-cols-[auto_minmax(0,1fr)_minmax(0,auto)] items-center gap-1.5 sm:gap-2">
+        <div className="flex items-center justify-between gap-1.5 sm:grid sm:grid-cols-[auto_minmax(0,1fr)_minmax(0,auto)] sm:items-center sm:gap-2">
           <button
             type="button"
             onClick={() => router.push("/")}
@@ -407,18 +422,8 @@ export function GameBoard({
             <span aria-hidden>←</span>
             <span>Exit</span>
           </button>
-          <div className="min-w-0 px-1 text-center leading-tight">
-            <p className="text-[9px] font-black uppercase tracking-[0.18em] text-teal-700/70 sm:text-[10px]">
-              {dailyDateLabel ?? "Your task"}
-            </p>
-            <p className="truncate font-display text-sm font-extrabold text-slate-700 dark:text-slate-200 sm:text-base">
-              {roundTaskLabel}
-            </p>
-            {mode === "daily-challenge" && !countStats && (
-              <p className="mt-0.5 text-[10px] font-semibold text-amber-600 dark:text-amber-400">
-                Review — stats won&apos;t count
-              </p>
-            )}
+          <div className="hidden min-w-0 px-1 text-center leading-tight sm:block">
+            {roundTitlePanel}
           </div>
           <div className="flex min-w-0 shrink-0 items-stretch justify-end gap-1 sm:gap-1.5">
             <StreakCounter streak={streak} compact />
@@ -440,43 +445,69 @@ export function GameBoard({
             )}
           </div>
         </div>
+        <div className="mt-1.5 px-1 text-center leading-tight sm:hidden">
+          {roundTitlePanel}
+        </div>
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border-2 border-slate-200 bg-white/90 p-3 shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90 sm:rounded-3xl sm:p-4">
         {!isTextOnlyPrompt && (
-          <h2 className="mb-2 shrink-0 text-center font-display text-base font-extrabold leading-tight sm:mb-3 sm:text-xl">
+          <h2 className="mb-2 hidden shrink-0 text-center font-display text-base font-extrabold leading-tight sm:mb-3 sm:block sm:text-xl">
             {question.prompt}
           </h2>
         )}
 
         <div
-          className={`@container/size flex min-h-0 flex-1 flex-col overflow-hidden ${question.displayType === "flags-grid" ? "" : "justify-center"}`}
+          className={`@container/size flex min-h-0 flex-1 flex-col overflow-hidden ${
+            question.displayType === "flags-grid" ? "sm:justify-start" : "sm:justify-center"
+          }`}
         >
+          <div className="min-h-0 flex-[0.24] sm:hidden" aria-hidden />
+
+          <div className="shrink-0 px-3 pb-2 text-center sm:hidden">
+            <p
+              className={`font-display font-extrabold leading-snug text-slate-800 dark:text-slate-100 ${
+                isTextOnlyPrompt ? "text-2xl" : "text-base"
+              }`}
+            >
+              {question.prompt}
+            </p>
+          </div>
+
           {!showLearnCard && isTextOnlyPrompt && (
-            <div className="flex items-center justify-center px-4 py-6 text-center">
+            <div className="hidden min-h-0 flex-1 items-center justify-center px-4 py-6 text-center sm:flex">
               <p className="max-w-2xl font-display text-2xl font-extrabold leading-snug text-slate-800 dark:text-slate-100 sm:text-3xl md:text-4xl">
                 {question.prompt}
               </p>
             </div>
           )}
-          {!showLearnCard && question.displayType === "flag" && (
-            <FlagDisplay code={question.countryCode} size="md" />
+
+          {!showLearnCard && isTextOnlyPrompt && (
+            <div className="min-h-0 flex-[0.76] sm:hidden" aria-hidden />
           )}
-          {!showLearnCard && question.displayType === "shape" && (
-            <ShapeDisplay code={question.countryCode} compact />
-          )}
-          {!showLearnCard && question.mode === "neighbor-quiz" && (
-            <NeighborCountryDisplay code={question.countryCode} />
-          )}
-          {!showLearnCard && question.displayType === "population" && question.optionCodes && (
-            <PopulationMatchupDisplay codes={question.optionCodes} />
-          )}
-          {!showLearnCard && question.displayType === "flags-grid" && question.optionCodes && (
-            <FlagGrid
-              codes={question.optionCodes.filter((c) => !hiddenOptions.includes(c))}
-              onSelect={(code) => handleAnswer(code, code)}
-              compact
-            />
+
+          {!showLearnCard && !isTextOnlyPrompt && (
+            <div className="flex min-h-0 flex-[0.76] flex-col items-center justify-center overflow-hidden sm:flex-1">
+              {question.displayType === "flag" && (
+                <FlagDisplay code={question.countryCode} size="md" />
+              )}
+              {question.displayType === "shape" && (
+                <ShapeDisplay code={question.countryCode} compact />
+              )}
+              {question.mode === "neighbor-quiz" && (
+                <NeighborCountryDisplay code={question.countryCode} />
+              )}
+              {question.displayType === "population" && question.optionCodes && (
+                <PopulationMatchupDisplay codes={question.optionCodes} />
+              )}
+              {question.displayType === "flags-grid" && question.optionCodes && (
+                <FlagGrid
+                  codes={question.optionCodes.filter((c) => !hiddenOptions.includes(c))}
+                  onSelect={(code) => handleAnswer(code, code)}
+                  compact
+                />
+              )}
+            </div>
           )}
         </div>
 
@@ -521,18 +552,22 @@ export function GameBoard({
       <AnswerFeedbackLayer bursts={bursts} onDone={removeBurst} />
 
       {showLearnCard && (
-        <div
-          className="fixed inset-0 z-50 cursor-pointer bg-slate-900/50 backdrop-blur-[2px]"
-          onClick={handleContinue}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") handleContinue();
-          }}
-          role="button"
-          tabIndex={0}
-          aria-label="Continue to next question"
-        >
-          <div className="flex h-full items-center justify-center p-4">
-            <div className="pointer-events-none max-h-[88dvh] w-full max-w-lg overflow-y-auto">
+        <>
+          <div
+            className="fixed inset-0 z-50 cursor-pointer bg-slate-900/50 backdrop-blur-[2px]"
+            onClick={handleContinue}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") handleContinue();
+            }}
+            role="button"
+            tabIndex={0}
+            aria-label="Continue to next question"
+          />
+          <div
+            className="pointer-events-none fixed inset-0 z-[55] flex items-center justify-center p-4"
+            aria-hidden
+          >
+            <div className="max-h-[88dvh] w-full max-w-lg overflow-y-auto">
               <LearnCard
                 countryCode={
                   question.mode === "neighbor-quiz"
@@ -555,7 +590,7 @@ export function GameBoard({
               />
             </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );

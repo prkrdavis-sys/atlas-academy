@@ -25,7 +25,7 @@ US states (the "Across America" scope) use **ISO 3166-2:US** codes (`US-AL` … 
 
 ## Shape quiz eligibility
 
-Very small territories and micro-states are excluded from Shape → Country mode because their silhouettes are unreadable on mobile screens. This includes Vatican City, Monaco, Singapore, and similar entries. The `shapeQuizEligible` field in `data/countries.json` controls this.
+Shape quiz questions include every place that has a downloaded silhouette asset (`hasShape`). Four sovereign countries — Kosovo, Marshall Islands, Micronesia, and Tuvalu — have no shape file and are excluded from shape modes. On data refresh, `shapeQuizEligible` is set to match `hasShape`.
 
 ## Keeping data current
 

@@ -2,6 +2,7 @@ import type { GameMode, GameScope } from "@/lib/types";
 import { GAME_MODES } from "@/lib/types";
 
 export const SCOPE_STORAGE_KEY = "atlas-academy-scope";
+export const LIBRARY_SCOPE_STORAGE_KEY = "atlas-academy-library-scope";
 
 export const SCOPE_INFO: Record<
   GameScope,
@@ -25,7 +26,7 @@ export const SCOPE_INFO: Record<
     noun: "country",
     nounPlural: "countries",
     tagline: "Flags, capitals, and country shapes. Build a streak and beat your best.",
-    libraryTitle: "Country Library",
+    libraryTitle: "Global Library",
     regionLabel: "Continents",
   },
   usa: {
@@ -53,7 +54,16 @@ export function setStoredScope(scope: GameScope): void {
   localStorage.setItem(SCOPE_STORAGE_KEY, scope);
 }
 
-/** Query string to append to play/library links so the scope carries through. */
+export function getStoredLibraryScope(): GameScope {
+  if (typeof window === "undefined") return "world";
+  return normalizeScope(localStorage.getItem(LIBRARY_SCOPE_STORAGE_KEY));
+}
+
+export function setStoredLibraryScope(scope: GameScope): void {
+  localStorage.setItem(LIBRARY_SCOPE_STORAGE_KEY, scope);
+}
+
+/** Query string to append to play links so the quiz scope carries through. */
 export function scopeQuery(scope: GameScope): string {
   return scope === "usa" ? "?scope=usa" : "";
 }

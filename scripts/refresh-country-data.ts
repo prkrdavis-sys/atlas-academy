@@ -60,14 +60,6 @@ const PUBLIC_FLAGS = join(ROOT, "public", "flags");
 const PUBLIC_SHAPES = join(ROOT, "public", "shapes");
 const FLAG_ICONS_DIR = join(ROOT, "node_modules", "flag-icons", "flags", "4x3");
 
-const SHAPE_INELIGIBLE_CODES = new Set([
-  "AD", "AG", "AI", "AW", "AX", "BB", "BH", "BM", "BN", "BQ", "BS", "CK", "CW", "CY",
-  "DM", "FK", "FO", "GD", "GG", "GI", "GL", "GM", "GP", "GU", "HK", "IM", "IO", "JE",
-  "KI", "KN", "KY", "LC", "LI", "MC", "MF", "MH", "MO", "MP", "MQ", "MS", "MT", "MV",
-  "NC", "NR", "NU", "PF", "PM", "PN", "PR", "PW", "RE", "SB", "SC", "SG", "SH", "SJ",
-  "SM", "ST", "SX", "TC", "TK", "TO", "TV", "VA", "VC", "VG", "VI", "WF", "WS", "YT",
-]);
-
 const ALIAS_MAP: Record<string, string[]> = {
   US: ["usa", "u.s.a.", "u.s.", "america", "united states of america"],
   GB: ["uk", "u.k.", "britain", "great britain", "england"],
@@ -197,11 +189,9 @@ async function main() {
     const hasShape = await downloadShape(code, code3);
     if (hasShape) shapeCount += 1;
 
+    const shapeQuizEligible = hasShape;
+
     const area = raw.area ?? 0;
-    const shapeQuizEligible =
-      hasShape &&
-      !SHAPE_INELIGIBLE_CODES.has(code) &&
-      area >= 500;
 
     const aliases = [
       raw.name.common.toLowerCase(),

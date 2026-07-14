@@ -60,9 +60,8 @@ function Burst({ burst, onDone }: { burst: FeedbackBurst; onDone: (id: number) =
 }
 
 /**
- * Fixed overlay that plays quick correct/incorrect bursts. It sits just below the
- * learn-card overlay and ignores pointer events, so the popup stays readable while
- * the burst plays underneath.
+ * Fixed overlay that plays quick correct/incorrect bursts. It sits above the
+ * learn-card backdrop blur but below the card content, and ignores pointer events.
  */
 export function AnswerFeedbackLayer({
   bursts,
@@ -73,7 +72,7 @@ export function AnswerFeedbackLayer({
 }) {
   if (bursts.length === 0) return null;
   return (
-    <div className="pointer-events-none fixed inset-0 z-[45]" aria-hidden>
+    <div className="pointer-events-none fixed inset-0 z-[52]" aria-hidden>
       {bursts.map((burst) => (
         <Burst key={burst.id} burst={burst} onDone={onDone} />
       ))}

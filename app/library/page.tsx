@@ -1,20 +1,16 @@
-import type { Metadata } from "next";
-import { LibraryBrowser } from "@/components/LibraryBrowser";
-import { normalizeScope } from "@/lib/scope";
+import { Suspense } from "react";
+import { LibraryPageContent } from "@/components/LibraryPageContent";
 
-export const metadata: Metadata = {
-  title: "Library | Atlas Academy",
-  description:
-    "Browse flags, shapes, capitals, populations, neighbors, and facts for every country and US state.",
-};
-
-type LibraryPageProps = {
-  searchParams: Promise<{ scope?: string }>;
-};
-
-export default async function LibraryPage({ searchParams }: LibraryPageProps) {
-  const { scope } = await searchParams;
-  const normalized = normalizeScope(scope);
-  // Remount on scope change so the region filter resets to "All".
-  return <LibraryBrowser key={normalized} scope={normalized} />;
+export default function LibraryPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="space-y-5 sm:space-y-7">
+          <div className="h-44 animate-pulse rounded-[1.75rem] bg-slate-200/70 dark:bg-slate-800/70" />
+        </div>
+      }
+    >
+      <LibraryPageContent />
+    </Suspense>
+  );
 }

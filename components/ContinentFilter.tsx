@@ -43,10 +43,16 @@ export function ContinentFilter({
 
   function selectAll() {
     onContinentsChange([...regions]);
+    if (!isUsa) {
+      onIncludeTerritoriesChange(true);
+    }
   }
 
   function clearAll() {
     onContinentsChange([]);
+    if (!isUsa) {
+      onIncludeTerritoriesChange(false);
+    }
   }
 
   const summary = (() => {
@@ -99,7 +105,7 @@ export function ContinentFilter({
         {!isUsa && (
           <label
             className={cn(
-              "col-span-2 flex min-h-12 cursor-pointer items-center gap-2 rounded-xl border px-3 py-2.5 transition-colors sm:gap-3 sm:px-4 sm:py-3",
+              "flex min-h-12 cursor-pointer items-center gap-2 rounded-xl border px-3 py-2.5 transition-colors sm:gap-3 sm:px-4 sm:py-3",
               includeTerritories
                 ? "border-emerald-300 bg-emerald-50 dark:border-emerald-700 dark:bg-emerald-950/50"
                 : "border-slate-200 bg-white hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:hover:bg-slate-700",

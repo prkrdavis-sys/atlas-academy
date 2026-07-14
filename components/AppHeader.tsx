@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 
 const MOBILE_NAV_ITEMS = [
   { href: "/", label: "Play", icon: "🌎" },
+  { href: "/extras", label: "Extras", icon: "✨" },
   { href: "/stats", label: "Stats", icon: "📊" },
   { href: "/profiles", label: "Profiles", icon: "🙂" },
 ] as const;
@@ -38,6 +39,15 @@ export function AppHeader() {
               Play
             </Link>
             <Link
+              href="/extras"
+              className={cn(
+                "transition-colors hover:text-teal-700 dark:hover:text-teal-300",
+                pathname.startsWith("/extras") && "text-teal-700 dark:text-teal-300",
+              )}
+            >
+              Extras
+            </Link>
+            <Link
               href="/stats"
               className={cn(
                 "transition-colors hover:text-teal-700 dark:hover:text-teal-300",
@@ -60,7 +70,7 @@ export function AppHeader() {
         aria-label="Primary navigation"
         className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200/90 bg-white/92 pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_30px_rgb(15_23_42_/_0.08)] backdrop-blur-xl dark:border-slate-700/90 dark:bg-slate-900/92 dark:shadow-[0_-8px_30px_rgb(0_0_0_/_0.3)] sm:hidden"
       >
-        <div className="mx-auto grid h-16 max-w-md grid-cols-3 px-3">
+        <div className="mx-auto grid h-16 max-w-md grid-cols-4 px-3">
           {MOBILE_NAV_ITEMS.map((item) => {
             const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
             return (

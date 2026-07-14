@@ -205,6 +205,14 @@ export type AnswerResult = {
   skipped?: boolean;
 };
 
+/** Phase-2 quiz modes shown on the Extras page (not core Play or Challenges). */
+export const EXTRA_QUIZ_MODES: GameMode[] = [
+  "weak-spots",
+  "country-to-flag",
+  "neighbor-quiz",
+  "population-showdown",
+];
+
 export const GAME_MODES: {
   id: GameMode;
   title: string;

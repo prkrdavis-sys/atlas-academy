@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { LibraryPlaceVisual } from "@/components/LibraryPlaceVisual";
 import {
   countries,
   formatPopulation,
   getCountryByCode,
   getFlagPath,
-  getShapePath,
   usStates,
 } from "@/lib/countries";
 import { isStateCode } from "@/lib/scope";
@@ -112,17 +112,7 @@ export default async function CountryPage({ params }: CountryPageProps) {
           </div>
 
           <div className="flex min-h-56 items-center justify-center rounded-2xl bg-slate-50 p-6 dark:bg-slate-800/70 sm:min-h-72">
-            {country.hasShape ? (
-              // Country silhouettes are local SVG documents with their own intrinsic viewBox.
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={getShapePath(country.code3)}
-                alt={`Outline of ${country.name}`}
-                className="max-h-64 w-full object-contain [filter:brightness(0)_saturate(100%)_invert(28%)_sepia(15%)_saturate(1120%)_hue-rotate(179deg)_brightness(93%)_contrast(90%)] dark:[filter:brightness(0)_invert(1)]"
-              />
-            ) : (
-              <p className="text-sm font-semibold text-slate-400">Shape unavailable</p>
-            )}
+            <LibraryPlaceVisual country={country} variant="hero" />
           </div>
         </div>
       </header>

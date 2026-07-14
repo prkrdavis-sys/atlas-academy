@@ -3,8 +3,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { getFlagPath, getPlacesForScope, getRegionsForScope, getShapePath } from "@/lib/countries";
-import { SCOPE_INFO } from "@/lib/scope";
+import { LibraryPlaceVisual } from "@/components/LibraryPlaceVisual";
+import { getFlagPath, getPlacesForScope, getRegionsForScope } from "@/lib/countries";
+import { SCOPE_INFO, setStoredLibraryScope } from "@/lib/scope";
 import { GAME_SCOPES, type GameScope, type Region } from "@/lib/types";
 
 type LibraryFilter = "All" | Region;
@@ -47,6 +48,7 @@ export function LibraryBrowser({ scope = "world" }: LibraryBrowserProps) {
                 key={option}
                 href={option === "usa" ? "/library?scope=usa" : "/library"}
                 aria-current={active ? "page" : undefined}
+                onClick={() => setStoredLibraryScope(option)}
                 className={`min-h-10 rounded-xl px-4 py-2 font-display text-sm font-extrabold transition-all ${
                   active
                     ? "bg-white text-teal-800 shadow-sm dark:bg-slate-900 dark:text-teal-300"
@@ -100,17 +102,7 @@ export function LibraryBrowser({ scope = "world" }: LibraryBrowserProps) {
                 className="group flex h-full min-h-48 flex-col overflow-hidden rounded-2xl border-2 border-slate-200 bg-white/85 p-3 shadow-sm transition-all hover:-translate-y-0.5 hover:border-teal-400 hover:shadow-md active:translate-y-0 dark:border-slate-700 dark:bg-slate-900/85 dark:hover:border-teal-500 sm:min-h-56 sm:p-4"
               >
                 <div className="flex min-h-28 flex-1 items-center justify-center rounded-xl bg-slate-50 p-3 dark:bg-slate-800/70 sm:min-h-32">
-                  {country.hasShape ? (
-                    // Silhouettes are local SVG documents with their own intrinsic viewBox.
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={getShapePath(country.code3)}
-                      alt=""
-                      className="max-h-24 w-full object-contain opacity-80 transition-transform group-hover:scale-105 [filter:brightness(0)_saturate(100%)_invert(30%)_sepia(13%)_saturate(1020%)_hue-rotate(179deg)_brightness(93%)_contrast(90%)] dark:opacity-90 dark:[filter:brightness(0)_invert(1)] sm:max-h-28"
-                    />
-                  ) : (
-                    <span className="text-xs font-semibold text-slate-400">Shape unavailable</span>
-                  )}
+                  <LibraryPlaceVisual country={country} variant="card" />
                 </div>
                 <div className="mt-3 flex items-center gap-2.5">
                   {country.hasFlag ? (

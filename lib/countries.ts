@@ -58,7 +58,7 @@ export function filterCountries(options: FilterOptions): Country[] {
   let pool = [...sovereignPool, ...territoryPool];
 
   if (options.mode === "shape-to-country") {
-    pool = pool.filter((c) => c.shapeQuizEligible);
+    pool = pool.filter((c) => c.hasShape);
   }
 
   if (options.mode === "flag-to-country" || options.mode === "country-to-flag") {
@@ -74,7 +74,7 @@ export function filterCountries(options: FilterOptions): Country[] {
   }
 
   if (options.mode === "population-showdown") {
-    pool = pool.filter((c) => c.population > 0 && c.hasShape && c.hasFlag);
+    pool = pool.filter((c) => c.population > 0 && c.hasFlag);
   }
 
   if (options.mode === "weak-spots" && options.weakSpotCodes?.length) {
@@ -112,7 +112,7 @@ export function getEligibleCoreQuestionTypes(country: Country): CoreQuestionType
   if (country.capital.length > 0) {
     types.push("capital-to-country", "country-to-capital");
   }
-  if (country.shapeQuizEligible) types.push("shape-to-country");
+  if (country.hasShape) types.push("shape-to-country");
   return types;
 }
 

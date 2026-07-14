@@ -256,8 +256,8 @@ export default function StatsPage() {
         </div>
       </section>
 
-      <section className="overflow-hidden rounded-[1.75rem] border-2 border-slate-200 bg-white/90 shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90">
-        <div className="sticky top-[var(--app-header-offset)] z-10 border-b border-slate-200 bg-white px-4 py-4 dark:border-slate-700 dark:bg-slate-900 sm:px-6">
+      <section className="rounded-[1.75rem] border-2 border-slate-200 bg-white/90 shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90">
+        <div className="border-b border-slate-200 bg-white px-4 py-4 dark:border-slate-700 dark:bg-slate-900 sm:px-6 sm:py-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="font-display text-base font-extrabold text-slate-800 dark:text-slate-100 sm:font-semibold">Achievements</h2>
@@ -271,11 +271,11 @@ export default function StatsPage() {
               className="sm:max-w-xs sm:flex-1"
             />
           </div>
-        </div>
-        <div className="p-4 sm:p-6">
-          <p className="mb-3 text-xs text-slate-500 dark:text-slate-400 sm:mb-4 sm:text-sm">
+          <p className="mt-3 text-xs text-slate-500 dark:text-slate-400 sm:mt-4 sm:text-sm">
             Achievements count progress across all difficulties.
           </p>
+        </div>
+        <div className="px-4 pb-4 pt-4 sm:px-6 sm:pb-6 sm:pt-5">
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3 lg:grid-cols-3">
             {sortedAchievements.map((achievement) => {
               const earned = profile.achievements.includes(achievement.id);

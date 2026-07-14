@@ -36,10 +36,22 @@ const CORE_MODE_STYLES: Record<
     iconBg: "bg-amber-100 dark:bg-amber-900/60",
     hover: "hover:border-amber-400 dark:hover:border-amber-600",
   },
+  mixed: {
+    tile: "border-teal-200 bg-teal-50/80 dark:border-teal-800 dark:bg-teal-950/50",
+    iconBg: "bg-teal-100 dark:bg-teal-900/60",
+    hover: "hover:border-teal-400 dark:hover:border-teal-600",
+  },
 };
 
-const CHALLENGE_MODES: GameMode[] = ["daily-challenge", "mixed", "speed-round", "marathon"];
-const EXTRA_QUIZ_MODES: GameMode[] = ["weak-spots", "country-to-flag", "neighbor-quiz", "population-showdown"];
+const PLAY_MODES: GameMode[] = [
+  "flag-to-country",
+  "capital-to-country",
+  "country-to-capital",
+  "shape-to-country",
+  "mixed",
+];
+
+const CHALLENGE_MODES: GameMode[] = ["daily-challenge", "speed-round", "marathon"];
 
 export default function HomePage() {
   const { activeProfile, hydrated } = useProfiles();
@@ -155,7 +167,9 @@ export default function HomePage() {
       <section>
         <h2 className="mb-3 font-display text-xl font-extrabold text-slate-800 dark:text-slate-100 sm:mb-4">Play</h2>
         <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
-          {GAME_MODES.filter((m) => m.phase === 1).map((mode) => {
+          {PLAY_MODES.map((id) => {
+            const mode = GAME_MODES.find((m) => m.id === id);
+            if (!mode) return null;
             const style = CORE_MODE_STYLES[mode.id];
             return (
               <PlayModeLink
@@ -165,6 +179,7 @@ export default function HomePage() {
                 onProfileRequired={showRequiredProfileDialog}
                 className={cn(
                   "group flex min-h-[5.25rem] items-center gap-3 rounded-2xl border-2 p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md sm:gap-4 sm:p-5",
+                  mode.id === "mixed" && "sm:col-span-2",
                   style?.tile ?? "border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900",
                   style?.hover,
                 )}
@@ -189,7 +204,7 @@ export default function HomePage() {
 
       <section>
         <h2 className="mb-3 font-display text-xl font-extrabold text-slate-800 dark:text-slate-100 sm:mb-4">Challenges</h2>
-        <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-3 xl:grid-cols-5">
+        <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-3">
           {CHALLENGE_MODES.map((id) => {
             const mode = GAME_MODES.find((m) => m.id === id);
             if (!mode) return null;
@@ -217,31 +232,6 @@ export default function HomePage() {
               </PlayModeLink>
             );
           })}
-        </div>
-
-        <div className="-mx-4 mt-3 flex items-center gap-2 overflow-x-auto px-4 py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:mt-4 sm:flex-wrap sm:overflow-visible sm:px-0">
-          <span className="shrink-0 text-sm font-medium text-slate-500 dark:text-slate-400">More:</span>
-          {EXTRA_QUIZ_MODES.map((id) => {
-            const mode = GAME_MODES.find((m) => m.id === id);
-            if (!mode) return null;
-            return (
-              <PlayModeLink
-                key={mode.id}
-                mode={mode.id}
-                scope={scope}
-                onProfileRequired={showRequiredProfileDialog}
-                className="min-h-11 shrink-0 rounded-full border-2 border-slate-200 bg-white/80 px-3.5 py-2 text-sm font-semibold text-slate-700 transition-colors hover:border-teal-400 hover:text-teal-700 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-300 dark:hover:border-teal-500 dark:hover:text-teal-300"
-              >
-                {mode.icon} {scopeText(mode.title, scope)}
-              </PlayModeLink>
-            );
-          })}
-          <Link
-            href={`/library${scopeQuery(scope)}`}
-            className="min-h-11 shrink-0 rounded-full border-2 border-slate-200 bg-white/80 px-3.5 py-2 text-sm font-semibold text-slate-700 transition-colors hover:border-teal-400 hover:text-teal-700 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-300 dark:hover:border-teal-500 dark:hover:text-teal-300"
-          >
-            📚 {scopeInfo.libraryTitle}
-          </Link>
         </div>
       </section>
     </div>
