@@ -101,10 +101,10 @@ export default function HomePage() {
         </div>
         <div className="relative max-w-xl">
           <h1 className="font-display text-3xl font-extrabold tracking-tight sm:text-5xl">
-            Atlas Academy
+            Learn world geography
           </h1>
           <p className="mt-3 max-w-[18rem] text-sm leading-relaxed text-emerald-50 sm:max-w-md sm:text-base">
-            Flags, capitals, shapes, and geography challenges. Build a streak and beat your best.
+            Flags, capitals, shapes, and more. Build a streak and beat your best.
           </p>
           {profile && (
             <HomeStreakHighlights
@@ -139,10 +139,11 @@ export default function HomePage() {
         </div>
       </section>
 
-      <ScopeSelector scope={scope} onSelect={selectScope} />
-
       <section>
-        <h2 className="mb-3 font-display text-xl font-extrabold text-slate-800 dark:text-slate-100 sm:mb-4">Play</h2>
+        <div className="mb-3 flex items-center justify-between gap-3 sm:mb-4">
+          <h2 className="font-display text-xl font-extrabold text-slate-800 dark:text-slate-100">Play</h2>
+          <ScopeSelector scope={scope} onSelect={selectScope} />
+        </div>
         <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
           {PLAY_MODES.map((id) => {
             const mode = GAME_MODES.find((m) => m.id === id);

@@ -16,7 +16,7 @@ function Burst({ burst, onDone }: { burst: FeedbackBurst; onDone: (id: number) =
   }, [burst.id, onDone]);
 
   return (
-    <div className="absolute inset-0 flex items-center justify-center translate-y-[30vh] sm:translate-y-[22vh]">
+    <div className="absolute inset-0 flex items-center justify-center translate-y-[30vh]">
       {!burst.correct && (
         <div className="animate-screen-flash absolute inset-0 shadow-[inset_0_0_120px_40px_rgb(244_63_94_/_0.35)]" />
       )}

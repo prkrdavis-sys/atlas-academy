@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { ContinentFilter } from "@/components/ContinentFilter";
+import { GameActionButton } from "@/components/GameActionButton";
 import { GameBoard } from "@/components/GameBoard";
 import { useProfiles, useRequiredProfile } from "@/components/ProfileProvider";
 import { Select } from "@/components/ui/Select";
@@ -252,22 +253,13 @@ function PlayPageInner() {
             }
           >
             <div className="px-1 pb-1">
-              <button
-                type="button"
+              <GameActionButton
                 onClick={handleStart}
                 disabled={startDisabled}
-                className="group relative w-full overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-emerald-500 via-teal-600 to-sky-700 p-4 text-left text-white shadow-[0_5px_14px_-8px_rgb(15_118_110_/_0.55)] transition-all duration-150 ease-out hover:-translate-y-px hover:shadow-[0_7px_18px_-9px_rgb(15_118_110_/_0.6)] active:translate-y-px active:shadow-[0_2px_8px_-6px_rgb(15_118_110_/_0.45)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-[0_5px_14px_-8px_rgb(15_118_110_/_0.55)] disabled:active:translate-y-0 sm:p-5"
+                icon={scopeInfo.icon}
               >
-                <span
-                  aria-hidden
-                  className="pointer-events-none absolute -right-3 -top-3 select-none text-[4.5rem] opacity-15 transition-transform duration-150 group-hover:scale-110 group-active:scale-95 sm:-right-5 sm:-top-5 sm:text-[5.5rem]"
-                >
-                  {scopeInfo.icon}
-                </span>
-                <span className="relative font-display text-xl font-extrabold tracking-tight transition-transform duration-150 group-active:translate-y-px sm:text-2xl">
-                  {isDailyChallenge && dailyAlreadyPlayed ? "Review challenge" : "Start Game"}
-                </span>
-              </button>
+                {isDailyChallenge && dailyAlreadyPlayed ? "Review challenge" : "Start Game"}
+              </GameActionButton>
             </div>
           </div>
         </div>

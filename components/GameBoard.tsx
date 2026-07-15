@@ -12,6 +12,7 @@ import { NeighborCountryDisplay } from "@/components/NeighborCountryDisplay";
 import { PopulationMatchupDisplay } from "@/components/PopulationMatchupDisplay";
 import { ShapeDisplay } from "@/components/ShapeDisplay";
 import { StreakCounter } from "@/components/StreakCounter";
+import { GameActionButton } from "@/components/GameActionButton";
 import { Button } from "@/components/ui/Button";
 import { useProfiles, useRequiredProfile } from "@/components/ProfileProvider";
 import { getCountryName } from "@/lib/countries";
@@ -24,7 +25,7 @@ import {
   recordDailyChallengeCompletion,
 } from "@/lib/storage";
 import { getGlobalStreakOrZero } from "@/lib/stats-helpers";
-import { scopeText } from "@/lib/scope";
+import { scopeText, SCOPE_INFO } from "@/lib/scope";
 import type { Difficulty, GameMode, GameScope, Question, Region, RoundQuestionSetting, SpeedRoundQuestionType } from "@/lib/types";
 
 const ROUND_TASK_LABELS: Record<GameMode, string> = {
@@ -404,13 +405,13 @@ export function GameBoard({
               <p className="text-xs font-semibold text-slate-600 dark:text-slate-400">Skipped</p>
             </div>
           </div>
-          <div className="mt-6 space-y-3">
+          <div className="mt-6 flex flex-col gap-3">
             {onPlayAgain && (
-              <Button className="w-full" onClick={onPlayAgain}>
+              <GameActionButton icon={SCOPE_INFO[scope].icon} onClick={onPlayAgain}>
                 Play again
-              </Button>
+              </GameActionButton>
             )}
-            <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:justify-center">
+            <div className="grid grid-cols-2 gap-3">
               <Button variant="secondary" className="w-full" onClick={() => router.push("/stats")}>View stats</Button>
               <Button className="w-full" onClick={() => router.push("/")}>Back home</Button>
             </div>
