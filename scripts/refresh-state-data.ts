@@ -96,8 +96,10 @@ const states = STATE_ROWS.map(
     const code = toCode(postal);
     const flagPath = join(process.cwd(), "public", "flags", `${code.toLowerCase()}.svg`);
     const shapePath = join(process.cwd(), "public", "shapes", `${code.toLowerCase()}.svg`);
+    const capitalPath = join(process.cwd(), "public", "capitals", `${code.toLowerCase()}.jpg`);
     const hasFlag = existsSync(flagPath);
     const hasShape = existsSync(shapePath);
+    const hasCapitalImage = existsSync(capitalPath);
     if (!hasFlag || !hasShape) {
       throw new Error(`Missing assets for ${name}: flag=${hasFlag} shape=${hasShape}`);
     }
@@ -116,6 +118,7 @@ const states = STATE_ROWS.map(
       shapeQuizEligible: true,
       hasFlag,
       hasShape,
+      hasCapitalImage,
       isTerritory: false,
       fact: `${name} is known as ${nickname}.`,
     };

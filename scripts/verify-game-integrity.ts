@@ -32,6 +32,9 @@ for (const c of [...countries, ...usStates]) {
   if (c.hasShape && !existsSync(join("public", "shapes", `${c.code3.toLowerCase()}.svg`))) {
     fail(`${c.name}: hasShape but shape file missing`);
   }
+  if (c.hasCapitalImage && !existsSync(join("public", "capitals", `${c.code.toLowerCase()}.jpg`))) {
+    fail(`${c.name}: hasCapitalImage but capital image missing`);
+  }
   if (c.shapeQuizEligible && !c.hasShape) fail(`${c.name}: shapeQuizEligible without shape`);
 }
 

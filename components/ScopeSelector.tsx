@@ -24,6 +24,10 @@ export function ScopeSelector({ scope, onSelect }: ScopeSelectorProps) {
             key={option}
             type="button"
             aria-pressed={active}
+            onMouseDown={(event) => {
+              // Prevent mobile browsers from scrolling the toggle into view on tap.
+              event.preventDefault();
+            }}
             onClick={() => onSelect(option)}
             className={cn(
               "min-h-9 rounded-xl px-3 py-1.5 font-display text-sm font-extrabold transition-all",

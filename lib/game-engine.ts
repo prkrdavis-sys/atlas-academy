@@ -35,6 +35,17 @@ function pickFromPool<T>(pool: T[], random: () => number): T {
   return pool[Math.floor(random() * pool.length)];
 }
 
+const NON_ISLAND_AND_COUNTRIES = new Set(["Bosnia and Herzegovina"]);
+
+function isIslandCountry(country: Country): boolean {
+  if (NON_ISLAND_AND_COUNTRIES.has(country.name)) return false;
+  if (/\bIslands?\b/i.test(country.name)) return true;
+  if (/\band\b/i.test(country.name) && country.borders.length === 0) return true;
+  // Sovereign island nations have no land borders; skip US states where border data is incomplete.
+  if (!country.code.startsWith("US-") && country.borders.length === 0) return true;
+  return false;
+}
+
 function buildMcOptions(
   correct: Country,
   pool: Country[],
@@ -61,26 +72,43 @@ function buildMcOptions(
       : pool.filter((c) => isValidDistractor(c) && c.continent === correct.continent);
 
   const distractors: { label: string; code: string }[] = [];
-  for (const c of shuffle(distractorPool)) {
-    if (distractors.length >= 3) break;
-    if (distractors.some((d) => normalizeAnswerText(d.label) === normalizeAnswerText(getValue(c)))) continue;
-    distractors.push({ label: getValue(c), code: c.code });
+  const usedCodes = new Set<string>();
+  const usedLabels = new Set<string>();
+
+  const tryAddDistractor = (candidate: Country) => {
+    if (distractors.length >= 3) return;
+    if (usedCodes.has(candidate.code)) return;
+    const label = getValue(candidate);
+    const normalizedLabel = normalizeAnswerText(label);
+    if (usedLabels.has(normalizedLabel)) return;
+    usedCodes.add(candidate.code);
+    usedLabels.add(normalizedLabel);
+    distractors.push({ label, code: candidate.code });
+  };
+
+  const fillFromPool = (source: Country[]) => {
+    for (const candidate of shuffle(source)) {
+      if (distractors.length >= 3) break;
+      tryAddDistractor(candidate);
+    }
+  };
+
+  if (isIslandCountry(correct)) {
+    fillFromPool(distractorPool.filter(isIslandCountry));
   }
+  fillFromPool(distractorPool);
 
   while (distractors.length < 3) {
     const extra = pickRandom(
       pool.filter(
         (c) =>
           isValidDistractor(c) &&
-          !distractors.some(
-            (d) =>
-              d.code === c.code ||
-              normalizeAnswerText(d.label) === normalizeAnswerText(getValue(c)),
-          ),
+          !usedCodes.has(c.code) &&
+          !usedLabels.has(normalizeAnswerText(getValue(c))),
       ),
     );
     if (!extra) break;
-    distractors.push({ label: getValue(extra), code: extra.code });
+    tryAddDistractor(extra);
   }
 
   const combined = shuffle([{ label: getValue(correct), code: correct.code }, ...distractors]);
@@ -246,10 +274,15 @@ export class GameEngine {
           id,
           mode,
           countryCode: country.code,
-          prompt: scopeText(`What country has ${country.capital} as its capital?`, this.scope),
+          prompt: scopeText(
+            country.hasCapitalImage
+              ? "What country has this capital?"
+              : `What country has ${country.capital} as its capital?`,
+            this.scope,
+          ),
           correctAnswer: country.name,
           correctCode: country.code,
-          displayType: "text",
+          displayType: country.hasCapitalImage ? "capital" : "text",
           ...mc,
         };
       }

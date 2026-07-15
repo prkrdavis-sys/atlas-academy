@@ -114,6 +114,27 @@ export default async function CountryPage({ params }: CountryPageProps) {
         </div>
       </header>
 
+      {country.hasCapitalImage ? (
+        <section aria-labelledby="capital-city-heading">
+          <h2 id="capital-city-heading" className="mb-3 font-display text-xl font-extrabold text-slate-800 dark:text-slate-100">
+            Capital city
+          </h2>
+          <div className="overflow-hidden rounded-[1.75rem] border-2 border-slate-200 bg-white/85 shadow-sm dark:border-slate-700 dark:bg-slate-900/85">
+            <div className="aspect-[16/7] w-full sm:aspect-[21/9]">
+              <LibraryPlaceVisual country={country} variant="hero" visual="capital" />
+            </div>
+            <div className="border-t border-slate-200 px-5 py-4 dark:border-slate-700 sm:px-6">
+              <p className="font-display text-2xl font-extrabold text-slate-900 dark:text-slate-100 sm:text-3xl">
+                {country.capital}
+              </p>
+              <p className="mt-1 text-sm font-semibold text-slate-500 dark:text-slate-400">
+                Capital of {country.name}
+              </p>
+            </div>
+          </div>
+        </section>
+      ) : null}
+
       <section aria-labelledby="country-details-heading">
         <h2 id="country-details-heading" className="mb-3 font-display text-xl font-extrabold text-slate-800 dark:text-slate-100">
           {isState ? "State details" : "Country details"}

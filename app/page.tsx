@@ -1,15 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { PlayModeLink } from "@/components/PlayModeLink";
 import { HomeStreakHighlights } from "@/components/HomeStreakHighlights";
 import { ScopeSelector } from "@/components/ScopeSelector";
 import { ProfileRequiredDialog } from "@/components/ProfileRequiredDialog";
 import { useProfiles } from "@/components/ProfileProvider";
-import { GAME_MODES, type GameMode, type GameScope } from "@/lib/types";
+import { GAME_MODES, type GameMode } from "@/lib/types";
 import { formatDailyDate, getDailyChallengeRun, hasCompletedDailyToday, hasPlayedDailyToday } from "@/lib/game-engine";
-import { getStoredScope, scopeQuery, scopeText, setStoredScope } from "@/lib/scope";
+import { scopeQuery, scopeText } from "@/lib/scope";
+import { useGameScope } from "@/lib/use-game-scope";
 import { getGlobalStreakOrZero, getTodayBestStreakDisplay, getTodayBestStreakOrZero } from "@/lib/stats-helpers";
 import { cn } from "@/lib/utils";
 
@@ -61,17 +62,8 @@ export default function HomePage() {
   const showRequiredProfileDialog = useCallback(() => setShowProfileDialog(true), []);
   const hideRequiredProfileDialog = useCallback(() => setShowProfileDialog(false), []);
 
-  const [scope, setScope] = useState<GameScope>("world");
-  useEffect(() => {
-    // Hydrate the saved scope after mount, matching how profiles hydrate, so
-    // the server-rendered "world" markup never mismatches.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setScope(getStoredScope());
-  }, []);
-  const selectScope = useCallback((next: GameScope) => {
-    setScope(next);
-    setStoredScope(next);
-  }, []);
+  const heroRef = useRef<HTMLElement>(null);
+  const { scope, selectScope } = useGameScope({ layoutAnchorRef: heroRef });
 
   const difficulty = profile?.settings.difficulty ?? "easy";
   const globalStreak = getGlobalStreakOrZero(profile, difficulty, scope);
@@ -92,7 +84,10 @@ export default function HomePage() {
         open={showProfileDialog}
         onClose={hideRequiredProfileDialog}
       />
-      <section className="relative overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-emerald-500 via-teal-600 to-sky-700 p-5 text-white shadow-[0_16px_40px_rgb(15_118_110_/_0.22)] sm:p-10">
+      <section
+        ref={heroRef}
+        className="relative overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-emerald-500 via-teal-600 to-sky-700 p-5 text-white shadow-[0_16px_40px_rgb(15_118_110_/_0.22)] sm:p-10"
+      >
         <div
           aria-hidden
           className="pointer-events-none absolute -right-8 -top-8 select-none text-[8rem] opacity-15 sm:-right-10 sm:-top-14 sm:text-[11rem]"

@@ -1,55 +1,99 @@
-import { countries } from "@/lib/countries";
+import { getPlacesForScope } from "@/lib/countries";
 import type {
   AchievementSessionContext,
-  Continent,
   Difficulty,
   GameMode,
   GameScope,
   Profile,
+  Region,
+  UsRegion,
 } from "@/lib/types";
-import { ACHIEVEMENTS, GAME_MODES } from "@/lib/types";
+import { ACHIEVEMENTS, GAME_MODES, US_REGIONS } from "@/lib/types";
 import {
-  getGlobalStreak,
+  difficultyCorrectCount,
   maxGlobalBestStreak,
+  maxModeBestStreak,
+  maxTodayBestStreak,
   modeCorrectCount,
   modePlayedCount,
   modesWithMinCorrect,
+  modesWithMinPlayed,
   sumStatAcrossDifficulties,
 } from "@/lib/stats-helpers";
+
+const VALID_ACHIEVEMENT_IDS = new Set<string>(ACHIEVEMENTS.map((achievement) => achievement.id));
+
+/** Maps retired achievement IDs to their closest replacement. */
+const LEGACY_ACHIEVEMENT_MAP: Record<string, string> = {
+  "streak-5": "peak-15",
+  "streak-10": "peak-15",
+  "streak-25": "peak-30",
+  "streak-50": "peak-50",
+  "streak-75": "peak-75",
+  "streak-100": "peak-100",
+  "best-streak-20": "peak-15",
+  "best-streak-40": "peak-30",
+  "correct-100": "correct-150",
+  "correct-250": "correct-500",
+  "correct-1000": "correct-1500",
+  "flag-master": "flag-fanatic",
+  "marathon-runner": "marathon-25",
+  "marathon-40": "marathon-45",
+  "marathon-60": "marathon-65",
+  "speed-rookie": "speed-demon",
+  "mode-master": "mode-specialist",
+  "americas-master": "country-collector",
+  "oceania-master": "country-collector",
+  "antarctica-explorer": "country-collector",
+  "country-completionist": "country-collector",
+};
 
 function sumStat(profile: Profile, field: "totalCorrect" | "totalPlayed"): number {
   return sumStatAcrossDifficulties(profile, field);
 }
 
-function maxBestStreak(profile: Profile): number {
-  return maxGlobalBestStreak(profile);
+function scopePlayedCount(profile: Profile, scope: GameScope): number {
+  return sumStatAcrossDifficulties(profile, "totalPlayed", scope);
 }
 
-function continentMastery(
+function placeMastery(
   profile: Profile,
-  continents: Continent[],
-  minCountries: number,
+  regions: Region[],
+  minPlaces: number,
+  scope: GameScope,
+  minAccuracy = 0.9,
 ): boolean {
   const progress = profile.countryProgress ?? {};
+  const places = getPlacesForScope(scope);
   let correct = 0;
   let total = 0;
-  let countriesPlayed = 0;
+  let placesPlayed = 0;
 
-  for (const country of countries) {
-    if (!continents.includes(country.continent as Continent)) continue;
-    const entry = progress[country.code];
+  for (const place of places) {
+    if (!regions.includes(place.continent)) continue;
+    const entry = progress[place.code];
     if (!entry || entry.total === 0) continue;
-    countriesPlayed += 1;
+    placesPlayed += 1;
     correct += entry.correct;
     total += entry.total;
   }
 
-  if (countriesPlayed < minCountries || total === 0) return false;
-  return correct / total >= 0.9;
+  if (placesPlayed < minPlaces || total === 0) return false;
+  return correct / total >= minAccuracy;
 }
 
-function countriesAnswered(profile: Profile): number {
-  return Object.values(profile.countryProgress ?? {}).filter((entry) => entry.total > 0).length;
+function placesAnswered(profile: Profile, scope: GameScope): number {
+  const progress = profile.countryProgress ?? {};
+  const codes = new Set(getPlacesForScope(scope).map((place) => place.code));
+  return Object.entries(progress).filter(
+    ([code, entry]) => codes.has(code) && entry.total > 0,
+  ).length;
+}
+
+function coastToCoastMastery(profile: Profile): boolean {
+  return US_REGIONS.every((region) =>
+    placeMastery(profile, [region], 5, "usa"),
+  );
 }
 
 export function buildAchievementChecks(
@@ -59,8 +103,6 @@ export function buildAchievementChecks(
   session?: AchievementSessionContext,
   scope: GameScope = "world",
 ): Record<string, boolean> {
-  const stats = profile.stats[scope][mode][difficulty];
-  const globalStreak = getGlobalStreak(profile, difficulty, scope).currentStreak;
   const totalCorrect = sumStat(profile, "totalCorrect");
   const totalPlayed = sumStat(profile, "totalPlayed");
   const overallAccuracy = totalPlayed > 0 ? totalCorrect / totalPlayed : 0;
@@ -68,62 +110,78 @@ export function buildAchievementChecks(
   const sessionCorrect = session?.sessionCorrect ?? 0;
   const sessionTotal = session?.sessionTotal ?? 0;
   const sessionEnded = session?.sessionEnded ?? false;
+  const bestStreak = maxGlobalBestStreak(profile);
+  const marathonBest = maxModeBestStreak(profile, "marathon");
 
   return {
     "first-steps": totalPlayed >= 1,
-    "streak-5": globalStreak >= 5,
-    "streak-10": globalStreak >= 10,
-    "streak-25": globalStreak >= 25,
-    "streak-50": globalStreak >= 50,
-    "streak-75": globalStreak >= 75,
-    "streak-100": globalStreak >= 100,
-    "best-streak-20": maxBestStreak(profile) >= 20,
-    "best-streak-40": maxBestStreak(profile) >= 40,
+    "mode-curious": modesWithMinPlayed(profile, 1) >= 4,
+    "around-the-map": scopePlayedCount(profile, "world") >= 10 && scopePlayedCount(profile, "usa") >= 10,
+    "daily-devotee": dailyCompletions >= 1,
     "played-50": totalPlayed >= 50,
     "played-250": totalPlayed >= 250,
+    "played-750": totalPlayed >= 750,
+    "played-2000": totalPlayed >= 2000,
     "correct-25": totalCorrect >= 25,
-    "correct-100": totalCorrect >= 100,
-    "correct-250": totalCorrect >= 250,
+    "correct-150": totalCorrect >= 150,
     "correct-500": totalCorrect >= 500,
-    "correct-1000": totalCorrect >= 1000,
-    "flag-rookie": modeCorrectCount(profile, "flag-to-country") >= 10,
-    "flag-fanatic": modeCorrectCount(profile, "flag-to-country") >= 50,
-    "flag-master": modeCorrectCount(profile, "flag-to-country") >= 150,
-    "capital-hunter": modeCorrectCount(profile, "capital-to-country") >= 25,
-    "capital-sage": modeCorrectCount(profile, "capital-to-country") >= 50,
-    "capital-namer": modeCorrectCount(profile, "country-to-capital") >= 25,
-    "shape-spotter": modeCorrectCount(profile, "shape-to-country") >= 25,
+    "correct-1500": totalCorrect >= 1500,
+    "peak-15": bestStreak >= 15,
+    "peak-30": bestStreak >= 30,
+    "peak-50": bestStreak >= 50,
+    "peak-75": bestStreak >= 75,
+    "peak-100": bestStreak >= 100,
+    "daily-regular": dailyCompletions >= 7,
+    "daily-veteran": dailyCompletions >= 30,
+    "hot-day": maxTodayBestStreak(profile) >= 20,
+    "perfect-session":
+      sessionEnded && sessionTotal >= 10 && sessionCorrect === sessionTotal,
+    "flag-rookie": modeCorrectCount(profile, "flag-to-country") >= 15,
+    "capital-hunter": modeCorrectCount(profile, "capital-to-country") >= 15,
+    "capital-namer": modeCorrectCount(profile, "country-to-capital") >= 15,
+    "shape-spotter": modeCorrectCount(profile, "shape-to-country") >= 15,
+    "mixed-starter": modeCorrectCount(profile, "mixed") >= 15,
+    "flag-picker": modeCorrectCount(profile, "country-to-flag") >= 15,
+    "flag-fanatic": modeCorrectCount(profile, "flag-to-country") >= 75,
+    "capital-sage": modeCorrectCount(profile, "capital-to-country") >= 75,
+    "capital-legend": modeCorrectCount(profile, "country-to-capital") >= 75,
     "shape-master": modeCorrectCount(profile, "shape-to-country") >= 75,
-    "flag-picker": modeCorrectCount(profile, "country-to-flag") >= 25,
-    "border-boss": modeCorrectCount(profile, "neighbor-quiz") >= 25,
-    "population-prophet": modeCorrectCount(profile, "population-showdown") >= 25,
-    "marathon-runner": mode === "marathon" && stats.currentStreak >= 15,
-    "marathon-25": mode === "marathon" && stats.currentStreak >= 25,
-    "marathon-40": mode === "marathon" && stats.currentStreak >= 40,
-    "marathon-60": mode === "marathon" && stats.currentStreak >= 60,
-    "speed-rookie": modeCorrectCount(profile, "speed-round") >= 20,
+    "mixed-veteran": modeCorrectCount(profile, "mixed") >= 75,
+    "border-boss": modeCorrectCount(profile, "neighbor-quiz") >= 50,
+    "population-prophet": modeCorrectCount(profile, "population-showdown") >= 50,
+    "marathon-25": marathonBest >= 25,
+    "marathon-45": marathonBest >= 45,
+    "marathon-65": marathonBest >= 65,
     "speed-demon":
       mode === "speed-round" && sessionEnded && sessionCorrect >= 15,
     "speed-frenzy":
       mode === "speed-round" && sessionEnded && sessionCorrect >= 25,
-    "daily-devotee": dailyCompletions >= 1,
-    "daily-regular": dailyCompletions >= 5,
-    "daily-veteran": dailyCompletions >= 20,
-    "weak-spots-warrior": modeCorrectCount(profile, "weak-spots") >= 15,
-    "accuracy-sharp": totalPlayed >= 75 && overallAccuracy >= 0.8,
-    "perfect-session":
-      sessionEnded && sessionTotal >= 10 && sessionCorrect === sessionTotal,
+    "weak-spots-warrior": modeCorrectCount(profile, "weak-spots") >= 50,
     "mode-explorer": GAME_MODES.every((gameMode) => modePlayedCount(profile, gameMode.id) > 0),
-    "mode-master": modesWithMinCorrect(profile, 25) >= 5,
-    "africa-master": continentMastery(profile, ["Africa"], 20),
-    "asia-master": continentMastery(profile, ["Asia"], 20),
-    "europe-master": continentMastery(profile, ["Europe"], 20),
-    "americas-master": continentMastery(profile, ["North America", "South America"], 15),
-    "oceania-master": continentMastery(profile, ["Oceania"], 10),
-    "antarctica-explorer": continentMastery(profile, ["Antarctica"], 3),
-    "country-collector": countriesAnswered(profile) >= 50,
-    "country-completionist": countriesAnswered(profile) >= 100,
+    "mode-specialist": modesWithMinCorrect(profile, 50) >= 8,
+    "accuracy-sharp": totalPlayed >= 100 && overallAccuracy >= 0.8,
+    "hard-earned": difficultyCorrectCount(profile, "hard") >= 50,
+    "africa-master": placeMastery(profile, ["Africa"], 20, "world"),
+    "asia-master": placeMastery(profile, ["Asia"], 20, "world"),
+    "europe-master": placeMastery(profile, ["Europe"], 20, "world"),
+    "coast-to-coast": coastToCoastMastery(profile),
+    "state-collector": placesAnswered(profile, "usa") >= 35,
+    "country-collector": placesAnswered(profile, "world") >= 100,
   };
+}
+
+export function reconcileAchievements(profile: Profile): string[] {
+  const mapped = profile.achievements.map(
+    (id) => LEGACY_ACHIEVEMENT_MAP[id] ?? id,
+  );
+  const retained = [...new Set(mapped.filter((id) => VALID_ACHIEVEMENT_IDS.has(id)))];
+
+  const checks = buildAchievementChecks(profile, "flag-to-country", "easy");
+  const earnedFromStats = ACHIEVEMENTS.filter(
+    (achievement) => checks[achievement.id],
+  ).map((achievement) => achievement.id);
+
+  return [...new Set([...retained, ...earnedFromStats])];
 }
 
 export function checkAchievements(

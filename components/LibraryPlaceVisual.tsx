@@ -1,10 +1,11 @@
 import { FlagImage } from "@/components/FlagDisplay";
-import { getShapePath } from "@/lib/countries";
+import { getCapitalPath, getShapePath } from "@/lib/countries";
 import type { Country } from "@/lib/types";
 
 type LibraryPlaceVisualProps = {
-  country: Pick<Country, "code" | "code3" | "name" | "hasShape" | "hasFlag">;
+  country: Pick<Country, "code" | "code3" | "name" | "capital" | "hasShape" | "hasFlag" | "hasCapitalImage">;
   variant?: "card" | "hero";
+  visual?: "auto" | "shape" | "flag" | "capital";
 };
 
 const shapeFilterCard =
@@ -13,8 +14,39 @@ const shapeFilterCard =
 const shapeFilterHero =
   "[filter:brightness(0)_saturate(100%)_invert(28%)_sepia(15%)_saturate(1120%)_hue-rotate(179deg)_brightness(93%)_contrast(90%)] dark:[filter:brightness(0)_invert(1)]";
 
-export function LibraryPlaceVisual({ country, variant = "card" }: LibraryPlaceVisualProps) {
-  if (country.hasShape) {
+export function LibraryPlaceVisual({
+  country,
+  variant = "card",
+  visual = "auto",
+}: LibraryPlaceVisualProps) {
+  const showCapital = visual === "capital" && country.hasCapitalImage;
+  const showShape = !showCapital && (visual === "shape" || (visual === "auto" && country.hasShape));
+  const showFlag = !showCapital && !showShape && (visual === "flag" || (visual === "auto" && country.hasFlag));
+
+  if (showCapital) {
+    return (
+      <div
+        className={
+          variant === "hero"
+            ? "h-full w-full overflow-hidden rounded-2xl"
+            : "h-full w-full overflow-hidden rounded-xl"
+        }
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={getCapitalPath(country.code)}
+          alt={variant === "hero" ? `Skyline of ${country.capital}` : ""}
+          className={
+            variant === "hero"
+              ? "h-full w-full rounded-2xl object-cover"
+              : "h-full w-full rounded-xl object-cover transition-transform group-hover:scale-105"
+          }
+        />
+      </div>
+    );
+  }
+
+  if (showShape) {
     return (
       // Silhouettes are local SVG documents with their own intrinsic viewBox.
       // eslint-disable-next-line @next/next/no-img-element
@@ -30,7 +62,7 @@ export function LibraryPlaceVisual({ country, variant = "card" }: LibraryPlaceVi
     );
   }
 
-  if (country.hasFlag) {
+  if (showFlag) {
     const width = variant === "hero" ? 280 : 176;
     return (
       <div

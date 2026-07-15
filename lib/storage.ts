@@ -17,7 +17,7 @@ import {
   US_REGIONS,
   normalizeRoundQuestionSetting,
 } from "@/lib/types";
-import { checkAchievements as evaluateAchievements } from "@/lib/achievements";
+import { checkAchievements as evaluateAchievements, reconcileAchievements } from "@/lib/achievements";
 import { getDailyDateKey } from "@/lib/game-engine";
 import { scopedDailyKey } from "@/lib/scope";
 import {
@@ -165,6 +165,7 @@ export function normalizeProfile(profile: Profile): Profile {
       }
     }
   }
+  normalized.achievements = reconcileAchievements(normalized as Profile);
   return normalized as Profile;
 }
 

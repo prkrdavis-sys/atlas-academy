@@ -58,6 +58,7 @@ const ROOT = process.cwd();
 const DATA_DIR = join(ROOT, "data");
 const PUBLIC_FLAGS = join(ROOT, "public", "flags");
 const PUBLIC_SHAPES = join(ROOT, "public", "shapes");
+const PUBLIC_CAPITALS = join(ROOT, "public", "capitals");
 const FLAG_ICONS_DIR = join(ROOT, "node_modules", "flag-icons", "flags", "4x3");
 
 const ALIAS_MAP: Record<string, string[]> = {
@@ -189,6 +190,8 @@ async function main() {
     const hasShape = await downloadShape(code, code3);
     if (hasShape) shapeCount += 1;
 
+    const hasCapitalImage = existsSync(join(PUBLIC_CAPITALS, `${code.toLowerCase()}.jpg`));
+
     const shapeQuizEligible = hasShape;
 
     const area = raw.area ?? 0;
@@ -216,6 +219,7 @@ async function main() {
       shapeQuizEligible,
       hasFlag,
       hasShape,
+      hasCapitalImage,
       isTerritory: raw.independent === false,
       fact: buildFact(raw),
     });

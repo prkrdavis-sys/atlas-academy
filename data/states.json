@@ -23,7 +23,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "Alabama is known as the Yellowhammer State."
+    "fact": "Alabama is known as the Yellowhammer State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-AK",
@@ -44,7 +45,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "Alaska is known as the Last Frontier."
+    "fact": "Alaska is known as the Last Frontier.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-AZ",
@@ -71,7 +73,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "Arizona is known as the Grand Canyon State."
+    "fact": "Arizona is known as the Grand Canyon State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-AR",
@@ -99,7 +102,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "Arkansas is known as the Natural State."
+    "fact": "Arkansas is known as the Natural State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-CA",
@@ -124,7 +128,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "California is known as the Golden State."
+    "fact": "California is known as the Golden State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-CO",
@@ -153,7 +158,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "Colorado is known as the Centennial State."
+    "fact": "Colorado is known as the Centennial State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-CT",
@@ -178,7 +184,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "Connecticut is known as the Constitution State."
+    "fact": "Connecticut is known as the Constitution State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-DE",
@@ -203,7 +210,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "Delaware is known as the First State."
+    "fact": "Delaware is known as the First State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-FL",
@@ -227,7 +235,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "Florida is known as the Sunshine State."
+    "fact": "Florida is known as the Sunshine State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-GA",
@@ -254,7 +263,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "Georgia is known as the Peach State."
+    "fact": "Georgia is known as the Peach State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-HI",
@@ -275,7 +285,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "Hawaii is known as the Aloha State."
+    "fact": "Hawaii is known as the Aloha State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-ID",
@@ -303,7 +314,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "Idaho is known as the Gem State."
+    "fact": "Idaho is known as the Gem State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-IL",
@@ -330,7 +342,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "Illinois is known as the Prairie State."
+    "fact": "Illinois is known as the Prairie State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-IN",
@@ -356,7 +369,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "Indiana is known as the Hoosier State."
+    "fact": "Indiana is known as the Hoosier State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-IA",
@@ -384,7 +398,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "Iowa is known as the Hawkeye State."
+    "fact": "Iowa is known as the Hawkeye State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-KS",
@@ -410,7 +425,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "Kansas is known as the Sunflower State."
+    "fact": "Kansas is known as the Sunflower State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-KY",
@@ -439,7 +455,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "Kentucky is known as the Bluegrass State."
+    "fact": "Kentucky is known as the Bluegrass State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-LA",
@@ -464,7 +481,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "Louisiana is known as the Pelican State."
+    "fact": "Louisiana is known as the Pelican State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-ME",
@@ -487,7 +505,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "Maine is known as the Pine Tree State."
+    "fact": "Maine is known as the Pine Tree State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-MD",
@@ -513,7 +532,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "Maryland is known as the Old Line State."
+    "fact": "Maryland is known as the Old Line State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-MA",
@@ -540,7 +560,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "Massachusetts is known as the Bay State."
+    "fact": "Massachusetts is known as the Bay State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-MI",
@@ -565,7 +586,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "Michigan is known as the Great Lakes State."
+    "fact": "Michigan is known as the Great Lakes State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-MN",
@@ -591,7 +613,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "Minnesota is known as the North Star State."
+    "fact": "Minnesota is known as the North Star State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-MS",
@@ -617,7 +640,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "Mississippi is known as the Magnolia State."
+    "fact": "Mississippi is known as the Magnolia State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-MO",
@@ -647,7 +671,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "Missouri is known as the Show-Me State."
+    "fact": "Missouri is known as the Show-Me State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-MT",
@@ -673,7 +698,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "Montana is known as the Treasure State."
+    "fact": "Montana is known as the Treasure State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-NE",
@@ -701,7 +727,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "Nebraska is known as the Cornhusker State."
+    "fact": "Nebraska is known as the Cornhusker State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-NV",
@@ -728,7 +755,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "Nevada is known as the Silver State."
+    "fact": "Nevada is known as the Silver State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-NH",
@@ -753,7 +781,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "New Hampshire is known as the Granite State."
+    "fact": "New Hampshire is known as the Granite State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-NJ",
@@ -778,7 +807,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "New Jersey is known as the Garden State."
+    "fact": "New Jersey is known as the Garden State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-NM",
@@ -805,7 +835,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "New Mexico is known as the Land of Enchantment."
+    "fact": "New Mexico is known as the Land of Enchantment.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-NY",
@@ -832,7 +863,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "New York is known as the Empire State."
+    "fact": "New York is known as the Empire State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-NC",
@@ -858,7 +890,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "North Carolina is known as the Tar Heel State."
+    "fact": "North Carolina is known as the Tar Heel State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-ND",
@@ -883,7 +916,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "North Dakota is known as the Peace Garden State."
+    "fact": "North Dakota is known as the Peace Garden State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-OH",
@@ -910,7 +944,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "Ohio is known as the Buckeye State."
+    "fact": "Ohio is known as the Buckeye State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-OK",
@@ -938,7 +973,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "Oklahoma is known as the Sooner State."
+    "fact": "Oklahoma is known as the Sooner State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-OR",
@@ -964,7 +1000,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "Oregon is known as the Beaver State."
+    "fact": "Oregon is known as the Beaver State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-PA",
@@ -992,7 +1029,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "Pennsylvania is known as the Keystone State."
+    "fact": "Pennsylvania is known as the Keystone State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-RI",
@@ -1016,7 +1054,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "Rhode Island is known as the Ocean State."
+    "fact": "Rhode Island is known as the Ocean State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-SC",
@@ -1040,7 +1079,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "South Carolina is known as the Palmetto State."
+    "fact": "South Carolina is known as the Palmetto State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-SD",
@@ -1068,7 +1108,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "South Dakota is known as the Mount Rushmore State."
+    "fact": "South Dakota is known as the Mount Rushmore State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-TN",
@@ -1098,7 +1139,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "Tennessee is known as the Volunteer State."
+    "fact": "Tennessee is known as the Volunteer State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-TX",
@@ -1124,7 +1166,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "Texas is known as the Lone Star State."
+    "fact": "Texas is known as the Lone Star State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-UT",
@@ -1152,7 +1195,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "Utah is known as the Beehive State."
+    "fact": "Utah is known as the Beehive State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-VT",
@@ -1177,7 +1221,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "Vermont is known as the Green Mountain State."
+    "fact": "Vermont is known as the Green Mountain State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-VA",
@@ -1204,7 +1249,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "Virginia is known as the Old Dominion."
+    "fact": "Virginia is known as the Old Dominion.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-WA",
@@ -1228,7 +1274,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "Washington is known as the Evergreen State."
+    "fact": "Washington is known as the Evergreen State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-WV",
@@ -1255,7 +1302,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "West Virginia is known as the Mountain State."
+    "fact": "West Virginia is known as the Mountain State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-WI",
@@ -1281,7 +1329,8 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "Wisconsin is known as the Badger State."
+    "fact": "Wisconsin is known as the Badger State.",
+    "hasCapitalImage": true
   },
   {
     "code": "US-WY",
@@ -1309,6 +1358,7 @@
     "hasFlag": true,
     "hasShape": true,
     "isTerritory": false,
-    "fact": "Wyoming is known as the Equality State."
+    "fact": "Wyoming is known as the Equality State.",
+    "hasCapitalImage": true
   }
 ]

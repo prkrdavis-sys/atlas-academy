@@ -206,6 +206,62 @@ export function modesWithMinCorrect(
   return GAME_MODES.filter((mode) => modeCorrectCount(profile, mode.id, scope) >= minCorrect).length;
 }
 
+export function modesWithMinPlayed(
+  profile: Profile,
+  minPlayed: number,
+  scope?: GameScope,
+): number {
+  return GAME_MODES.filter((mode) => modePlayedCount(profile, mode.id, scope) >= minPlayed).length;
+}
+
+export function maxModeBestStreak(
+  profile: Profile,
+  mode: GameMode,
+  scope?: GameScope,
+): number {
+  const scopes = scope ? [scope] : GAME_SCOPES;
+  return Math.max(
+    ...scopes.flatMap((activeScope) =>
+      DIFFICULTIES.map((difficulty) => profile.stats[activeScope][mode][difficulty].bestStreak),
+    ),
+    0,
+  );
+}
+
+export function difficultyCorrectCount(
+  profile: Profile,
+  difficulty: Difficulty,
+  scope?: GameScope,
+): number {
+  const scopes = scope ? [scope] : GAME_SCOPES;
+  return scopes.reduce(
+    (scopeSum, activeScope) =>
+      scopeSum +
+      GAME_MODES.reduce(
+        (sum, mode) => sum + profile.stats[activeScope][mode.id][difficulty].totalCorrect,
+        0,
+      ),
+    0,
+  );
+}
+
+export function maxTodayBestStreak(profile: Profile): number {
+  const today = getDailyDateKey();
+  let max = 0;
+
+  for (const scope of GAME_SCOPES) {
+    for (const difficulty of DIFFICULTIES) {
+      const entry = profile.todayBestStreaks?.[scope]?.[difficulty];
+      if (entry?.dateKey === today) {
+        max = Math.max(max, entry.value);
+      }
+      max = Math.max(max, getTodayBestStreakDisplay(profile, difficulty, scope));
+    }
+  }
+
+  return max;
+}
+
 export function sortGameModesByMostPlayed<T extends { id: GameMode }>(
   modes: readonly T[],
   profile: Profile,

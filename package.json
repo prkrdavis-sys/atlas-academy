@@ -11,6 +11,7 @@
     "refresh-state-data": "tsx scripts/refresh-state-data.ts",
     "fetch-state-flags": "bash scripts/fetch-state-flags.sh",
     "generate-state-shapes": "tsx scripts/generate-state-shapes.ts",
+    "fetch-capital-images": "tsx scripts/fetch-capital-images.ts",
     "verify-integrity": "tsx scripts/verify-game-integrity.ts"
   },
   "dependencies": {

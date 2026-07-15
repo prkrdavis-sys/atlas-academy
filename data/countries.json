@@ -25,7 +25,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "AX",
@@ -45,7 +46,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It has fewer than 100,000 people.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "AL",
@@ -71,7 +73,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 4 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "DZ",
@@ -100,7 +103,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 7 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "AS",
@@ -120,7 +124,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It has fewer than 100,000 people.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "AD",
@@ -144,7 +149,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "AO",
@@ -170,7 +176,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 4 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "AI",
@@ -190,7 +197,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It has fewer than 100,000 people.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "AQ",
@@ -210,7 +218,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It has fewer than 100,000 people.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": false
   },
   {
     "code": "AG",
@@ -230,7 +239,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It has fewer than 100,000 people.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "AR",
@@ -257,7 +267,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 5 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "AM",
@@ -283,7 +294,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "AW",
@@ -303,7 +315,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "Located in North America.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "AU",
@@ -324,7 +337,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "Located in Oceania.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "AT",
@@ -354,7 +368,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "AZ",
@@ -381,7 +396,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "BS",
@@ -402,7 +418,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "Located in North America.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "BH",
@@ -423,7 +440,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "Located in Asia.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "BD",
@@ -447,7 +465,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 2 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "BB",
@@ -467,7 +486,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "Located in North America.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "BY",
@@ -494,7 +514,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "BE",
@@ -520,7 +541,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 4 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "BZ",
@@ -543,7 +565,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 2 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "BJ",
@@ -569,7 +592,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 4 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "BM",
@@ -589,7 +613,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It has fewer than 100,000 people.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "BT",
@@ -613,7 +638,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "BO",
@@ -640,7 +666,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "BA",
@@ -664,7 +691,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 3 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "BW",
@@ -690,7 +718,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "BV",
@@ -710,7 +739,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "Located in Antarctica.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": false
   },
   {
     "code": "BR",
@@ -742,7 +772,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 10 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "IO",
@@ -762,7 +793,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It has fewer than 100,000 people.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "VG",
@@ -783,7 +815,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It has fewer than 100,000 people.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "BN",
@@ -806,7 +839,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 1 country.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "BG",
@@ -833,7 +867,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 5 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "BF",
@@ -860,7 +895,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "BI",
@@ -885,7 +921,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "KH",
@@ -910,7 +947,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 3 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "CM",
@@ -938,7 +976,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 6 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "CA",
@@ -960,7 +999,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 1 country.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "CV",
@@ -982,7 +1022,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "Located in Africa.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "BQ",
@@ -1003,7 +1044,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It has fewer than 100,000 people.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "KY",
@@ -1023,7 +1065,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It has fewer than 100,000 people.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "CF",
@@ -1050,7 +1093,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "TD",
@@ -1078,7 +1122,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "CL",
@@ -1103,7 +1148,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 3 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "CN",
@@ -1141,7 +1187,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 16 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "CX",
@@ -1162,7 +1209,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It has fewer than 100,000 people.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "CC",
@@ -1183,7 +1231,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It has fewer than 100,000 people.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "CO",
@@ -1210,7 +1259,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 5 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "KM",
@@ -1231,7 +1281,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "Located in Africa.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "CG",
@@ -1260,7 +1311,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 5 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "CK",
@@ -1280,7 +1332,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It has fewer than 100,000 people.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "CR",
@@ -1304,7 +1357,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 2 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "HR",
@@ -1331,7 +1385,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 5 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "CU",
@@ -1352,7 +1407,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "Located in North America.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "CW",
@@ -1373,7 +1429,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "Located in North America.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "CY",
@@ -1394,7 +1451,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "Located in Europe.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "CZ",
@@ -1420,7 +1478,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "DK",
@@ -1443,7 +1502,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 1 country.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "DJ",
@@ -1468,7 +1528,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 3 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "DM",
@@ -1489,7 +1550,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It has fewer than 100,000 people.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "DO",
@@ -1511,7 +1573,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 1 country.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "CD",
@@ -1544,7 +1607,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 9 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "EC",
@@ -1568,7 +1632,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 2 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "EG",
@@ -1594,7 +1659,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 4 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "SV",
@@ -1618,7 +1684,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 2 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "GQ",
@@ -1642,7 +1709,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 2 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "ER",
@@ -1667,7 +1735,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 3 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "EE",
@@ -1691,7 +1760,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 2 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "SZ",
@@ -1716,7 +1786,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "ET",
@@ -1744,7 +1815,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "FK",
@@ -1765,7 +1837,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It has fewer than 100,000 people.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "FO",
@@ -1785,7 +1858,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It has fewer than 100,000 people.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "FJ",
@@ -1806,7 +1880,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "Located in Oceania.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "FI",
@@ -1831,7 +1906,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 3 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "FR",
@@ -1861,7 +1937,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 8 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "GF",
@@ -1885,7 +1962,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 2 countries.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "PF",
@@ -1905,7 +1983,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "Located in Oceania.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "TF",
@@ -1926,7 +2005,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It has fewer than 100,000 people.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "GA",
@@ -1951,7 +2031,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 3 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "GM",
@@ -1974,7 +2055,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 1 country.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "GE",
@@ -1999,7 +2081,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 4 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "DE",
@@ -2030,7 +2113,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 9 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "GH",
@@ -2055,7 +2139,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 3 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "GI",
@@ -2077,7 +2162,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 1 country.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "GR",
@@ -2103,7 +2189,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 4 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "GL",
@@ -2123,7 +2210,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It has fewer than 100,000 people.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "GD",
@@ -2143,7 +2231,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "Located in North America.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "GP",
@@ -2163,7 +2252,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "Located in North America.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "GU",
@@ -2183,7 +2273,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "Located in Oceania.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "GT",
@@ -2209,7 +2300,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 4 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "GG",
@@ -2230,7 +2322,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It has fewer than 100,000 people.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "GN",
@@ -2258,7 +2351,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 6 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "GW",
@@ -2282,7 +2376,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 2 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "GY",
@@ -2307,7 +2402,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 3 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "HT",
@@ -2330,7 +2426,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 1 country.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "HM",
@@ -2350,7 +2447,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "Located in Antarctica.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": false
   },
   {
     "code": "HN",
@@ -2375,7 +2473,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 3 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "HK",
@@ -2398,7 +2497,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 1 country.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "HU",
@@ -2426,7 +2526,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "IS",
@@ -2446,7 +2547,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "Located in Europe.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "IN",
@@ -2474,7 +2576,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 6 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "ID",
@@ -2499,7 +2602,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 3 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "IR",
@@ -2528,7 +2632,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 7 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "IQ",
@@ -2556,7 +2661,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 6 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "IE",
@@ -2579,7 +2685,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 1 country.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "IM",
@@ -2599,7 +2706,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It has fewer than 100,000 people.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "IL",
@@ -2626,7 +2734,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 5 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "IT",
@@ -2654,7 +2763,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 6 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "CI",
@@ -2683,7 +2793,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 5 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "JM",
@@ -2703,7 +2814,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "Located in North America.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "JP",
@@ -2723,7 +2835,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It has over 100 million people.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "JE",
@@ -2744,7 +2857,8 @@
     "hasFlag": true,
     "hasShape": false,
     "fact": "Located in Europe.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "JO",
@@ -2771,7 +2885,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 5 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "KZ",
@@ -2798,7 +2913,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "KE",
@@ -2825,7 +2941,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 5 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "KI",
@@ -2846,7 +2963,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "Located in Oceania.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "XK",
@@ -2872,7 +2990,8 @@
     "hasFlag": true,
     "hasShape": false,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "KW",
@@ -2896,7 +3015,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 2 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "KG",
@@ -2922,7 +3042,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "LA",
@@ -2949,7 +3070,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "LV",
@@ -2975,7 +3097,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 4 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "LB",
@@ -2999,7 +3122,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 2 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "LS",
@@ -3022,7 +3146,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "LR",
@@ -3047,7 +3172,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 3 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "LY",
@@ -3075,7 +3201,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 6 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "LI",
@@ -3099,7 +3226,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "LT",
@@ -3125,7 +3253,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 4 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "LU",
@@ -3150,7 +3279,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "MO",
@@ -3173,7 +3303,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 1 country.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": false
   },
   {
     "code": "MG",
@@ -3194,7 +3325,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "Located in Africa.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "MW",
@@ -3219,7 +3351,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "MY",
@@ -3243,7 +3376,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 3 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "MV",
@@ -3264,7 +3398,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "Located in Asia.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "ML",
@@ -3293,7 +3428,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "MT",
@@ -3314,7 +3450,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "Located in Europe.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "MH",
@@ -3335,7 +3472,8 @@
     "hasFlag": true,
     "hasShape": false,
     "fact": "It has fewer than 100,000 people.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "MQ",
@@ -3355,7 +3493,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "Located in North America.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "MR",
@@ -3381,7 +3520,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 4 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "MU",
@@ -3402,7 +3542,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "Located in Africa.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "YT",
@@ -3423,7 +3564,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "Located in Africa.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "MX",
@@ -3448,7 +3590,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 3 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "FM",
@@ -3469,7 +3612,8 @@
     "hasFlag": true,
     "hasShape": false,
     "fact": "Located in Oceania.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "MD",
@@ -3493,7 +3637,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "MC",
@@ -3516,7 +3661,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 1 country.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "MN",
@@ -3539,7 +3685,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "ME",
@@ -3565,7 +3712,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 5 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "MS",
@@ -3585,7 +3733,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It has fewer than 100,000 people.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "MA",
@@ -3610,7 +3759,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 3 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "MZ",
@@ -3638,7 +3788,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 6 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "MM",
@@ -3666,7 +3817,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 5 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "NA",
@@ -3692,7 +3844,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 4 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "NR",
@@ -3713,7 +3866,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It has fewer than 100,000 people.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "NP",
@@ -3737,7 +3891,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "NL",
@@ -3763,7 +3918,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 2 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "NC",
@@ -3783,7 +3939,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "Located in Oceania.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "NZ",
@@ -3803,7 +3960,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "Located in Oceania.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "NI",
@@ -3827,7 +3985,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 2 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "NE",
@@ -3856,7 +4015,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "NG",
@@ -3882,7 +4042,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 4 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "NU",
@@ -3902,7 +4063,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It has fewer than 100,000 people.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "NF",
@@ -3923,7 +4085,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It has fewer than 100,000 people.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "KP",
@@ -3949,7 +4112,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 3 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "MK",
@@ -3977,7 +4141,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "MP",
@@ -3998,7 +4163,8 @@
     "hasFlag": true,
     "hasShape": false,
     "fact": "It has fewer than 100,000 people.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "NO",
@@ -4023,7 +4189,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 3 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "OM",
@@ -4048,7 +4215,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 3 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "PK",
@@ -4074,7 +4242,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 4 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "PW",
@@ -4095,7 +4264,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It has fewer than 100,000 people.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "PS",
@@ -4120,7 +4290,8 @@
     "hasFlag": true,
     "hasShape": false,
     "fact": "It borders 3 countries.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "PA",
@@ -4144,7 +4315,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 2 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "PG",
@@ -4167,7 +4339,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 1 country.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "PY",
@@ -4192,7 +4365,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "PE",
@@ -4219,7 +4393,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 5 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "PH",
@@ -4240,7 +4415,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It has over 100 million people.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "PN",
@@ -4261,7 +4437,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It has fewer than 100,000 people.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "PL",
@@ -4290,7 +4467,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 7 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "PT",
@@ -4313,7 +4491,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 1 country.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "PR",
@@ -4334,7 +4513,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "Located in North America.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "QA",
@@ -4357,7 +4537,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 1 country.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "RE",
@@ -4378,7 +4559,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "Located in Africa.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "RO",
@@ -4404,7 +4586,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 5 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "RU",
@@ -4440,7 +4623,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 14 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "RW",
@@ -4466,7 +4650,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "BL",
@@ -4487,7 +4672,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It has fewer than 100,000 people.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "SH",
@@ -4507,7 +4693,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It has fewer than 100,000 people.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "KN",
@@ -4528,7 +4715,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It has fewer than 100,000 people.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "LC",
@@ -4548,7 +4736,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "Located in North America.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "MF",
@@ -4570,7 +4759,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 1 country.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "PM",
@@ -4590,7 +4780,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It has fewer than 100,000 people.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "VC",
@@ -4610,7 +4801,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "Located in North America.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "WS",
@@ -4631,7 +4823,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "Located in Oceania.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "SM",
@@ -4654,7 +4847,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "ST",
@@ -4675,7 +4869,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "Located in Africa.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "SA",
@@ -4704,7 +4899,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 7 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "SN",
@@ -4731,7 +4927,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 5 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "RS",
@@ -4761,7 +4958,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "SC",
@@ -4782,7 +4980,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "Located in Africa.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "SL",
@@ -4806,7 +5005,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 2 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "SG",
@@ -4827,7 +5027,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "Located in Asia.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "SX",
@@ -4849,7 +5050,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 1 country.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "SK",
@@ -4876,7 +5078,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "SI",
@@ -4902,7 +5105,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 4 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "SB",
@@ -4922,7 +5126,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "Located in Oceania.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "SO",
@@ -4947,7 +5152,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 3 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "ZA",
@@ -4975,7 +5181,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 6 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "GS",
@@ -4996,7 +5203,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It has fewer than 100,000 people.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "KR",
@@ -5019,7 +5227,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 1 country.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "SS",
@@ -5047,7 +5256,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "ES",
@@ -5074,7 +5284,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 5 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "LK",
@@ -5097,7 +5308,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 1 country.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "SD",
@@ -5126,7 +5338,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 7 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "SR",
@@ -5151,7 +5364,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 3 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "SJ",
@@ -5172,7 +5386,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It has fewer than 100,000 people.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "SE",
@@ -5196,7 +5411,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 2 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "CH",
@@ -5223,7 +5439,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "SY",
@@ -5250,7 +5467,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 5 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "TW",
@@ -5271,7 +5489,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "Located in Asia.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "TJ",
@@ -5297,7 +5516,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "TZ",
@@ -5327,7 +5547,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 8 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "TH",
@@ -5353,7 +5574,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 4 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "TL",
@@ -5376,7 +5598,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 1 country.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "TG",
@@ -5401,7 +5624,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 3 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "TK",
@@ -5421,7 +5645,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It has fewer than 100,000 people.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "TO",
@@ -5442,7 +5667,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "Located in Oceania.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "TT",
@@ -5463,7 +5689,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "Located in North America.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "TN",
@@ -5487,7 +5714,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 2 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "TR",
@@ -5519,7 +5747,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 8 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "TM",
@@ -5544,7 +5773,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "TC",
@@ -5564,7 +5794,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It has fewer than 100,000 people.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "TV",
@@ -5584,7 +5815,8 @@
     "hasFlag": true,
     "hasShape": false,
     "fact": "It has fewer than 100,000 people.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "UG",
@@ -5611,7 +5843,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "UA",
@@ -5639,7 +5872,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 7 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "AE",
@@ -5664,7 +5898,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 2 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "GB",
@@ -5692,7 +5927,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 1 country.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "US",
@@ -5720,7 +5956,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 2 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "UM",
@@ -5740,7 +5977,8 @@
     "hasFlag": true,
     "hasShape": false,
     "fact": "It has fewer than 100,000 people.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": false
   },
   {
     "code": "VI",
@@ -5761,7 +5999,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "Located in North America.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "UY",
@@ -5785,7 +6024,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 2 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "UZ",
@@ -5812,7 +6052,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "VU",
@@ -5833,7 +6074,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "Located in Oceania.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "VA",
@@ -5857,7 +6099,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "VE",
@@ -5882,7 +6125,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 3 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "VN",
@@ -5908,7 +6152,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 3 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "WF",
@@ -5929,7 +6174,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It has fewer than 100,000 people.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "EH",
@@ -5954,7 +6200,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 3 countries.",
-    "isTerritory": true
+    "isTerritory": true,
+    "hasCapitalImage": true
   },
   {
     "code": "YE",
@@ -5978,7 +6225,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "It borders 2 countries.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "ZM",
@@ -6008,7 +6256,8 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   },
   {
     "code": "ZW",
@@ -6034,6 +6283,7 @@
     "hasFlag": true,
     "hasShape": true,
     "fact": "This country is landlocked.",
-    "isTerritory": false
+    "isTerritory": false,
+    "hasCapitalImage": true
   }
 ]

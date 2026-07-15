@@ -5,9 +5,10 @@ import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { PlayModeLink } from "@/components/PlayModeLink";
 import { ProfileRequiredDialog } from "@/components/ProfileRequiredDialog";
-import { EXTRA_QUIZ_MODES, GAME_MODES, GAME_SCOPES } from "@/lib/types";
+import { ScopeSelector } from "@/components/ScopeSelector";
+import { EXTRA_QUIZ_MODES, GAME_MODES } from "@/lib/types";
 import { getStoredScope, normalizeScope, SCOPE_INFO, scopeText, setStoredScope } from "@/lib/scope";
-import type { GameScope } from "@/lib/types";
+import { useGameScope } from "@/lib/use-game-scope";
 import { cn } from "@/lib/utils";
 
 const TILE_STYLES: Record<
@@ -56,18 +57,14 @@ export function ExtrasPageContent() {
   const showRequiredProfileDialog = useCallback(() => setShowProfileDialog(true), []);
   const hideRequiredProfileDialog = useCallback(() => setShowProfileDialog(false), []);
 
-  const [scope, setScope] = useState<GameScope>("world");
+  const { scope, setScope, selectScope } = useGameScope();
   useEffect(() => {
     const fromUrl = searchParams.get("scope");
     const next = fromUrl !== null ? normalizeScope(fromUrl) : getStoredScope();
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setScope(next);
     setStoredScope(next);
-  }, [searchParams]);
-  const selectScope = useCallback((next: GameScope) => {
-    setScope(next);
-    setStoredScope(next);
-  }, []);
+  }, [searchParams, setScope]);
   const scopeInfo = SCOPE_INFO[scope];
 
   return (
@@ -83,27 +80,7 @@ export function ExtrasPageContent() {
             Bonus quiz modes and the Library
           </p>
         </div>
-        <div className="inline-flex rounded-2xl bg-slate-100 p-1 dark:bg-slate-800" role="group" aria-label="Choose where to play">
-          {GAME_SCOPES.map((option) => {
-            const active = scope === option;
-            return (
-              <button
-                key={option}
-                type="button"
-                aria-pressed={active}
-                onClick={() => selectScope(option)}
-                className={cn(
-                  "min-h-9 rounded-xl px-3 py-1.5 font-display text-sm font-extrabold transition-all",
-                  active
-                    ? "bg-white text-teal-800 shadow-sm dark:bg-slate-900 dark:text-teal-300"
-                    : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100",
-                )}
-              >
-                {SCOPE_INFO[option].icon} {SCOPE_INFO[option].shortLabel}
-              </button>
-            );
-          })}
-        </div>
+        <ScopeSelector scope={scope} onSelect={selectScope} />
       </header>
 
       <section>

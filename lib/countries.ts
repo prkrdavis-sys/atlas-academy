@@ -65,7 +65,11 @@ export function filterCountries(options: FilterOptions): Country[] {
     pool = pool.filter((c) => c.hasFlag);
   }
 
-  if (options.mode === "capital-to-country" || options.mode === "country-to-capital") {
+  if (options.mode === "capital-to-country") {
+    pool = pool.filter((c) => c.capital.length > 0 && c.hasCapitalImage);
+  }
+
+  if (options.mode === "country-to-capital") {
     pool = pool.filter((c) => c.capital.length > 0);
   }
 
@@ -110,7 +114,10 @@ export function getEligibleCoreQuestionTypes(country: Country): CoreQuestionType
   const types: CoreQuestionType[] = [];
   if (country.hasFlag) types.push("flag-to-country");
   if (country.capital.length > 0) {
-    types.push("capital-to-country", "country-to-capital");
+    types.push("country-to-capital");
+  }
+  if (country.hasCapitalImage) {
+    types.push("capital-to-country");
   }
   if (country.hasShape) types.push("shape-to-country");
   return types;
@@ -180,6 +187,10 @@ export function getFlagPath(code: string): string {
 
 export function getShapePath(code3: string): string {
   return `/shapes/${code3.toLowerCase()}.svg`;
+}
+
+export function getCapitalPath(code: string): string {
+  return `/capitals/${code.toLowerCase()}.jpg`;
 }
 
 export function formatPopulation(population: number): string {

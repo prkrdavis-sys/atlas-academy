@@ -173,11 +173,46 @@ input:focus-visible {
   0% {
     opacity: 0;
   }
-  25% {
+  22% {
     opacity: 1;
   }
   100% {
     opacity: 0;
+  }
+}
+
+/* Full-viewport edge vignette — vmin tracks zoom and device size. */
+.answer-screen-flash {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  animation: screen-flash 0.55s ease-out both;
+}
+
+.answer-screen-flash-incorrect {
+  background-image:
+    linear-gradient(to bottom, rgb(244 63 94 / 0.48) 0%, transparent 22vmin),
+    linear-gradient(to top, rgb(244 63 94 / 0.48) 0%, transparent 22vmin),
+    linear-gradient(to right, rgb(244 63 94 / 0.48) 0%, transparent 18vmin),
+    linear-gradient(to left, rgb(244 63 94 / 0.48) 0%, transparent 18vmin);
+}
+
+.answer-screen-flash-correct {
+  background-image:
+    linear-gradient(to bottom, rgb(16 185 129 / 0.48) 0%, transparent 22vmin),
+    linear-gradient(to top, rgb(16 185 129 / 0.48) 0%, transparent 22vmin),
+    linear-gradient(to right, rgb(16 185 129 / 0.48) 0%, transparent 18vmin),
+    linear-gradient(to left, rgb(16 185 129 / 0.48) 0%, transparent 18vmin);
+}
+
+@keyframes learn-card-pop-in {
+  0% {
+    transform: scale(0.97);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
   }
 }
 
@@ -268,6 +303,10 @@ input:focus-visible {
   animation: card-pop-in 0.28s cubic-bezier(0.34, 1.4, 0.64, 1) both;
 }
 
+.animate-learn-card-pop-in {
+  animation: learn-card-pop-in 0.28s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+}
+
 .animate-achievement-toast {
   animation: achievement-toast 10s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
@@ -302,12 +341,14 @@ input:focus-visible {
   }
 
   .animate-feedback-ring,
-  .animate-screen-flash {
+  .animate-screen-flash,
+  .answer-screen-flash {
     animation: none;
     opacity: 0;
   }
 
-  .animate-card-pop-in {
+  .animate-card-pop-in,
+  .animate-learn-card-pop-in {
     animation: none;
   }
 

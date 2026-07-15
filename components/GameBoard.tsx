@@ -6,6 +6,7 @@ import { AnswerFeedbackLayer, type FeedbackBurst } from "@/components/AnswerFeed
 import { AnswerMultipleChoice } from "@/components/AnswerMultipleChoice";
 import { AnswerTypeIn } from "@/components/AnswerTypeIn";
 import { AchievementToast } from "@/components/AchievementToast";
+import { CapitalDisplay } from "@/components/CapitalDisplay";
 import { FlagDisplay, FlagGrid } from "@/components/FlagDisplay";
 import { LearnCard } from "@/components/LearnCard";
 import { NeighborCountryDisplay } from "@/components/NeighborCountryDisplay";
@@ -103,6 +104,8 @@ export function GameBoard({
   );
   const [showLearnCard, setShowLearnCard] = useState(false);
   const [lastCorrect, setLastCorrect] = useState(true);
+  const [lastSelectedAnswer, setLastSelectedAnswer] = useState<string | null>(null);
+  const [lastSelectedCode, setLastSelectedCode] = useState<string | null>(null);
   const [disabled, setDisabled] = useState(false);
   const [hiddenOptions, setHiddenOptions] = useState<string[]>([]);
   const [usedFiftyFifty, setUsedFiftyFifty] = useState(false);
@@ -255,6 +258,8 @@ export function GameBoard({
     const isCodeSelection = code !== undefined;
     const correct = engine.checkAnswer(question, code ?? answer, isCodeSelection);
     setLastCorrect(correct);
+    setLastSelectedAnswer(answer);
+    setLastSelectedCode(code ?? null);
     spawnBurst(correct);
 
     if (countStats) {
@@ -303,6 +308,8 @@ export function GameBoard({
     setUsedSkip(true);
     setShowLearnCard(true);
     setLastCorrect(false);
+    setLastSelectedAnswer(null);
+    setLastSelectedCode(null);
     const completedQuestions = questionCount + 1;
     setQuestionCount(completedQuestions);
     setSkippedAnswers((count) => count + 1);
@@ -344,6 +351,8 @@ export function GameBoard({
     setHiddenOptions([]);
     setUsedFiftyFifty(false);
     setUsedSkip(false);
+    setLastSelectedAnswer(null);
+    setLastSelectedCode(null);
 
     if (
       gameOver ||
@@ -440,7 +449,35 @@ export function GameBoard({
   );
   const dailyDateLabel = mode === "daily-challenge" ? formatDailyDate() : null;
   const isTextOnlyPrompt =
-    question.mode === "capital-to-country" || question.mode === "country-to-capital";
+    question.mode === "country-to-capital" ||
+    (question.mode === "capital-to-country" && question.displayType === "text");
+  const isMultipleChoiceRound =
+    question.displayType === "flags-grid" ||
+    Boolean(question.options && difficulty !== "hard");
+  const showChoiceReveal = showLearnCard && isMultipleChoiceRound;
+  const learnCardCountryCode =
+    question.mode === "neighbor-quiz"
+      ? question.correctCode ?? question.countryCode
+      : question.countryCode;
+  const learnCardHeading =
+    question.mode === "neighbor-quiz" ? (
+      <>
+        <span className="font-black">{getCountryName(question.countryCode)}</span>
+        <span className="font-bold opacity-95">&apos;s neighbor is </span>
+        <span className="font-black">{question.correctAnswer}</span>
+      </>
+    ) : undefined;
+  const learnCard = (
+    <LearnCard
+      countryCode={learnCardCountryCode}
+      heading={learnCardHeading}
+      wasCorrect={lastCorrect}
+      compareCountryCode={
+        question.mode === "population-showdown" ? question.secondaryCountryCode : undefined
+      }
+      variant={showChoiceReveal ? "inline" : "default"}
+    />
+  );
   const roundTitlePanel = (
     <>
       <p className="text-[9px] font-black uppercase tracking-[0.18em] text-teal-700/70 sm:text-[10px]">
@@ -466,11 +503,14 @@ export function GameBoard({
         />
       )}
 
-      <div className="shrink-0 px-0.5 py-1.5 sm:px-1 sm:py-2">
+      <div className="relative z-50 shrink-0 px-0.5 py-1.5 sm:px-1 sm:py-2">
         <div className="flex items-center justify-between gap-1.5 sm:grid sm:grid-cols-[auto_minmax(0,1fr)_minmax(0,auto)] sm:items-center sm:gap-2">
           <button
             type="button"
-            onClick={() => router.push("/")}
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push("/");
+            }}
             aria-label="Exit this round and return home"
             className="inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-2xl border-2 border-slate-800 bg-slate-800 px-3 py-1.5 text-sm font-extrabold text-white shadow-[0_3px_0_var(--color-slate-950)] transition-all duration-100 hover:border-slate-700 hover:bg-slate-700 active:translate-y-[3px] active:shadow-none sm:px-4"
           >
@@ -508,28 +548,40 @@ export function GameBoard({
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border-2 border-slate-200 bg-white/90 p-3 shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90 sm:rounded-3xl sm:p-4">
-        {!isTextOnlyPrompt && (
+        {!showChoiceReveal && !isTextOnlyPrompt && (
           <h2 className="mb-2 hidden shrink-0 text-center font-display text-base font-extrabold leading-tight sm:mb-3 sm:block sm:text-xl">
             {question.prompt}
           </h2>
         )}
 
         <div
-          className={`@container/size flex min-h-0 flex-1 flex-col overflow-hidden ${
-            question.displayType === "flags-grid" ? "sm:justify-start" : "sm:justify-center"
-          }`}
+          className={`@container/size flex min-h-0 flex-1 flex-col ${
+            showChoiceReveal ? "justify-start overflow-y-auto" : "overflow-hidden"
+          } ${showChoiceReveal || question.displayType === "flags-grid" ? "sm:justify-start" : "sm:justify-center"}`}
         >
-          <div className="min-h-0 flex-[0.24] sm:hidden" aria-hidden />
+          {!showChoiceReveal && (
+            <>
+              <div className="min-h-0 flex-[0.24] sm:hidden" aria-hidden />
 
-          <div className="shrink-0 px-3 pb-2 text-center sm:hidden">
-            <p
-              className={`font-display font-extrabold leading-snug text-slate-800 dark:text-slate-100 ${
-                isTextOnlyPrompt ? "text-2xl" : "text-base"
-              }`}
-            >
-              {question.prompt}
-            </p>
-          </div>
+              <div className="shrink-0 px-3 pb-2 text-center sm:hidden">
+                <p
+                  className={`font-display font-extrabold leading-snug text-slate-800 dark:text-slate-100 ${
+                    isTextOnlyPrompt ? "text-2xl" : "text-base"
+                  }`}
+                >
+                  {question.prompt}
+                </p>
+              </div>
+            </>
+          )}
+
+          {showChoiceReveal && isTextOnlyPrompt && (
+            <div className="shrink-0 px-3 pb-2 text-center sm:pb-3">
+              <p className="font-display text-lg font-extrabold leading-snug text-slate-800 dark:text-slate-100 sm:text-xl">
+                {question.prompt}
+              </p>
+            </div>
+          )}
 
           {!showLearnCard && isTextOnlyPrompt && (
             <div className="hidden min-h-0 flex-1 items-center justify-center px-4 py-6 text-center sm:flex">
@@ -543,13 +595,38 @@ export function GameBoard({
             <div className="min-h-0 flex-[0.76] sm:hidden" aria-hidden />
           )}
 
-          {!showLearnCard && !isTextOnlyPrompt && (
+          {showChoiceReveal ? (
+            <div
+              className={`flex min-h-0 w-full flex-col items-stretch ${
+                question.displayType === "flags-grid"
+                  ? "flex-1 gap-2 overflow-hidden sm:gap-3"
+                  : "shrink-0 py-1 sm:py-2"
+              }`}
+            >
+              <div className="mx-auto w-full max-w-2xl shrink-0">{learnCard}</div>
+              {question.displayType === "flags-grid" && question.optionCodes && (
+                <div className="flex min-h-0 w-full flex-1 items-center justify-center">
+                  <FlagGrid
+                    codes={question.optionCodes.filter((c) => !hiddenOptions.includes(c))}
+                    onSelect={(code) => handleAnswer(code, code)}
+                    compact
+                    revealed
+                    selectedCode={lastSelectedCode}
+                    correctCode={question.correctCode ?? question.countryCode}
+                  />
+                </div>
+              )}
+            </div>
+          ) : !showLearnCard && !isTextOnlyPrompt ? (
             <div className="flex min-h-0 flex-[0.76] flex-col items-center justify-center overflow-hidden sm:flex-1">
               {question.displayType === "flag" && (
                 <FlagDisplay code={question.countryCode} size="md" />
               )}
               {question.displayType === "shape" && (
                 <ShapeDisplay code={question.countryCode} compact />
+              )}
+              {question.displayType === "capital" && (
+                <CapitalDisplay code={question.countryCode} compact showLabel />
               )}
               {question.mode === "neighbor-quiz" && (
                 <NeighborCountryDisplay code={question.countryCode} />
@@ -565,12 +642,12 @@ export function GameBoard({
                 />
               )}
             </div>
-          )}
+          ) : null}
         </div>
 
-        {!showLearnCard && (
+        {(showChoiceReveal || !showLearnCard) && question.displayType !== "flags-grid" && (
           <div className="mt-2 shrink-0 space-y-2 sm:mt-3 sm:space-y-3">
-            {difficulty === "easy" && (
+            {!showLearnCard && difficulty === "easy" && (
               <div className="flex justify-end gap-2">
                 {(question.options?.length ?? 0) > 2 && (
                   <Button variant="secondary" size="sm" onClick={handleFiftyFifty} disabled={usedFiftyFifty}>
@@ -583,7 +660,7 @@ export function GameBoard({
               </div>
             )}
 
-            {question.displayType === "flags-grid" ? null : difficulty === "hard" ? (
+            {difficulty === "hard" ? (
               <AnswerTypeIn
                 onSubmit={handleAnswer}
                 disabled={disabled}
@@ -600,6 +677,11 @@ export function GameBoard({
                 onSelect={handleAnswer}
                 disabled={disabled}
                 hiddenOptions={hiddenOptions}
+                revealed={showChoiceReveal}
+                selectedAnswer={lastSelectedAnswer}
+                selectedCode={lastSelectedCode}
+                correctAnswer={question.correctAnswer}
+                correctCode={question.correctCode}
               />
             ) : null}
           </div>
@@ -611,42 +693,25 @@ export function GameBoard({
       {showLearnCard && (
         <>
           <div
-            className="fixed inset-0 z-50 cursor-pointer bg-slate-900/50 backdrop-blur-[2px]"
+            className={`fixed inset-0 z-40 cursor-pointer ${
+              isMultipleChoiceRound ? "" : "bg-slate-900/50 backdrop-blur-[2px]"
+            }`}
             onClick={handleContinue}
             onKeyDown={(e) => {
               if (e.key === "Enter" || e.key === " ") handleContinue();
             }}
             role="button"
-            tabIndex={0}
+            tabIndex={-1}
             aria-label="Continue to next question"
           />
-          <div
-            className="pointer-events-none fixed inset-0 z-[55] flex items-center justify-center p-4"
-            aria-hidden
-          >
-            <div className="max-h-[88dvh] w-full max-w-lg overflow-y-auto">
-              <LearnCard
-                countryCode={
-                  question.mode === "neighbor-quiz"
-                    ? question.correctCode ?? question.countryCode
-                    : question.countryCode
-                }
-                heading={
-                  question.mode === "neighbor-quiz" ? (
-                    <>
-                      <span className="font-black">{getCountryName(question.countryCode)}</span>
-                      <span className="font-bold opacity-95">&apos;s neighbor is </span>
-                      <span className="font-black">{question.correctAnswer}</span>
-                    </>
-                  ) : undefined
-                }
-                wasCorrect={lastCorrect}
-                compareCountryCode={
-                  question.mode === "population-showdown" ? question.secondaryCountryCode : undefined
-                }
-              />
+          {!isMultipleChoiceRound && (
+            <div
+              className="pointer-events-none fixed inset-0 z-[45] flex items-center justify-center p-4"
+              aria-hidden
+            >
+              <div className="max-h-[88dvh] w-full max-w-lg overflow-y-auto">{learnCard}</div>
             </div>
-          </div>
+          )}
         </>
       )}
     </div>
