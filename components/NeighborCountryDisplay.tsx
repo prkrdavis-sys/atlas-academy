@@ -1,8 +1,7 @@
-import Image from "next/image";
+import { FlagImage } from "@/components/FlagDisplay";
 import {
   formatPopulation,
   getCountryByCode,
-  getFlagPath,
   getShapePath,
 } from "@/lib/countries";
 
@@ -28,16 +27,14 @@ export function NeighborCountryDisplay({ code }: { code: string }) {
       </div>
 
       <div className="flex flex-col gap-4 sm:gap-5">
-        <div className="w-fit overflow-hidden rounded-xl border-2 border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
-          <Image
-            src={getFlagPath(country.code)}
-            alt={`Flag of ${country.name}`}
-            width={180}
-            height={135}
-            className="h-auto w-28 object-contain sm:w-36"
-            priority
-          />
-        </div>
+        <FlagImage
+          code={country.code}
+          alt={`Flag of ${country.name}`}
+          width={144}
+          frame="md"
+          className="w-28 sm:w-36"
+          priority
+        />
 
         <dl className="grid gap-3">
           <div>

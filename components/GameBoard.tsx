@@ -98,7 +98,7 @@ export function GameBoard({
   const [streak, setStreak] = useState(() =>
     mode === "daily-challenge" && !countStats
       ? 0
-      : getGlobalStreakOrZero(activeProfile, difficulty).currentStreak,
+      : getGlobalStreakOrZero(activeProfile, difficulty, scope).currentStreak,
   );
   const [showLearnCard, setShowLearnCard] = useState(false);
   const [lastCorrect, setLastCorrect] = useState(true);
@@ -115,6 +115,33 @@ export function GameBoard({
   const [newAchievements, setNewAchievements] = useState<string[]>([]);
   const speedSessionCheckedRef = useRef(false);
   const dailyCompletionRecordedRef = useRef(false);
+  const summaryAchievementsCheckedRef = useRef(false);
+
+  function maybeRecordDailyCompletion(completedQuestions: number) {
+    if (
+      mode !== "daily-challenge" ||
+      !countStats ||
+      !sessionQuestionLimit ||
+      completedQuestions < sessionQuestionLimit ||
+      dailyCompletionRecordedRef.current
+    ) {
+      return;
+    }
+    dailyCompletionRecordedRef.current = true;
+    recordDailyChallengeCompletion(activeProfile.id, scope);
+  }
+
+  function awardAchievements(session: {
+    sessionCorrect: number;
+    sessionTotal: number;
+    sessionEnded: boolean;
+  }) {
+    const state = loadState();
+    const updatedProfile = state.profiles.find((p) => p.id === activeProfile.id);
+    if (!updatedProfile) return;
+    const earned = checkAchievements(updatedProfile, mode, difficulty, session, scope);
+    if (earned.length) setNewAchievements((prev) => [...prev, ...earned]);
+  }
 
   // Feedback bursts live in their own list so advancing to the next question
   // never unmounts an in-flight animation.
@@ -153,15 +180,11 @@ export function GameBoard({
       return;
     }
     speedSessionCheckedRef.current = true;
-    const state = loadState();
-    const updatedProfile = state.profiles.find((p) => p.id === activeProfile.id);
-    if (!updatedProfile) return;
-    const earned = checkAchievements(updatedProfile, mode, difficulty, {
+    awardAchievements({
       sessionCorrect: correctAnswers,
       sessionTotal: questionCount,
       sessionEnded: true,
     });
-    if (earned.length) setNewAchievements((prev) => [...prev, ...earned]);
   }, [timed, gameOver, activeProfile, mode, correctAnswers, questionCount]);
 
   useEffect(() => {
@@ -174,6 +197,46 @@ export function GameBoard({
       }
     };
   }, [mode, countStats]);
+
+  const hasFinishedQuestions = !question && questionCount > 0;
+  const hasReachedQuestionLimit = Boolean(
+    sessionQuestionLimit && questionCount >= sessionQuestionLimit,
+  );
+  const roundEnded =
+    gameOver || sessionComplete || hasFinishedQuestions || hasReachedQuestionLimit;
+  const showSummary = roundEnded && !showLearnCard;
+
+  useEffect(() => {
+    if (!showSummary || !countStats || summaryAchievementsCheckedRef.current || questionCount === 0) {
+      return;
+    }
+    summaryAchievementsCheckedRef.current = true;
+
+    if (
+      mode === "daily-challenge" &&
+      sessionQuestionLimit &&
+      questionCount >= sessionQuestionLimit
+    ) {
+      maybeRecordDailyCompletion(questionCount);
+      refresh();
+    }
+
+    awardAchievements({
+      sessionCorrect: correctAnswers,
+      sessionTotal: questionCount,
+      sessionEnded: true,
+    });
+  }, [
+    showSummary,
+    countStats,
+    questionCount,
+    correctAnswers,
+    mode,
+    difficulty,
+    activeProfile.id,
+    sessionQuestionLimit,
+    scope,
+  ]);
 
   if (engine.getPoolSize() === 0) {
     return (
@@ -194,11 +257,10 @@ export function GameBoard({
     spawnBurst(correct);
 
     if (countStats) {
-      recordAnswer(activeProfile.id, mode, difficulty, correct, question.countryCode);
+      recordAnswer(activeProfile.id, mode, difficulty, correct, question.countryCode, false, scope);
       if (mode === "daily-challenge") {
         markDailyChallengePlayed(activeProfile.id, scope);
       }
-      refresh();
 
       const completedQuestions = questionCount + 1;
       const sessionCorrect = correctAnswers + (correct ? 1 : 0);
@@ -206,16 +268,16 @@ export function GameBoard({
         Boolean(sessionQuestionLimit && completedQuestions >= sessionQuestionLimit) ||
         (stopOnWrong && !correct);
 
-      const state = loadState();
-      const updatedProfile = state.profiles.find((p) => p.id === activeProfile.id);
-      if (updatedProfile) {
-        const earned = checkAchievements(updatedProfile, mode, difficulty, {
-          sessionCorrect,
-          sessionTotal: completedQuestions,
-          sessionEnded,
-        });
-        if (earned.length) setNewAchievements((prev) => [...prev, ...earned]);
+      if (sessionEnded) {
+        maybeRecordDailyCompletion(completedQuestions);
       }
+
+      refresh();
+      awardAchievements({
+        sessionCorrect,
+        sessionTotal: completedQuestions,
+        sessionEnded,
+      });
     }
 
     const completedQuestions = questionCount + 1;
@@ -231,15 +293,6 @@ export function GameBoard({
     setQuestionCount(completedQuestions);
     if (sessionQuestionLimit && completedQuestions >= sessionQuestionLimit) {
       setSessionComplete(true);
-      if (
-        mode === "daily-challenge" &&
-        countStats &&
-        !dailyCompletionRecordedRef.current
-      ) {
-        dailyCompletionRecordedRef.current = true;
-        recordDailyChallengeCompletion(activeProfile.id, scope);
-        refresh();
-      }
     }
     setShowLearnCard(true);
   }
@@ -254,19 +307,26 @@ export function GameBoard({
     setSkippedAnswers((count) => count + 1);
     if (sessionQuestionLimit && completedQuestions >= sessionQuestionLimit) {
       setSessionComplete(true);
-      if (
-        mode === "daily-challenge" &&
-        countStats &&
-        !dailyCompletionRecordedRef.current
-      ) {
-        dailyCompletionRecordedRef.current = true;
-        recordDailyChallengeCompletion(activeProfile.id, scope);
-        refresh();
-      }
     }
     if (countStats) {
-      recordAnswer(activeProfile.id, mode, difficulty, false, question.countryCode, true);
+      recordAnswer(activeProfile.id, mode, difficulty, false, question.countryCode, true, scope);
+      if (mode === "daily-challenge") {
+        markDailyChallengePlayed(activeProfile.id, scope);
+      }
+
+      const sessionEnded = Boolean(
+        sessionQuestionLimit && completedQuestions >= sessionQuestionLimit,
+      );
+      if (sessionEnded) {
+        maybeRecordDailyCompletion(completedQuestions);
+      }
+
       refresh();
+      awardAchievements({
+        sessionCorrect: correctAnswers,
+        sessionTotal: completedQuestions,
+        sessionEnded,
+      });
     }
   }
 
@@ -300,14 +360,6 @@ export function GameBoard({
     }
     setQuestion(nextQuestion);
   }
-
-  const hasFinishedQuestions = !question && questionCount > 0;
-  const hasReachedQuestionLimit = Boolean(
-    sessionQuestionLimit && questionCount >= sessionQuestionLimit,
-  );
-  const roundEnded =
-    gameOver || sessionComplete || hasFinishedQuestions || hasReachedQuestionLimit;
-  const showSummary = roundEnded && !showLearnCard;
 
   if (showSummary) {
     const accuracy = questionCount > 0
@@ -406,10 +458,12 @@ export function GameBoard({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden sm:gap-3">
-      <AchievementToast
-        achievementIds={newAchievements}
-        onDismiss={dismissAchievements}
-      />
+      {!showLearnCard && (
+        <AchievementToast
+          achievementIds={newAchievements}
+          onDismiss={dismissAchievements}
+        />
+      )}
 
       <div className="shrink-0 px-0.5 py-1.5 sm:px-1 sm:py-2">
         <div className="flex items-center justify-between gap-1.5 sm:grid sm:grid-cols-[auto_minmax(0,1fr)_minmax(0,auto)] sm:items-center sm:gap-2">
@@ -437,10 +491,12 @@ export function GameBoard({
                 <p className={`font-display text-base font-extrabold leading-none sm:text-lg ${timeLeft <= 10 ? "text-rose-600" : ""}`}>{timeLeft}s</p>
               </div>
             )}
-            {sessionQuestionLimit && (
+            {(timed || sessionQuestionLimit) && (
               <div className="shrink-0 rounded-xl border-2 border-slate-200 bg-white/90 px-1.5 py-1 text-center dark:border-slate-700 dark:bg-slate-900/90 sm:rounded-2xl sm:px-3 sm:py-1.5">
                 <p className="game-stat-label text-[9px] font-semibold uppercase text-slate-500 dark:text-slate-400">Question</p>
-                <p className="font-display text-base font-extrabold leading-none sm:text-lg">{questionCount + 1}/{sessionQuestionLimit}</p>
+                <p className="font-display text-base font-extrabold leading-none sm:text-lg">
+                  {timed ? questionCount + 1 : `${questionCount + 1}/${sessionQuestionLimit}`}
+                </p>
               </div>
             )}
           </div>

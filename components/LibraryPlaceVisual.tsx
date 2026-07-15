@@ -1,5 +1,5 @@
-import Image from "next/image";
-import { getFlagPath, getShapePath } from "@/lib/countries";
+import { FlagImage } from "@/components/FlagDisplay";
+import { getShapePath } from "@/lib/countries";
 import type { Country } from "@/lib/types";
 
 type LibraryPlaceVisualProps = {
@@ -31,7 +31,7 @@ export function LibraryPlaceVisual({ country, variant = "card" }: LibraryPlaceVi
   }
 
   if (country.hasFlag) {
-    const dimensions = variant === "hero" ? { w: 280, h: 210 } : { w: 176, h: 132 };
+    const width = variant === "hero" ? 280 : 176;
     return (
       <div
         className={
@@ -40,22 +40,14 @@ export function LibraryPlaceVisual({ country, variant = "card" }: LibraryPlaceVi
             : "flex h-full w-full items-center justify-center"
         }
       >
-        <span
-          className={
-            variant === "hero"
-              ? "overflow-hidden rounded-2xl border-2 border-white/90 bg-white shadow-lg dark:border-slate-600 dark:bg-slate-900"
-              : "overflow-hidden rounded-xl border-2 border-slate-200 bg-white shadow-md transition-transform group-hover:scale-105 dark:border-slate-600 dark:bg-slate-900"
-          }
-        >
-          <Image
-            src={getFlagPath(country.code)}
-            alt={variant === "hero" ? `Flag of ${country.name}` : ""}
-            width={dimensions.w}
-            height={dimensions.h}
-            className="h-auto w-full object-contain"
-            priority={variant === "hero"}
-          />
-        </span>
+        <FlagImage
+          code={country.code}
+          alt={variant === "hero" ? `Flag of ${country.name}` : ""}
+          width={width}
+          frame={variant === "hero" ? "lg" : "md"}
+          className={variant === "hero" ? "w-[min(100%,17.5rem)]" : "w-[min(100%,11rem)] transition-transform group-hover:scale-105"}
+          priority={variant === "hero"}
+        />
       </div>
     );
   }

@@ -1,9 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useProfiles } from "@/components/ProfileProvider";
 import { cn } from "@/lib/utils";
-import { ACHIEVEMENTS, DIFFICULTIES, DIFFICULTY_LABELS, GAME_MODES, type Difficulty } from "@/lib/types";
+import {
+  ACHIEVEMENTS,
+  DIFFICULTIES,
+  DIFFICULTY_LABELS,
+  GAME_MODES,
+  GAME_SCOPES,
+  type Difficulty,
+  type GameScope,
+} from "@/lib/types";
+import { getStoredScope, SCOPE_INFO, scopeText, setStoredScope } from "@/lib/scope";
 import { getGlobalStreak, sortGameModesByMostPlayed } from "@/lib/stats-helpers";
 
 type AchievementSort = "default" | "unlocked";
@@ -94,6 +103,17 @@ export default function StatsPage() {
   const profile = hydrated ? activeProfile : null;
   const [difficulty, setDifficulty] = useState<Difficulty>("easy");
   const [achievementSort, setAchievementSort] = useState<AchievementSort>("default");
+  const [scope, setScope] = useState<GameScope>("world");
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setScope(getStoredScope());
+  }, []);
+
+  const selectScope = useCallback((next: GameScope) => {
+    setScope(next);
+    setStoredScope(next);
+  }, []);
 
   useEffect(() => {
     if (profile) {
@@ -109,9 +129,10 @@ export default function StatsPage() {
     );
   }
 
-  const globalStreak = getGlobalStreak(profile, difficulty);
+  const globalStreak = getGlobalStreak(profile, difficulty, scope);
+  const scopeInfo = SCOPE_INFO[scope];
   const difficultyLabel = DIFFICULTY_LABELS[difficulty];
-  const modesByMostPlayed = sortGameModesByMostPlayed(GAME_MODES, profile, difficulty);
+  const modesByMostPlayed = sortGameModesByMostPlayed(GAME_MODES, profile, difficulty, scope);
   const sortedAchievements =
     achievementSort === "default"
       ? ACHIEVEMENTS
@@ -126,11 +147,38 @@ export default function StatsPage() {
 
   return (
     <div className="space-y-5 sm:space-y-8">
-      <div>
-        <h1 className="font-display text-2xl font-extrabold sm:text-3xl">Stats for {profile.name}</h1>
-        <p className="mt-1 text-sm text-slate-600 dark:text-slate-400 sm:text-base">
-          Track your streaks and accuracy across all game modes — world and USA play combined.
-        </p>
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 className="font-display text-2xl font-extrabold sm:text-3xl">Stats for {profile.name}</h1>
+          <p className="mt-1 text-sm text-slate-600 dark:text-slate-400 sm:text-base">
+            Track your streaks and accuracy across all game modes for {scopeInfo.nounPlural}.
+          </p>
+        </div>
+        <div
+          className="inline-flex rounded-2xl bg-slate-100 p-1 dark:bg-slate-800"
+          role="group"
+          aria-label="Choose where to view stats"
+        >
+          {GAME_SCOPES.map((option) => {
+            const active = scope === option;
+            return (
+              <button
+                key={option}
+                type="button"
+                aria-pressed={active}
+                onClick={() => selectScope(option)}
+                className={cn(
+                  "min-h-9 rounded-xl px-3 py-1.5 font-display text-sm font-extrabold transition-all",
+                  active
+                    ? "bg-white text-teal-800 shadow-sm dark:bg-slate-900 dark:text-teal-300"
+                    : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100",
+                )}
+              >
+                {SCOPE_INFO[option].icon} {SCOPE_INFO[option].shortLabel}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -156,7 +204,7 @@ export default function StatsPage() {
             {globalStreak.currentStreak}
           </p>
           <p className="mt-1 hidden text-sm text-amber-800/80 dark:text-amber-300/80 sm:block">
-            Carries across modes and rounds
+            Carries across modes and rounds in {scopeInfo.label.toLowerCase()}
           </p>
         </div>
         <div className="rounded-2xl border-2 border-emerald-200 bg-gradient-to-br from-emerald-50 to-teal-50 p-5 shadow-sm dark:border-emerald-800 dark:from-emerald-950/50 dark:to-teal-950/50">
@@ -165,7 +213,7 @@ export default function StatsPage() {
             {globalStreak.bestStreak}
           </p>
           <p className="mt-1 hidden text-sm text-emerald-800/80 dark:text-emerald-300/80 sm:block">
-            Your longest run across every mode
+            Your longest run in {scopeInfo.label.toLowerCase()}
           </p>
         </div>
       </div>
@@ -177,7 +225,7 @@ export default function StatsPage() {
         </div>
         <ul className="divide-y divide-slate-100 dark:divide-slate-800">
           {modesByMostPlayed.map((mode) => {
-            const stats = profile.stats[mode.id][difficulty];
+            const stats = profile.stats[scope][mode.id][difficulty];
             const accuracy =
               stats.totalPlayed > 0
                 ? Math.round((stats.totalCorrect / stats.totalPlayed) * 100)
@@ -194,7 +242,7 @@ export default function StatsPage() {
                   <div className="min-w-0 flex-1">
                     <div className="flex items-start justify-between gap-2">
                       <p className="font-display text-sm font-extrabold leading-snug text-slate-900 dark:text-slate-100">
-                        {mode.title}
+                        {scopeText(mode.title, scope)}
                       </p>
                       <span className="shrink-0 rounded-lg bg-emerald-50 px-2 py-0.5 font-mono text-xs font-bold tabular-nums text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400">
                         {accuracy}%
@@ -233,7 +281,7 @@ export default function StatsPage() {
             </thead>
             <tbody>
               {modesByMostPlayed.map((mode) => {
-                const stats = profile.stats[mode.id][difficulty];
+                const stats = profile.stats[scope][mode.id][difficulty];
                 const accuracy =
                   stats.totalPlayed > 0
                     ? Math.round((stats.totalCorrect / stats.totalPlayed) * 100)
@@ -242,7 +290,7 @@ export default function StatsPage() {
                   <tr key={mode.id} className="border-b border-slate-100 even:bg-slate-100/80 dark:border-slate-800 dark:even:bg-slate-800/80">
                     <td className="px-4 py-3">
                       <span className="mr-2">{mode.icon}</span>
-                      {mode.title}
+                      {scopeText(mode.title, scope)}
                     </td>
                     <td className="px-4 py-3 text-right font-medium">{stats.currentStreak}</td>
                     <td className="px-4 py-3 text-right font-bold text-emerald-700 dark:text-emerald-400">{stats.bestStreak}</td>

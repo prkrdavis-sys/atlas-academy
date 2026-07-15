@@ -4,11 +4,12 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { PlayModeLink } from "@/components/PlayModeLink";
 import { HomeStreakHighlights } from "@/components/HomeStreakHighlights";
+import { ScopeSelector } from "@/components/ScopeSelector";
 import { ProfileRequiredDialog } from "@/components/ProfileRequiredDialog";
 import { useProfiles } from "@/components/ProfileProvider";
-import { GAME_MODES, GAME_SCOPES, type GameMode, type GameScope } from "@/lib/types";
+import { GAME_MODES, type GameMode, type GameScope } from "@/lib/types";
 import { formatDailyDate, getDailyChallengeRun, hasCompletedDailyToday, hasPlayedDailyToday } from "@/lib/game-engine";
-import { getStoredScope, SCOPE_INFO, scopeQuery, scopeText, setStoredScope } from "@/lib/scope";
+import { getStoredScope, scopeQuery, scopeText, setStoredScope } from "@/lib/scope";
 import { getGlobalStreakOrZero, getTodayBestStreakDisplay, getTodayBestStreakOrZero } from "@/lib/stats-helpers";
 import { cn } from "@/lib/utils";
 
@@ -71,12 +72,11 @@ export default function HomePage() {
     setScope(next);
     setStoredScope(next);
   }, []);
-  const scopeInfo = SCOPE_INFO[scope];
 
   const difficulty = profile?.settings.difficulty ?? "easy";
-  const globalStreak = getGlobalStreakOrZero(profile, difficulty);
-  const todayBest = getTodayBestStreakDisplay(profile, difficulty);
-  const storedTodayBest = getTodayBestStreakOrZero(profile, difficulty);
+  const globalStreak = getGlobalStreakOrZero(profile, difficulty, scope);
+  const todayBest = getTodayBestStreakDisplay(profile, difficulty, scope);
+  const storedTodayBest = getTodayBestStreakOrZero(profile, difficulty, scope);
   const dailyRun = profile ? getDailyChallengeRun(profile.dailyChallengeCompletions, scope) : 0;
   const dailyDateLabel = formatDailyDate();
   const dailyCompletedToday = profile
@@ -97,39 +97,14 @@ export default function HomePage() {
           aria-hidden
           className="pointer-events-none absolute -right-8 -top-8 select-none text-[8rem] opacity-15 sm:-right-10 sm:-top-14 sm:text-[11rem]"
         >
-          {scopeInfo.icon}
+          🗺️
         </div>
         <div className="relative max-w-xl">
           <h1 className="font-display text-3xl font-extrabold tracking-tight sm:text-5xl">
             Atlas Academy
           </h1>
-          <div
-            className="mt-3 inline-flex rounded-2xl bg-white/15 p-1 backdrop-blur-sm"
-            role="group"
-            aria-label="Choose where to play"
-          >
-            {GAME_SCOPES.map((option) => {
-              const active = scope === option;
-              return (
-                <button
-                  key={option}
-                  type="button"
-                  aria-pressed={active}
-                  onClick={() => selectScope(option)}
-                  className={cn(
-                    "min-h-10 rounded-xl px-4 py-1.5 font-display text-sm font-extrabold transition-all sm:text-base",
-                    active
-                      ? "bg-white text-teal-800 shadow-sm"
-                      : "text-white/85 hover:bg-white/10 hover:text-white",
-                  )}
-                >
-                  {SCOPE_INFO[option].icon} {SCOPE_INFO[option].label}
-                </button>
-              );
-            })}
-          </div>
           <p className="mt-3 max-w-[18rem] text-sm leading-relaxed text-emerald-50 sm:max-w-md sm:text-base">
-            {scopeInfo.tagline}
+            Flags, capitals, shapes, and geography challenges. Build a streak and beat your best.
           </p>
           {profile && (
             <HomeStreakHighlights
@@ -163,6 +138,8 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      <ScopeSelector scope={scope} onSelect={selectScope} />
 
       <section>
         <h2 className="mb-3 font-display text-xl font-extrabold text-slate-800 dark:text-slate-100 sm:mb-4">Play</h2>

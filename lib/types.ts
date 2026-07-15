@@ -148,13 +148,19 @@ export type GlobalStreakSnapshot = {
   bestStreak: number;
 };
 
+export type GlobalStreaksByDifficulty = Record<Difficulty, GlobalStreakSnapshot>;
+
+export type ModeStatsByScope = Record<GameMode, ModeStatsByDifficulty>;
+
+export type ScopedByGameScope<T> = Record<GameScope, T>;
+
 export type Profile = {
   id: string;
   name: string;
   avatarColor: string;
   createdAt: string;
-  globalStreaks: Record<Difficulty, GlobalStreakSnapshot>;
-  stats: Record<GameMode, ModeStatsByDifficulty>;
+  globalStreaks: ScopedByGameScope<GlobalStreaksByDifficulty>;
+  stats: ScopedByGameScope<ModeStatsByScope>;
   settings: {
     difficulty: Difficulty;
     lastContinentFilter: Continent[];
@@ -170,8 +176,10 @@ export type Profile = {
   dailyChallengePlayedDates?: string[];
   /** EST date keys (YYYY-MM-DD) when the daily challenge was fully completed */
   dailyChallengeCompletions?: string[];
-  /** Highest global streak reached today, per difficulty (resets each EST day) */
-  todayBestStreaks?: Partial<Record<Difficulty, { dateKey: string; value: number }>>;
+  /** Highest global streak reached today, per scope and difficulty (resets each EST day) */
+  todayBestStreaks?: Partial<
+    Record<GameScope, Partial<Record<Difficulty, { dateKey: string; value: number }>>>
+  >;
 };
 
 export type AchievementSessionContext = {

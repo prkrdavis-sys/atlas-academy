@@ -129,7 +129,7 @@ export class GameEngine {
     if (this.mode === "daily-challenge") {
       return Math.min(DAILY_CHALLENGE_QUESTION_COUNT, this.pool.length);
     }
-    if (this.mode === "marathon") {
+    if (this.mode === "marathon" || this.mode === "speed-round") {
       return undefined;
     }
     return resolveRoundQuestionLimit(this.questionLimit, this.pool.length);
@@ -156,7 +156,7 @@ export class GameEngine {
   }
 
   private buildShuffledRoundCountries(): Country[] {
-    if (this.mode === "marathon") {
+    if (this.mode === "marathon" || this.mode === "speed-round") {
       return shuffle(this.pool);
     }
     const limit = resolveRoundQuestionLimit(this.questionLimit, this.pool.length);
@@ -174,7 +174,7 @@ export class GameEngine {
 
     const country = this.roundCountries[this.questionIndex];
     if (!country) {
-      if (this.mode === "marathon") {
+      if (this.mode === "marathon" || this.mode === "speed-round") {
         const recycled = pickFromPool(this.pool, this.random);
         this.questionIndex += 1;
         return this.buildNextQuestionForCountry(recycled);

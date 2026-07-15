@@ -2,23 +2,70 @@
 
 import Image from "next/image";
 import { getFlagPath } from "@/lib/countries";
+import { cn } from "@/lib/utils";
+
+export type FlagFrameVariant = "none" | "sm" | "md" | "lg" | "pill";
+
+type FlagImageProps = {
+  code: string;
+  alt: string;
+  /** Intrinsic width hint for Next.js; actual display width comes from className. */
+  width: number;
+  frame?: FlagFrameVariant;
+  className?: string;
+  /** Which axis is set via className — the other is set to auto for correct aspect ratio. */
+  constrainedAxis?: "width" | "height";
+  priority?: boolean;
+};
+
+const FRAME_STYLES: Record<Exclude<FlagFrameVariant, "none">, string> = {
+  sm: "overflow-hidden rounded-md border border-slate-200 bg-white dark:border-slate-600 dark:bg-slate-900",
+  md: "overflow-hidden rounded-xl border-2 border-slate-200 bg-white shadow-md dark:border-slate-700 dark:bg-slate-800",
+  lg: "overflow-hidden rounded-2xl border-2 border-slate-200 bg-white shadow-lg dark:border-slate-600 dark:bg-slate-900",
+  pill: "overflow-hidden rounded-sm border border-slate-200 bg-white dark:border-slate-600 dark:bg-slate-900",
+};
+
+/** Renders a flag at its SVG intrinsic aspect ratio with no letterboxing. */
+export function FlagImage({
+  code,
+  alt,
+  width,
+  frame = "none",
+  className,
+  constrainedAxis = "width",
+  priority,
+}: FlagImageProps) {
+  const image = (
+    <Image
+      src={getFlagPath(code)}
+      alt={alt}
+      width={width}
+      height={Math.round(width * 0.75)}
+      className={cn("block max-w-full", className)}
+      style={constrainedAxis === "width" ? { height: "auto" } : { width: "auto" }}
+      priority={priority}
+    />
+  );
+
+  if (frame === "none") {
+    return image;
+  }
+
+  return <span className={cn("inline-block leading-none", FRAME_STYLES[frame])}>{image}</span>;
+}
 
 export function FlagDisplay({ code, size = "lg" }: { code: string; size?: "sm" | "md" | "lg" }) {
-  // All flag assets share a 4:3 viewBox, so keep the box 4:3 to avoid cropping.
-  const dimensions =
-    size === "lg" ? { w: 320, h: 240 } : size === "md" ? { w: 240, h: 180 } : { w: 120, h: 90 };
+  const width = size === "lg" ? 320 : size === "md" ? 240 : 120;
   return (
     <div className="flex justify-center">
-      <div className="overflow-hidden rounded-2xl border-2 border-slate-200 bg-white shadow-md dark:border-slate-700 dark:bg-slate-800">
-        <Image
-          src={getFlagPath(code)}
-          alt={`Flag of ${code}`}
-          width={dimensions.w}
-          height={dimensions.h}
-          className="object-contain"
-          priority
-        />
-      </div>
+      <FlagImage
+        code={code}
+        alt={`Flag of ${code}`}
+        width={width}
+        frame="md"
+        className={size === "lg" ? "w-80" : size === "md" ? "w-60" : "w-[7.5rem]"}
+        priority
+      />
     </div>
   );
 }
@@ -32,25 +79,24 @@ export function FlagGrid({
   onSelect: (code: string) => void;
   compact?: boolean;
 }) {
-  const flagSize = compact ? { w: 160, h: 120 } : { w: 200, h: 150 };
+  const flagWidth = compact ? 160 : 200;
   return (
     <div className="flex h-full w-full min-h-0 items-center justify-center">
       <div
-        className={`grid w-[min(100cqw,calc(100cqh*4/3))] grid-cols-2 ${compact ? "gap-2" : "gap-3"}`}
+        className={`grid w-full max-w-[min(100cqw,22rem)] grid-cols-2 items-start ${compact ? "gap-2" : "gap-3"}`}
       >
         {codes.map((code) => (
           <button
             key={code}
             type="button"
             onClick={() => onSelect(code)}
-            className="aspect-[4/3] overflow-hidden rounded-xl border-2 border-slate-200 bg-white shadow-[0_3px_0_var(--color-slate-200)] transition-all duration-100 hover:border-sky-300 active:translate-y-[3px] active:shadow-none dark:border-slate-600 dark:bg-slate-800 dark:shadow-[0_3px_0_var(--color-slate-700)] dark:hover:border-sky-500"
+            className="block overflow-hidden rounded-xl border-2 border-slate-200 bg-white p-0 leading-none shadow-[0_3px_0_var(--color-slate-200)] transition-all duration-100 hover:border-sky-300 active:translate-y-[3px] active:shadow-none dark:border-slate-600 dark:bg-slate-800 dark:shadow-[0_3px_0_var(--color-slate-700)] dark:hover:border-sky-500"
           >
-            <Image
-              src={getFlagPath(code)}
+            <FlagImage
+              code={code}
               alt={`Flag option ${code}`}
-              width={flagSize.w}
-              height={flagSize.h}
-              className="h-full w-full object-contain"
+              width={flagWidth}
+              className="w-full"
             />
           </button>
         ))}

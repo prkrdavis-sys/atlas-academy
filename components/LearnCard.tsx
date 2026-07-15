@@ -1,15 +1,14 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { FlagImage } from "@/components/FlagDisplay";
 import {
   getCountryByCode,
-  getFlagPath,
   getShapePath,
   formatBorderFact,
   formatPopulation,
 } from "@/lib/countries";
 import { isStateCode } from "@/lib/scope";
-import Image from "next/image";
 
 type LearnCardProps = {
   countryCode: string;
@@ -49,12 +48,12 @@ function PopulationComparison({
               }`}
             >
               {country.hasFlag && (
-                <Image
-                  src={getFlagPath(country.code)}
+                <FlagImage
+                  code={country.code}
                   alt=""
                   width={48}
-                  height={36}
-                  className="h-9 w-12 shrink-0 rounded border border-slate-200 object-contain dark:border-slate-600"
+                  frame="pill"
+                  className="w-12"
                 />
               )}
               <div className="min-w-0 flex-1">
@@ -125,12 +124,12 @@ export function LearnCard({ countryCode, wasCorrect, compareCountryCode, heading
           }
         >
           {country.hasFlag && (
-            <Image
-              src={getFlagPath(country.code)}
+            <FlagImage
+              code={country.code}
               alt={country.name}
               width={120}
-              height={90}
-              className="h-auto w-full rounded-lg border border-slate-200 object-contain dark:border-slate-600 sm:w-[120px]"
+              frame="pill"
+              className="w-full rounded-lg sm:w-[7.5rem]"
             />
           )}
           <div className="min-w-0 space-y-1 text-xs leading-relaxed sm:text-sm">

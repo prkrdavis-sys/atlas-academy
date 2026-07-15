@@ -21,9 +21,15 @@ import { checkAchievements as evaluateAchievements } from "@/lib/achievements";
 import { getDailyDateKey } from "@/lib/game-engine";
 import { scopedDailyKey } from "@/lib/scope";
 import {
+  createEmptyGlobalStreaksByDifficulty,
   createEmptyModeStatsByDifficulty,
+  createEmptyModeStatsByScope,
+  createEmptyScopedGlobalStreaks,
+  createEmptyScopedStats,
   emptyModeStats,
   isLegacyFlatModeStats,
+  isLegacyUnscopedGlobalStreaks,
+  isLegacyUnscopedStats,
 } from "@/lib/stats-helpers";
 
 const STORAGE_KEY = "atlas-academy";
@@ -40,58 +46,71 @@ type LegacyProfile = Omit<Profile, "settings"> & {
   globalBestStreak?: number;
 };
 
-function createEmptyStats(): Record<GameMode, ReturnType<typeof createEmptyModeStatsByDifficulty>> {
-  const stats = {} as Record<GameMode, ReturnType<typeof createEmptyModeStatsByDifficulty>>;
-  for (const mode of GAME_MODES) {
-    stats[mode.id] = createEmptyModeStatsByDifficulty();
-  }
-  return stats;
+function createEmptyStats(): ReturnType<typeof createEmptyScopedStats> {
+  return createEmptyScopedStats();
 }
 
 function createEmptyGlobalStreaks(): Profile["globalStreaks"] {
-  return {
-    easy: { currentStreak: 0, bestStreak: 0 },
-    medium: { currentStreak: 0, bestStreak: 0 },
-    hard: { currentStreak: 0, bestStreak: 0 },
-  };
+  return createEmptyScopedGlobalStreaks();
 }
 
 function migrateLegacyStats(profile: LegacyProfile): LegacyProfile {
-  for (const mode of GAME_MODES) {
-    const modeStats = profile.stats[mode.id] as unknown;
-    if (isLegacyFlatModeStats(modeStats)) {
-      profile.stats[mode.id] = {
-        easy: {
-          ...modeStats,
-          missedCountries: [...modeStats.missedCountries],
-        },
-        medium: emptyModeStats(),
-        hard: emptyModeStats(),
-      };
-    } else {
-      for (const difficulty of DIFFICULTIES) {
-        if (!profile.stats[mode.id][difficulty]) {
-          profile.stats[mode.id][difficulty] = emptyModeStats();
+  if (isLegacyUnscopedStats(profile.stats)) {
+    profile.stats = {
+      world: profile.stats,
+      usa: createEmptyModeStatsByScope(),
+    };
+  }
+
+  for (const scope of ["world", "usa"] as const) {
+    for (const mode of GAME_MODES) {
+      const modeStats = profile.stats[scope][mode.id] as unknown;
+      if (isLegacyFlatModeStats(modeStats)) {
+        profile.stats[scope][mode.id] = {
+          easy: {
+            ...modeStats,
+            missedCountries: [...modeStats.missedCountries],
+          },
+          medium: emptyModeStats(),
+          hard: emptyModeStats(),
+        };
+      } else {
+        for (const difficulty of DIFFICULTIES) {
+          if (!profile.stats[scope][mode.id][difficulty]) {
+            profile.stats[scope][mode.id][difficulty] = emptyModeStats();
+          }
         }
       }
     }
+  }
+
+  if (isLegacyUnscopedGlobalStreaks(profile.globalStreaks)) {
+    profile.globalStreaks = {
+      world: profile.globalStreaks,
+      usa: createEmptyGlobalStreaksByDifficulty(),
+    };
   }
 
   if (!profile.globalStreaks) {
     const legacyCurrent = profile.globalCurrentStreak ?? 0;
     const legacyBest = profile.globalBestStreak ?? 0;
     profile.globalStreaks = {
-      easy: { currentStreak: legacyCurrent, bestStreak: legacyBest },
-      medium: { currentStreak: 0, bestStreak: 0 },
-      hard: { currentStreak: 0, bestStreak: 0 },
+      world: {
+        easy: { currentStreak: legacyCurrent, bestStreak: legacyBest },
+        medium: { currentStreak: 0, bestStreak: 0 },
+        hard: { currentStreak: 0, bestStreak: 0 },
+      },
+      usa: createEmptyGlobalStreaksByDifficulty(),
     };
     delete profile.globalCurrentStreak;
     delete profile.globalBestStreak;
   }
 
-  for (const difficulty of DIFFICULTIES) {
-    if (!profile.globalStreaks[difficulty]) {
-      profile.globalStreaks[difficulty] = { currentStreak: 0, bestStreak: 0 };
+  for (const scope of ["world", "usa"] as const) {
+    for (const difficulty of DIFFICULTIES) {
+      if (!profile.globalStreaks[scope][difficulty]) {
+        profile.globalStreaks[scope][difficulty] = { currentStreak: 0, bestStreak: 0 };
+      }
     }
   }
 
@@ -130,10 +149,20 @@ export function normalizeProfile(profile: Profile): Profile {
   }
   if (!normalized.todayBestStreaks) {
     normalized.todayBestStreaks = {};
+  } else if (!("world" in normalized.todayBestStreaks) && !("usa" in normalized.todayBestStreaks)) {
+    const legacyTodayBest = normalized.todayBestStreaks as Partial<
+      Record<Difficulty, { dateKey: string; value: number }>
+    >;
+    normalized.todayBestStreaks = {
+      world: legacyTodayBest,
+      usa: {},
+    };
   }
-  for (const mode of GAME_MODES) {
-    if (!normalized.stats[mode.id]) {
-      normalized.stats[mode.id] = createEmptyModeStatsByDifficulty();
+  for (const scope of ["world", "usa"] as const) {
+    for (const mode of GAME_MODES) {
+      if (!normalized.stats[scope][mode.id]) {
+        normalized.stats[scope][mode.id] = createEmptyModeStatsByDifficulty();
+      }
     }
   }
   return normalized as Profile;
@@ -261,13 +290,14 @@ export function recordAnswer(
   correct: boolean,
   countryCode: string,
   skipped = false,
+  scope: GameScope = "world",
 ) {
   const state = loadState();
   const profile = state.profiles.find((p) => p.id === profileId);
   if (!profile) return state;
 
-  const stats = profile.stats[mode][difficulty];
-  const globalStreak = profile.globalStreaks[difficulty];
+  const stats = profile.stats[scope][mode][difficulty];
+  const globalStreak = profile.globalStreaks[scope][difficulty];
   stats.totalPlayed += 1;
 
   if (correct && !skipped) {
@@ -279,9 +309,10 @@ export function recordAnswer(
 
     const today = getDailyDateKey();
     if (!profile.todayBestStreaks) profile.todayBestStreaks = {};
-    const todayBest = profile.todayBestStreaks[difficulty];
+    if (!profile.todayBestStreaks[scope]) profile.todayBestStreaks[scope] = {};
+    const todayBest = profile.todayBestStreaks[scope]![difficulty];
     if (!todayBest || todayBest.dateKey !== today) {
-      profile.todayBestStreaks[difficulty] = { dateKey: today, value: globalStreak.currentStreak };
+      profile.todayBestStreaks[scope]![difficulty] = { dateKey: today, value: globalStreak.currentStreak };
     } else {
       todayBest.value = Math.max(todayBest.value, globalStreak.currentStreak);
     }
@@ -360,8 +391,9 @@ export function checkAchievements(
   mode: GameMode,
   difficulty: Difficulty,
   session?: AchievementSessionContext,
+  scope: GameScope = "world",
 ): string[] {
-  const newAchievements = evaluateAchievements(profile, mode, difficulty, session);
+  const newAchievements = evaluateAchievements(profile, mode, difficulty, session, scope);
 
   if (newAchievements.length > 0) {
     profile.achievements = [...profile.achievements, ...newAchievements];

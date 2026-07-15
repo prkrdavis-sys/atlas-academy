@@ -1,10 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { FlagImage } from "@/components/FlagDisplay";
 import { LibraryPlaceVisual } from "@/components/LibraryPlaceVisual";
-import { getFlagPath, getPlacesForScope, getRegionsForScope } from "@/lib/countries";
+import { getPlacesForScope, getRegionsForScope } from "@/lib/countries";
 import { SCOPE_INFO, setStoredLibraryScope } from "@/lib/scope";
 import { GAME_SCOPES, type GameScope, type Region } from "@/lib/types";
 
@@ -106,15 +106,13 @@ export function LibraryBrowser({ scope = "world" }: LibraryBrowserProps) {
                 </div>
                 <div className="mt-3 flex items-center gap-2.5">
                   {country.hasFlag ? (
-                    <span className="w-10 shrink-0 overflow-hidden rounded-md border border-slate-200 bg-white dark:border-slate-600">
-                      <Image
-                        src={getFlagPath(country.code)}
-                        alt=""
-                        width={80}
-                        height={60}
-                        className="h-auto w-full object-contain"
-                      />
-                    </span>
+                    <FlagImage
+                      code={country.code}
+                      alt=""
+                      width={40}
+                      frame="pill"
+                      className="w-10 shrink-0"
+                    />
                   ) : null}
                   <span className="min-w-0 font-display text-sm font-extrabold leading-tight text-slate-900 dark:text-slate-100 sm:text-base">
                     {country.name}

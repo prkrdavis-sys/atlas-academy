@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { FlagImage } from "@/components/FlagDisplay";
 import { LibraryPlaceVisual } from "@/components/LibraryPlaceVisual";
 import {
   countries,
   formatPopulation,
   getCountryByCode,
-  getFlagPath,
   usStates,
 } from "@/lib/countries";
 import { isStateCode } from "@/lib/scope";
@@ -85,16 +84,14 @@ export default async function CountryPage({ params }: CountryPageProps) {
           <div>
             <div className="flex items-center gap-3">
               {country.hasFlag ? (
-                <span className="w-16 shrink-0 overflow-hidden rounded-lg border-2 border-slate-200 bg-white shadow-sm dark:border-slate-700">
-                  <Image
-                    src={getFlagPath(country.code)}
-                    alt={`Flag of ${country.name}`}
-                    width={160}
-                    height={120}
-                    className="h-auto w-full object-contain"
-                    priority
-                  />
-                </span>
+                <FlagImage
+                  code={country.code}
+                  alt={`Flag of ${country.name}`}
+                  width={64}
+                  frame="sm"
+                  className="w-16"
+                  priority
+                />
               ) : null}
               <p className="text-sm font-bold text-teal-700 dark:text-teal-300">{country.continent}</p>
             </div>
@@ -146,13 +143,14 @@ export default async function CountryPage({ params }: CountryPageProps) {
                 className="inline-flex min-h-11 items-center gap-2 rounded-full border-2 border-slate-200 bg-white/80 px-3 py-2 text-sm font-bold text-slate-700 transition-colors hover:border-teal-400 hover:text-teal-700 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-300 dark:hover:border-teal-500 dark:hover:text-teal-300"
               >
                 {neighbor.hasFlag ? (
-                  <Image
-                    src={getFlagPath(neighbor.code)}
-                    alt=""
-                    width={32}
-                    height={24}
-                    className="h-5 w-auto rounded-sm border border-slate-200 object-contain dark:border-slate-600"
-                  />
+                <FlagImage
+                  code={neighbor.code}
+                  alt=""
+                  width={32}
+                  frame="pill"
+                  constrainedAxis="height"
+                  className="h-5 w-auto shrink-0"
+                />
                 ) : null}
                 {neighbor.name}
               </Link>

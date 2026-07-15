@@ -4,6 +4,7 @@ import type {
   Continent,
   Difficulty,
   GameMode,
+  GameScope,
   Profile,
 } from "@/lib/types";
 import { ACHIEVEMENTS, GAME_MODES } from "@/lib/types";
@@ -56,9 +57,10 @@ export function buildAchievementChecks(
   mode: GameMode,
   difficulty: Difficulty,
   session?: AchievementSessionContext,
+  scope: GameScope = "world",
 ): Record<string, boolean> {
-  const stats = profile.stats[mode][difficulty];
-  const globalStreak = getGlobalStreak(profile, difficulty).currentStreak;
+  const stats = profile.stats[scope][mode][difficulty];
+  const globalStreak = getGlobalStreak(profile, difficulty, scope).currentStreak;
   const totalCorrect = sumStat(profile, "totalCorrect");
   const totalPlayed = sumStat(profile, "totalPlayed");
   const overallAccuracy = totalPlayed > 0 ? totalCorrect / totalPlayed : 0;
@@ -129,9 +131,10 @@ export function checkAchievements(
   mode: GameMode,
   difficulty: Difficulty,
   session?: AchievementSessionContext,
+  scope: GameScope = "world",
 ): string[] {
   const newAchievements: string[] = [];
-  const checks = buildAchievementChecks(profile, mode, difficulty, session);
+  const checks = buildAchievementChecks(profile, mode, difficulty, session, scope);
 
   for (const achievement of ACHIEVEMENTS) {
     if (checks[achievement.id] && !profile.achievements.includes(achievement.id)) {
