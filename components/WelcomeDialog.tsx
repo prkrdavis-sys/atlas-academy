@@ -11,10 +11,14 @@ const WELCOME_HIGHLIGHTS = [
   "Create a local profile to save your streaks, stats, and daily progress on this device.",
 ] as const;
 
+const WELCOME_COUNTDOWN_SECONDS = 5;
+
 export function WelcomeDialog() {
   const pathname = usePathname();
   const isPlayRoute = pathname.startsWith("/play/");
   const [open, setOpen] = useState(false);
+  const [secondsRemaining, setSecondsRemaining] = useState(WELCOME_COUNTDOWN_SECONDS);
+  const canDismiss = secondsRemaining === 0;
 
   useEffect(() => {
     if (isPlayRoute) return;
@@ -22,16 +26,35 @@ export function WelcomeDialog() {
     setOpen(true);
   }, [isPlayRoute]);
 
+  useEffect(() => {
+    if (!open) return;
+
+    setSecondsRemaining(WELCOME_COUNTDOWN_SECONDS);
+    let remaining = WELCOME_COUNTDOWN_SECONDS;
+    const interval = window.setInterval(() => {
+      remaining -= 1;
+      if (remaining <= 0) {
+        setSecondsRemaining(0);
+        window.clearInterval(interval);
+        return;
+      }
+      setSecondsRemaining(remaining);
+    }, 1000);
+
+    return () => window.clearInterval(interval);
+  }, [open]);
+
   const dismiss = useCallback(() => {
+    if (!canDismiss) return;
     markWelcomeSeen();
     setOpen(false);
-  }, []);
+  }, [canDismiss]);
 
   useEffect(() => {
     if (!open) return;
 
     function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") dismiss();
+      if (event.key === "Escape" && canDismiss) dismiss();
     }
 
     document.addEventListener("keydown", handleKeyDown);
@@ -42,18 +65,22 @@ export function WelcomeDialog() {
       document.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = previousOverflow;
     };
-  }, [open, dismiss]);
+  }, [open, dismiss, canDismiss]);
 
   if (!open) return null;
 
   return (
     <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 sm:p-6">
-      <button
-        type="button"
-        aria-label="Close dialog"
-        className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm"
-        onClick={dismiss}
-      />
+      {canDismiss ? (
+        <button
+          type="button"
+          aria-label="Close dialog"
+          className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm"
+          onClick={dismiss}
+        />
+      ) : (
+        <div aria-hidden className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm" />
+      )}
       <div
         role="dialog"
         aria-modal="true"
@@ -110,8 +137,14 @@ export function WelcomeDialog() {
             becomes.
           </p>
         </div>
-        <Button size="lg" className="mt-6 w-full" onClick={dismiss}>
-          OK
+        <Button
+          size="lg"
+          className="mt-6 w-full"
+          disabled={!canDismiss}
+          onClick={dismiss}
+          aria-label={canDismiss ? "Continue" : `Continue in ${secondsRemaining} seconds`}
+        >
+          {canDismiss ? "OK" : secondsRemaining}
         </Button>
       </div>
     </div>
