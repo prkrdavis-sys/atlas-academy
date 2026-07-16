@@ -254,6 +254,10 @@ const EXCLUDED_TITLE_PATTERNS = [
   /maintenance crew making/i,
   /\bveterans memorial\b/i,
   /\bpentagon\b/i,
+  /agricultural/i,
+  /\bmumbai\b/i,
+  /sahara star/i,
+  /croma terminal/i,
 ];
 
 // Penalize single-building photos unless a strong skyline indicator is present.
@@ -313,6 +317,9 @@ const COMMONS_FILE_OVERRIDES: Record<string, string> = {
   US: "An elevated view S.W., Washington, D.C., panorama showing the roof tops of row houses, tree line, and United States Capitol building in the distance LCCN2016647093.jpg",
   "US-WV": "Charleston, West Virginia (2023).jpg",
   "US-NV": "2015-11-01 11 41 46 View north along Carson Street (U.S. Route 395 Business) at Musser Street in downtown Carson City, Nevada.jpg",
+  EH: "Laayoune Port (2).jpg",
+  ZW: "Harare skyline.jpg",
+  "US-OR": "Salem Oregon aerial.jpg",
 };
 
 // Required for automated selection — filenames must signal a city overview.
@@ -425,17 +432,56 @@ function isBareCapitalFilename(title: string, place: Country): boolean {
   return false;
 }
 
+const AMBIGUOUS_PLACE_WORDS = new Set([
+  "sahara",
+  "george",
+  "saint",
+  "san",
+  "port",
+  "north",
+  "south",
+  "east",
+  "west",
+  "new",
+  "old",
+  "central",
+  "union",
+]);
+
+function normalizePlaceText(text: string): string {
+  return text
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+}
+
+function capitalHintsInText(text: string, place: Country): boolean {
+  const normalized = normalizePlaceText(text);
+  const capitalParts = normalizePlaceText(place.capital).split(/\s+/).filter((word) => word.length > 2);
+  return capitalParts.some((word) => normalized.includes(word));
+}
+
 function placeNameMatches(combined: string, place: Country): boolean {
-  const combinedLower = combined.toLowerCase();
-  const placeName = place.name.toLowerCase();
+  const combinedLower = normalizePlaceText(combined);
+  const placeName = normalizePlaceText(place.name);
   if (combinedLower.includes(placeName)) return true;
 
   const aliases = PLACE_NAME_ALIASES[place.code] ?? [];
-  if (aliases.some((alias) => combinedLower.includes(alias))) return true;
+  if (aliases.some((alias) => combinedLower.includes(normalizePlaceText(alias)))) return true;
 
   const placeWords = placeName.split(/\s+/).filter((word) => word.length > 3);
   if (
-    placeWords.some((word) => new RegExp(`\\b${word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i").test(combinedLower))
+    placeWords.some((word) => {
+      const matchesWord = new RegExp(
+        `\\b${word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`,
+        "i",
+      ).test(combinedLower);
+      if (!matchesWord) return false;
+      if (AMBIGUOUS_PLACE_WORDS.has(word)) {
+        return capitalHintsInText(combinedLower, place);
+      }
+      return true;
+    })
   ) {
     return true;
   }
@@ -450,9 +496,13 @@ function placeNameMatches(combined: string, place: Country): boolean {
 
   if (
     !GENERIC_CAPITALS.has(capital) &&
-    combinedLower.includes(capital) &&
+    combinedLower.includes(normalizePlaceText(capital)) &&
     (hasStrongSkylineIndicator(combinedLower) || hasWeakSkylineIndicator(combinedLower))
   ) {
+    return true;
+  }
+
+  if (place.code === "EH" && /laayoune|aaiun|el-aaiun|el aaiun/.test(combinedLower)) {
     return true;
   }
 
@@ -540,6 +590,14 @@ function isAcceptableImage(
     (!GENERIC_CAPITALS.has(capital) && fileName.includes(capital));
   if (!placeMatched) return false;
   if (isBareCapitalFilename(image.title, place)) return false;
+
+  const placeName = normalizePlaceText(place.name);
+  const fileNorm = normalizePlaceText(fileName);
+  const countryOnlyMatch =
+    placeName.split(/\s+/).some((word) => word.length > 3 && fileNorm.includes(word)) &&
+    !capitalHintsInText(fileName, place);
+  if (countryOnlyMatch) return false;
+
   return hasStrongSkylineIndicator(combined);
 }
 

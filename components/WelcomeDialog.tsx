@@ -129,12 +129,12 @@ export function WelcomeDialog() {
           <p>
             <span className="font-bold">Heads up!</span>
             {" "}
-            You&apos;re on the alpha build! I&apos;m still cooking, so things may shift, wobble,
-            or surprise you.
+            You&apos;re on the alpha build — I&apos;m still cooking, so things may shift, wobble,
+            or surprise you. That includes profiles and stats: an update might reset or delete them.
           </p>
           <p>
-            Thanks for being an early explorer — your adventure helps shape what Atlas Academy
-            becomes.
+            Thanks for being an early explorer. Grab a backup on Profiles if you want a safety net
+            while you help shape what Atlas Academy becomes.
           </p>
         </div>
         <Button

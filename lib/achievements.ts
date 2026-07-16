@@ -171,7 +171,7 @@ export function buildAchievementChecks(
 }
 
 export function reconcileAchievements(profile: Profile): string[] {
-  const mapped = profile.achievements.map(
+  const mapped = (profile.achievements ?? []).map(
     (id) => LEGACY_ACHIEVEMENT_MAP[id] ?? id,
   );
   const retained = [...new Set(mapped.filter((id) => VALID_ACHIEVEMENT_IDS.has(id)))];

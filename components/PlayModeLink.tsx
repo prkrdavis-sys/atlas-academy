@@ -21,7 +21,11 @@ export function PlayModeLink({
   const { activeProfile, hydrated } = useProfiles();
 
   function handleClick(event: MouseEvent<HTMLAnchorElement>) {
-    if (!hydrated || activeProfile) return;
+    if (!hydrated) {
+      event.preventDefault();
+      return;
+    }
+    if (activeProfile) return;
     event.preventDefault();
     onProfileRequired();
   }

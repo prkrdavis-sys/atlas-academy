@@ -36,6 +36,17 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     setHydrated(true);
   }, []);
 
+  useEffect(() => {
+    function handleStorage(event: StorageEvent) {
+      if (event.key === null || event.key === "atlas-academy" || event.key === "geography-game") {
+        setState(loadState());
+      }
+    }
+
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
+
   const refresh = useCallback(() => {
     setState(loadState());
   }, []);

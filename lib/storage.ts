@@ -54,7 +54,30 @@ function createEmptyGlobalStreaks(): Profile["globalStreaks"] {
   return createEmptyScopedGlobalStreaks();
 }
 
+function getDefaultProfileSettings(): Profile["settings"] {
+  return {
+    difficulty: "easy",
+    lastContinentFilter: [
+      "Africa",
+      "Asia",
+      "Europe",
+      "North America",
+      "Oceania",
+      "South America",
+    ],
+    lastRegionFilter: [...US_REGIONS],
+    includeTerritories: false,
+    speedRoundQuestionType: "flag-to-country",
+    marathonQuestionType: "flag-to-country",
+    roundQuestionCount: DEFAULT_ROUND_QUESTION_COUNT,
+  };
+}
+
 function migrateLegacyStats(profile: LegacyProfile): LegacyProfile {
+  if (!profile.stats) {
+    profile.stats = createEmptyStats();
+  }
+
   if (isLegacyUnscopedStats(profile.stats)) {
     profile.stats = {
       world: profile.stats,
@@ -117,8 +140,27 @@ function migrateLegacyStats(profile: LegacyProfile): LegacyProfile {
   return profile;
 }
 
+function normalizeProfiles(rawProfiles: unknown[]): Profile[] {
+  const profiles: Profile[] = [];
+  for (const raw of rawProfiles) {
+    try {
+      profiles.push(normalizeProfile(raw as Profile));
+    } catch {
+      // Skip corrupt entries so one bad profile does not wipe the rest.
+    }
+  }
+  return profiles;
+}
+
 export function normalizeProfile(profile: Profile): Profile {
-  const normalized = migrateLegacyStats(profile as LegacyProfile);
+  const normalized = migrateLegacyStats({
+    ...(profile as LegacyProfile),
+    achievements: profile.achievements ?? [],
+    settings: {
+      ...getDefaultProfileSettings(),
+      ...(profile.settings ?? {}),
+    },
+  });
   if (!normalized.settings.speedRoundQuestionType) {
     normalized.settings.speedRoundQuestionType = "flag-to-country";
   } else if ((normalized.settings.speedRoundQuestionType as string) === "mixed") {
@@ -179,22 +221,7 @@ export function createProfile(name: string, avatarColor: string): Profile {
     createdAt: new Date().toISOString(),
     globalStreaks: createEmptyGlobalStreaks(),
     stats: createEmptyStats(),
-    settings: {
-      difficulty: "easy",
-      lastContinentFilter: [
-        "Africa",
-        "Asia",
-        "Europe",
-        "North America",
-        "Oceania",
-        "South America",
-    ],
-    lastRegionFilter: [...US_REGIONS],
-    includeTerritories: false,
-      speedRoundQuestionType: "flag-to-country",
-      marathonQuestionType: "flag-to-country",
-      roundQuestionCount: DEFAULT_ROUND_QUESTION_COUNT,
-    },
+    settings: getDefaultProfileSettings(),
     achievements: [],
   };
 }
@@ -227,7 +254,7 @@ export function loadState() {
     }
     if (!raw) return getDefaultState();
     const parsed = JSON.parse(raw) as ReturnType<typeof getDefaultState>;
-    const profiles = (parsed.profiles ?? []).map(normalizeProfile);
+    const profiles = normalizeProfiles(parsed.profiles ?? []);
     const activeProfileId = resolveActiveProfileId(profiles, parsed.activeProfileId ?? null);
     const state = { profiles, activeProfileId };
     if (activeProfileId !== (parsed.activeProfileId ?? null)) {

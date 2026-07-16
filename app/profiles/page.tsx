@@ -11,7 +11,8 @@ import type { Profile } from "@/lib/types";
 
 export default function ProfilesPage() {
   const router = useRouter();
-  const { profiles, activeProfile, addProfile, switchProfile, removeProfile, updateProfile, refresh } = useProfiles();
+  const { profiles, activeProfile, hydrated, addProfile, switchProfile, removeProfile, updateProfile, refresh } =
+    useProfiles();
   const [name, setName] = useState("");
   const [color, setColor] = useState<string>(AVATAR_COLORS[0]);
   const [profileToModify, setProfileToModify] = useState<Profile | null>(null);
@@ -89,7 +90,9 @@ export default function ProfilesPage() {
 
       <div className="rounded-[1.75rem] border-2 border-slate-200 bg-white/90 p-4 shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90 sm:p-6">
         <h2 className="mb-4 font-semibold">Your profiles</h2>
-        {profiles.length === 0 ? (
+        {!hydrated ? (
+          <p className="text-sm text-slate-600 dark:text-slate-400">Loading profiles…</p>
+        ) : profiles.length === 0 ? (
           <p className="text-sm text-slate-600 dark:text-slate-400">No profiles yet. Create one below.</p>
         ) : (
           <div className="space-y-3">

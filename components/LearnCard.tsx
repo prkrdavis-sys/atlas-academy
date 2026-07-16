@@ -1,7 +1,6 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { CapitalDisplay } from "@/components/CapitalDisplay";
 import { FlagImage } from "@/components/FlagDisplay";
 import {
   getCountryByCode,
@@ -19,6 +18,8 @@ type LearnCardProps = {
   heading?: ReactNode;
   /** Embedded in the game panel between the header and answer choices. */
   variant?: "default" | "inline";
+  /** Full-height mobile overlay presentation after answering. */
+  mobileOverlay?: boolean;
 };
 
 function PopulationComparison({
@@ -104,14 +105,6 @@ function PopulationComparison({
   );
 }
 
-function CapitalLearnVisual({ countryCode }: { countryCode: string }) {
-  return (
-    <div className="mb-3 sm:mb-4">
-      <CapitalDisplay code={countryCode} compact showLabel={false} />
-    </div>
-  );
-}
-
 function InlineLearnCard({
   country,
   isState,
@@ -169,9 +162,6 @@ function InlineLearnCard({
         )}
 
         <div className="min-w-0">
-          {country.hasCapitalImage && (
-            <CapitalLearnVisual countryCode={country.code} />
-          )}
           {compareCountryCode && (
             <PopulationComparison
               countryCode={countryCode}
@@ -235,6 +225,7 @@ export function LearnCard({
   compareCountryCode,
   heading,
   variant = "default",
+  mobileOverlay = false,
 }: LearnCardProps) {
   const country = getCountryByCode(countryCode);
   if (!country) return null;
@@ -255,12 +246,14 @@ export function LearnCard({
 
   return (
     <div
-      className={`animate-card-pop-in overflow-hidden rounded-[1.75rem] border-2 bg-white shadow-xl dark:bg-slate-900 sm:rounded-3xl ${
-        wasCorrect ? "border-emerald-300 dark:border-emerald-700" : "border-rose-300 dark:border-rose-700"
-      }`}
+      className={cn(
+        "animate-card-pop-in overflow-hidden rounded-[1.75rem] border-2 bg-white shadow-xl dark:bg-slate-900 sm:rounded-3xl",
+        mobileOverlay && "flex min-h-full flex-col",
+        wasCorrect ? "border-emerald-300 dark:border-emerald-700" : "border-rose-300 dark:border-rose-700",
+      )}
     >
       <div
-        className={`px-4 py-3.5 font-display text-white sm:px-6 sm:py-4 ${
+        className={`shrink-0 px-4 py-3.5 font-display text-white sm:px-6 sm:py-4 ${
           wasCorrect ? "bg-emerald-500" : "bg-rose-500"
         }`}
       >
@@ -268,10 +261,7 @@ export function LearnCard({
           {heading ?? country.name}
         </p>
       </div>
-      <div className="p-4 sm:p-6">
-        {country.hasCapitalImage && (
-          <CapitalLearnVisual countryCode={country.code} />
-        )}
+      <div className={cn("p-4 sm:p-6", mobileOverlay && "flex min-h-0 flex-1 flex-col")}>
         {compareCountryCode && (
           <PopulationComparison
             countryCode={countryCode}
@@ -279,8 +269,13 @@ export function LearnCard({
           />
         )}
         {country.hasShape && (
-          <div className="mb-4 flex justify-center">
-            <div className="flex h-28 w-full max-w-xs items-center justify-center rounded-2xl border border-slate-200 bg-gradient-to-b from-sky-50 to-white p-4 dark:border-slate-700 dark:from-slate-800 dark:to-slate-900 sm:h-32">
+          <div className={cn("mb-4 flex justify-center", mobileOverlay && "mb-3")}>
+            <div
+              className={cn(
+                "flex w-full max-w-xs items-center justify-center rounded-2xl border border-slate-200 bg-gradient-to-b from-sky-50 to-white p-4 dark:border-slate-700 dark:from-slate-800 dark:to-slate-900",
+                mobileOverlay ? "h-36" : "h-28 sm:h-32",
+              )}
+            >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={getShapePath(country.code3)}
@@ -291,11 +286,12 @@ export function LearnCard({
           </div>
         )}
         <div
-          className={
+          className={cn(
             country.hasFlag
               ? "grid grid-cols-[5.5rem_minmax(0,1fr)] items-start gap-3 sm:flex sm:items-center sm:gap-4"
-              : "block"
-          }
+              : "block",
+            mobileOverlay && "min-h-0 flex-1",
+          )}
         >
           {country.hasFlag && (
             <FlagImage
@@ -303,10 +299,15 @@ export function LearnCard({
               alt={country.name}
               width={120}
               frame="pill"
-              className="w-full rounded-lg sm:w-[7.5rem]"
+              className={cn("w-full rounded-lg sm:w-[7.5rem]", mobileOverlay && "w-[6.5rem]")}
             />
           )}
-          <div className="min-w-0 space-y-1 text-xs leading-relaxed sm:text-sm">
+          <div
+            className={cn(
+              "min-w-0 space-y-1 text-xs leading-relaxed sm:text-sm",
+              mobileOverlay && "space-y-2 text-sm",
+            )}
+          >
             <p><span className="font-semibold">Capital:</span> {country.capital || "N/A"}</p>
             <p><span className="font-semibold">{isState ? "Region" : "Continent"}:</span> {country.continent}</p>
             {!compareCountryCode && (
@@ -317,7 +318,12 @@ export function LearnCard({
             </p>
           </div>
         </div>
-        <p className="mt-3 text-center text-xs font-medium text-slate-400 dark:text-slate-500 sm:mt-4 sm:text-sm">
+        <p
+          className={cn(
+            "mt-3 text-center text-xs font-medium text-slate-400 dark:text-slate-500 sm:mt-4 sm:text-sm",
+            mobileOverlay && "mt-auto shrink-0 pt-4 text-sm",
+          )}
+        >
           Tap anywhere to continue
         </p>
       </div>

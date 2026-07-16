@@ -6,9 +6,9 @@ import { Button } from "@/components/ui/Button";
 
 const PROGRESS_TIPS = [
   "Stats and streaks save automatically on this device.",
-  "App updates won't delete your progress.",
-  "Clearing browser data or switching browsers will reset it.",
-  "Use Backup & restore on Profiles to download a copy.",
+  "App updates can sometimes reset or delete profiles and stats — it's the alpha life.",
+  "Clearing browser data or switching browsers will reset it too.",
+  "Use Backup & restore on Profiles to keep a copy safe.",
 ] as const;
 
 type ProfileProgressInfoDialogProps = {
@@ -70,7 +70,7 @@ export function ProfileProgressInfoDialog({ open, onClose }: ProfileProgressInfo
           id="profile-progress-title"
           className="mt-2 font-display text-2xl font-extrabold tracking-tight text-slate-900 dark:text-slate-50"
         >
-          Your progress stays on this device
+          Your progress saves on this device
         </h2>
         <div id="profile-progress-description" className="mt-4 space-y-2.5">
           {PROGRESS_TIPS.map((tip) => (

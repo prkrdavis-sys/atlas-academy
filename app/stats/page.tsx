@@ -121,6 +121,14 @@ export default function StatsPage() {
     }
   }, [profile?.id, profile?.settings.difficulty]);
 
+  if (!hydrated) {
+    return (
+      <div className="rounded-3xl border-2 border-slate-200 bg-white/90 p-8 text-center shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90">
+        <p className="text-slate-600 dark:text-slate-400">Loading stats…</p>
+      </div>
+    );
+  }
+
   if (!profile) {
     return (
       <div className="rounded-3xl border-2 border-slate-200 bg-white/90 p-8 text-center shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90">

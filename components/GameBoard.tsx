@@ -473,17 +473,23 @@ export function GameBoard({
         <span className="font-black">{question.correctAnswer}</span>
       </>
     ) : undefined;
-  const learnCard = (
-    <LearnCard
-      countryCode={learnCardCountryCode}
-      heading={learnCardHeading}
-      wasCorrect={lastCorrect}
-      compareCountryCode={
-        question.mode === "population-showdown" ? question.secondaryCountryCode : undefined
-      }
-      variant={showChoiceReveal ? "inline" : "default"}
-    />
+  const learnCardProps = {
+    countryCode: learnCardCountryCode,
+    heading: learnCardHeading,
+    wasCorrect: lastCorrect,
+    compareCountryCode:
+      question.mode === "population-showdown" ? question.secondaryCountryCode : undefined,
+  };
+  const inlineLearnCard = (
+    <LearnCard {...learnCardProps} variant="inline" />
   );
+  const overlayLearnCard = (
+    <LearnCard {...learnCardProps} variant="default" />
+  );
+  const mobileOverlayLearnCard = (
+    <LearnCard {...learnCardProps} variant="default" mobileOverlay />
+  );
+  const useMobileLearnOverlay = question.displayType !== "flags-grid";
   const roundTitlePanel = (
     <>
       <p className="text-[9px] font-black uppercase tracking-[0.18em] text-teal-700/70 sm:text-[10px]">
@@ -609,7 +615,15 @@ export function GameBoard({
                   : "shrink-0 py-1 sm:py-2"
               }`}
             >
-              <div className="mx-auto w-full max-w-2xl shrink-0">{learnCard}</div>
+              <div
+                className={
+                  question.displayType === "flags-grid"
+                    ? "mx-auto min-h-0 w-full max-w-2xl flex-1 overflow-y-auto sm:shrink-0"
+                    : "mx-auto hidden w-full max-w-2xl shrink-0 sm:block"
+                }
+              >
+                {inlineLearnCard}
+              </div>
               {question.displayType === "flags-grid" && question.optionCodes && (
                 <div className="flex min-h-0 w-full flex-1 items-center justify-center">
                   <FlagGrid
@@ -700,7 +714,11 @@ export function GameBoard({
         <>
           <div
             className={`fixed inset-0 z-40 cursor-pointer ${
-              isMultipleChoiceRound ? "" : "bg-slate-900/50 backdrop-blur-[2px]"
+              isMultipleChoiceRound
+                ? useMobileLearnOverlay
+                  ? "bg-slate-900/40 backdrop-blur-[1px] sm:bg-transparent sm:backdrop-blur-none"
+                  : ""
+                : "bg-slate-900/50 backdrop-blur-[2px]"
             }`}
             onClick={handleContinue}
             onKeyDown={(e) => {
@@ -710,12 +728,22 @@ export function GameBoard({
             tabIndex={-1}
             aria-label="Continue to next question"
           />
-          {!isMultipleChoiceRound && (
+          {useMobileLearnOverlay && (
             <div
-              className="pointer-events-none fixed inset-0 z-[45] flex items-center justify-center p-4"
+              className="pointer-events-none fixed inset-0 z-[45] flex min-h-0 flex-col px-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-[max(0.75rem,env(safe-area-inset-top))] sm:hidden"
               aria-hidden
             >
-              <div className="max-h-[88dvh] w-full max-w-lg overflow-y-auto">{learnCard}</div>
+              <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+                <div className="min-h-0 flex-1 overflow-y-auto">{mobileOverlayLearnCard}</div>
+              </div>
+            </div>
+          )}
+          {!isMultipleChoiceRound && (
+            <div
+              className="pointer-events-none fixed inset-0 z-[45] hidden items-center justify-center p-4 sm:flex"
+              aria-hidden
+            >
+              <div className="max-h-[88dvh] w-full max-w-lg overflow-y-auto">{overlayLearnCard}</div>
             </div>
           )}
         </>
