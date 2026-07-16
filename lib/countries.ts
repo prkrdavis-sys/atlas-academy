@@ -2,6 +2,7 @@ import countriesData from "@/data/countries.json";
 import statesData from "@/data/states.json";
 import {
   CONTINENTS,
+  CORE_QUESTION_TYPES,
   MIXED_QUESTION_TYPES,
   SPEED_ROUND_ALL_TYPES,
   US_REGIONS,
@@ -111,16 +112,22 @@ export function getRegionsForScope(scope: GameScope): readonly Region[] {
 }
 
 export function getEligibleCoreQuestionTypes(country: Country): CoreQuestionType[] {
-  const types: CoreQuestionType[] = [];
-  if (country.hasFlag) types.push("flag-to-country");
-  if (country.capital.length > 0) {
-    types.push("country-to-capital");
-  }
-  if (country.hasCapitalImage) {
-    types.push("capital-to-country");
-  }
-  if (country.hasShape) types.push("shape-to-country");
-  return types;
+  return CORE_QUESTION_TYPES.filter((type) => {
+    switch (type) {
+      case "flag-to-country":
+        return country.hasFlag;
+      case "shape-to-country":
+        return country.hasShape;
+      case "capital-to-country":
+        return country.capital.length > 0 && country.hasCapitalImage;
+      case "country-to-capital":
+        return country.capital.length > 0;
+      default: {
+        const _exhaustive: never = type;
+        return _exhaustive;
+      }
+    }
+  });
 }
 
 export function getEligibleMixedQuestionTypes(country: Country): MixedQuestionType[] {
@@ -202,4 +209,68 @@ export function formatBorderFact(borderCount: number, scope: GameScope = "world"
     return `It borders ${borderCount} state${borderCount === 1 ? "" : "s"}.`;
   }
   return `It borders ${borderCount} countr${borderCount === 1 ? "y" : "ies"}.`;
+}
+
+const NON_ARCHIPELAGO_AND_NAMES = new Set(["Bosnia and Herzegovina"]);
+
+const ISLAND_SUBREGIONS = new Set([
+  "Caribbean",
+  "Polynesia",
+  "Micronesia",
+  "Melanesia",
+  "Australia and New Zealand",
+]);
+
+const REGIONS_WITH_THE = new Set(["Caribbean", "Middle East", "Pacific"]);
+
+function getRegionLabel(country: Country): string {
+  const label = country.subregion || country.continent;
+  return REGIONS_WITH_THE.has(label) ? `the ${label}` : label;
+}
+
+function isArchipelagoPlace(country: Country): boolean {
+  if (NON_ARCHIPELAGO_AND_NAMES.has(country.name)) return false;
+  if (/\bIslands\b/i.test(country.name)) return true;
+  return /\band\b/i.test(country.name);
+}
+
+/** Explains why a place has no bordering neighbors in the library view. */
+export function formatNoNeighborsMessage(country: Country, scope: GameScope = "world"): string {
+  if (scope === "usa") {
+    if (country.code === "US-HI") {
+      return "Hawaii is an island state in the Pacific and does not share a land border with any other U.S. state.";
+    }
+    if (country.code === "US-AK") {
+      return "Alaska is separated from the contiguous United States and does not share a land border with any other U.S. state.";
+    }
+    return `${country.name} does not share a land border with any other U.S. state.`;
+  }
+
+  const region = getRegionLabel(country);
+
+  if (country.continent === "Antarctica") {
+    return `${country.name} lies in Antarctica and has no land neighbors — only ice and ocean surround it.`;
+  }
+
+  if (isArchipelagoPlace(country)) {
+    return `${country.name} is an island archipelago in ${region} with no land neighbors.`;
+  }
+
+  if (/\bIsland\b/i.test(country.name)) {
+    return `${country.name} is a remote island in ${region} with no land neighbors.`;
+  }
+
+  if (country.isTerritory) {
+    return `${country.name} is an island territory in ${region} with no land neighbors.`;
+  }
+
+  if (
+    ISLAND_SUBREGIONS.has(country.subregion) ||
+    country.continent === "Oceania" ||
+    !country.isTerritory
+  ) {
+    return `${country.name} is an island nation in ${region} with no land neighbors.`;
+  }
+
+  return `${country.name} is surrounded by water and has no land neighbors.`;
 }

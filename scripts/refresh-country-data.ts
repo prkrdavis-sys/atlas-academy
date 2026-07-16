@@ -1,5 +1,7 @@
 import { copyFileSync, existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { getCountryFact } from "./place-facts";
+import { isSupplementalShapeCode, isCustomShapeCode, writeCustomShape, writeSupplementalShape } from "./supplemental-shapes";
 
 type RawCountry = {
   cca2: string;
@@ -102,9 +104,12 @@ function mapContinent(region: string, subregion?: string): string {
   return "Asia";
 }
 
-function buildFact(country: RawCountry): string {
-  const borderCount = country.borders?.length ?? 0;
-  return `It borders ${borderCount} countr${borderCount === 1 ? "y" : "ies"}.`;
+function buildFact(code3: string, name: string): string {
+  const fact = getCountryFact(code3);
+  if (!fact) {
+    throw new Error(`Missing curated fact for ${name} (${code3})`);
+  }
+  return fact;
 }
 
 async function fetchPopulationByCode3(): Promise<Map<string, number>> {
@@ -158,6 +163,21 @@ async function downloadShape(code: string, code3: string): Promise<boolean> {
   }
 }
 
+/** Tries mapsicon, then custom silhouettes, then @svg-maps/world fallbacks. */
+async function resolveCountryShape(code: string, code3: string): Promise<boolean> {
+  if (isCustomShapeCode(code)) {
+    return writeCustomShape(code, code3, PUBLIC_SHAPES);
+  }
+
+  if (await downloadShape(code, code3)) return true;
+
+  if (isSupplementalShapeCode(code)) {
+    return writeSupplementalShape(code, code3, PUBLIC_SHAPES);
+  }
+
+  return false;
+}
+
 async function main() {
   mkdirSync(DATA_DIR, { recursive: true });
   mkdirSync(PUBLIC_FLAGS, { recursive: true });
@@ -187,7 +207,7 @@ async function main() {
       flagCount += 1;
     }
 
-    const hasShape = await downloadShape(code, code3);
+    const hasShape = await resolveCountryShape(code, code3);
     if (hasShape) shapeCount += 1;
 
     const hasCapitalImage = existsSync(join(PUBLIC_CAPITALS, `${code.toLowerCase()}.jpg`));
@@ -221,7 +241,7 @@ async function main() {
       hasShape,
       hasCapitalImage,
       isTerritory: raw.independent === false,
-      fact: buildFact(raw),
+      fact: buildFact(code3, raw.name.common),
     });
   }
 

@@ -31,9 +31,9 @@ import type { Difficulty, GameMode, GameScope, Question, Region, RoundQuestionSe
 
 const ROUND_TASK_LABELS: Record<GameMode, string> = {
   "flag-to-country": "Name the country",
+  "shape-to-country": "Name the country",
   "capital-to-country": "Name the country",
   "country-to-capital": "Name the capital",
-  "shape-to-country": "Name the country",
   "country-to-flag": "Pick the flag",
   "neighbor-quiz": "Find the neighbor",
   "population-showdown": "Pick the larger population",

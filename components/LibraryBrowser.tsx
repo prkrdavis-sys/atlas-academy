@@ -1,31 +1,62 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 import { FlagImage } from "@/components/FlagDisplay";
 import { LibraryPlaceVisual } from "@/components/LibraryPlaceVisual";
-import { getPlacesForScope, getRegionsForScope } from "@/lib/countries";
+import { getRegionsForScope } from "@/lib/countries";
+import {
+  buildLibraryDetailHref,
+  buildLibraryListHref,
+  getFilteredLibraryPlaces,
+  getStoredLibraryFilter,
+  normalizeLibraryFilter,
+  setStoredLibraryFilter,
+  type LibraryFilter,
+} from "@/lib/library";
 import { SCOPE_INFO, setStoredLibraryScope } from "@/lib/scope";
-import { GAME_SCOPES, type GameScope, type Region } from "@/lib/types";
-
-type LibraryFilter = "All" | Region;
+import { GAME_SCOPES, type GameScope } from "@/lib/types";
 
 type LibraryBrowserProps = {
   scope?: GameScope;
 };
 
 export function LibraryBrowser({ scope = "world" }: LibraryBrowserProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [filter, setFilter] = useState<LibraryFilter>("All");
 
   const scopeInfo = SCOPE_INFO[scope];
   const regions = getRegionsForScope(scope);
   const isUsa = scope === "usa";
 
+  useEffect(() => {
+    const regionParam = searchParams.get("region");
+    if (regionParam !== null) {
+      const next = normalizeLibraryFilter(scope, regionParam);
+      setFilter(next);
+      setStoredLibraryFilter(scope, next);
+      return;
+    }
+
+    const stored = getStoredLibraryFilter(scope);
+    if (stored !== "All") {
+      router.replace(buildLibraryListHref(scope, stored));
+      return;
+    }
+
+    setFilter("All");
+  }, [scope, searchParams, router]);
+
+  const updateFilter = (next: LibraryFilter) => {
+    setFilter(next);
+    setStoredLibraryFilter(scope, next);
+    router.replace(buildLibraryListHref(scope, next));
+  };
+
   const filteredCountries = useMemo(
-    () =>
-      getPlacesForScope(scope)
-        .filter((country) => filter === "All" || country.continent === filter)
-        .toSorted((a, b) => a.name.localeCompare(b.name)),
+    () => getFilteredLibraryPlaces(scope, filter),
     [scope, filter],
   );
 
@@ -46,7 +77,7 @@ export function LibraryBrowser({ scope = "world" }: LibraryBrowserProps) {
             return (
               <Link
                 key={option}
-                href={option === "usa" ? "/library?scope=usa" : "/library"}
+                href={buildLibraryListHref(option, option === scope ? filter : getStoredLibraryFilter(option))}
                 aria-current={active ? "page" : undefined}
                 onClick={() => setStoredLibraryScope(option)}
                 className={`min-h-10 rounded-xl px-4 py-2 font-display text-sm font-extrabold transition-all ${
@@ -78,7 +109,7 @@ export function LibraryBrowser({ scope = "world" }: LibraryBrowserProps) {
               <button
                 key={region}
                 type="button"
-                onClick={() => setFilter(region)}
+                onClick={() => updateFilter(region)}
                 aria-pressed={active}
                 className={`min-h-11 shrink-0 rounded-full border-2 px-4 py-2 text-sm font-bold transition-all active:scale-[0.98] ${
                   active
@@ -98,7 +129,7 @@ export function LibraryBrowser({ scope = "world" }: LibraryBrowserProps) {
           {filteredCountries.map((country) => (
             <li key={country.code}>
               <Link
-                href={`/library/${country.code.toLowerCase()}`}
+                href={buildLibraryDetailHref(country.code, scope, filter)}
                 className="group flex h-full min-h-48 flex-col overflow-hidden rounded-2xl border-2 border-slate-200 bg-white/85 p-3 shadow-sm transition-all hover:-translate-y-0.5 hover:border-teal-400 hover:shadow-md active:translate-y-0 dark:border-slate-700 dark:bg-slate-900/85 dark:hover:border-teal-500 sm:min-h-56 sm:p-4"
               >
                 <div className="flex min-h-28 flex-1 items-center justify-center rounded-xl bg-slate-50 p-3 dark:bg-slate-800/70 sm:min-h-32">

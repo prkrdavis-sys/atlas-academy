@@ -8,6 +8,7 @@
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { GameEngine } from "../lib/game-engine";
+import { normalizeAnswerText } from "../lib/answer-matcher";
 import { countries, getCountryByCode, usStates } from "../lib/countries";
 import {
   CONTINENTS,
@@ -40,9 +41,9 @@ for (const c of [...countries, ...usStates]) {
 
 const MODES: GameMode[] = [
   "flag-to-country",
+  "shape-to-country",
   "capital-to-country",
   "country-to-capital",
-  "shape-to-country",
   "country-to-flag",
   "neighbor-quiz",
   "population-showdown",
@@ -64,12 +65,50 @@ for (const mode of MODES) {
       let q: Question | null;
       while ((q = engine.nextQuestion())) {
         questionsChecked += 1;
-        const { options, optionCodes, correctCode, countryCode } = q;
-        if (!options || !optionCodes) {
+        const { options, optionCodes, correctCode, countryCode, correctAnswer, mode: questionMode } = q;
+        if (!options) {
           fail(`${mode}: question missing options`);
           continue;
         }
+
+        if (questionMode === "country-to-capital") {
+          if (optionCodes) {
+            fail(`${mode}: capital MC must use label selection, not optionCodes`);
+            continue;
+          }
+          const correctIdx = options.findIndex(
+            (option) => normalizeAnswerText(option) === normalizeAnswerText(correctAnswer),
+          );
+          if (correctIdx === -1) {
+            fail(`${mode}: correct capital not among options (${correctAnswer})`);
+            continue;
+          }
+          const labels = options.map((option) => option.toLowerCase());
+          if (new Set(labels).size !== labels.length) {
+            fail(`${mode}: duplicate option labels ${options.join(" | ")}`);
+          }
+          for (let i = 0; i < options.length; i += 1) {
+            const accepted = engine.checkAnswer(q, options[i], false);
+            if (i === correctIdx && !accepted) {
+              fail(`${mode}: correct pick "${options[i]}" rejected for ${countryCode}`);
+            }
+            if (i !== correctIdx && accepted) {
+              fail(`${mode}: wrong pick "${options[i]}" accepted for ${countryCode} (${q.prompt})`);
+            }
+          }
+          continue;
+        }
+
+        if (!optionCodes) {
+          fail(`${mode}: question missing optionCodes`);
+          continue;
+        }
         if (options.length !== optionCodes.length) fail(`${mode}: options/codes length mismatch`);
+        for (const code of optionCodes) {
+          if (!getCountryByCode(code)) {
+            fail(`${mode}: optionCodes must be country codes (${code})`);
+          }
+        }
         const target = correctCode ?? countryCode;
         const correctIdx = optionCodes.findIndex((code) => {
           const a = getCountryByCode(code);

@@ -7,7 +7,7 @@ import { HomeStreakHighlights } from "@/components/HomeStreakHighlights";
 import { ScopeSelector } from "@/components/ScopeSelector";
 import { ProfileRequiredDialog } from "@/components/ProfileRequiredDialog";
 import { useProfiles } from "@/components/ProfileProvider";
-import { GAME_MODES, type GameMode } from "@/lib/types";
+import { GAME_MODES, PLAY_MODES, type GameMode } from "@/lib/types";
 import { formatDailyDate, getDailyChallengeRun, hasCompletedDailyToday, hasPlayedDailyToday } from "@/lib/game-engine";
 import { scopeQuery, scopeText } from "@/lib/scope";
 import { useGameScope } from "@/lib/use-game-scope";
@@ -23,6 +23,11 @@ const CORE_MODE_STYLES: Record<
     iconBg: "bg-sky-100 dark:bg-sky-900/60",
     hover: "hover:border-sky-400 dark:hover:border-sky-600",
   },
+  "shape-to-country": {
+    tile: "border-amber-200 bg-amber-50/80 dark:border-amber-800 dark:bg-amber-950/50",
+    iconBg: "bg-amber-100 dark:bg-amber-900/60",
+    hover: "hover:border-amber-400 dark:hover:border-amber-600",
+  },
   "capital-to-country": {
     tile: "border-violet-200 bg-violet-50/80 dark:border-violet-800 dark:bg-violet-950/50",
     iconBg: "bg-violet-100 dark:bg-violet-900/60",
@@ -33,25 +38,12 @@ const CORE_MODE_STYLES: Record<
     iconBg: "bg-rose-100 dark:bg-rose-900/60",
     hover: "hover:border-rose-400 dark:hover:border-rose-600",
   },
-  "shape-to-country": {
-    tile: "border-amber-200 bg-amber-50/80 dark:border-amber-800 dark:bg-amber-950/50",
-    iconBg: "bg-amber-100 dark:bg-amber-900/60",
-    hover: "hover:border-amber-400 dark:hover:border-amber-600",
-  },
   mixed: {
     tile: "border-teal-200 bg-teal-50/80 dark:border-teal-800 dark:bg-teal-950/50",
     iconBg: "bg-teal-100 dark:bg-teal-900/60",
     hover: "hover:border-teal-400 dark:hover:border-teal-600",
   },
 };
-
-const PLAY_MODES: GameMode[] = [
-  "flag-to-country",
-  "capital-to-country",
-  "country-to-capital",
-  "shape-to-country",
-  "mixed",
-];
 
 const CHALLENGE_MODES: GameMode[] = ["daily-challenge", "speed-round", "marathon"];
 

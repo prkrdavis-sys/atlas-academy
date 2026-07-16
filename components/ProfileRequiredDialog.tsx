@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/Button";
+import { PROFILE_EMOJI } from "@/lib/types";
 
 type ProfileRequiredDialogProps = {
   open: boolean;
@@ -48,7 +49,7 @@ export function ProfileRequiredDialog({ open, onClose }: ProfileRequiredDialogPr
           aria-hidden
           className="pointer-events-none absolute -right-6 -top-6 text-[6rem] opacity-15"
         >
-          🙂
+          {PROFILE_EMOJI}
         </div>
         <p className="text-xs font-black uppercase tracking-[0.16em] text-teal-700 dark:text-teal-300">
           Before you play

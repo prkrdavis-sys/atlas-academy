@@ -4,13 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ProfileSwitcher } from "@/components/ProfileSwitcher";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { PROFILE_EMOJI } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 const MOBILE_NAV_ITEMS = [
   { href: "/", label: "Play", icon: "🌎" },
   { href: "/extras", label: "Extras", icon: "✨" },
   { href: "/stats", label: "Stats", icon: "📊" },
-  { href: "/profiles", label: "Profiles", icon: "👨🏽‍🎓" },
+  { href: "/profiles", label: "Profiles", icon: PROFILE_EMOJI },
 ] as const;
 
 export function AppHeader() {

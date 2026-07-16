@@ -1,5 +1,6 @@
 import { FlagImage } from "@/components/FlagDisplay";
 import { getCapitalPath, getShapePath } from "@/lib/countries";
+import { formatDisplayCode } from "@/lib/scope";
 import type { Country } from "@/lib/types";
 
 type LibraryPlaceVisualProps = {
@@ -93,7 +94,7 @@ export function LibraryPlaceVisual({
       }
       aria-hidden
     >
-      {country.code}
+      {formatDisplayCode(country.code)}
     </span>
   );
 }

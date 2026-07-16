@@ -21,6 +21,7 @@ import {
   type SpeedRoundQuestionType,
 } from "@/lib/types";
 import { filterDailyDatesByScope, scopeText } from "@/lib/scope";
+import { getCapitalCityDistractors } from "@/lib/city-distractors";
 import { pickRandom, shuffle, uniqueBy } from "@/lib/utils";
 
 function seededRandom(seed: number) {
@@ -46,14 +47,13 @@ function isIslandCountry(country: Country): boolean {
   return false;
 }
 
-function buildMcOptions(
+function buildNameMcOptions(
   correct: Country,
   pool: Country[],
   difficulty: Difficulty,
-  field: "name" | "capital" = "name",
   promptCapital?: string,
 ): { options: string[]; optionCodes: string[] } {
-  const getValue = (c: Country) => (field === "capital" ? c.capital : c.name);
+  const getValue = (c: Country) => c.name;
   const correctLabel = normalizeAnswerText(getValue(correct));
   const normalizedPromptCapital = promptCapital ? normalizeAnswerText(promptCapital) : "";
 
@@ -75,7 +75,7 @@ function buildMcOptions(
   const usedCodes = new Set<string>();
   const usedLabels = new Set<string>();
 
-  const tryAddDistractor = (candidate: Country) => {
+  const tryAddCountryDistractor = (candidate: Country) => {
     if (distractors.length >= 3) return;
     if (usedCodes.has(candidate.code)) return;
     const label = getValue(candidate);
@@ -89,7 +89,7 @@ function buildMcOptions(
   const fillFromPool = (source: Country[]) => {
     for (const candidate of shuffle(source)) {
       if (distractors.length >= 3) break;
-      tryAddDistractor(candidate);
+      tryAddCountryDistractor(candidate);
     }
   };
 
@@ -108,7 +108,7 @@ function buildMcOptions(
       ),
     );
     if (!extra) break;
-    tryAddDistractor(extra);
+    tryAddCountryDistractor(extra);
   }
 
   const combined = shuffle([{ label: getValue(correct), code: correct.code }, ...distractors]);
@@ -116,6 +116,29 @@ function buildMcOptions(
     options: combined.map((c) => c.label),
     optionCodes: combined.map((c) => c.code),
   };
+}
+
+function buildCapitalMcOptions(
+  correct: Country,
+  scope: GameScope,
+): { options: string[] } {
+  const usedLabels = new Set<string>([normalizeAnswerText(correct.capital)]);
+  const distractors: string[] = [];
+
+  const tryAddCity = (city: string) => {
+    if (distractors.length >= 3) return;
+    const normalized = normalizeAnswerText(city);
+    if (usedLabels.has(normalized)) return;
+    usedLabels.add(normalized);
+    distractors.push(city);
+  };
+
+  for (const city of shuffle(getCapitalCityDistractors(correct, scope))) {
+    if (distractors.length >= 3) break;
+    tryAddCity(city);
+  }
+
+  return { options: shuffle([correct.capital, ...distractors]) };
 }
 
 export class GameEngine {
@@ -252,7 +275,7 @@ export class GameEngine {
       case "weak-spots": {
         const mc =
           this.difficulty !== "hard"
-            ? buildMcOptions(country, this.pool, this.difficulty, "name")
+            ? buildNameMcOptions(country, this.pool, this.difficulty)
             : undefined;
         return {
           id,
@@ -268,7 +291,7 @@ export class GameEngine {
       case "capital-to-country": {
         const mc =
           this.difficulty !== "hard"
-            ? buildMcOptions(country, this.pool, this.difficulty, "name", country.capital)
+            ? buildNameMcOptions(country, this.pool, this.difficulty, country.capital)
             : undefined;
         return {
           id,
@@ -289,7 +312,7 @@ export class GameEngine {
       case "country-to-capital": {
         const mc =
           this.difficulty !== "hard"
-            ? buildMcOptions(country, this.pool, this.difficulty, "capital")
+            ? buildCapitalMcOptions(country, this.scope)
             : undefined;
         return {
           id,
@@ -305,7 +328,7 @@ export class GameEngine {
       case "shape-to-country": {
         const mc =
           this.difficulty !== "hard"
-            ? buildMcOptions(country, this.pool, this.difficulty, "name")
+            ? buildNameMcOptions(country, this.pool, this.difficulty)
             : undefined;
         return {
           id,
@@ -319,7 +342,7 @@ export class GameEngine {
         };
       }
       case "country-to-flag": {
-        const mc = buildMcOptions(country, this.pool, this.difficulty, "name");
+        const mc = buildNameMcOptions(country, this.pool, this.difficulty);
         return {
           id,
           mode,
@@ -335,12 +358,7 @@ export class GameEngine {
       case "neighbor-quiz": {
         const neighborCode = pickRandom(country.borders);
         const neighbor = getCountryByCode(neighborCode);
-        const mc = buildMcOptions(
-          neighbor ?? country,
-          this.pool,
-          this.difficulty,
-          "name",
-        );
+        const mc = buildNameMcOptions(neighbor ?? country, this.pool, this.difficulty);
         return {
           id,
           mode,

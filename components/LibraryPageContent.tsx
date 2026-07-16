@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { LibraryBrowser } from "@/components/LibraryBrowser";
+import { buildLibraryListHref, getStoredLibraryFilter } from "@/lib/library";
 import { getStoredLibraryScope, normalizeScope, setStoredLibraryScope } from "@/lib/scope";
 import type { GameScope } from "@/lib/types";
 
@@ -40,7 +41,7 @@ export function LibraryPageContent() {
 
     const stored = getStoredLibraryScope();
     if (stored === "usa") {
-      router.replace("/library?scope=usa");
+      router.replace(buildLibraryListHref("usa", getStoredLibraryFilter("usa")));
       return;
     }
 

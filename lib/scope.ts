@@ -115,3 +115,11 @@ export function filterDailyDatesByScope(
 export function isStateCode(code: string): boolean {
   return code.toUpperCase().startsWith("US-");
 }
+
+/** Returns the user-facing code (e.g. "VA" instead of "US-VA"). */
+export function formatDisplayCode(code: string): string {
+  if (isStateCode(code)) {
+    return code.slice(3).toUpperCase();
+  }
+  return code;
+}

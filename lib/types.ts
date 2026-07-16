@@ -79,15 +79,15 @@ export function resolveRoundQuestionLimit(
 
 export type CoreQuestionType =
   | "flag-to-country"
+  | "shape-to-country"
   | "capital-to-country"
-  | "country-to-capital"
-  | "shape-to-country";
+  | "country-to-capital";
 
 export const CORE_QUESTION_TYPES: CoreQuestionType[] = [
   "flag-to-country",
+  "shape-to-country",
   "capital-to-country",
   "country-to-capital",
-  "shape-to-country",
 ];
 
 export const MIXED_QUESTION_TYPES = [
@@ -102,9 +102,9 @@ export type SpeedRoundQuestionType = CoreQuestionType | typeof SPEED_ROUND_ALL_T
 
 export type GameMode =
   | "flag-to-country"
+  | "shape-to-country"
   | "capital-to-country"
   | "country-to-capital"
-  | "shape-to-country"
   | "country-to-flag"
   | "neighbor-quiz"
   | "population-showdown"
@@ -113,6 +113,11 @@ export type GameMode =
   | "speed-round"
   | "weak-spots"
   | "mixed";
+
+export const PLAY_MODES: GameMode[] = [
+  ...CORE_QUESTION_TYPES,
+  "mixed",
+];
 
 export type Country = {
   code: string;
@@ -237,6 +242,13 @@ export const GAME_MODES: {
     phase: 1,
   },
   {
+    id: "shape-to-country",
+    title: "Countries from shapes",
+    description: "Identify each country by its silhouette",
+    icon: "🗺️",
+    phase: 1,
+  },
+  {
     id: "capital-to-country",
     title: "Countries from capitals",
     description: "Identify each country by its capital city",
@@ -248,13 +260,6 @@ export const GAME_MODES: {
     title: "Capitals from countries",
     description: "Name the capital city for each country",
     icon: "📍",
-    phase: 1,
-  },
-  {
-    id: "shape-to-country",
-    title: "Countries from shapes",
-    description: "Identify each country by its silhouette",
-    icon: "🗺️",
     phase: 1,
   },
   {
@@ -325,6 +330,8 @@ export const AVATAR_COLORS = [
   "#0891b2",
   "#ea580c",
 ] as const;
+
+export const PROFILE_EMOJI = "👨🏽‍🎓";
 
 export const ACHIEVEMENTS = [
   { id: "first-steps", title: "First Steps", description: "Answer your first question" },

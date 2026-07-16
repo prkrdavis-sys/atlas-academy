@@ -9,6 +9,7 @@
  */
 import { existsSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { getStateFact } from "./place-facts";
 
 type StateRow = [
   postal: string,
@@ -120,7 +121,11 @@ const states = STATE_ROWS.map(
       hasShape,
       hasCapitalImage,
       isTerritory: false,
-      fact: `${name} is known as ${nickname}.`,
+      fact: (() => {
+        const fact = getStateFact(code);
+        if (!fact) throw new Error(`Missing curated fact for ${name} (${code})`);
+        return fact;
+      })(),
     };
   },
 );

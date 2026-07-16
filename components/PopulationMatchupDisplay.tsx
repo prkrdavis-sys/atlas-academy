@@ -17,26 +17,26 @@ export function PopulationMatchupDisplay({ codes }: PopulationMatchupDisplayProp
         return (
           <div
             key={code}
-            className="flex min-h-0 items-center justify-center px-2 py-2 sm:px-4 sm:py-3"
+            className="flex min-h-0 min-w-0 flex-col items-stretch justify-center px-1.5 py-2 sm:px-3 sm:py-3"
           >
-            <div className="flex w-full max-w-[11rem] flex-col items-center justify-center gap-3 sm:max-w-none sm:gap-4">
+            <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-2 sm:gap-3">
               {country.hasShape && (
-                <div className="flex w-full items-center justify-center px-1">
+                <div className="flex min-h-0 flex-1 w-full items-center justify-center px-0.5">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={getShapePath(country.code3)}
                     alt=""
-                    className="max-h-[min(18dvh,8rem)] w-full object-contain [filter:brightness(0)] dark:[filter:brightness(0)_invert(1)] sm:max-h-[min(28dvh,12rem)]"
+                    className="max-h-full max-w-full object-contain [filter:brightness(0)] dark:[filter:brightness(0)_invert(1)]"
                   />
                 </div>
               )}
-              <div className="flex w-full items-center justify-center">
+              <div className="w-full min-w-0 shrink-0 overflow-hidden rounded-xl border-2 border-slate-200 bg-white shadow-md dark:border-slate-700 dark:bg-slate-800">
                 <FlagImage
                   code={country.code}
                   alt=""
-                  width={144}
-                  frame="md"
-                  className="w-[min(92%,9rem)] sm:w-36"
+                  width={160}
+                  frame="none"
+                  className="w-full"
                 />
               </div>
             </div>

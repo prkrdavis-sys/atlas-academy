@@ -22,9 +22,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Alabama is known as the Yellowhammer State.",
-    "hasCapitalImage": true
+    "fact": "The Saturn V rockets that carried Apollo astronauts to the Moon were designed and built in Huntsville."
   },
   {
     "code": "US-AK",
@@ -44,9 +44,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Alaska is known as the Last Frontier.",
-    "hasCapitalImage": true
+    "fact": "Alaska is the northernmost, westernmost, and easternmost U.S. state—the Aleutian Islands cross the 180th meridian into the Eastern Hemisphere."
   },
   {
     "code": "US-AZ",
@@ -72,9 +72,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Arizona is known as the Grand Canyon State.",
-    "hasCapitalImage": true
+    "fact": "The Grand Canyon exposes nearly two billion years of geology in its colorful layered walls."
   },
   {
     "code": "US-AR",
@@ -101,9 +101,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Arkansas is known as the Natural State.",
-    "hasCapitalImage": true
+    "fact": "Hot Springs National Park in Arkansas predates Yellowstone and was the first U.S. federal reserve."
   },
   {
     "code": "US-CA",
@@ -127,9 +127,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "California is known as the Golden State.",
-    "hasCapitalImage": true
+    "fact": "California's economy is larger than that of most countries—if it were independent, it would rank among the world's biggest."
   },
   {
     "code": "US-CO",
@@ -157,9 +157,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Colorado is known as the Centennial State.",
-    "hasCapitalImage": true
+    "fact": "Denver sits exactly one mile above sea level, giving Colorado its 'Mile High City' nickname."
   },
   {
     "code": "US-CT",
@@ -183,9 +183,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Connecticut is known as the Constitution State.",
-    "hasCapitalImage": true
+    "fact": "The Fundamental Orders of Connecticut, adopted in 1639, are often called the first written constitution in the Americas."
   },
   {
     "code": "US-DE",
@@ -209,9 +209,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Delaware is known as the First State.",
-    "hasCapitalImage": true
+    "fact": "Delaware was the first state to ratify the U.S. Constitution on December 7, 1787."
   },
   {
     "code": "US-FL",
@@ -234,9 +234,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Florida is known as the Sunshine State.",
-    "hasCapitalImage": true
+    "fact": "Florida has more coastline than any U.S. state except Alaska and is the only state bordering both the Atlantic and Gulf."
   },
   {
     "code": "US-GA",
@@ -262,9 +262,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Georgia is known as the Peach State.",
-    "hasCapitalImage": true
+    "fact": "Coca-Cola was invented by a pharmacist in Atlanta in 1886 and first sold at a local drugstore."
   },
   {
     "code": "US-HI",
@@ -284,9 +284,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Hawaii is known as the Aloha State.",
-    "hasCapitalImage": true
+    "fact": "Hawaii is the only U.S. state that grows coffee commercially and sits 2,400 miles from the mainland."
   },
   {
     "code": "US-ID",
@@ -313,9 +313,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Idaho is known as the Gem State.",
-    "hasCapitalImage": true
+    "fact": "Idaho produces about one-third of all potatoes grown in the United States."
   },
   {
     "code": "US-IL",
@@ -341,9 +341,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Illinois is known as the Prairie State.",
-    "hasCapitalImage": true
+    "fact": "Chicago reversed the flow of its river in 1900 so wastewater would drain away from Lake Michigan."
   },
   {
     "code": "US-IN",
@@ -368,9 +368,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Indiana is known as the Hoosier State.",
-    "hasCapitalImage": true
+    "fact": "The Indianapolis 500, first held in 1911, is one of the oldest and most famous car races in the world."
   },
   {
     "code": "US-IA",
@@ -397,9 +397,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Iowa is known as the Hawkeye State.",
-    "hasCapitalImage": true
+    "fact": "Iowa leads the nation in corn production and raises more pigs than any other state."
   },
   {
     "code": "US-KS",
@@ -424,9 +424,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Kansas is known as the Sunflower State.",
-    "hasCapitalImage": true
+    "fact": "The geographic center of the contiguous United States lies near Lebanon, Kansas."
   },
   {
     "code": "US-KY",
@@ -454,9 +454,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Kentucky is known as the Bluegrass State.",
-    "hasCapitalImage": true
+    "fact": "Kentucky produces about 95% of the world's bourbon and has more barrels of aging whiskey than people."
   },
   {
     "code": "US-LA",
@@ -480,9 +480,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Louisiana is known as the Pelican State.",
-    "hasCapitalImage": true
+    "fact": "New Orleans sits largely below sea level and relies on levees, pumps, and Mississippi River silt to stay dry."
   },
   {
     "code": "US-ME",
@@ -504,9 +504,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Maine is known as the Pine Tree State.",
-    "hasCapitalImage": true
+    "fact": "Maine supplies roughly 90% of the United States' lobster catch."
   },
   {
     "code": "US-MD",
@@ -531,9 +531,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Maryland is known as the Old Line State.",
-    "hasCapitalImage": true
+    "fact": "The Star-Spangled Banner was written during the 1814 Battle of Baltimore at Fort McHenry."
   },
   {
     "code": "US-MA",
@@ -559,9 +559,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Massachusetts is known as the Bay State.",
-    "hasCapitalImage": true
+    "fact": "The first subway system in the Americas opened in Boston in 1897."
   },
   {
     "code": "US-MI",
@@ -585,9 +585,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Michigan is known as the Great Lakes State.",
-    "hasCapitalImage": true
+    "fact": "Michigan touches four of the five Great Lakes and has more freshwater shoreline than any other state."
   },
   {
     "code": "US-MN",
@@ -612,9 +612,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Minnesota is known as the North Star State.",
-    "hasCapitalImage": true
+    "fact": "Minnesota has more than 11,000 lakes and is the birthplace of water skiing and the Mall of America."
   },
   {
     "code": "US-MS",
@@ -639,9 +639,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Mississippi is known as the Magnolia State.",
-    "hasCapitalImage": true
+    "fact": "The Mississippi River forms most of the state's western border and gave the state its name."
   },
   {
     "code": "US-MO",
@@ -670,9 +670,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Missouri is known as the Show-Me State.",
-    "hasCapitalImage": true
+    "fact": "The Gateway Arch in St. Louis is 630 feet tall—the tallest monument in the United States."
   },
   {
     "code": "US-MT",
@@ -697,9 +697,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Montana is known as the Treasure State.",
-    "hasCapitalImage": true
+    "fact": "Montana's name comes from the Spanish word montaña, though it is not the most mountainous U.S. state."
   },
   {
     "code": "US-NE",
@@ -726,9 +726,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Nebraska is known as the Cornhusker State.",
-    "hasCapitalImage": true
+    "fact": "Carhenge in Alliance is a full-scale replica of England's Stonehenge built from vintage American cars."
   },
   {
     "code": "US-NV",
@@ -754,9 +754,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Nevada is known as the Silver State.",
-    "hasCapitalImage": true
+    "fact": "About three-quarters of Nevada's population lives in the Las Vegas metro area."
   },
   {
     "code": "US-NH",
@@ -780,9 +780,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "New Hampshire is known as the Granite State.",
-    "hasCapitalImage": true
+    "fact": "New Hampshire's license plates carry the bold motto 'Live Free or Die.'"
   },
   {
     "code": "US-NJ",
@@ -806,9 +806,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "New Jersey is known as the Garden State.",
-    "hasCapitalImage": true
+    "fact": "Thomas Edison developed the practical light bulb, phonograph, and motion picture in his Menlo Park laboratory."
   },
   {
     "code": "US-NM",
@@ -834,9 +834,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "New Mexico is known as the Land of Enchantment.",
-    "hasCapitalImage": true
+    "fact": "Roswell became synonymous with UFO lore after a 1947 incident that still fuels conspiracy theories."
   },
   {
     "code": "US-NY",
@@ -862,9 +862,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "New York is known as the Empire State.",
-    "hasCapitalImage": true
+    "fact": "More people live in New York City than in all but a handful of U.S. states."
   },
   {
     "code": "US-NC",
@@ -889,9 +889,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "North Carolina is known as the Tar Heel State.",
-    "hasCapitalImage": true
+    "fact": "The Wright brothers achieved the first powered airplane flight at Kitty Hawk in 1903."
   },
   {
     "code": "US-ND",
@@ -915,9 +915,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "North Dakota is known as the Peace Garden State.",
-    "hasCapitalImage": true
+    "fact": "Theodore Roosevelt National Park preserves the badlands where the future president ranched and found inspiration."
   },
   {
     "code": "US-OH",
@@ -943,9 +943,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Ohio is known as the Buckeye State.",
-    "hasCapitalImage": true
+    "fact": "Seven U.S. presidents were born in Ohio—more than any state except Virginia."
   },
   {
     "code": "US-OK",
@@ -972,9 +972,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Oklahoma is known as the Sooner State.",
-    "hasCapitalImage": true
+    "fact": "Oklahoma City lies close to the geographic center of the contiguous United States."
   },
   {
     "code": "US-OR",
@@ -999,9 +999,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Oregon is known as the Beaver State.",
-    "hasCapitalImage": true
+    "fact": "Crater Lake is the deepest lake in the United States, formed when a volcano collapsed about 7,700 years ago."
   },
   {
     "code": "US-PA",
@@ -1028,9 +1028,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Pennsylvania is known as the Keystone State.",
-    "hasCapitalImage": true
+    "fact": "Independence Hall in Philadelphia is where the Declaration of Independence and U.S. Constitution were signed."
   },
   {
     "code": "US-RI",
@@ -1053,9 +1053,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Rhode Island is known as the Ocean State.",
-    "hasCapitalImage": true
+    "fact": "Rhode Island is the smallest U.S. state but has over 400 miles of coastline."
   },
   {
     "code": "US-SC",
@@ -1078,9 +1078,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "South Carolina is known as the Palmetto State.",
-    "hasCapitalImage": true
+    "fact": "The first shots of the Civil War were fired at Fort Sumter in Charleston Harbor in 1861."
   },
   {
     "code": "US-SD",
@@ -1107,9 +1107,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "South Dakota is known as the Mount Rushmore State.",
-    "hasCapitalImage": true
+    "fact": "Mount Rushmore's 60-foot presidential faces were carved into the Black Hills over 14 years."
   },
   {
     "code": "US-TN",
@@ -1138,9 +1138,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Tennessee is known as the Volunteer State.",
-    "hasCapitalImage": true
+    "fact": "Memphis is a cradle of blues and rock and roll—Elvis Presley's Graceland draws visitors from around the world."
   },
   {
     "code": "US-TX",
@@ -1165,9 +1165,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Texas is known as the Lone Star State.",
-    "hasCapitalImage": true
+    "fact": "Texas was an independent republic for nearly ten years before joining the United States in 1845."
   },
   {
     "code": "US-UT",
@@ -1194,9 +1194,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Utah is known as the Beehive State.",
-    "hasCapitalImage": true
+    "fact": "The Great Salt Lake is saltier than the ocean, so swimmers float effortlessly on its surface."
   },
   {
     "code": "US-VT",
@@ -1220,9 +1220,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Vermont is known as the Green Mountain State.",
-    "hasCapitalImage": true
+    "fact": "Ben & Jerry's ice cream began in a renovated gas station in Burlington in 1978."
   },
   {
     "code": "US-VA",
@@ -1248,9 +1248,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Virginia is known as the Old Dominion.",
-    "hasCapitalImage": true
+    "fact": "Eight U.S. presidents were born in Virginia—more than any other state."
   },
   {
     "code": "US-WA",
@@ -1273,9 +1273,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Washington is known as the Evergreen State.",
-    "hasCapitalImage": true
+    "fact": "Mount Rainier is an active volcano towering over Seattle and visible across much of the Puget Sound."
   },
   {
     "code": "US-WV",
@@ -1301,9 +1301,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "West Virginia is known as the Mountain State.",
-    "hasCapitalImage": true
+    "fact": "West Virginia split from Virginia during the Civil War and joined the Union as its own state in 1863."
   },
   {
     "code": "US-WI",
@@ -1328,9 +1328,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Wisconsin is known as the Badger State.",
-    "hasCapitalImage": true
+    "fact": "Wisconsin produces more cheese than any other U.S. state and hosts the Green Bay Packers' Lambeau Field."
   },
   {
     "code": "US-WY",
@@ -1357,8 +1357,8 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Wyoming is known as the Equality State.",
-    "hasCapitalImage": true
+    "fact": "Yellowstone National Park—mostly in Wyoming—was the world's first national park, established in 1872."
   }
 ]
