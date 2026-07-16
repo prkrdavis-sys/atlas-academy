@@ -455,7 +455,7 @@ export function GameBoard({
   );
   const dailyDateLabel = mode === "daily-challenge" ? formatDailyDate() : null;
   const isTextOnlyPrompt =
-    question.mode === "country-to-capital" ||
+    (question.mode === "country-to-capital" && question.displayType === "text") ||
     (question.mode === "capital-to-country" && question.displayType === "text");
   const isMultipleChoiceRound =
     question.displayType === "flags-grid" ||

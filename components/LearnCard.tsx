@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { CapitalDisplay } from "@/components/CapitalDisplay";
 import { FlagImage } from "@/components/FlagDisplay";
 import {
   getCountryByCode,
@@ -103,6 +104,14 @@ function PopulationComparison({
   );
 }
 
+function CapitalLearnVisual({ countryCode }: { countryCode: string }) {
+  return (
+    <div className="mb-3 sm:mb-4">
+      <CapitalDisplay code={countryCode} compact showLabel={false} />
+    </div>
+  );
+}
+
 function InlineLearnCard({
   country,
   isState,
@@ -160,6 +169,9 @@ function InlineLearnCard({
         )}
 
         <div className="min-w-0">
+          {country.hasCapitalImage && (
+            <CapitalLearnVisual countryCode={country.code} />
+          )}
           {compareCountryCode && (
             <PopulationComparison
               countryCode={countryCode}
@@ -257,6 +269,9 @@ export function LearnCard({
         </p>
       </div>
       <div className="p-4 sm:p-6">
+        {country.hasCapitalImage && (
+          <CapitalLearnVisual countryCode={country.code} />
+        )}
         {compareCountryCode && (
           <PopulationComparison
             countryCode={countryCode}

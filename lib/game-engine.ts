@@ -323,7 +323,7 @@ export class GameEngine {
           prompt: `What is the capital of ${country.name}?`,
           correctAnswer: country.capital,
           correctCode: country.code,
-          displayType: "text",
+          displayType: country.hasFlag ? "flag" : "text",
           ...mc,
         };
       }
