@@ -1,6 +1,22 @@
 {
   "NU": {
-    "title": "Main street of Alofi.jpg",
+    "title": "Alofi before sunset.jpg",
     "score": 35
+  },
+  "US": {
+    "title": "An elevated view S.W., Washington, D.C., panorama showing the roof tops of row houses, tree line, and United States Capitol building in the distance LCCN2016647093.jpg",
+    "score": 85
+  },
+  "KM": {
+    "title": "Moroni, Comoros.jpg",
+    "score": 35
+  },
+  "TC": {
+    "title": "Cockburn Town, Grand Turk.jpg",
+    "score": 35
+  },
+  "TV": {
+    "title": "Tuvalu Funafuti Atoll from the Airplane.jpg",
+    "score": 100
   }
 }

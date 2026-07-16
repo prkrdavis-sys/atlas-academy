@@ -305,9 +305,12 @@ const COMMONS_FILE_OVERRIDES: Record<string, string> = {
   RU: "Moscow Skyline.jpg",
   SD: "Sudsky.jpg",
   DZ: "At night in Algiers, Algeria.jpg",
-  NU: "Main street of Alofi.jpg",
-  TC: "Cockburn Town, Grand Turk.jpg",
   KP: "Pyongyang Skyline.jpg",
+  KM: "Moroni, Comoros.jpg",
+  NU: "Alofi before sunset.jpg",
+  TV: "Tuvalu Funafuti Atoll from the Airplane.jpg",
+  TC: "Cockburn Town, Grand Turk.jpg",
+  US: "An elevated view S.W., Washington, D.C., panorama showing the roof tops of row houses, tree line, and United States Capitol building in the distance LCCN2016647093.jpg",
   "US-WV": "Charleston, West Virginia (2023).jpg",
   "US-NV": "2015-11-01 11 41 46 View north along Carson Street (U.S. Route 395 Business) at Musser Street in downtown Carson City, Nevada.jpg",
 };
@@ -522,20 +525,14 @@ function isAcceptableImage(
   place: Country,
   options: { isOverride?: boolean } = {},
 ): boolean {
+  if (options.isOverride) return true;
   if (score === -1) return false;
+
+  if (score < MIN_ACCEPT_SCORE) return false;
 
   const combined = `${image.title} ${image.sourcePage ?? ""}`;
   const fileName = image.title.replace(/^File:/i, "").toLowerCase();
   const capital = place.capital.toLowerCase();
-
-  if (options.isOverride) {
-    return (
-      placeNameMatches(combined, place) ||
-      (!GENERIC_CAPITALS.has(capital) && fileName.includes(capital))
-    );
-  }
-
-  if (score < MIN_ACCEPT_SCORE) return false;
 
   // Match on filename only — Wikipedia country pages attach unrelated images.
   const placeMatched =
