@@ -203,6 +203,17 @@ export function getDefaultState() {
   return { profiles: [] as Profile[], activeProfileId: null as string | null };
 }
 
+function resolveActiveProfileId(
+  profiles: Profile[],
+  activeProfileId: string | null,
+): string | null {
+  if (profiles.length === 0) return null;
+  if (activeProfileId && profiles.some((profile) => profile.id === activeProfileId)) {
+    return activeProfileId;
+  }
+  return profiles[0]?.id ?? null;
+}
+
 export function loadState() {
   if (typeof window === "undefined") return getDefaultState();
   try {
@@ -216,10 +227,13 @@ export function loadState() {
     }
     if (!raw) return getDefaultState();
     const parsed = JSON.parse(raw) as ReturnType<typeof getDefaultState>;
-    return {
-      profiles: (parsed.profiles ?? []).map(normalizeProfile),
-      activeProfileId: parsed.activeProfileId ?? null,
-    };
+    const profiles = (parsed.profiles ?? []).map(normalizeProfile);
+    const activeProfileId = resolveActiveProfileId(profiles, parsed.activeProfileId ?? null);
+    const state = { profiles, activeProfileId };
+    if (activeProfileId !== (parsed.activeProfileId ?? null)) {
+      saveState(state);
+    }
+    return state;
   } catch {
     return getDefaultState();
   }
@@ -240,7 +254,10 @@ export function upsertProfile(profile: Profile) {
   const index = state.profiles.findIndex((p) => p.id === profile.id);
   if (index >= 0) state.profiles[index] = profile;
   else state.profiles.push(profile);
-  if (!state.activeProfileId) state.activeProfileId = profile.id;
+  const activeExists = state.activeProfileId
+    ? state.profiles.some((p) => p.id === state.activeProfileId)
+    : false;
+  if (!activeExists) state.activeProfileId = profile.id;
   saveState(state);
   return state;
 }
