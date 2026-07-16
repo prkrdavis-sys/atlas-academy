@@ -222,6 +222,60 @@ export default function ProfilesPage() {
         </div>
       </details>
 
+      {profileToModify && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-slate-950/45 px-4 backdrop-blur-sm">
+          <form
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modify-profile-title"
+            onSubmit={handleModifySave}
+            className="animate-card-pop-in w-full max-w-sm rounded-[2rem] border-2 border-slate-200 bg-white p-5 shadow-2xl dark:border-slate-700 dark:bg-slate-900 sm:p-6"
+          >
+            <h3 id="modify-profile-title" className="font-display text-2xl font-extrabold text-slate-900 dark:text-slate-100">
+              Modify profile
+            </h3>
+            <div className="mt-4 space-y-4">
+              <div>
+                <label htmlFor="modify-profile-name" className="mb-1 block text-sm font-medium">
+                  Name
+                </label>
+                <input
+                  id="modify-profile-name"
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+                  placeholder="Your name"
+                  autoFocus
+                />
+              </div>
+              <div>
+                <p className="mb-1 text-sm font-medium">Color</p>
+                <div className="flex flex-wrap gap-2">
+                  {AVATAR_COLORS.map((c) => (
+                    <button
+                      key={c}
+                      type="button"
+                      onClick={() => setEditColor(c)}
+                      aria-label={`Use profile color ${c}`}
+                      className={`h-11 w-11 rounded-full border-2 ${editColor === c ? "border-slate-800 ring-2 ring-slate-300 ring-offset-2 dark:border-slate-200 dark:ring-slate-600 dark:ring-offset-slate-900" : "border-transparent"}`}
+                      style={{ backgroundColor: c }}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="mt-6 grid grid-cols-2 gap-3">
+              <Button type="button" variant="secondary" onClick={() => setProfileToModify(null)}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={!editName.trim()}>
+                Save
+              </Button>
+            </div>
+          </form>
+        </div>
+      )}
+
       {profileToDelete && (
         <div className="fixed inset-0 z-[80] flex items-center justify-center bg-slate-950/45 px-4 backdrop-blur-sm">
           <div
