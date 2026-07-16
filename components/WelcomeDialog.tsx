@@ -8,7 +8,7 @@ import { hasSeenWelcome, markWelcomeSeen } from "@/lib/welcome";
 const WELCOME_HIGHLIGHTS = [
   "Match flags, capitals, and country shapes from around the world.",
   "Build streaks, chase daily challenges, and beat your personal best.",
-  "Everything saves locally on this device — no account needed.",
+  "Create a local profile to save your streaks, stats, and daily progress on this device.",
 ] as const;
 
 export function WelcomeDialog() {
