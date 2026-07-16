@@ -4,7 +4,7 @@
   "description": "Learn world geography with flags, capitals, and country shapes at Atlas Academy.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f2f8f4",
+  "background_color": "#0f172a",
   "theme_color": "#0f9f9b",
   "icons": [
     {

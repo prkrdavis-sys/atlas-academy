@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
+import { ProfileProgressInfoDialog } from "@/components/ProfileProgressInfoDialog";
 import { useProfiles } from "@/components/ProfileProvider";
 import { exportProfile, importProfile } from "@/lib/storage";
 import { AVATAR_COLORS } from "@/lib/types";
@@ -14,6 +15,7 @@ export default function ProfilesPage() {
   const [name, setName] = useState("");
   const [color, setColor] = useState<string>(AVATAR_COLORS[0]);
   const [profileToDelete, setProfileToDelete] = useState<Profile | null>(null);
+  const [showProgressInfo, setShowProgressInfo] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   function handleCreate(e: React.FormEvent) {
@@ -21,6 +23,11 @@ export default function ProfilesPage() {
     if (!name.trim()) return;
     addProfile(name, color);
     setName("");
+    setShowProgressInfo(true);
+  }
+
+  function dismissProgressInfo() {
+    setShowProgressInfo(false);
     router.push("/");
   }
 
@@ -52,6 +59,7 @@ export default function ProfilesPage() {
 
   return (
     <div className="space-y-6 sm:space-y-8">
+      <ProfileProgressInfoDialog open={showProgressInfo} onClose={dismissProgressInfo} />
       <div>
         <h1 className="font-display text-2xl font-extrabold sm:text-3xl">Profiles</h1>
         <p className="mt-1 text-sm text-slate-600 dark:text-slate-400 sm:text-base">Create and switch between local player profiles. No password needed.</p>

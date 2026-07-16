@@ -421,8 +421,14 @@ export function GameBoard({
               </GameActionButton>
             )}
             <div className="grid grid-cols-2 gap-3">
-              <Button variant="secondary" className="w-full" onClick={() => router.push("/stats")}>View stats</Button>
-              <Button className="w-full" onClick={() => router.push("/")}>Back home</Button>
+              <Button variant="secondary" size="lg" className="w-full gap-2.5 text-lg" onClick={() => router.push("/stats")}>
+                <img src="/icons/stats.svg" alt="" aria-hidden className="size-7 shrink-0" draggable={false} />
+                View stats
+              </Button>
+              <Button size="lg" className="w-full gap-2.5 text-lg" onClick={() => router.push("/")}>
+                <img src="/icons/home.svg" alt="" aria-hidden className="size-7 shrink-0" draggable={false} />
+                Back home
+              </Button>
             </div>
           </div>
         </div>

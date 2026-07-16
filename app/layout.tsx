@@ -39,7 +39,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#f2f8f4",
+  themeColor: "#0f172a",
 };
 
 export default function RootLayout({
@@ -48,7 +48,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable} ${nunito.variable} h-full antialiased`}>
+    <html lang="en" suppressHydrationWarning className={`dark ${geistSans.variable} ${geistMono.variable} ${nunito.variable} h-full antialiased`}>
       <body className="min-h-full">
         <ThemeProvider>
           <ProfileProvider>

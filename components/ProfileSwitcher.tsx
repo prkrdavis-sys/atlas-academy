@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useProfiles } from "@/components/ProfileProvider";
+import { ProfileProgressInfoDialog } from "@/components/ProfileProgressInfoDialog";
 import { Button } from "@/components/ui/Button";
 import { AVATAR_COLORS } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -15,6 +16,7 @@ export function ProfileSwitcher({ compact = false }: { compact?: boolean }) {
   const inactiveProfiles = profiles.filter((profile) => profile.id !== activeProfile?.id);
   const [open, setOpen] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
+  const [showProgressInfo, setShowProgressInfo] = useState(false);
   const [name, setName] = useState("");
   const [color, setColor] = useState<string>(AVATAR_COLORS[0]);
   const ref = useRef<HTMLDivElement>(null);
@@ -33,11 +35,17 @@ export function ProfileSwitcher({ compact = false }: { compact?: boolean }) {
     setName("");
     setShowCreate(false);
     setOpen(false);
+    setShowProgressInfo(true);
+  }
+
+  function dismissProgressInfo() {
+    setShowProgressInfo(false);
     router.push("/");
   }
 
   return (
     <div className="relative" ref={ref}>
+      <ProfileProgressInfoDialog open={showProgressInfo} onClose={dismissProgressInfo} />
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}

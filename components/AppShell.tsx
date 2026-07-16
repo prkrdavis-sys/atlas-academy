@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { AppHeader } from "@/components/AppHeader";
+import { WelcomeDialog } from "@/components/WelcomeDialog";
 import { cn } from "@/lib/utils";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -10,6 +11,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-dvh">
+      {!isPlayRoute && <WelcomeDialog />}
       <AppHeader />
       <main
         id="main-content"
