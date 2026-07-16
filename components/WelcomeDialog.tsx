@@ -129,7 +129,7 @@ export function WelcomeDialog() {
           <p>
             <span className="font-bold">Heads up!</span>
             {" "}
-            You&apos;re on the alpha build! We&apos;re still cooking, so things may shift, wobble,
+            You&apos;re on the alpha build! I&apos;m still cooking, so things may shift, wobble,
             or surprise you.
           </p>
           <p>

@@ -11,9 +11,12 @@ import type { Profile } from "@/lib/types";
 
 export default function ProfilesPage() {
   const router = useRouter();
-  const { profiles, activeProfile, addProfile, switchProfile, removeProfile, refresh } = useProfiles();
+  const { profiles, activeProfile, addProfile, switchProfile, removeProfile, updateProfile, refresh } = useProfiles();
   const [name, setName] = useState("");
   const [color, setColor] = useState<string>(AVATAR_COLORS[0]);
+  const [profileToModify, setProfileToModify] = useState<Profile | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editColor, setEditColor] = useState<string>(AVATAR_COLORS[0]);
   const [profileToDelete, setProfileToDelete] = useState<Profile | null>(null);
   const [showProgressInfo, setShowProgressInfo] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -29,6 +32,25 @@ export default function ProfilesPage() {
   function dismissProgressInfo() {
     setShowProgressInfo(false);
     router.push("/");
+  }
+
+  function openModify(profile: Profile) {
+    setProfileToModify(profile);
+    setEditName(profile.name);
+    setEditColor(profile.avatarColor);
+  }
+
+  function handleModifySave(e: React.FormEvent) {
+    e.preventDefault();
+    if (!profileToModify || !editName.trim()) return;
+    updateProfile({
+      ...profileToModify,
+      name: editName.trim(),
+      avatarColor: AVATAR_COLORS.includes(editColor as (typeof AVATAR_COLORS)[number])
+        ? editColor
+        : profileToModify.avatarColor,
+    });
+    setProfileToModify(null);
   }
 
   function handleExport(profile: Profile) {
@@ -91,6 +113,9 @@ export default function ProfilesPage() {
                       Switch
                     </Button>
                   )}
+                  <Button variant="secondary" size="sm" onClick={() => openModify(profile)}>
+                    Modify
+                  </Button>
                   <Button
                     variant="danger"
                     size="sm"

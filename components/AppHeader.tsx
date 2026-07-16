@@ -10,7 +10,7 @@ const MOBILE_NAV_ITEMS = [
   { href: "/", label: "Play", icon: "🌎" },
   { href: "/extras", label: "Extras", icon: "✨" },
   { href: "/stats", label: "Stats", icon: "📊" },
-  { href: "/profiles", label: "Profiles", icon: "🙂" },
+  { href: "/profiles", label: "Profiles", icon: "👨🏽‍🎓" },
 ] as const;
 
 export function AppHeader() {
