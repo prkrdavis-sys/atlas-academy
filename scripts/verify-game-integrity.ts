@@ -59,7 +59,9 @@ const SCOPE_SETUPS: { scope: GameScope; regions: Region[] }[] = [
 
 for (const { scope, regions } of SCOPE_SETUPS) {
 for (const mode of MODES) {
-  for (const difficulty of ["easy", "medium"] as const) {
+  const difficulties: ("easy" | "medium" | "hard")[] =
+    mode === "country-to-flag" ? ["easy", "medium", "hard"] : ["easy", "medium"];
+  for (const difficulty of difficulties) {
     for (let run = 0; run < RUNS; run += 1) {
       const engine = new GameEngine(mode, regions, difficulty, undefined, run, undefined, "all", true, scope);
       let q: Question | null;
@@ -69,6 +71,13 @@ for (const mode of MODES) {
         if (!options) {
           fail(`${mode}: question missing options`);
           continue;
+        }
+
+        if (mode === "country-to-flag" && difficulty === "hard" && options.length !== 6) {
+          fail(`${mode}: hard mode must offer 6 flag choices (got ${options.length})`);
+        }
+        if (mode === "country-to-flag" && difficulty !== "hard" && options.length !== 4) {
+          fail(`${mode}: easy/medium must offer 4 flag choices (got ${options.length})`);
         }
 
         if (questionMode === "country-to-capital") {

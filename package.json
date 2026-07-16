@@ -13,6 +13,7 @@
     "generate-state-shapes": "tsx scripts/generate-state-shapes.ts",
     "generate-supplemental-shapes": "tsx scripts/generate-supplemental-shapes.ts",
     "fetch-capital-images": "tsx scripts/fetch-capital-images.ts",
+    "refresh-capital-images": "tsx scripts/fetch-capital-images.ts --refresh",
     "verify-integrity": "tsx scripts/verify-game-integrity.ts"
   },
   "dependencies": {

@@ -86,10 +86,11 @@ export function FlagGrid({
   correctCode?: string;
 }) {
   const flagWidth = compact ? 160 : 200;
+  const gridCols = codes.length >= 6 ? "grid-cols-3" : "grid-cols-2";
   return (
     <div className="flex h-full w-full min-h-0 items-center justify-center">
       <div
-        className={`grid w-full max-w-[min(100cqw,22rem)] grid-cols-2 items-start ${compact ? "gap-2" : "gap-3"}`}
+        className={`grid w-full max-w-[min(100cqw,22rem)] ${gridCols} items-start ${compact ? "gap-2" : "gap-3"}`}
       >
         {codes.map((code) => {
           const isCorrect = revealed && correctCode === code;

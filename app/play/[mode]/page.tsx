@@ -17,6 +17,7 @@ import {
   CORE_QUESTION_TYPES,
   DAILY_CHALLENGE_QUESTION_COUNT,
   DIFFICULTY_LABELS,
+  getDifficultyHint,
   ROUND_ALL_QUESTIONS,
   SPEED_ROUND_ALL_TYPES,
   US_REGIONS,
@@ -406,9 +407,7 @@ function PlayPageInner() {
                     }`}
                   >
                     {DIFFICULTY_LABELS[level]}
-                    {level === "easy" && " - multiple choice + boosts"}
-                    {level === "medium" && " - multiple choice"}
-                    {level === "hard" && " - type your answer"}
+                    {getDifficultyHint(mode, level)}
                   </button>
                 ))}
               </div>

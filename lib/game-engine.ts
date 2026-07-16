@@ -52,10 +52,12 @@ function buildNameMcOptions(
   pool: Country[],
   difficulty: Difficulty,
   promptCapital?: string,
+  optionCount = 4,
 ): { options: string[]; optionCodes: string[] } {
   const getValue = (c: Country) => c.name;
   const correctLabel = normalizeAnswerText(getValue(correct));
   const normalizedPromptCapital = promptCapital ? normalizeAnswerText(promptCapital) : "";
+  const targetDistractors = Math.max(1, optionCount - 1);
 
   // A distractor is ambiguous if its label reads the same as the correct
   // answer (e.g. two countries whose capital is "Kingston"), or — for
@@ -76,7 +78,7 @@ function buildNameMcOptions(
   const usedLabels = new Set<string>();
 
   const tryAddCountryDistractor = (candidate: Country) => {
-    if (distractors.length >= 3) return;
+    if (distractors.length >= targetDistractors) return;
     if (usedCodes.has(candidate.code)) return;
     const label = getValue(candidate);
     const normalizedLabel = normalizeAnswerText(label);
@@ -88,7 +90,7 @@ function buildNameMcOptions(
 
   const fillFromPool = (source: Country[]) => {
     for (const candidate of shuffle(source)) {
-      if (distractors.length >= 3) break;
+      if (distractors.length >= targetDistractors) break;
       tryAddCountryDistractor(candidate);
     }
   };
@@ -98,7 +100,7 @@ function buildNameMcOptions(
   }
   fillFromPool(distractorPool);
 
-  while (distractors.length < 3) {
+  while (distractors.length < targetDistractors) {
     const extra = pickRandom(
       pool.filter(
         (c) =>
@@ -342,7 +344,8 @@ export class GameEngine {
         };
       }
       case "country-to-flag": {
-        const mc = buildNameMcOptions(country, this.pool, this.difficulty);
+        const optionCount = this.difficulty === "hard" ? 6 : 4;
+        const mc = buildNameMcOptions(country, this.pool, this.difficulty, undefined, optionCount);
         return {
           id,
           mode,

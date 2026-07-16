@@ -119,6 +119,29 @@ export const PLAY_MODES: GameMode[] = [
   "mixed",
 ];
 
+const TYPE_IN_HARD_MODES: GameMode[] = [
+  "flag-to-country",
+  "shape-to-country",
+  "capital-to-country",
+  "country-to-capital",
+  "neighbor-quiz",
+  "weak-spots",
+  "mixed",
+];
+
+export function getDifficultyHint(mode: GameMode, level: Difficulty): string {
+  switch (level) {
+    case "easy":
+      return " - multiple choice + boosts";
+    case "medium":
+      return " - multiple choice";
+    case "hard":
+      if (mode === "country-to-flag") return " - pick from 6 flags";
+      if (TYPE_IN_HARD_MODES.includes(mode)) return " - type your answer";
+      return " - multiple choice";
+  }
+}
+
 export type Country = {
   code: string;
   code3: string;
@@ -265,7 +288,7 @@ export const GAME_MODES: {
   {
     id: "country-to-flag",
     title: "Flags from countries",
-    description: "Pick the matching flag for each country",
+    description: "See a country name, pick its flag — Hard adds two more choices",
     icon: "🎌",
     phase: 2,
   },
