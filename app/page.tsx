@@ -82,28 +82,37 @@ export default function HomePage() {
       >
         <div
           aria-hidden
-          className="pointer-events-none absolute -right-8 -top-8 select-none text-[8rem] opacity-15 sm:-right-10 sm:-top-14 sm:text-[11rem]"
+          className="pointer-events-none absolute -right-8 -top-8 select-none overflow-hidden text-[8rem] opacity-15 sm:-right-10 sm:-top-14 sm:text-[11rem]"
         >
           🗺️
         </div>
-        <div className="relative max-w-xl">
-          <h1 className="font-display text-3xl font-extrabold tracking-tight sm:text-5xl">
-            Learn world geography
-          </h1>
-          <p className="mt-3 max-w-[18rem] text-sm leading-relaxed text-emerald-50 sm:max-w-md sm:text-base">
-            Flags, capitals, shapes, and more. Build a streak and beat your best.
-          </p>
-          {profile && (
+        <div
+          className={cn(
+            "relative grid gap-5 sm:gap-6",
+            profile && "lg:grid-cols-[minmax(0,1fr)_min(100%,21rem)] lg:grid-rows-[auto_auto] lg:items-center lg:gap-x-10",
+          )}
+        >
+          <div className={cn("max-w-xl", profile && "lg:col-start-1 lg:row-start-1")}>
+            <h1 className="font-display text-3xl font-extrabold tracking-tight sm:text-5xl">
+              Learn world geography
+            </h1>
+            <p className="mt-3 max-w-[18rem] text-sm leading-relaxed text-emerald-50 sm:max-w-md sm:text-base">
+              Flags, capitals, shapes, and more. Build a streak and beat your best.
+            </p>
+          </div>
+
+          {profile ? (
             <HomeStreakHighlights
               streak={globalStreak}
               todayBest={todayBest}
               storedTodayBest={storedTodayBest}
               dailyRun={dailyRun}
               dailyCompletedToday={dailyCompletedToday}
-              className="mt-4 sm:mt-5"
+              className="lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:self-center"
             />
-          )}
-          <div className="mt-5 sm:mt-6">
+          ) : null}
+
+          <div className={cn("max-w-xl", profile && "lg:col-start-1 lg:row-start-2")}>
             {profile ? (
               <Link
                 href={`/play/daily-challenge${scopeQuery(scope)}`}
