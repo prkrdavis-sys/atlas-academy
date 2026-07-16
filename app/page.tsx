@@ -89,7 +89,7 @@ export default function HomePage() {
         <div
           className={cn(
             "relative grid gap-5 sm:gap-6",
-            profile && "lg:grid-cols-[minmax(0,1fr)_min(100%,21rem)] lg:grid-rows-[auto_auto] lg:items-center lg:gap-x-10",
+            profile && "lg:grid-cols-[minmax(0,1fr)_14rem] lg:grid-rows-[auto_auto] lg:items-start lg:gap-x-8 lg:gap-y-5",
           )}
         >
           <div className={cn("max-w-xl", profile && "lg:col-start-1 lg:row-start-1")}>
@@ -108,7 +108,7 @@ export default function HomePage() {
               storedTodayBest={storedTodayBest}
               dailyRun={dailyRun}
               dailyCompletedToday={dailyCompletedToday}
-              className="lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:self-center"
+              className="lg:col-start-2 lg:row-start-2 lg:max-w-[14rem] lg:justify-self-end lg:self-end"
             />
           ) : null}
 
