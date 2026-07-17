@@ -1,0 +1,225 @@
+{
+  "auditedAt": "2026-07-17",
+  "scope": "Western Hemisphere countries from data/countries.json (North America, South America, Caribbean, Central America). Excludes US-* state codes.",
+  "criteria": {
+    "pass": "Skyline, aerial, or wide city view of the correct capital",
+    "fail": "Single building, wrong city, harbor-only, military, parade, portrait, disaster rubble, or missing image"
+  },
+  "summary": {
+    "total": 56,
+    "pass": 55,
+    "fail": 1,
+    "fixed": 19,
+    "remainingFailures": 1
+  },
+  "pass": [
+    "AI",
+    "AG",
+    "AR",
+    "AW",
+    "BB",
+    "BM",
+    "BO",
+    "BQ",
+    "BR",
+    "BS",
+    "BZ",
+    "CA",
+    "CL",
+    "CO",
+    "CR",
+    "CU",
+    "CW",
+    "DM",
+    "DO",
+    "EC",
+    "SV",
+    "FK",
+    "GF",
+    "GL",
+    "GD",
+    "GP",
+    "GT",
+    "GY",
+    "HT",
+    "HN",
+    "JM",
+    "KY",
+    "MQ",
+    "MX",
+    "MS",
+    "MF",
+    "NI",
+    "PA",
+    "PE",
+    "PM",
+    "PR",
+    "BL",
+    "KN",
+    "LC",
+    "VC",
+    "SR",
+    "SX",
+    "TT",
+    "TC",
+    "US",
+    "VI",
+    "UY",
+    "VE",
+    "PY",
+    "VG"
+  ],
+  "fail": [
+    {
+      "code": "UM",
+      "capital": "",
+      "reason": "No capital defined in countries.json; no image fetch possible",
+      "source": null
+    }
+  ],
+  "fixed": [
+    {
+      "code": "AW",
+      "capital": "Oranjestad",
+      "was": "Archaeological Museum Panorama (1), Oranjestad, ARUBA.JPG — single building",
+      "now": "BNA-DIG-MEINERS-0154 - Luchtfoto's 27 - 640900 - Oranjestad c.jpg"
+    },
+    {
+      "code": "BO",
+      "capital": "Sucre",
+      "was": "Pair of Men in Downtown Plaza — street portrait scene",
+      "now": "Sucre capital of Bolivia.JPG"
+    },
+    {
+      "code": "BR",
+      "capital": "Brasília",
+      "was": "Sao Paulo Skyline in Brazil.jpg — wrong city",
+      "now": "Brasília Panorama.jpg"
+    },
+    {
+      "code": "BS",
+      "capital": "Nassau",
+      "was": "Nassau-Harbour-Cruise-Ships-Aerial-Bahamas.jpg — harbor/cruise ships only",
+      "now": "Nassau, Bahamas aerial view.jpg"
+    },
+    {
+      "code": "DO",
+      "capital": "Santo Domingo",
+      "was": "Young Woman (Ana Martinez) in Downtown Santo Domingo — portrait",
+      "now": "View of Santo Domingo Skyline.jpg"
+    },
+    {
+      "code": "GP",
+      "capital": "Basse-Terre",
+      "was": "Soufrière volcano panorama — distant/wrong subject",
+      "now": "Vue du centre de Basse-Terre, Guadeloupe.jpg"
+    },
+    {
+      "code": "HT",
+      "capital": "Port-au-Prince",
+      "was": "US Navy earthquake damage aerial — disaster/military",
+      "now": "Port-Au-Prince, Haiti from the Black Mountains.jpg"
+    },
+    {
+      "code": "JM",
+      "capital": "Kingston",
+      "was": "Painted building in downtown Kingston — single building",
+      "now": "Kingston, Jamaica.JPG"
+    },
+    {
+      "code": "KY",
+      "capital": "George Town",
+      "was": "Harbor pier construction view — harbor-only",
+      "now": "Camana Bay skyline.jpg"
+    },
+    {
+      "code": "MF",
+      "capital": "Marigot",
+      "was": "Saint Martin island 360° atoll panorama — wrong location",
+      "now": "Marigot, Saint Martin (15648526873).jpg"
+    },
+    {
+      "code": "MQ",
+      "capital": "Fort-de-France",
+      "was": "Historical B&W harbor panorama with person in foreground",
+      "now": "Martinique - Fort-de-France Centre-Ville.jpg"
+    },
+    {
+      "code": "MS",
+      "capital": "Plymouth",
+      "was": "Soufrière Hills volcanic destruction — abandoned city",
+      "now": "Little Bay from above, Montserrat.JPG"
+    },
+    {
+      "code": "NI",
+      "capital": "Managua",
+      "was": "Earthquake rubble workers — disaster scene",
+      "now": "Managua skyline.jpg"
+    },
+    {
+      "code": "PM",
+      "capital": "Saint-Pierre",
+      "was": "Miquelon-Langlade island geology — wrong island",
+      "now": "Sainte-Pierre aerial.jpg"
+    },
+    {
+      "code": "PY",
+      "capital": "Asunción",
+      "was": "Friendship Bridge to Brazil — bridge focus, not city",
+      "now": "Asunción skyline from Chaco'i.jpg"
+    },
+    {
+      "code": "SX",
+      "capital": "Philipsburg",
+      "was": "Oil painting panorama — non-photographic",
+      "now": "Philipsburg, St. Maarten, Netherlands Antilles (32741901691).jpg"
+    },
+    {
+      "code": "TT",
+      "capital": "Port of Spain",
+      "was": "Tradewinds 2017 military raid — military",
+      "now": "Port of Spain night skyline 2008.jpg"
+    },
+    {
+      "code": "UY",
+      "capital": "Montevideo",
+      "was": "Street-level 18 de Julio avenue — not skyline",
+      "now": "Montevideo skyline (282952662).jpg"
+    },
+    {
+      "code": "VE",
+      "capital": "Caracas",
+      "was": "LCF-24 military helicopter recon — military",
+      "now": "Caracas skyline and Avila mountain from my penthouse.JPG"
+    }
+  ],
+  "verifiedAlreadyPass": [
+    {
+      "code": "AR",
+      "note": "Buenos Aires skyline verified OK"
+    },
+    {
+      "code": "BZ",
+      "note": "Belmopan aerial city grid verified OK"
+    },
+    {
+      "code": "FK",
+      "note": "Stanley aerial town verified OK"
+    },
+    {
+      "code": "GY",
+      "note": "Georgetown aerial with cathedral verified OK"
+    },
+    {
+      "code": "SR",
+      "note": "Paramaribo waterfront skyline verified OK"
+    }
+  ],
+  "outOfScopeNotTouched": [
+    "GS — Antarctica (Rome GA wrong-city issue; not Western Hemisphere continent filter)",
+    "CK — Oceania",
+    "FM — Oceania",
+    "SA — Asia (Mont Blanc wrong image; not Western Hemisphere)",
+    "US-* — US states handled by separate agent"
+  ]
+}

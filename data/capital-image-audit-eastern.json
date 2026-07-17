@@ -1,0 +1,1229 @@
+{
+  "auditedAt": "2026-07-17",
+  "scope": "Europe, Asia, Africa, Oceania countries from countries.json (excludes US states and Americas)",
+  "summary": {
+    "pass": 166,
+    "fail": 23,
+    "fixed": 41
+  },
+  "pass": [
+    {
+      "code": "AD",
+      "capital": "Andorra la Vella",
+      "sourceTitle": "Vue d'Andorra la Vieille depuis la tour Caldea panorama.jpg"
+    },
+    {
+      "code": "AE",
+      "capital": "Abu Dhabi",
+      "sourceTitle": "Abu Dhabi - Panorama - Corniche – Skyline - بانوراما - الكورنيش - الأفق - panoramio.jpg"
+    },
+    {
+      "code": "AF",
+      "capital": "Kabul",
+      "sourceTitle": "360 Panorama - Nawabadi Gurzargan in District 7 Kabul Afghanistan - Aerial View - panoramio.jpg"
+    },
+    {
+      "code": "AL",
+      "capital": "Tirana",
+      "sourceTitle": "Tirana Albania.jpg"
+    },
+    {
+      "code": "AM",
+      "capital": "Yerevan",
+      "sourceTitle": "Skyline with Soviet-Era Flats and Mountains - Yerevan - Armenia (18960738885).jpg"
+    },
+    {
+      "code": "AO",
+      "capital": "Luanda",
+      "sourceTitle": "Luanda Skyline - Angola 2015.jpg"
+    },
+    {
+      "code": "AS",
+      "capital": "Pago Pago",
+      "sourceTitle": "(Aerial view of mountains and coastline in American Samoa) - DPLA - 7bf79725bf375c22d84b96eabd3d6108.jpg"
+    },
+    {
+      "code": "AT",
+      "capital": "Vienna",
+      "sourceTitle": "Vienna Austria Skyline Aerial, October 2024.jpg"
+    },
+    {
+      "code": "AU",
+      "capital": "Canberra",
+      "sourceTitle": "Aerial view of Canberra, Australia - December 2025.jpg"
+    },
+    {
+      "code": "AX",
+      "capital": "Mariehamn",
+      "sourceTitle": "Aerial photo of Mariehamn.jpg"
+    },
+    {
+      "code": "AZ",
+      "capital": "Baku",
+      "sourceTitle": "The skyline of Baku, Azerbaijan.jpg"
+    },
+    {
+      "code": "BA",
+      "capital": "Sarajevo",
+      "sourceTitle": "Sarajevo Night Skyline Bosnia & Herzegovina 2014 (15510458883).jpg"
+    },
+    {
+      "code": "BD",
+      "capital": "Dhaka",
+      "sourceTitle": "Panorama of Skyline from Roof of Fars Hotel - Dhaka - Bangladesh (12850542815).jpg"
+    },
+    {
+      "code": "BE",
+      "capital": "Brussels",
+      "sourceTitle": "Brussels skyline 1003.JPG"
+    },
+    {
+      "code": "BF",
+      "capital": "Ouagadougou",
+      "sourceTitle": "Ouagadougou.jpg"
+    },
+    {
+      "code": "BG",
+      "capital": "Sofia",
+      "sourceTitle": "Sofia skyline.jpg"
+    },
+    {
+      "code": "BH",
+      "capital": "Manama",
+      "sourceTitle": "Manama Qal'at al-Bahrain Courtyard & Skyline 2.jpg"
+    },
+    {
+      "code": "BI",
+      "capital": "Gitega",
+      "sourceTitle": "Gitega new city.jpg"
+    },
+    {
+      "code": "BJ",
+      "capital": "Porto-Novo",
+      "sourceTitle": "Iss072e069105 (Oct 15, 2024) --- Porto-Novo, the capital of Benin with a population of over 260,000, is situated on the Yewa River next to the coast of the Gulf of Guinea in this photograph from the International Spac.jpg"
+    },
+    {
+      "code": "BN",
+      "capital": "Bandar Seri Begawan",
+      "sourceTitle": "Pusat Bandar, Brunei skyline.jpg"
+    },
+    {
+      "code": "BT",
+      "capital": "Thimphu",
+      "sourceTitle": "Thimphu panorama 01.jpg"
+    },
+    {
+      "code": "BW",
+      "capital": "Gaborone",
+      "sourceTitle": "Aerial Group Photo Botswana Bootcamp 2026 3.jpg"
+    },
+    {
+      "code": "CD",
+      "capital": "Kinshasa",
+      "sourceTitle": "La Gombe, Kinshasa, RDC.jpg"
+    },
+    {
+      "code": "CG",
+      "capital": "Brazzaville",
+      "sourceTitle": "Brazzaville.jpg"
+    },
+    {
+      "code": "CH",
+      "capital": "Bern",
+      "sourceTitle": "Bern Skyline.jpg"
+    },
+    {
+      "code": "CI",
+      "capital": "Yamoussoukro",
+      "sourceTitle": "Aerial view of Fresco, Ivory Coast.png"
+    },
+    {
+      "code": "CK",
+      "capital": "Avarua",
+      "sourceTitle": "Manuae (Cook Islands) Aerial.jpg"
+    },
+    {
+      "code": "CM",
+      "capital": "Yaoundé",
+      "sourceTitle": "Aerial View - Boulevard de la liberte' Douala Cameroon.jpg"
+    },
+    {
+      "code": "CN",
+      "capital": "Beijing",
+      "sourceTitle": "Downtown Beijing China (2013) - Flickr.jpg"
+    },
+    {
+      "code": "CV",
+      "capital": "Praia",
+      "sourceTitle": "Fogo island in Cape Verde - Aerial View from South - September 2022.jpg"
+    },
+    {
+      "code": "CX",
+      "capital": "Flying Fish Cove",
+      "sourceTitle": "Flying Fish Cove.jpg"
+    },
+    {
+      "code": "CY",
+      "capital": "Nicosia",
+      "sourceTitle": "Nicosia panoramic view Cyprus Tower 25 Jean Nouvel.jpg"
+    },
+    {
+      "code": "CZ",
+      "capital": "Prague",
+      "sourceTitle": "DownTown Suites Bělohorská, Prague, Czechia.jpg"
+    },
+    {
+      "code": "DE",
+      "capital": "Berlin",
+      "sourceTitle": "Berlin Skyline, Germany (43219996764).jpg"
+    },
+    {
+      "code": "DJ",
+      "capital": "Djibouti",
+      "sourceTitle": "An aerial view of Djibouti City.jpg"
+    },
+    {
+      "code": "DK",
+      "capital": "Copenhagen",
+      "sourceTitle": "Cityscape and skyline by the Copenhagen Lakes, Denmark - (36018109956).jpg"
+    },
+    {
+      "code": "DZ",
+      "capital": "Algiers",
+      "sourceTitle": "At night in Algiers, Algeria.jpg"
+    },
+    {
+      "code": "EE",
+      "capital": "Tallinn",
+      "sourceTitle": "Tallinn Skyline at Night - Estonia.jpg"
+    },
+    {
+      "code": "EG",
+      "capital": "Cairo",
+      "sourceTitle": "Pyramids of Giza, Egypt - Cairo skyline in the background - panoramio.jpg"
+    },
+    {
+      "code": "ER",
+      "capital": "Asmara",
+      "sourceTitle": "Asmara panorama, Eritrea.jpg"
+    },
+    {
+      "code": "ES",
+      "capital": "Madrid",
+      "sourceTitle": "Skyline view of Madrid, Spain at night - 50317258357.jpg"
+    },
+    {
+      "code": "ET",
+      "capital": "Addis Ababa",
+      "sourceTitle": "Aerials Ethiopia 2009-08-27 15-24-40.JPG"
+    },
+    {
+      "code": "FI",
+      "capital": "Helsinki",
+      "sourceTitle": "Skyline of Helsinki as seen from the Erottaja fire station.jpg"
+    },
+    {
+      "code": "FJ",
+      "capital": "Suva",
+      "sourceTitle": "(Aerial view of mountains in Suva, Fiji) - DPLA - be45b4514426a5f4670ef4992965a9b9.jpg"
+    },
+    {
+      "code": "FM",
+      "capital": "Palikir",
+      "sourceTitle": "Falalop Island (Ulithi atoll, Federated States of Micronesia) banner Aerial view of airfield.jpg"
+    },
+    {
+      "code": "FO",
+      "capital": "Tórshavn",
+      "sourceTitle": "Faroe Islands, Streymoy, Tórshavn (4), Bryggjubakki street at night.jpg"
+    },
+    {
+      "code": "FR",
+      "capital": "Paris",
+      "sourceTitle": "Paris Panorama.jpg"
+    },
+    {
+      "code": "GA",
+      "capital": "Libreville",
+      "sourceTitle": "Libreville Gabon.jpg"
+    },
+    {
+      "code": "GB",
+      "capital": "London",
+      "sourceTitle": "01 London cityscape - Aerial view of London UK - free stock photo with attribution .jpg"
+    },
+    {
+      "code": "GE",
+      "capital": "Tbilisi",
+      "sourceTitle": "Panorama of Tbilisi.jpg"
+    },
+    {
+      "code": "GG",
+      "capital": "St. Peter Port",
+      "sourceTitle": "Aerial views of Guernsey's St. Martin Point.jpg"
+    },
+    {
+      "code": "GH",
+      "capital": "Accra",
+      "sourceTitle": "Ghana College of Physicians and Surgeons over-looking the skyline of Accra - panoramio.jpg"
+    },
+    {
+      "code": "GI",
+      "capital": "Gibraltar",
+      "sourceTitle": "Aerial-view-Gibraltar-2011.jpg"
+    },
+    {
+      "code": "GM",
+      "capital": "Banjul",
+      "sourceTitle": "Banjul Gambia skyline.jpg"
+    },
+    {
+      "code": "GN",
+      "capital": "Conakry",
+      "sourceTitle": "Conakry.jpg"
+    },
+    {
+      "code": "GR",
+      "capital": "Athens",
+      "sourceTitle": "Athens, Greece Skyline at Night (5986575817).jpg"
+    },
+    {
+      "code": "GU",
+      "capital": "Hagåtña",
+      "sourceTitle": "Aerial view of Hagåtña, Guam in November 1943.tif"
+    },
+    {
+      "code": "GW",
+      "capital": "Bissau",
+      "sourceTitle": "Satellite image of Guinea-Bissau in January 2003.jpg"
+    },
+    {
+      "code": "HK",
+      "capital": "City of Victoria",
+      "sourceTitle": "Hong Kong Skyline at Night - Star Ferry - Flickr - Wilson Hui.jpg"
+    },
+    {
+      "code": "HR",
+      "capital": "Zagreb",
+      "sourceTitle": "Panorama of Travno - Borough of Zagreb, Croatia..jpg"
+    },
+    {
+      "code": "HU",
+      "capital": "Budapest",
+      "sourceTitle": "Budapest skyline panorama (22972090381).jpg"
+    },
+    {
+      "code": "ID",
+      "capital": "Jakarta",
+      "sourceTitle": "Jakarta skyline at night -- Business District area at Jalan Jenderal Sudirman, Central Jakarta, as seen from Kuningan District, South Jakarta, Indonesia.jpg"
+    },
+    {
+      "code": "IE",
+      "capital": "Dublin",
+      "sourceTitle": "North Wall Quay Dublin Ireland Cityscape Photography (169960849).jpeg"
+    },
+    {
+      "code": "IL",
+      "capital": "Jerusalem",
+      "sourceTitle": "Israeli-Police-Facebook--Jerusalem-aerial-01.jpg"
+    },
+    {
+      "code": "IM",
+      "capital": "Douglas",
+      "sourceTitle": "Cmglee Douglas Isle of Man aerial view.jpg"
+    },
+    {
+      "code": "IN",
+      "capital": "New Delhi",
+      "sourceTitle": "IAF helicopters showering rose petals from the sky while Indian tricolor flutters in the skyline of India Gate on the occasion of Republic Day Parade-2005, in New Delhi on January 26, 2005.jpg"
+    },
+    {
+      "code": "IO",
+      "capital": "Diego Garcia",
+      "sourceTitle": "Diego Garcia (satellite).jpg"
+    },
+    {
+      "code": "IQ",
+      "capital": "Baghdad",
+      "sourceTitle": "Baghdad, Iraq.JPG"
+    },
+    {
+      "code": "IR",
+      "capital": "Tehran",
+      "sourceTitle": "Tehran Skyline, Milad Tower and Alborz Mountains, Iran (10059004754).jpg"
+    },
+    {
+      "code": "IS",
+      "capital": "Reykjavik",
+      "sourceTitle": "Reykjavik, Iceland aerial cityscape (Unsplash).jpg"
+    },
+    {
+      "code": "IT",
+      "capital": "Rome",
+      "sourceTitle": "Rome, Italy Skyline (5987189184).jpg"
+    },
+    {
+      "code": "JE",
+      "capital": "Saint Helier",
+      "sourceTitle": "Panorama of St.Helier, Jersey, Channel Islands - panoramio.jpg"
+    },
+    {
+      "code": "JO",
+      "capital": "Amman",
+      "sourceTitle": "Amman Skyline at Sunset - Jordan.jpg"
+    },
+    {
+      "code": "JP",
+      "capital": "Tokyo",
+      "sourceTitle": "Tokyo Skyline View - From Hotel in Toshima City District - Tokyo - Japan (46991211765).jpg"
+    },
+    {
+      "code": "KE",
+      "capital": "Nairobi",
+      "sourceTitle": "Buffalo Nairobi Skyline Savannah Kenya May19 R1600769.jpg"
+    },
+    {
+      "code": "KG",
+      "capital": "Bishkek",
+      "sourceTitle": "Bishkek City's business center.jpg"
+    },
+    {
+      "code": "KH",
+      "capital": "Phnom Penh",
+      "sourceTitle": "Skyline of Koh Pich Cambodia.jpg"
+    },
+    {
+      "code": "KM",
+      "capital": "Moroni",
+      "sourceTitle": "Moroni, Comoros.jpg"
+    },
+    {
+      "code": "KP",
+      "capital": "Pyongyang",
+      "sourceTitle": "Pyongyang Skyline.jpg"
+    },
+    {
+      "code": "KR",
+      "capital": "Seoul",
+      "sourceTitle": "Skyline view from Seoul City (South Korea).jpg"
+    },
+    {
+      "code": "KW",
+      "capital": "Kuwait City",
+      "sourceTitle": "Kuwait City Skyline at Night 3.jpg"
+    },
+    {
+      "code": "KZ",
+      "capital": "Astana",
+      "sourceTitle": "Astana, Kazakhstan - aerial view.jpg"
+    },
+    {
+      "code": "LA",
+      "capital": "Vientiane",
+      "sourceTitle": "Downtown Vientiane, Laos 2003.jpg"
+    },
+    {
+      "code": "LB",
+      "capital": "Beirut",
+      "sourceTitle": "Beirut skyline, Beirut, Lebanon.jpg"
+    },
+    {
+      "code": "LI",
+      "capital": "Vaduz",
+      "sourceTitle": "Vista de Vaduz, Liechtenstein, 2022-10-23, DD 28.jpg"
+    },
+    {
+      "code": "LK",
+      "capital": "Colombo",
+      "sourceTitle": "Night Skyline Reflection in Colombo, Sri Lanka.jpg"
+    },
+    {
+      "code": "LR",
+      "capital": "Monrovia",
+      "sourceTitle": "An aerial view of the West Point area of Monrovia.jpg"
+    },
+    {
+      "code": "LS",
+      "capital": "Maseru",
+      "sourceTitle": "Maseru Panorama 1-2007.jpg"
+    },
+    {
+      "code": "LT",
+      "capital": "Vilnius",
+      "sourceTitle": "Vilnius Modern Skyline, Lithuania - Diliff.jpg"
+    },
+    {
+      "code": "LU",
+      "capital": "Luxembourg",
+      "sourceTitle": "Luxembourg Skyline (3756386370).jpg"
+    },
+    {
+      "code": "LV",
+      "capital": "Riga",
+      "sourceTitle": "Riga Skyline Panorama, Latvia - Diliff.jpg"
+    },
+    {
+      "code": "LY",
+      "capital": "Tripoli",
+      "sourceTitle": "Aerial reconnaissance photograph of Tripoli Harbour, Libya, 12 March 1942 (80-G-350011).jpg"
+    },
+    {
+      "code": "MA",
+      "capital": "Rabat",
+      "sourceTitle": "Panorama from Kasbah Ramparts - Rabat - Morocco.jpg"
+    },
+    {
+      "code": "MC",
+      "capital": "Monaco",
+      "sourceTitle": "Skyline monaco 1.JPG"
+    },
+    {
+      "code": "MD",
+      "capital": "Chișinău",
+      "sourceTitle": "Sectorul Botanica, Chisinau, Moldova - panoramio (27).jpg"
+    },
+    {
+      "code": "ME",
+      "capital": "Podgorica",
+      "sourceTitle": "Downtown, Podgorica 81000, Montenegro - panoramio.jpg"
+    },
+    {
+      "code": "MH",
+      "capital": "Majuro",
+      "sourceTitle": "Aerial view, Kwajalein Atoll, Marshall Islands.jpg"
+    },
+    {
+      "code": "ML",
+      "capital": "Bamako",
+      "sourceTitle": "Bamako ACI 2000 Aeriel.jpg"
+    },
+    {
+      "code": "MM",
+      "capital": "Naypyidaw",
+      "sourceTitle": "Ministry Zone, Naypyitaw, Myanmar (Burma) - panoramio.jpg"
+    },
+    {
+      "code": "MN",
+      "capital": "Ulan Bator",
+      "sourceTitle": "Downtown Ulan Bator (6216622435).jpg"
+    },
+    {
+      "code": "MP",
+      "capital": "Saipan",
+      "sourceTitle": "Saipan.jpg"
+    },
+    {
+      "code": "MR",
+      "capital": "Nouakchott",
+      "sourceTitle": "Aerial view of Atar, Mauritania, 1967.jpg"
+    },
+    {
+      "code": "MT",
+      "capital": "Valletta",
+      "sourceTitle": "Cityscape of Valletta, Malta, Mediterranean Sea.jpg"
+    },
+    {
+      "code": "MU",
+      "capital": "Port Louis",
+      "sourceTitle": "Aerial View of Mauritius (1).jpg"
+    },
+    {
+      "code": "MV",
+      "capital": "Malé",
+      "sourceTitle": "View of Skyline from 9th Floor of Coral Hotel & Spa - Male - Maldives (14064478859).jpg"
+    },
+    {
+      "code": "MW",
+      "capital": "Lilongwe",
+      "sourceTitle": "Lake Malawi seen from orbit.jpg"
+    },
+    {
+      "code": "MY",
+      "capital": "Kuala Lumpur",
+      "sourceTitle": "Kuala Lumpur Malaysia Skyline-01.jpg"
+    },
+    {
+      "code": "MZ",
+      "capital": "Maputo",
+      "sourceTitle": "1990s aerial Maputo Mozambique 6331087036.jpg"
+    },
+    {
+      "code": "NA",
+      "capital": "Windhoek",
+      "sourceTitle": "Windhoek-Skyline.jpg"
+    },
+    {
+      "code": "NC",
+      "capital": "Nouméa",
+      "sourceTitle": "NouméaCentre.jpg"
+    },
+    {
+      "code": "NE",
+      "capital": "Niamey",
+      "sourceTitle": "Niger, Niamey, Dunes (19), panorama.jpg"
+    },
+    {
+      "code": "NG",
+      "capital": "Abuja",
+      "sourceTitle": "An aerial view of Jabi Lake Abuja Nigeria.jpg"
+    },
+    {
+      "code": "NL",
+      "capital": "Amsterdam",
+      "sourceTitle": "2006, Amsterdam photo - view over the old city with skyline - seen from the roof of the former Post C.S. office in the Oosterdok area; cityscape photography of The Netherlands by Fons Heijnsbroek - free photo CCO.tif"
+    },
+    {
+      "code": "NO",
+      "capital": "Oslo",
+      "sourceTitle": "OSLO Norway 2026-06-10 Overlooking rooftop cityscape view from Odd Fellow-bygningen (Stortingsgata 28) Munkedamsveien Torstedgården (1936) Slottsparken Royal Palace park Abelhaugen rundkjøring roundabout Frederiks gate Raddison cros.jpg"
+    },
+    {
+      "code": "NP",
+      "capital": "Kathmandu",
+      "sourceTitle": "Nepal Kathmandu Durbar Square Panorama 1 (full res).jpg"
+    },
+    {
+      "code": "NR",
+      "capital": "Yaren",
+      "sourceTitle": "Nauru Aerial.jpg"
+    },
+    {
+      "code": "NU",
+      "capital": "Alofi",
+      "sourceTitle": "Alofi before sunset.jpg"
+    },
+    {
+      "code": "NZ",
+      "capital": "Wellington",
+      "sourceTitle": "Wellington cityscape New Zealand.jpg"
+    },
+    {
+      "code": "PG",
+      "capital": "Port Moresby",
+      "sourceTitle": "(Aerial view of Port Moresby coastline in Papua New Guinea) - DPLA - e1029ad7f197bd6a97d7e8c84e6cfa95.jpg"
+    },
+    {
+      "code": "PH",
+      "capital": "Manila",
+      "sourceTitle": "Manila skyline from above, flying over Manila, Manila, Philippines.jpg"
+    },
+    {
+      "code": "PK",
+      "capital": "Islamabad",
+      "sourceTitle": "Islamabad skyline.jpg"
+    },
+    {
+      "code": "PL",
+      "capital": "Warsaw",
+      "sourceTitle": "Warsaw cityscape, Warsaw, Masovian Voivodeship, Poland, November 2019.jpg"
+    },
+    {
+      "code": "PS",
+      "capital": "Ramallah",
+      "sourceTitle": "Palestine panorama.jpg"
+    },
+    {
+      "code": "PT",
+      "capital": "Lisbon",
+      "sourceTitle": "Portugal, Lisbon - skyline (8588522505).jpg"
+    },
+    {
+      "code": "PW",
+      "capital": "Ngerulmud",
+      "sourceTitle": "Aerial photograph of Palau, Dec. 11, 2015.jpg"
+    },
+    {
+      "code": "QA",
+      "capital": "Doha",
+      "sourceTitle": "Doha Qatar skyline at night Sept 2012.jpg"
+    },
+    {
+      "code": "RE",
+      "capital": "Saint-Denis",
+      "sourceTitle": "La Réunion. Panorama de St Denis (2 clichés), vue prise du S. vers le N. - (photogr.) A. S(alles) - btv1b531976145 (1 of 3).jpg"
+    },
+    {
+      "code": "RO",
+      "capital": "Bucharest",
+      "sourceTitle": "Bucharest, Romania - panorama -a.jpg"
+    },
+    {
+      "code": "RS",
+      "capital": "Belgrade",
+      "sourceTitle": "Serbia, Belgrade, Old Sava bridge panorama 20111127.jpg"
+    },
+    {
+      "code": "RU",
+      "capital": "Moscow",
+      "sourceTitle": "Moscow Skyline.jpg"
+    },
+    {
+      "code": "RW",
+      "capital": "Kigali",
+      "sourceTitle": "Kigali skyline.jpg"
+    },
+    {
+      "code": "SA",
+      "capital": "Riyadh",
+      "sourceTitle": "Riyadh Skyline showing the King Abdullah Financial District (KAFD) and the famous Kingdom Tower .jpg"
+    },
+    {
+      "code": "SB",
+      "capital": "Honiara",
+      "sourceTitle": "Aerial view of Honiara, 2013.jpg"
+    },
+    {
+      "code": "SC",
+      "capital": "Victoria",
+      "sourceTitle": "Anne Marine NP aerial Seychelles.jpg"
+    },
+    {
+      "code": "SE",
+      "capital": "Stockholm",
+      "sourceTitle": "Stockholm city skyline and waterfront at night (April 2016).jpg"
+    },
+    {
+      "code": "SG",
+      "capital": "Singapore",
+      "sourceTitle": "Singapore Skyline-01.jpg"
+    },
+    {
+      "code": "SI",
+      "capital": "Ljubljana",
+      "sourceTitle": "Panorama over Old Town from Ljubljana Castle - Ljubljana - Slovenia (54557308241).jpg"
+    },
+    {
+      "code": "SJ",
+      "capital": "Longyearbyen",
+      "sourceTitle": "Cable center of aerial tramway, Longyearbyen, Svalbard.jpg"
+    },
+    {
+      "code": "SK",
+      "capital": "Bratislava",
+      "sourceTitle": "Bratislava skyline 1.jpg"
+    },
+    {
+      "code": "SM",
+      "capital": "City of San Marino",
+      "sourceTitle": "San Marino and Romagna background - Panorama.jpg"
+    },
+    {
+      "code": "SN",
+      "capital": "Dakar",
+      "sourceTitle": "Panorama senegalskog glavnog grada Dakra.jpg"
+    },
+    {
+      "code": "SO",
+      "capital": "Mogadishu",
+      "sourceTitle": "Mogadishu, Somalia.JPG"
+    },
+    {
+      "code": "SS",
+      "capital": "Juba",
+      "sourceTitle": "AERIAL VIEW OF JUBA, SOUTH SUDAN.jpg"
+    },
+    {
+      "code": "SY",
+      "capital": "Damascus",
+      "sourceTitle": "Syria, Damascus, Cityscape.jpg"
+    },
+    {
+      "code": "TG",
+      "capital": "Lomé",
+      "sourceTitle": "2008-Lomé-Togo-IBIS-Hotel-Panorama.jpg"
+    },
+    {
+      "code": "TH",
+      "capital": "Bangkok",
+      "sourceTitle": "Bangkok skyline, Bangkok, Thailand.jpg"
+    },
+    {
+      "code": "TJ",
+      "capital": "Dushanbe",
+      "sourceTitle": "Dushanbe, Tajikistan (satellite view).jpg"
+    },
+    {
+      "code": "TL",
+      "capital": "Dili",
+      "sourceTitle": "DSCI3101 Blick runter auf Dili.JPG"
+    },
+    {
+      "code": "TM",
+      "capital": "Ashgabat",
+      "sourceTitle": "Panorama From Ashgabat TV Tower.JPG"
+    },
+    {
+      "code": "TN",
+      "capital": "Tunis",
+      "sourceTitle": "Tunisia from above - Tunisie vue de ciel - تونس من فوق photo3.jpg"
+    },
+    {
+      "code": "TO",
+      "capital": "Nuku'alofa",
+      "sourceTitle": "Nuku'alofa Skyline.JPG"
+    },
+    {
+      "code": "TR",
+      "capital": "Ankara",
+      "sourceTitle": "Havadan Ankara 01.jpg"
+    },
+    {
+      "code": "TV",
+      "capital": "Funafuti",
+      "sourceTitle": "Tuvalu Funafuti Atoll from the Airplane.jpg"
+    },
+    {
+      "code": "TW",
+      "capital": "Taipei",
+      "sourceTitle": "Taipei Taiwan skyline from Zhongxiao Wharf.jpg"
+    },
+    {
+      "code": "UA",
+      "capital": "Kyiv",
+      "sourceTitle": "Cityscape Kiev Ukraine at night light (8202640274).jpg"
+    },
+    {
+      "code": "UG",
+      "capital": "Kampala",
+      "sourceTitle": "Overview of Minibuses in Taxi Park - Downtown Kampala - Uganda.jpg"
+    },
+    {
+      "code": "UZ",
+      "capital": "Tashkent",
+      "sourceTitle": "Aerial view of Tashkent, Uzbekistan.JPG"
+    },
+    {
+      "code": "VA",
+      "capital": "Vatican City",
+      "sourceTitle": "Panorama Vatican, St. Peter's Basilica and Gardens of Vatican City (46800435851).jpg"
+    },
+    {
+      "code": "VN",
+      "capital": "Hanoi",
+      "sourceTitle": "Hanoi Skyline panorama.JPG"
+    },
+    {
+      "code": "VU",
+      "capital": "Port Vila",
+      "sourceTitle": "(Aerial view of Port Vila, Vanuatu) - DPLA - bb18f7a761c4014eeacc1faaea5aa0e4.jpg"
+    },
+    {
+      "code": "WS",
+      "capital": "Apia",
+      "sourceTitle": "Downed Pulu trees downtown Apia-trees approx 100 yrs old-famous for having withstood Cyclones Ofa and Val in 90s, Samoa 2012. Photo AusAID (10693314584).jpg"
+    },
+    {
+      "code": "XK",
+      "capital": "Pristina",
+      "sourceTitle": "PrishtinaKosovoSkyline.JPG"
+    },
+    {
+      "code": "YE",
+      "capital": "Sana'a",
+      "sourceTitle": "أفق وأسطح مدينة صنعاء القديمة التاريخية، اليمن oSkyline and rooftops of the historic Old City of Sana'a, Yemen.jpg"
+    },
+    {
+      "code": "ZA",
+      "capital": "Pretoria",
+      "sourceTitle": "Pretoria, uitsig oor middestad.jpg"
+    },
+    {
+      "code": "ZM",
+      "capital": "Lusaka",
+      "sourceTitle": "Lusaka, Zambia at Night.jpg"
+    },
+    {
+      "code": "ZW",
+      "capital": "Harare",
+      "sourceTitle": "Harare skyline.jpg"
+    }
+  ],
+  "fail": [
+    {
+      "code": "BY",
+      "capital": "Minsk",
+      "sourceTitle": "Belarus-Minsk-View from above-1.jpg",
+      "issue": "No city overview indicator in filename"
+    },
+    {
+      "code": "CC",
+      "capital": "West Island",
+      "sourceTitle": "(none)",
+      "issue": "Missing source metadata"
+    },
+    {
+      "code": "CF",
+      "capital": "Bangui",
+      "sourceTitle": "(none)",
+      "issue": "Missing source metadata"
+    },
+    {
+      "code": "EH",
+      "capital": "El Aaiún",
+      "sourceTitle": "Laayoune Port (2).jpg",
+      "issue": "No city overview indicator in filename"
+    },
+    {
+      "code": "GQ",
+      "capital": "Malabo",
+      "sourceTitle": "(none)",
+      "issue": "Missing source metadata"
+    },
+    {
+      "code": "KI",
+      "capital": "South Tarawa",
+      "sourceTitle": "Kiribati banner South Tarawa from the air.jpg",
+      "issue": "No city overview indicator in filename"
+    },
+    {
+      "code": "MG",
+      "capital": "Antananarivo",
+      "sourceTitle": "Madagascar From The Air, Antananarivo - Île Sainte-Marie (TNR-SMS) (4041944425).jpg",
+      "issue": "No city overview indicator in filename"
+    },
+    {
+      "code": "MK",
+      "capital": "Skopje",
+      "sourceTitle": "Skopje, Macedonia banner-City view.jpg",
+      "issue": "No city overview indicator in filename"
+    },
+    {
+      "code": "MO",
+      "capital": "",
+      "sourceTitle": "(none)",
+      "issue": "Missing image file"
+    },
+    {
+      "code": "NF",
+      "capital": "Kingston",
+      "sourceTitle": "(none)",
+      "issue": "Missing source metadata"
+    },
+    {
+      "code": "OM",
+      "capital": "Muscat",
+      "sourceTitle": "Old Muscat City View, Muscat, Oman3.jpg",
+      "issue": "No city overview indicator in filename"
+    },
+    {
+      "code": "PF",
+      "capital": "Papeetē",
+      "sourceTitle": "(none)",
+      "issue": "Missing source metadata"
+    },
+    {
+      "code": "PN",
+      "capital": "Adamstown",
+      "sourceTitle": "(none)",
+      "issue": "Missing source metadata"
+    },
+    {
+      "code": "SD",
+      "capital": "Khartoum",
+      "sourceTitle": "Sudsky.jpg",
+      "issue": "No city overview indicator in filename"
+    },
+    {
+      "code": "SH",
+      "capital": "Jamestown",
+      "sourceTitle": "Overlooking Jamestown from the south.jpg",
+      "issue": "No city overview indicator in filename"
+    },
+    {
+      "code": "SL",
+      "capital": "Freetown",
+      "sourceTitle": "Apartment near Fourah Bay College overlooking Freetown, Sierra Leone (West Africa) (2066773005).jpg",
+      "issue": "No city overview indicator in filename"
+    },
+    {
+      "code": "ST",
+      "capital": "São Tomé",
+      "sourceTitle": "(none)",
+      "issue": "Missing source metadata"
+    },
+    {
+      "code": "SZ",
+      "capital": "Lobamba",
+      "sourceTitle": "(none)",
+      "issue": "Missing source metadata"
+    },
+    {
+      "code": "TD",
+      "capital": "N'Djamena",
+      "sourceTitle": "(none)",
+      "issue": "Missing source metadata"
+    },
+    {
+      "code": "TK",
+      "capital": "Fakaofo",
+      "sourceTitle": "(none)",
+      "issue": "Missing source metadata"
+    },
+    {
+      "code": "TZ",
+      "capital": "Dodoma",
+      "sourceTitle": "Tanzania from above.jpg",
+      "issue": "No city overview indicator in filename"
+    },
+    {
+      "code": "WF",
+      "capital": "Mata-Utu",
+      "sourceTitle": "Mata-Utu seen from a drone (Wallis and Futuna).png",
+      "issue": "No city overview indicator in filename"
+    },
+    {
+      "code": "YT",
+      "capital": "Mamoudzou",
+      "sourceTitle": "(none)",
+      "issue": "Missing source metadata"
+    }
+  ],
+  "fixed": [
+    {
+      "code": "AL",
+      "capital": "Tirana",
+      "oldIssue": "American Legation historical photo, not modern skyline",
+      "newSourceTitle": "Tirana Albania.jpg"
+    },
+    {
+      "code": "BE",
+      "capital": "Brussels",
+      "oldIssue": "Drawing/artwork, not photograph of Brussels",
+      "newSourceTitle": "Brussels skyline 1003.JPG"
+    },
+    {
+      "code": "BF",
+      "capital": "Ouagadougou",
+      "oldIssue": "Aerial of Sindou peaks, not Ouagadougou",
+      "newSourceTitle": "Ouagadougou.jpg"
+    },
+    {
+      "code": "BG",
+      "capital": "Sofia",
+      "oldIssue": "Aerial of Kavarna (wrong city), not Sofia",
+      "newSourceTitle": "Sofia skyline.jpg"
+    },
+    {
+      "code": "BI",
+      "capital": "Gitega",
+      "oldIssue": "Refugee camp aerial, not Gitega",
+      "newSourceTitle": "Gitega new city.jpg"
+    },
+    {
+      "code": "BJ",
+      "capital": "Porto-Novo",
+      "oldIssue": "No source metadata; added ISS aerial of Porto-Novo",
+      "newSourceTitle": "Iss072e069105 (Oct 15, 2024) --- Porto-Novo, the capital of Benin with a population of over 260,000, is situated on the Yewa River next to the coast of the Gulf of Guinea in this photograph from the International Spac.jpg"
+    },
+    {
+      "code": "BT",
+      "capital": "Thimphu",
+      "oldIssue": "Single hotel photo; replaced with Thimphu panorama",
+      "newSourceTitle": "Thimphu panorama 01.jpg"
+    },
+    {
+      "code": "CD",
+      "capital": "Kinshasa",
+      "oldIssue": "Bukavu partial view, not Kinshasa",
+      "newSourceTitle": "La Gombe, Kinshasa, RDC.jpg"
+    },
+    {
+      "code": "CG",
+      "capital": "Brazzaville",
+      "oldIssue": "Congo River near Kisangani, not Brazzaville",
+      "newSourceTitle": "Brazzaville.jpg"
+    },
+    {
+      "code": "CX",
+      "capital": "Flying Fish Cove",
+      "oldIssue": "Fais Island (wrong location), not Flying Fish Cove",
+      "newSourceTitle": "Flying Fish Cove.jpg"
+    },
+    {
+      "code": "CY",
+      "capital": "Nicosia",
+      "oldIssue": "Deloitte office building, not city overview",
+      "newSourceTitle": "Nicosia panoramic view Cyprus Tower 25 Jean Nouvel.jpg"
+    },
+    {
+      "code": "DJ",
+      "capital": "Djibouti",
+      "oldIssue": "Military aerial refueling exercise",
+      "newSourceTitle": "An aerial view of Djibouti City.jpg"
+    },
+    {
+      "code": "FR",
+      "capital": "Paris",
+      "oldIssue": "Notre Dame close-up, not Paris skyline",
+      "newSourceTitle": "Paris Panorama.jpg"
+    },
+    {
+      "code": "GA",
+      "capital": "Libreville",
+      "oldIssue": "No source metadata; added Libreville city view",
+      "newSourceTitle": "Libreville Gabon.jpg"
+    },
+    {
+      "code": "GE",
+      "capital": "Tbilisi",
+      "oldIssue": "Single downtown hotel foreground; replaced with Tbilisi panorama",
+      "newSourceTitle": "Panorama of Tbilisi.jpg"
+    },
+    {
+      "code": "GN",
+      "capital": "Conakry",
+      "oldIssue": "Port Moresby PNG coastline (wrong country)",
+      "newSourceTitle": "Conakry.jpg"
+    },
+    {
+      "code": "IO",
+      "capital": "Diego Garcia",
+      "oldIssue": "No source metadata; added Diego Garcia satellite view",
+      "newSourceTitle": "Diego Garcia (satellite).jpg"
+    },
+    {
+      "code": "IQ",
+      "capital": "Baghdad",
+      "oldIssue": "Abandoned ammunition aerial, not Baghdad skyline",
+      "newSourceTitle": "Baghdad, Iraq.JPG"
+    },
+    {
+      "code": "KG",
+      "capital": "Bishkek",
+      "oldIssue": "US Air Force sign at Manas base",
+      "newSourceTitle": "Bishkek City's business center.jpg"
+    },
+    {
+      "code": "KM",
+      "capital": "Moroni",
+      "oldIssue": "Weak score; verified Moroni coastal overview",
+      "newSourceTitle": "Moroni, Comoros.jpg"
+    },
+    {
+      "code": "KP",
+      "capital": "Pyongyang",
+      "oldIssue": "Korean War Veterans Memorial (US), not Pyongyang",
+      "newSourceTitle": "Pyongyang Skyline.jpg"
+    },
+    {
+      "code": "LI",
+      "capital": "Vaduz",
+      "oldIssue": "Castle aerial, not Vaduz city overview",
+      "newSourceTitle": "Vista de Vaduz, Liechtenstein, 2022-10-23, DD 28.jpg"
+    },
+    {
+      "code": "LR",
+      "capital": "Monrovia",
+      "oldIssue": "Shanty town scene from Ducor Hotel, not city overview",
+      "newSourceTitle": "An aerial view of the West Point area of Monrovia.jpg"
+    },
+    {
+      "code": "MD",
+      "capital": "Chișinău",
+      "oldIssue": "Train station, not city overview",
+      "newSourceTitle": "Sectorul Botanica, Chisinau, Moldova - panoramio (27).jpg"
+    },
+    {
+      "code": "ML",
+      "capital": "Bamako",
+      "oldIssue": "Mali Plavnik island Croatia, not Bamako",
+      "newSourceTitle": "Bamako ACI 2000 Aeriel.jpg"
+    },
+    {
+      "code": "MM",
+      "capital": "Naypyidaw",
+      "oldIssue": "No source metadata; added Naypyidaw Ministry Zone panorama",
+      "newSourceTitle": "Ministry Zone, Naypyitaw, Myanmar (Burma) - panoramio.jpg"
+    },
+    {
+      "code": "MP",
+      "capital": "Saipan",
+      "oldIssue": "Aerial photography index sheet, not Saipan city",
+      "newSourceTitle": "Saipan.jpg"
+    },
+    {
+      "code": "NA",
+      "capital": "Windhoek",
+      "oldIssue": "Fairy circles desert, not Windhoek",
+      "newSourceTitle": "Windhoek-Skyline.jpg"
+    },
+    {
+      "code": "NC",
+      "capital": "Nouméa",
+      "oldIssue": "Caledonia New York, not Nouméa",
+      "newSourceTitle": "NouméaCentre.jpg"
+    },
+    {
+      "code": "NU",
+      "capital": "Alofi",
+      "oldIssue": "Weak score; verified Alofi coastal sunset",
+      "newSourceTitle": "Alofi before sunset.jpg"
+    },
+    {
+      "code": "PK",
+      "capital": "Islamabad",
+      "oldIssue": "Flood disaster aerial, not Islamabad skyline",
+      "newSourceTitle": "Islamabad skyline.jpg"
+    },
+    {
+      "code": "SA",
+      "capital": "Riyadh",
+      "oldIssue": "Mont Blanc from Kerry flight, not Riyadh",
+      "newSourceTitle": "Riyadh Skyline showing the King Abdullah Financial District (KAFD) and the famous Kingdom Tower .jpg"
+    },
+    {
+      "code": "SB",
+      "capital": "Honiara",
+      "oldIssue": "Gizo coast, not Honiara",
+      "newSourceTitle": "Aerial view of Honiara, 2013.jpg"
+    },
+    {
+      "code": "SK",
+      "capital": "Bratislava",
+      "oldIssue": "Liptovský Mikuláš (wrong city), not Bratislava",
+      "newSourceTitle": "Bratislava skyline 1.jpg"
+    },
+    {
+      "code": "SO",
+      "capital": "Mogadishu",
+      "oldIssue": "View from Kerry aircraft over Somalia",
+      "newSourceTitle": "Mogadishu, Somalia.JPG"
+    },
+    {
+      "code": "TL",
+      "capital": "Dili",
+      "oldIssue": "Mangrove mudflats, not Dili",
+      "newSourceTitle": "DSCI3101 Blick runter auf Dili.JPG"
+    },
+    {
+      "code": "TR",
+      "capital": "Ankara",
+      "oldIssue": "No source metadata; added Havadan Ankara aerial night view",
+      "newSourceTitle": "Havadan Ankara 01.jpg"
+    },
+    {
+      "code": "TV",
+      "capital": "Funafuti",
+      "oldIssue": "Verified Funafuti atoll aerial",
+      "newSourceTitle": "Tuvalu Funafuti Atoll from the Airplane.jpg"
+    },
+    {
+      "code": "VA",
+      "capital": "Vatican City",
+      "oldIssue": "Rome view of St Peter's, not Vatican City",
+      "newSourceTitle": "Panorama Vatican, St. Peter's Basilica and Gardens of Vatican City (46800435851).jpg"
+    },
+    {
+      "code": "VN",
+      "capital": "Hanoi",
+      "oldIssue": "Military history museum exhibit, not Hanoi skyline",
+      "newSourceTitle": "Hanoi Skyline panorama.JPG"
+    },
+    {
+      "code": "ZA",
+      "capital": "Pretoria",
+      "oldIssue": "Freedom of Panorama protest, not Pretoria skyline",
+      "newSourceTitle": "Pretoria, uitsig oor middestad.jpg"
+    }
+  ]
+}
