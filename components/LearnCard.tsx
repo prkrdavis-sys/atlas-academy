@@ -139,15 +139,50 @@ function InlineLearnCard({
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4 py-5 sm:hidden">
-        {country.hasFlag && (
-          <div className="mb-5 flex shrink-0 justify-center">
-            <FlagImage
-              code={country.code}
-              alt={country.name}
-              width={160}
-              frame="md"
-              className="w-24"
-            />
+        {(country.hasFlag || country.hasShape) && (
+          <div
+            className={cn(
+              "mb-5 flex w-full shrink-0 items-center justify-center gap-4",
+              country.hasFlag && country.hasShape ? "flex-row" : "flex-col",
+            )}
+          >
+            {country.hasFlag && (
+              <div
+                className={cn(
+                  "flex justify-center",
+                  country.hasShape ? "min-w-0 flex-1" : "w-full",
+                )}
+              >
+                <FlagImage
+                  code={country.code}
+                  alt={country.name}
+                  width={240}
+                  frame="md"
+                  className={cn(
+                    "max-w-full",
+                    country.hasShape ? "w-full max-w-[9.5rem]" : "w-44",
+                  )}
+                />
+              </div>
+            )}
+
+            {country.hasShape && (
+              <div
+                className={cn(
+                  "flex items-center justify-center rounded-2xl border border-slate-200 bg-gradient-to-b from-sky-50 to-white p-3 dark:border-slate-700 dark:from-slate-800 dark:to-slate-900",
+                  country.hasFlag
+                    ? "h-36 min-w-0 flex-1 max-w-[11rem] shrink-0"
+                    : "h-40 w-48 max-w-full",
+                )}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={getShapePath(country.code3)}
+                  alt={`Outline of ${country.name}`}
+                  className="max-h-full max-w-full object-contain [filter:brightness(0)] dark:[filter:brightness(0)_invert(1)]"
+                />
+              </div>
+            )}
           </div>
         )}
 
@@ -159,7 +194,7 @@ function InlineLearnCard({
           />
         )}
 
-        <dl className="grid w-full flex-1 grid-cols-2 content-start gap-x-8 gap-y-5 self-stretch text-sm">
+        <dl className="grid w-full shrink-0 grid-cols-2 content-start gap-x-8 gap-y-5 self-stretch text-sm">
           <div>
             <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Capital</dt>
             <dd className="mt-1 text-base font-semibold text-slate-800 dark:text-slate-200">{country.capital || "N/A"}</dd>
@@ -181,19 +216,6 @@ function InlineLearnCard({
             </dd>
           </div>
         </dl>
-
-        {country.hasShape && (
-          <div className="mt-6 flex shrink-0 justify-center">
-            <div className="flex h-24 w-32 items-center justify-center rounded-2xl border border-slate-200 bg-gradient-to-b from-sky-50 to-white p-3 dark:border-slate-700 dark:from-slate-800 dark:to-slate-900">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={getShapePath(country.code3)}
-                alt={`Outline of ${country.name}`}
-                className="max-h-full max-w-full object-contain [filter:brightness(0)] dark:[filter:brightness(0)_invert(1)]"
-              />
-            </div>
-          </div>
-        )}
       </div>
 
       <div
