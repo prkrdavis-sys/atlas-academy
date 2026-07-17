@@ -39,7 +39,7 @@ function PopulationComparison({
     <div
       className={
         inline
-          ? "mb-3 grid grid-cols-2 gap-2"
+          ? "mb-4 grid grid-cols-2 gap-3 sm:mb-3 sm:gap-2"
           : "mb-4 rounded-2xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-800 sm:p-4"
       }
     >
@@ -56,7 +56,7 @@ function PopulationComparison({
               key={country.code}
               className={cn(
                 "flex items-center gap-2 rounded-xl border-2 px-2.5 py-2",
-                inline ? "flex-col text-center sm:flex-row sm:text-left" : "gap-3 px-3 py-2.5",
+                inline ? "flex-col px-3 py-3 text-center sm:flex-row sm:px-2.5 sm:py-2 sm:text-left" : "gap-3 px-3 py-2.5",
                 isLarger
                   ? "border-emerald-200 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-950/50"
                   : "border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900",
@@ -68,14 +68,14 @@ function PopulationComparison({
                   alt=""
                   width={inline ? 40 : 48}
                   frame="pill"
-                  className={inline ? "w-10" : "w-12"}
+                  className={inline ? "w-12 sm:w-10" : "w-12"}
                 />
               )}
               <div className="min-w-0 flex-1">
                 <p
                   className={cn(
                     "truncate font-display font-black text-slate-900 dark:text-slate-100",
-                    inline ? "text-sm" : "text-base sm:text-lg",
+                    inline ? "text-base sm:text-sm" : "text-base sm:text-lg",
                   )}
                 >
                   {country.name}
@@ -121,29 +121,87 @@ function InlineLearnCard({
   return (
     <div
       className={cn(
-        "animate-learn-card-pop-in w-full rounded-2xl border-2 bg-white shadow-md dark:bg-slate-900",
+        "animate-learn-card-pop-in flex min-h-full w-full flex-col rounded-2xl border-2 bg-white shadow-md dark:bg-slate-900 sm:min-h-0 sm:block",
         wasCorrect ? "border-emerald-400 dark:border-emerald-600" : "border-rose-400 dark:border-rose-600",
       )}
     >
       <div
         className={cn(
-          "border-b px-3 py-2 text-center sm:px-6 sm:py-3",
+          "shrink-0 border-b px-4 py-2.5 text-center sm:px-6 sm:py-3",
           wasCorrect
             ? "border-emerald-100 bg-emerald-50/80 dark:border-emerald-900/60 dark:bg-emerald-950/30"
             : "border-rose-100 bg-rose-50/80 dark:border-rose-900/60 dark:bg-rose-950/30",
         )}
       >
-        <p className="font-display text-sm font-extrabold leading-snug text-slate-900 dark:text-slate-100 sm:text-lg lg:text-xl">
+        <p className="font-display text-base font-extrabold leading-snug text-slate-900 dark:text-slate-100 sm:text-lg lg:text-xl">
           {heading ?? country.name}
         </p>
       </div>
 
+      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4 py-5 sm:hidden">
+        {country.hasFlag && (
+          <div className="mb-5 flex shrink-0 justify-center">
+            <FlagImage
+              code={country.code}
+              alt={country.name}
+              width={160}
+              frame="md"
+              className="w-24"
+            />
+          </div>
+        )}
+
+        {compareCountryCode && (
+          <PopulationComparison
+            countryCode={countryCode}
+            compareCountryCode={compareCountryCode}
+            inline
+          />
+        )}
+
+        <dl className="grid w-full flex-1 grid-cols-2 content-start gap-x-8 gap-y-5 self-stretch text-sm">
+          <div>
+            <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Capital</dt>
+            <dd className="mt-1 text-base font-semibold text-slate-800 dark:text-slate-200">{country.capital || "N/A"}</dd>
+          </div>
+          <div>
+            <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{isState ? "Region" : "Continent"}</dt>
+            <dd className="mt-1 text-base font-semibold text-slate-800 dark:text-slate-200">{country.continent}</dd>
+          </div>
+          {!compareCountryCode && (
+            <div>
+              <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Population</dt>
+              <dd className="mt-1 text-base font-semibold text-slate-800 dark:text-slate-200">{formatPopulation(country.population)}</dd>
+            </div>
+          )}
+          <div className={compareCountryCode ? "col-span-2" : ""}>
+            <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Borders</dt>
+            <dd className="mt-1 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+              {formatBorderFact(country.borders.length, isState ? "usa" : "world")}
+            </dd>
+          </div>
+        </dl>
+
+        {country.hasShape && (
+          <div className="mt-6 flex shrink-0 justify-center">
+            <div className="flex h-24 w-32 items-center justify-center rounded-2xl border border-slate-200 bg-gradient-to-b from-sky-50 to-white p-3 dark:border-slate-700 dark:from-slate-800 dark:to-slate-900">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={getShapePath(country.code3)}
+                alt={`Outline of ${country.name}`}
+                className="max-h-full max-w-full object-contain [filter:brightness(0)] dark:[filter:brightness(0)_invert(1)]"
+              />
+            </div>
+          </div>
+        )}
+      </div>
+
       <div
         className={cn(
-          "grid items-center gap-1.5 p-2 sm:gap-5 sm:p-4 lg:px-6 lg:py-4",
-          country.hasFlag && country.hasShape && "grid-cols-[3.25rem_1fr_3.25rem] sm:grid-cols-[6.5rem_1fr_6.5rem] lg:grid-cols-[7.5rem_1fr_7.5rem]",
-          country.hasFlag && !country.hasShape && "grid-cols-[3.25rem_1fr] sm:grid-cols-[6.5rem_1fr]",
-          !country.hasFlag && country.hasShape && "grid-cols-[1fr_3.25rem] sm:grid-cols-[1fr_6.5rem]",
+          "hidden items-center gap-5 p-4 sm:grid lg:px-6 lg:py-4",
+          country.hasFlag && country.hasShape && "grid-cols-[6.5rem_1fr_6.5rem] lg:grid-cols-[7.5rem_1fr_7.5rem]",
+          country.hasFlag && !country.hasShape && "grid-cols-[6.5rem_1fr]",
+          !country.hasFlag && country.hasShape && "grid-cols-[1fr_6.5rem]",
           !country.hasFlag && !country.hasShape && "grid-cols-1",
         )}
       >
@@ -154,7 +212,7 @@ function InlineLearnCard({
               alt={country.name}
               width={128}
               frame="md"
-              className="w-[3.25rem] sm:w-24 lg:w-28"
+              className="w-24 lg:w-28"
             />
           </div>
         )}
@@ -169,7 +227,7 @@ function InlineLearnCard({
           )}
           <dl
             className={cn(
-              "grid grid-cols-2 gap-x-3 gap-y-1 text-xs leading-snug sm:gap-x-4 sm:gap-y-2 sm:text-[0.9rem]",
+              "grid grid-cols-2 gap-x-4 gap-y-2 text-[0.9rem] leading-snug",
               compareCountryCode ? "mt-0" : "",
             )}
           >
@@ -198,7 +256,7 @@ function InlineLearnCard({
 
         {country.hasShape && (
           <div className="flex items-center justify-center">
-            <div className="flex h-[3.25rem] w-[3.25rem] items-center justify-center rounded-xl border border-slate-200 bg-gradient-to-b from-sky-50 to-white p-1.5 dark:border-slate-700 dark:from-slate-800 dark:to-slate-900 sm:h-24 sm:w-28 lg:h-28 lg:w-32 sm:p-2">
+            <div className="flex h-24 w-28 items-center justify-center rounded-xl border border-slate-200 bg-gradient-to-b from-sky-50 to-white p-2 dark:border-slate-700 dark:from-slate-800 dark:to-slate-900 lg:h-28 lg:w-32">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={getShapePath(country.code3)}
@@ -210,7 +268,7 @@ function InlineLearnCard({
         )}
       </div>
 
-      <p className="border-t border-slate-100 px-3 py-1.5 text-center text-[11px] font-medium text-slate-400 dark:border-slate-800 dark:text-slate-500 sm:px-6 sm:py-2 sm:text-xs">
+      <p className="mt-auto shrink-0 border-t border-slate-100 px-4 py-2.5 text-center text-xs font-medium text-slate-400 dark:border-slate-800 dark:text-slate-500 sm:mt-0 sm:px-6 sm:py-2">
         Tap anywhere to continue
       </p>
     </div>

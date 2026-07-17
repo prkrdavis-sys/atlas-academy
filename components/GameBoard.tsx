@@ -564,7 +564,7 @@ export function GameBoard({
 
         <div
           className={`@container/size flex min-h-0 flex-1 flex-col ${
-            showChoiceReveal ? "justify-start overflow-y-auto" : "overflow-hidden"
+            showChoiceReveal ? "justify-start overflow-hidden" : "overflow-hidden"
           } ${showChoiceReveal || question.displayType === "flags-grid" ? "sm:justify-start" : "sm:justify-center"}`}
         >
           {!showChoiceReveal && !(showLearnCard && !isMultipleChoiceRound) && (
@@ -614,8 +614,8 @@ export function GameBoard({
               <div
                 className={
                   question.displayType === "flags-grid"
-                    ? "mx-auto min-h-0 w-full max-w-2xl flex-1 overflow-y-auto sm:shrink-0"
-                    : "mx-auto min-h-0 w-full max-w-2xl shrink-0 overflow-y-auto sm:overflow-visible"
+                    ? "mx-auto flex min-h-0 w-full max-w-2xl flex-1 flex-col overflow-y-auto sm:shrink-0"
+                    : "mx-auto flex min-h-0 w-full max-w-2xl flex-1 flex-col sm:shrink-0"
                 }
               >
                 {inlineLearnCard}
@@ -634,8 +634,8 @@ export function GameBoard({
               )}
             </div>
           ) : showLearnCard && !isMultipleChoiceRound ? (
-            <div className="flex min-h-0 flex-1 flex-col overflow-y-auto sm:hidden">
-              <div className="mx-auto w-full max-w-2xl shrink-0">{inlineLearnCard}</div>
+            <div className="flex min-h-0 flex-1 flex-col overflow-hidden sm:hidden">
+              <div className="mx-auto flex min-h-0 w-full max-w-2xl flex-1 flex-col">{inlineLearnCard}</div>
             </div>
           ) : !showLearnCard && !isTextOnlyPrompt ? (
             <div className="flex min-h-0 flex-[0.76] flex-col items-center justify-center overflow-hidden sm:flex-1">
