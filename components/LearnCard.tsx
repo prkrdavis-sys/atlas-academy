@@ -138,15 +138,20 @@ function InlineLearnCard({
         </p>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4 py-4 sm:hidden">
+      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4 py-3 sm:hidden">
         {country.hasFlag && (
-          <div className="mb-4 w-full shrink-0 overflow-hidden rounded-xl">
+          <div
+            className={cn(
+              "mb-3 w-full shrink-0 overflow-hidden rounded-xl",
+              country.hasShape && "mx-auto max-w-[11.5rem]",
+            )}
+          >
             <FlagImage
               code={country.code}
               alt={country.name}
-              width={360}
+              width={country.hasShape ? 220 : 360}
               frame="md"
-              className="block w-full max-w-full"
+              className="mx-auto block w-full max-w-full"
             />
           </div>
         )}
@@ -159,7 +164,7 @@ function InlineLearnCard({
           />
         )}
 
-        <dl className="grid w-full shrink-0 grid-cols-2 content-start gap-x-8 gap-y-4 self-stretch text-sm">
+        <dl className="grid w-full shrink-0 grid-cols-2 content-start gap-x-6 gap-y-3 self-stretch text-sm">
           <div>
             <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Capital</dt>
             <dd className="mt-1 text-base font-semibold text-slate-800 dark:text-slate-200">{country.capital || "N/A"}</dd>
@@ -183,13 +188,13 @@ function InlineLearnCard({
         </dl>
 
         {country.hasShape && (
-          <div className="mt-5 w-full shrink-0">
-            <div className="flex min-h-[6.5rem] w-full items-center justify-center rounded-2xl border border-slate-200 bg-gradient-to-b from-sky-50 to-white px-3 py-4 dark:border-slate-700 dark:from-slate-800 dark:to-slate-900">
+          <div className="mt-3 w-full shrink-0 pb-1">
+            <div className="flex min-h-[4.5rem] w-full items-center justify-center rounded-2xl border border-slate-200 bg-gradient-to-b from-sky-50 to-white px-3 py-3 dark:border-slate-700 dark:from-slate-800 dark:to-slate-900">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={getShapePath(country.code3)}
                 alt={`Outline of ${country.name}`}
-                className="h-auto max-h-32 w-full max-w-full object-contain object-center [filter:brightness(0)] dark:[filter:brightness(0)_invert(1)]"
+                className="h-auto max-h-24 w-full max-w-full object-contain object-center [filter:brightness(0)] dark:[filter:brightness(0)_invert(1)]"
               />
             </div>
           </div>
