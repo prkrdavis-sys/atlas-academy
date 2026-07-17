@@ -486,10 +486,6 @@ export function GameBoard({
   const overlayLearnCard = (
     <LearnCard {...learnCardProps} variant="default" />
   );
-  const mobileOverlayLearnCard = (
-    <LearnCard {...learnCardProps} variant="default" mobileOverlay />
-  );
-  const useMobileLearnOverlay = question.displayType !== "flags-grid";
   const roundTitlePanel = (
     <>
       <p className="text-[9px] font-black uppercase tracking-[0.18em] text-teal-700/70 sm:text-[10px]">
@@ -571,7 +567,7 @@ export function GameBoard({
             showChoiceReveal ? "justify-start overflow-y-auto" : "overflow-hidden"
           } ${showChoiceReveal || question.displayType === "flags-grid" ? "sm:justify-start" : "sm:justify-center"}`}
         >
-          {!showChoiceReveal && (
+          {!showChoiceReveal && !(showLearnCard && !isMultipleChoiceRound) && (
             <>
               <div className="min-h-0 flex-[0.24] sm:hidden" aria-hidden />
 
@@ -588,8 +584,8 @@ export function GameBoard({
           )}
 
           {showChoiceReveal && isTextOnlyPrompt && (
-            <div className="shrink-0 px-3 pb-2 text-center sm:pb-3">
-              <p className="font-display text-lg font-extrabold leading-snug text-slate-800 dark:text-slate-100 sm:text-xl">
+            <div className="shrink-0 px-2 pb-1 text-center sm:px-3 sm:pb-3">
+              <p className="font-display text-sm font-extrabold leading-snug text-slate-800 dark:text-slate-100 sm:text-xl">
                 {question.prompt}
               </p>
             </div>
@@ -611,15 +607,15 @@ export function GameBoard({
             <div
               className={`flex min-h-0 w-full flex-col items-stretch ${
                 question.displayType === "flags-grid"
-                  ? "flex-1 gap-2 overflow-hidden sm:gap-3"
-                  : "shrink-0 py-1 sm:py-2"
+                  ? "min-h-0 flex-1 gap-2 overflow-hidden sm:gap-3"
+                  : "min-h-0 flex-1 overflow-hidden py-1 sm:shrink-0 sm:py-2"
               }`}
             >
               <div
                 className={
                   question.displayType === "flags-grid"
                     ? "mx-auto min-h-0 w-full max-w-2xl flex-1 overflow-y-auto sm:shrink-0"
-                    : "mx-auto hidden w-full max-w-2xl shrink-0 sm:block"
+                    : "mx-auto min-h-0 w-full max-w-2xl shrink-0 overflow-y-auto sm:overflow-visible"
                 }
               >
                 {inlineLearnCard}
@@ -636,6 +632,10 @@ export function GameBoard({
                   />
                 </div>
               )}
+            </div>
+          ) : showLearnCard && !isMultipleChoiceRound ? (
+            <div className="flex min-h-0 flex-1 flex-col overflow-y-auto sm:hidden">
+              <div className="mx-auto w-full max-w-2xl shrink-0">{inlineLearnCard}</div>
             </div>
           ) : !showLearnCard && !isTextOnlyPrompt ? (
             <div className="flex min-h-0 flex-[0.76] flex-col items-center justify-center overflow-hidden sm:flex-1">
@@ -714,11 +714,7 @@ export function GameBoard({
         <>
           <div
             className={`fixed inset-0 z-40 cursor-pointer ${
-              isMultipleChoiceRound
-                ? useMobileLearnOverlay
-                  ? "bg-slate-900/40 backdrop-blur-[1px] sm:bg-transparent sm:backdrop-blur-none"
-                  : ""
-                : "bg-slate-900/50 backdrop-blur-[2px]"
+              isMultipleChoiceRound ? "" : "sm:bg-slate-900/50 sm:backdrop-blur-[2px]"
             }`}
             onClick={handleContinue}
             onKeyDown={(e) => {
@@ -728,16 +724,6 @@ export function GameBoard({
             tabIndex={-1}
             aria-label="Continue to next question"
           />
-          {useMobileLearnOverlay && (
-            <div
-              className="pointer-events-none fixed inset-0 z-[45] flex min-h-0 flex-col px-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-[max(0.75rem,env(safe-area-inset-top))] sm:hidden"
-              aria-hidden
-            >
-              <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-                <div className="min-h-0 flex-1 overflow-y-auto">{mobileOverlayLearnCard}</div>
-              </div>
-            </div>
-          )}
           {!isMultipleChoiceRound && (
             <div
               className="pointer-events-none fixed inset-0 z-[45] hidden items-center justify-center p-4 sm:flex"

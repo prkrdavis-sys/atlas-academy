@@ -18,8 +18,6 @@ type LearnCardProps = {
   heading?: ReactNode;
   /** Embedded in the game panel between the header and answer choices. */
   variant?: "default" | "inline";
-  /** Full-height mobile overlay presentation after answering. */
-  mobileOverlay?: boolean;
 };
 
 function PopulationComparison({
@@ -129,23 +127,23 @@ function InlineLearnCard({
     >
       <div
         className={cn(
-          "border-b px-4 py-2.5 text-center sm:px-6 sm:py-3",
+          "border-b px-3 py-2 text-center sm:px-6 sm:py-3",
           wasCorrect
             ? "border-emerald-100 bg-emerald-50/80 dark:border-emerald-900/60 dark:bg-emerald-950/30"
             : "border-rose-100 bg-rose-50/80 dark:border-rose-900/60 dark:bg-rose-950/30",
         )}
       >
-        <p className="font-display text-base font-extrabold leading-normal text-slate-900 dark:text-slate-100 sm:text-lg lg:text-xl">
+        <p className="font-display text-sm font-extrabold leading-snug text-slate-900 dark:text-slate-100 sm:text-lg lg:text-xl">
           {heading ?? country.name}
         </p>
       </div>
 
       <div
         className={cn(
-          "grid items-center gap-2 p-3 sm:gap-5 sm:p-4 lg:px-6 lg:py-4",
-          country.hasFlag && country.hasShape && "grid-cols-[4.5rem_1fr_4.5rem] sm:grid-cols-[6.5rem_1fr_6.5rem] lg:grid-cols-[7.5rem_1fr_7.5rem]",
-          country.hasFlag && !country.hasShape && "grid-cols-[4.5rem_1fr] sm:grid-cols-[6.5rem_1fr]",
-          !country.hasFlag && country.hasShape && "grid-cols-[1fr_4.5rem] sm:grid-cols-[1fr_6.5rem]",
+          "grid items-center gap-1.5 p-2 sm:gap-5 sm:p-4 lg:px-6 lg:py-4",
+          country.hasFlag && country.hasShape && "grid-cols-[3.25rem_1fr_3.25rem] sm:grid-cols-[6.5rem_1fr_6.5rem] lg:grid-cols-[7.5rem_1fr_7.5rem]",
+          country.hasFlag && !country.hasShape && "grid-cols-[3.25rem_1fr] sm:grid-cols-[6.5rem_1fr]",
+          !country.hasFlag && country.hasShape && "grid-cols-[1fr_3.25rem] sm:grid-cols-[1fr_6.5rem]",
           !country.hasFlag && !country.hasShape && "grid-cols-1",
         )}
       >
@@ -156,7 +154,7 @@ function InlineLearnCard({
               alt={country.name}
               width={128}
               frame="md"
-              className="w-[4.5rem] sm:w-24 lg:w-28"
+              className="w-[3.25rem] sm:w-24 lg:w-28"
             />
           </div>
         )}
@@ -171,7 +169,7 @@ function InlineLearnCard({
           )}
           <dl
             className={cn(
-              "grid grid-cols-2 gap-x-4 gap-y-2 text-sm leading-snug sm:text-[0.9rem]",
+              "grid grid-cols-2 gap-x-3 gap-y-1 text-xs leading-snug sm:gap-x-4 sm:gap-y-2 sm:text-[0.9rem]",
               compareCountryCode ? "mt-0" : "",
             )}
           >
@@ -200,7 +198,7 @@ function InlineLearnCard({
 
         {country.hasShape && (
           <div className="flex items-center justify-center">
-            <div className="flex h-[4.5rem] w-[4.5rem] items-center justify-center rounded-xl border border-slate-200 bg-gradient-to-b from-sky-50 to-white p-2 dark:border-slate-700 dark:from-slate-800 dark:to-slate-900 sm:h-24 sm:w-28 lg:h-28 lg:w-32">
+            <div className="flex h-[3.25rem] w-[3.25rem] items-center justify-center rounded-xl border border-slate-200 bg-gradient-to-b from-sky-50 to-white p-1.5 dark:border-slate-700 dark:from-slate-800 dark:to-slate-900 sm:h-24 sm:w-28 lg:h-28 lg:w-32 sm:p-2">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={getShapePath(country.code3)}
@@ -212,7 +210,7 @@ function InlineLearnCard({
         )}
       </div>
 
-      <p className="border-t border-slate-100 px-4 py-2 text-center text-xs font-medium text-slate-400 dark:border-slate-800 dark:text-slate-500 sm:px-6">
+      <p className="border-t border-slate-100 px-3 py-1.5 text-center text-[11px] font-medium text-slate-400 dark:border-slate-800 dark:text-slate-500 sm:px-6 sm:py-2 sm:text-xs">
         Tap anywhere to continue
       </p>
     </div>
@@ -225,7 +223,6 @@ export function LearnCard({
   compareCountryCode,
   heading,
   variant = "default",
-  mobileOverlay = false,
 }: LearnCardProps) {
   const country = getCountryByCode(countryCode);
   if (!country) return null;
@@ -246,14 +243,12 @@ export function LearnCard({
 
   return (
     <div
-      className={cn(
-        "animate-card-pop-in overflow-hidden rounded-[1.75rem] border-2 bg-white shadow-xl dark:bg-slate-900 sm:rounded-3xl",
-        mobileOverlay && "flex min-h-full flex-col",
-        wasCorrect ? "border-emerald-300 dark:border-emerald-700" : "border-rose-300 dark:border-rose-700",
-      )}
+      className={`animate-card-pop-in overflow-hidden rounded-[1.75rem] border-2 bg-white shadow-xl dark:bg-slate-900 sm:rounded-3xl ${
+        wasCorrect ? "border-emerald-300 dark:border-emerald-700" : "border-rose-300 dark:border-rose-700"
+      }`}
     >
       <div
-        className={`shrink-0 px-4 py-3.5 font-display text-white sm:px-6 sm:py-4 ${
+        className={`px-4 py-3.5 font-display text-white sm:px-6 sm:py-4 ${
           wasCorrect ? "bg-emerald-500" : "bg-rose-500"
         }`}
       >
@@ -261,7 +256,7 @@ export function LearnCard({
           {heading ?? country.name}
         </p>
       </div>
-      <div className={cn("p-4 sm:p-6", mobileOverlay && "flex min-h-0 flex-1 flex-col")}>
+      <div className="p-4 sm:p-6">
         {compareCountryCode && (
           <PopulationComparison
             countryCode={countryCode}
@@ -269,13 +264,8 @@ export function LearnCard({
           />
         )}
         {country.hasShape && (
-          <div className={cn("mb-4 flex justify-center", mobileOverlay && "mb-3")}>
-            <div
-              className={cn(
-                "flex w-full max-w-xs items-center justify-center rounded-2xl border border-slate-200 bg-gradient-to-b from-sky-50 to-white p-4 dark:border-slate-700 dark:from-slate-800 dark:to-slate-900",
-                mobileOverlay ? "h-36" : "h-28 sm:h-32",
-              )}
-            >
+          <div className="mb-4 flex justify-center">
+            <div className="flex h-28 w-full max-w-xs items-center justify-center rounded-2xl border border-slate-200 bg-gradient-to-b from-sky-50 to-white p-4 dark:border-slate-700 dark:from-slate-800 dark:to-slate-900 sm:h-32">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={getShapePath(country.code3)}
@@ -286,12 +276,11 @@ export function LearnCard({
           </div>
         )}
         <div
-          className={cn(
+          className={
             country.hasFlag
               ? "grid grid-cols-[5.5rem_minmax(0,1fr)] items-start gap-3 sm:flex sm:items-center sm:gap-4"
-              : "block",
-            mobileOverlay && "min-h-0 flex-1",
-          )}
+              : "block"
+          }
         >
           {country.hasFlag && (
             <FlagImage
@@ -299,15 +288,10 @@ export function LearnCard({
               alt={country.name}
               width={120}
               frame="pill"
-              className={cn("w-full rounded-lg sm:w-[7.5rem]", mobileOverlay && "w-[6.5rem]")}
+              className="w-full rounded-lg sm:w-[7.5rem]"
             />
           )}
-          <div
-            className={cn(
-              "min-w-0 space-y-1 text-xs leading-relaxed sm:text-sm",
-              mobileOverlay && "space-y-2 text-sm",
-            )}
-          >
+          <div className="min-w-0 space-y-1 text-xs leading-relaxed sm:text-sm">
             <p><span className="font-semibold">Capital:</span> {country.capital || "N/A"}</p>
             <p><span className="font-semibold">{isState ? "Region" : "Continent"}:</span> {country.continent}</p>
             {!compareCountryCode && (
@@ -318,12 +302,7 @@ export function LearnCard({
             </p>
           </div>
         </div>
-        <p
-          className={cn(
-            "mt-3 text-center text-xs font-medium text-slate-400 dark:text-slate-500 sm:mt-4 sm:text-sm",
-            mobileOverlay && "mt-auto shrink-0 pt-4 text-sm",
-          )}
-        >
+        <p className="mt-3 text-center text-xs font-medium text-slate-400 dark:text-slate-500 sm:mt-4 sm:text-sm">
           Tap anywhere to continue
         </p>
       </div>
