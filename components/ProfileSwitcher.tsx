@@ -7,12 +7,6 @@ import { useProfiles } from "@/components/ProfileProvider";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { cn } from "@/lib/utils";
 
-const MENU_NAV_ITEMS = [
-  { href: "/", label: "Play", icon: "🌎" },
-  { href: "/extras", label: "Extras", icon: "✨" },
-  { href: "/stats", label: "Stats", icon: "📊" },
-] as const;
-
 export function ProfileSwitcher({ compact = false }: { compact?: boolean }) {
   const pathname = usePathname();
   const { profiles, activeProfile, switchProfile, hydrated } = useProfiles();
@@ -71,31 +65,6 @@ export function ProfileSwitcher({ compact = false }: { compact?: boolean }) {
           className="absolute right-0 z-50 mt-2 w-[min(20rem,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl dark:border-slate-700 dark:bg-slate-900"
         >
           <div className="border-b border-slate-100 p-2 dark:border-slate-800">
-            <p className="px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-              Navigate
-            </p>
-            {MENU_NAV_ITEMS.map((item) => {
-              const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  role="menuitem"
-                  aria-current={active ? "page" : undefined}
-                  className={cn(
-                    "flex min-h-11 items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors hover:bg-slate-50 dark:hover:bg-slate-800",
-                    active ? "text-teal-700 dark:text-teal-300" : "text-slate-700 dark:text-slate-200",
-                  )}
-                  onClick={closeMenu}
-                >
-                  <span className="text-lg leading-none" aria-hidden>{item.icon}</span>
-                  {item.label}
-                </Link>
-              );
-            })}
-          </div>
-
-          <div className="border-b border-slate-100 p-2 dark:border-slate-800">
             {displayProfile && (
               <div className="mb-1 rounded-xl bg-emerald-50 px-3 py-2 dark:bg-emerald-950/50">
                 <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-400">
@@ -109,6 +78,24 @@ export function ProfileSwitcher({ compact = false }: { compact?: boolean }) {
                   <span className="font-medium">{displayProfile.name}</span>
                 </div>
               </div>
+            )}
+
+            {!compact && (
+              <Link
+                href="/stats"
+                role="menuitem"
+                aria-current={pathname.startsWith("/stats") ? "page" : undefined}
+                className={cn(
+                  "mb-1 flex min-h-11 items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors hover:bg-slate-50 dark:hover:bg-slate-800",
+                  pathname.startsWith("/stats")
+                    ? "text-teal-700 dark:text-teal-300"
+                    : "text-slate-700 dark:text-slate-200",
+                )}
+                onClick={closeMenu}
+              >
+                <span className="text-lg leading-none" aria-hidden>📊</span>
+                Stats
+              </Link>
             )}
 
             {inactiveProfiles.length > 0 && (

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { PlayModeSwitcher } from "@/components/PlayModeSwitcher";
 import { ProfileSwitcher } from "@/components/ProfileSwitcher";
 import { PROFILE_EMOJI } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -21,14 +22,17 @@ export function AppHeader() {
   return (
     <>
       <header className="sticky top-0 z-40 border-b border-teal-900/10 bg-white/85 pt-[env(safe-area-inset-top)] backdrop-blur-xl dark:border-slate-700/50 dark:bg-slate-900/85">
-        <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4 sm:h-16">
+        <div className="mx-auto flex h-14 max-w-5xl items-center gap-4 px-4 sm:h-16">
           <Link
             href="/"
             className="font-display text-lg font-extrabold tracking-tight text-teal-800 transition-opacity active:opacity-60 dark:text-teal-300 sm:text-xl"
           >
             <span aria-hidden>🌍</span> Atlas Academy
           </Link>
-          <div className="flex items-center sm:hidden">
+          <div className="hidden flex-1 justify-center sm:flex">
+            <PlayModeSwitcher />
+          </div>
+          <div className="ml-auto flex items-center sm:hidden">
             <ProfileSwitcher compact />
           </div>
           <div className="hidden items-center sm:flex">

@@ -420,12 +420,21 @@ export function GameBoard({
                 Play again
               </GameActionButton>
             )}
-            <div className="grid grid-cols-2 gap-3">
-              <Button variant="secondary" size="lg" className="w-full gap-2.5 text-lg" onClick={() => router.push("/stats")}>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <Button
+                variant="secondary"
+                size="lg"
+                className="w-full gap-2.5 text-lg max-sm:whitespace-nowrap"
+                onClick={() => router.push("/stats")}
+              >
                 <img src="/icons/stats.svg" alt="" aria-hidden className="size-7 shrink-0" draggable={false} />
                 View stats
               </Button>
-              <Button size="lg" className="w-full gap-2.5 text-lg" onClick={() => router.push("/")}>
+              <Button
+                size="lg"
+                className="w-full gap-2.5 text-lg max-sm:whitespace-nowrap"
+                onClick={() => router.push("/")}
+              >
                 <img src="/icons/home.svg" alt="" aria-hidden className="size-7 shrink-0" draggable={false} />
                 Back home
               </Button>
