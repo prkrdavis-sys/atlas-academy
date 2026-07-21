@@ -17,6 +17,7 @@
     "verify-integrity": "tsx scripts/verify-game-integrity.ts"
   },
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
     "clsx": "^2.1.1",
     "flag-icons": "^7.5.0",
     "next": "16.2.10",
