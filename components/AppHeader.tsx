@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ProfileSwitcher } from "@/components/ProfileSwitcher";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { PROFILE_EMOJI } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -29,40 +28,11 @@ export function AppHeader() {
           >
             <span aria-hidden>🌍</span> Atlas Academy
           </Link>
-          <nav className="hidden items-center gap-4 text-sm font-semibold text-slate-600 dark:text-slate-400 sm:flex">
-            <Link
-              href="/"
-              className={cn(
-                "transition-colors hover:text-teal-700 dark:hover:text-teal-300",
-                pathname === "/" && "text-teal-700 dark:text-teal-300",
-              )}
-            >
-              Play
-            </Link>
-            <Link
-              href="/extras"
-              className={cn(
-                "transition-colors hover:text-teal-700 dark:hover:text-teal-300",
-                pathname.startsWith("/extras") && "text-teal-700 dark:text-teal-300",
-              )}
-            >
-              Extras
-            </Link>
-            <Link
-              href="/stats"
-              className={cn(
-                "transition-colors hover:text-teal-700 dark:hover:text-teal-300",
-                pathname === "/stats" && "text-teal-700 dark:text-teal-300",
-              )}
-            >
-              Stats
-            </Link>
-            <ThemeToggle />
-            <ProfileSwitcher />
-          </nav>
-          <div className="flex items-center gap-2 sm:hidden">
-            <ThemeToggle />
+          <div className="flex items-center sm:hidden">
             <ProfileSwitcher compact />
+          </div>
+          <div className="hidden items-center sm:flex">
+            <ProfileSwitcher />
           </div>
         </div>
       </header>
