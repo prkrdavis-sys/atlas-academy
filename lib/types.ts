@@ -97,6 +97,15 @@ export const MIXED_QUESTION_TYPES = [
 
 export type MixedQuestionType = CoreQuestionType | "country-to-flag";
 
+export const DAILY_CHALLENGE_QUESTION_TYPES = [
+  "flag-to-country",
+  "country-to-flag",
+  "shape-to-country",
+  "country-to-capital",
+] as const satisfies readonly MixedQuestionType[];
+
+export type DailyChallengeQuestionType = (typeof DAILY_CHALLENGE_QUESTION_TYPES)[number];
+
 export const SPEED_ROUND_ALL_TYPES = "all-types" as const;
 export type SpeedRoundQuestionType = CoreQuestionType | typeof SPEED_ROUND_ALL_TYPES;
 
@@ -309,7 +318,7 @@ export const GAME_MODES: {
   {
     id: "daily-challenge",
     title: "Daily Challenge",
-    description: "10 questions — resets at midnight Eastern",
+    description: "10 mixed questions — resets at midnight Eastern",
     icon: "📅",
     phase: 2,
   },

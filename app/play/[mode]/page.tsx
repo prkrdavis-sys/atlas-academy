@@ -3,12 +3,13 @@
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { ContinentFilter } from "@/components/ContinentFilter";
+import { DailyChallengePreRound } from "@/components/DailyChallengePreRound";
 import { GameActionButton } from "@/components/GameActionButton";
 import { GameBoard } from "@/components/GameBoard";
 import { useProfiles, useRequiredProfile } from "@/components/ProfileProvider";
 import { Select } from "@/components/ui/Select";
 import { getPlayablePoolSize } from "@/lib/countries";
-import { aggregateMissedCountries, DAILY_COUNTING_SESSION_KEY, formatDailyDate, getDailyDateKey, getDailySeed, hasPlayedDailyToday } from "@/lib/game-engine";
+import { aggregateMissedCountries, DAILY_COUNTING_SESSION_KEY, formatDailyDate, getDailyChallengeRun, getDailyDateKey, getDailySeed, hasCompletedDailyToday, hasPlayedDailyToday } from "@/lib/game-engine";
 import { getScopedModeInfo, normalizeScope, SCOPE_INFO, scopedDailyKey, scopeText, isStateCode } from "@/lib/scope";
 import { collectMissedCountries } from "@/lib/stats-helpers";
 import { updateProfileSettings } from "@/lib/storage";
@@ -127,6 +128,13 @@ function PlayPageInner() {
     isDailyChallenge
       ? hasPlayedDailyToday(profile.dailyChallengePlayedDates, scope)
       : false;
+  const dailyCompletedToday =
+    isDailyChallenge
+      ? hasCompletedDailyToday(profile.dailyChallengeCompletions, scope)
+      : false;
+  const dailyRun = isDailyChallenge
+    ? getDailyChallengeRun(profile.dailyChallengeCompletions, scope)
+    : 0;
   const dailyContinents: Region[] = isUsa ? [...US_REGIONS] : [...CONTINENTS];
   const dailyDifficulty: Difficulty = "medium";
 
@@ -230,7 +238,7 @@ function PlayPageInner() {
     (!isDailyChallenge && availableCountryCount === 0) ||
     (mode === "weak-spots" && !weakSpotCodes?.length);
 
-  const hasExtendedSettings = !isDailyChallenge;
+  const hasExtendedSettings = true;
 
   const startGameButton = (
     <div className="relative z-40">
@@ -259,7 +267,11 @@ function PlayPageInner() {
                 disabled={startDisabled}
                 icon={scopeInfo.icon}
               >
-                {isDailyChallenge && dailyAlreadyPlayed ? "Review challenge" : "Start Game"}
+                {isDailyChallenge
+                  ? dailyAlreadyPlayed
+                    ? "Review today's challenge"
+                    : "Start today's challenge"
+                  : "Start Game"}
               </GameActionButton>
             </div>
           </div>
@@ -285,27 +297,28 @@ function PlayPageInner() {
           >
             ← Back
           </button>
-          <h1 className="font-display text-2xl font-extrabold sm:mt-2 sm:text-3xl">{modeInfo.icon} {modeInfo.title}</h1>
-          {isUsa && (
-            <p className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-sky-100 px-3 py-1 text-xs font-bold text-sky-800 dark:bg-sky-950/60 dark:text-sky-300">
-              🇺🇸 Across America — all 50 states
-            </p>
-          )}
-          {dailyDateLabel && (
-            <p className="mt-1 font-display text-base font-bold text-teal-700 dark:text-teal-400">
-              {dailyDateLabel}
-            </p>
-          )}
-          <p className="mt-1 text-sm text-slate-600 dark:text-slate-400 sm:text-base">{modeInfo.description}</p>
-          {isDailyChallenge && dailyAlreadyPlayed && (
-            <p className="mt-2 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:bg-amber-950/50 dark:text-amber-200">
-              You already played today&apos;s challenge. Play again to review — stats won&apos;t count.
-            </p>
-          )}
-          {isDailyChallenge && (
-            <p className="mt-3 text-sm text-slate-600 dark:text-slate-400">
-              {DAILY_CHALLENGE_QUESTION_COUNT} questions · {DIFFICULTY_LABELS.medium} difficulty · {isUsa ? "All 50 states" : "All continents"}
-            </p>
+          {isDailyChallenge && dailyDateLabel ? (
+            <>
+              <h1 className="font-display text-2xl font-extrabold sm:mt-2 sm:text-3xl">
+                {modeInfo.icon} {modeInfo.title}
+              </h1>
+              <p className="mt-1 font-display text-base font-bold text-teal-700 dark:text-teal-400">
+                {dailyDateLabel}
+              </p>
+              <p className="mt-1 text-sm text-slate-600 dark:text-slate-400 sm:text-base">
+                {modeInfo.description}
+              </p>
+            </>
+          ) : (
+            <>
+              <h1 className="font-display text-2xl font-extrabold sm:mt-2 sm:text-3xl">{modeInfo.icon} {modeInfo.title}</h1>
+              {isUsa && (
+                <p className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-sky-100 px-3 py-1 text-xs font-bold text-sky-800 dark:bg-sky-950/60 dark:text-sky-300">
+                  🇺🇸 Across America — all 50 states
+                </p>
+              )}
+              <p className="mt-1 text-sm text-slate-600 dark:text-slate-400 sm:text-base">{modeInfo.description}</p>
+            </>
           )}
         </div>
       )}
@@ -319,6 +332,18 @@ function PlayPageInner() {
           )}
 
           {startGameButton}
+
+          {isDailyChallenge && dailyDateLabel ? (
+            <DailyChallengePreRound
+              scope={scope}
+              dailyDateLabel={dailyDateLabel}
+              dailyRun={dailyRun}
+              dailyCompletedToday={dailyCompletedToday}
+              dailyAlreadyPlayed={dailyAlreadyPlayed}
+              completions={profile.dailyChallengeCompletions}
+              isUsa={isUsa}
+            />
+          ) : null}
 
           {!isDailyChallenge && (
           <div className="space-y-5 rounded-[1.75rem] border-2 border-slate-200 bg-white/90 p-4 shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90 sm:space-y-6 sm:p-6">

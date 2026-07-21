@@ -400,7 +400,7 @@ export function GameBoard({
           <p className="text-4xl">{challengeComplete ? "🎉" : "🧭"}</p>
           <h2 className="mt-2 font-display text-3xl font-extrabold">{title}</h2>
           <p className="mt-2 text-slate-600 dark:text-slate-400">{description}</p>
-          <div className="mx-auto mt-6 grid max-w-sm grid-cols-3 gap-3">
+          <div className={`mx-auto mt-6 grid max-w-sm gap-3 ${difficulty === "easy" ? "grid-cols-3" : "grid-cols-2"}`}>
             <div className="rounded-2xl bg-emerald-50 p-3 dark:bg-emerald-950/50">
               <p className="font-display text-2xl font-extrabold text-emerald-700 dark:text-emerald-400">{correctAnswers}</p>
               <p className="text-xs font-semibold text-emerald-800 dark:text-emerald-300">Correct</p>
@@ -409,10 +409,12 @@ export function GameBoard({
               <p className="font-display text-2xl font-extrabold text-sky-700 dark:text-sky-400">{accuracy}%</p>
               <p className="text-xs font-semibold text-sky-800 dark:text-sky-300">Accuracy</p>
             </div>
-            <div className="rounded-2xl bg-slate-100 p-3 dark:bg-slate-800">
-              <p className="font-display text-2xl font-extrabold text-slate-700 dark:text-slate-200">{skippedAnswers}</p>
-              <p className="text-xs font-semibold text-slate-600 dark:text-slate-400">Skipped</p>
-            </div>
+            {difficulty === "easy" && (
+              <div className="rounded-2xl bg-slate-100 p-3 dark:bg-slate-800">
+                <p className="font-display text-2xl font-extrabold text-slate-700 dark:text-slate-200">{skippedAnswers}</p>
+                <p className="text-xs font-semibold text-slate-600 dark:text-slate-400">Skipped</p>
+              </div>
+            )}
           </div>
           <div className="mt-6 flex flex-col gap-3">
             {onPlayAgain && (

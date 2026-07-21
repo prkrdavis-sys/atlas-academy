@@ -3,6 +3,7 @@ import statesData from "@/data/states.json";
 import {
   CONTINENTS,
   CORE_QUESTION_TYPES,
+  DAILY_CHALLENGE_QUESTION_TYPES,
   MIXED_QUESTION_TYPES,
   SPEED_ROUND_ALL_TYPES,
   US_REGIONS,
@@ -149,12 +150,34 @@ export function getMixedCoreQuestionPool(options: Omit<FilterOptions, "mode">): 
   return [...byCode.values()];
 }
 
+export function getDailyChallengePool(options: Omit<FilterOptions, "mode">): Country[] {
+  const byCode = new Map<string, Country>();
+  for (const type of DAILY_CHALLENGE_QUESTION_TYPES) {
+    for (const country of filterCountries({
+      ...options,
+      mode: type,
+    })) {
+      byCode.set(country.code, country);
+    }
+  }
+  return [...byCode.values()];
+}
+
 type PoolOptions = FilterOptions & {
   mode: GameMode;
   questionType?: SpeedRoundQuestionType;
 };
 
 export function getPlayablePool(options: PoolOptions): Country[] {
+  if (options.mode === "daily-challenge") {
+    return getDailyChallengePool({
+      continents: options.continents,
+      includeTerritories: options.includeTerritories,
+      weakSpotCodes: options.weakSpotCodes,
+      scope: options.scope,
+    });
+  }
+
   if (
     options.mode === "mixed" ||
     ((options.mode === "speed-round" || options.mode === "marathon") &&

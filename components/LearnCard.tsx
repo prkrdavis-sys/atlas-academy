@@ -9,6 +9,7 @@ import {
   formatPopulation,
 } from "@/lib/countries";
 import { isStateCode } from "@/lib/scope";
+import type { Country } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 type LearnCardProps = {
@@ -19,6 +20,23 @@ type LearnCardProps = {
   /** Embedded in the game panel between the header and answer choices. */
   variant?: "default" | "inline";
 };
+
+function ContinentValue({ country, isState }: { country: Country; isState: boolean }) {
+  if (isState) {
+    return country.continent;
+  }
+
+  return (
+    <span className="inline-flex flex-wrap items-center gap-1.5">
+      {country.continent}
+      {country.isTerritory ? (
+        <span className="rounded-full bg-teal-100 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-teal-800 dark:bg-teal-950/60 dark:text-teal-300">
+          Territory
+        </span>
+      ) : null}
+    </span>
+  );
+}
 
 function PopulationComparison({
   countryCode,
@@ -171,7 +189,9 @@ function InlineLearnCard({
           </div>
           <div>
             <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{isState ? "Region" : "Continent"}</dt>
-            <dd className="mt-1 text-base font-semibold text-slate-800 dark:text-slate-200">{country.continent}</dd>
+            <dd className="mt-1 text-base font-semibold text-slate-800 dark:text-slate-200">
+              <ContinentValue country={country} isState={isState} />
+            </dd>
           </div>
           {!compareCountryCode && (
             <div>
@@ -242,7 +262,9 @@ function InlineLearnCard({
             </div>
             <div>
               <dt className="font-semibold text-slate-500 dark:text-slate-400">{isState ? "Region" : "Continent"}</dt>
-              <dd className="font-medium text-slate-800 dark:text-slate-200">{country.continent}</dd>
+              <dd className="font-medium text-slate-800 dark:text-slate-200">
+                <ContinentValue country={country} isState={isState} />
+              </dd>
             </div>
             {!compareCountryCode && (
               <div>
@@ -356,7 +378,10 @@ export function LearnCard({
           )}
           <div className="min-w-0 space-y-1 text-xs leading-relaxed sm:text-sm">
             <p><span className="font-semibold">Capital:</span> {country.capital || "N/A"}</p>
-            <p><span className="font-semibold">{isState ? "Region" : "Continent"}:</span> {country.continent}</p>
+            <p>
+              <span className="font-semibold">{isState ? "Region" : "Continent"}:</span>{" "}
+              <ContinentValue country={country} isState={isState} />
+            </p>
             {!compareCountryCode && (
               <p><span className="font-semibold">Population:</span> {formatPopulation(country.population)}</p>
             )}

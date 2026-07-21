@@ -101,12 +101,12 @@ export function FlagGrid({
               <div
                 key={code}
                 className={cn(
-                  "block overflow-hidden rounded-xl border-2 bg-white p-0 leading-none shadow-[0_3px_0_var(--color-slate-200)] dark:bg-slate-800 dark:shadow-[0_3px_0_var(--color-slate-700)]",
+                  "block overflow-hidden rounded-xl bg-white p-0 leading-none shadow-[0_3px_0_var(--color-slate-200)] dark:bg-slate-800 dark:shadow-[0_3px_0_var(--color-slate-700)]",
                   isCorrect
-                    ? "border-emerald-400 bg-emerald-50 shadow-[0_3px_0_var(--color-emerald-300)] dark:border-emerald-500 dark:bg-emerald-950/50 dark:shadow-[0_3px_0_var(--color-emerald-800)]"
+                    ? "border-4 border-emerald-400 bg-emerald-50 shadow-[0_3px_0_var(--color-emerald-300)] dark:border-emerald-500 dark:bg-emerald-950/50 dark:shadow-[0_3px_0_var(--color-emerald-800)]"
                     : isIncorrect
-                      ? "border-rose-400 bg-rose-50 shadow-[0_3px_0_var(--color-rose-300)] dark:border-rose-500 dark:bg-rose-950/50 dark:shadow-[0_3px_0_var(--color-rose-800)]"
-                      : "border-slate-200 dark:border-slate-600",
+                      ? "border-4 border-rose-400 bg-rose-50 shadow-[0_3px_0_var(--color-rose-300)] dark:border-rose-500 dark:bg-rose-950/50 dark:shadow-[0_3px_0_var(--color-rose-800)]"
+                      : "border-2 border-slate-200 dark:border-slate-600",
                 )}
                 aria-hidden
               >

@@ -27,6 +27,9 @@ export function ContinentFilter({
 }: ContinentFilterProps) {
   const regions = getRegionsForScope(scope);
   const isUsa = scope === "usa";
+  const mainRegions = isUsa
+    ? regions
+    : regions.filter((region) => region !== "Antarctica");
   const placeCount = countSovereignCountriesByContinents(selected, scope);
   const territoryCount = countAllTerritories();
   const noun = SCOPE_INFO[scope].noun;
@@ -80,7 +83,7 @@ export function ContinentFilter({
       </div>
 
       <div className="grid grid-cols-2 gap-2">
-        {regions.map((region) => {
+        {mainRegions.map((region) => {
           const checked = selected.includes(region);
           return (
             <label
@@ -103,22 +106,40 @@ export function ContinentFilter({
           );
         })}
         {!isUsa && (
-          <label
-            className={cn(
-              "flex min-h-12 cursor-pointer items-center gap-2 rounded-xl border px-3 py-2.5 transition-colors sm:gap-3 sm:px-4 sm:py-3",
-              includeTerritories
-                ? "border-emerald-300 bg-emerald-50 dark:border-emerald-700 dark:bg-emerald-950/50"
-                : "border-slate-200 bg-white hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:hover:bg-slate-700",
-            )}
-          >
-            <input
-              type="checkbox"
-              checked={includeTerritories}
-              onChange={() => onIncludeTerritoriesChange(!includeTerritories)}
-              className="h-5 w-5 shrink-0 rounded border-slate-300 text-emerald-600"
-            />
-            <span className="min-w-0 text-xs font-medium sm:text-sm">Territories</span>
-          </label>
+          <>
+            <label
+              className={cn(
+                "flex min-h-12 cursor-pointer items-center gap-2 rounded-xl border px-3 py-2.5 transition-colors sm:gap-3 sm:px-4 sm:py-3",
+                includeTerritories
+                  ? "border-emerald-300 bg-emerald-50 dark:border-emerald-700 dark:bg-emerald-950/50"
+                  : "border-slate-200 bg-white hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:hover:bg-slate-700",
+              )}
+            >
+              <input
+                type="checkbox"
+                checked={includeTerritories}
+                onChange={() => onIncludeTerritoriesChange(!includeTerritories)}
+                className="h-5 w-5 shrink-0 rounded border-slate-300 text-emerald-600"
+              />
+              <span className="min-w-0 text-xs font-medium sm:text-sm">Territories</span>
+            </label>
+            <label
+              className={cn(
+                "flex min-h-12 cursor-pointer items-center gap-2 rounded-xl border px-3 py-2.5 transition-colors sm:gap-3 sm:px-4 sm:py-3",
+                selected.includes("Antarctica")
+                  ? "border-emerald-300 bg-emerald-50 dark:border-emerald-700 dark:bg-emerald-950/50"
+                  : "border-slate-200 bg-white hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:hover:bg-slate-700",
+              )}
+            >
+              <input
+                type="checkbox"
+                checked={selected.includes("Antarctica")}
+                onChange={() => toggle("Antarctica")}
+                className="h-5 w-5 shrink-0 rounded border-slate-300 text-emerald-600"
+              />
+              <span className="min-w-0 text-xs font-medium sm:text-sm">Antarctica</span>
+            </label>
+          </>
         )}
       </div>
 

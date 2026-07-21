@@ -8,10 +8,12 @@ import {
 import { isSameCountry, normalizeAnswerText, validateAnswer } from "@/lib/answer-matcher";
 import {
   DAILY_CHALLENGE_QUESTION_COUNT,
+  DAILY_CHALLENGE_QUESTION_TYPES,
   DEFAULT_ROUND_QUESTION_COUNT,
   resolveRoundQuestionLimit,
   SPEED_ROUND_ALL_TYPES,
   type Country,
+  type DailyChallengeQuestionType,
   type Difficulty,
   type GameMode,
   type GameScope,
@@ -22,7 +24,7 @@ import {
 } from "@/lib/types";
 import { filterDailyDatesByScope, scopeText } from "@/lib/scope";
 import { getCapitalCityDistractors } from "@/lib/city-distractors";
-import { pickRandom, shuffle, uniqueBy } from "@/lib/utils";
+import { uniqueBy } from "@/lib/utils";
 
 function seededRandom(seed: number) {
   let value = seed;
@@ -30,6 +32,20 @@ function seededRandom(seed: number) {
     value = (value * 1664525 + 1013904223) % 4294967296;
     return value / 4294967296;
   };
+}
+
+function shuffleWith<T>(array: T[], random: () => number): T[] {
+  const copy = [...array];
+  for (let i = copy.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+function pickRandomWith<T>(array: T[], random: () => number): T | undefined {
+  if (array.length === 0) return undefined;
+  return array[Math.floor(random() * array.length)];
 }
 
 function pickFromPool<T>(pool: T[], random: () => number): T {
@@ -53,6 +69,7 @@ function buildNameMcOptions(
   difficulty: Difficulty,
   promptCapital?: string,
   optionCount = 4,
+  random: () => number = Math.random,
 ): { options: string[]; optionCodes: string[] } {
   const getValue = (c: Country) => c.name;
   const correctLabel = normalizeAnswerText(getValue(correct));
@@ -89,7 +106,7 @@ function buildNameMcOptions(
   };
 
   const fillFromPool = (source: Country[]) => {
-    for (const candidate of shuffle(source)) {
+    for (const candidate of shuffleWith(source, random)) {
       if (distractors.length >= targetDistractors) break;
       tryAddCountryDistractor(candidate);
     }
@@ -101,19 +118,23 @@ function buildNameMcOptions(
   fillFromPool(distractorPool);
 
   while (distractors.length < targetDistractors) {
-    const extra = pickRandom(
+    const extra = pickRandomWith(
       pool.filter(
         (c) =>
           isValidDistractor(c) &&
           !usedCodes.has(c.code) &&
           !usedLabels.has(normalizeAnswerText(getValue(c))),
       ),
+      random,
     );
     if (!extra) break;
     tryAddCountryDistractor(extra);
   }
 
-  const combined = shuffle([{ label: getValue(correct), code: correct.code }, ...distractors]);
+  const combined = shuffleWith(
+    [{ label: getValue(correct), code: correct.code }, ...distractors],
+    random,
+  );
   return {
     options: combined.map((c) => c.label),
     optionCodes: combined.map((c) => c.code),
@@ -123,6 +144,7 @@ function buildNameMcOptions(
 function buildCapitalMcOptions(
   correct: Country,
   scope: GameScope,
+  random: () => number = Math.random,
 ): { options: string[] } {
   const usedLabels = new Set<string>([normalizeAnswerText(correct.capital)]);
   const distractors: string[] = [];
@@ -135,12 +157,12 @@ function buildCapitalMcOptions(
     distractors.push(city);
   };
 
-  for (const city of shuffle(getCapitalCityDistractors(correct, scope))) {
+  for (const city of shuffleWith(getCapitalCityDistractors(correct, scope), random)) {
     if (distractors.length >= 3) break;
     tryAddCity(city);
   }
 
-  return { options: shuffle([correct.capital, ...distractors]) };
+  return { options: shuffleWith([correct.capital, ...distractors], random) };
 }
 
 export class GameEngine {
@@ -192,28 +214,64 @@ export class GameEngine {
     return this.pool.length;
   }
 
+  private buildDailyQuestionTypeSequence(): DailyChallengeQuestionType[] {
+    const baseTypes = [
+      ...DAILY_CHALLENGE_QUESTION_TYPES,
+      ...DAILY_CHALLENGE_QUESTION_TYPES,
+    ];
+    const extraTypes: DailyChallengeQuestionType[] = [
+      pickFromPool([...DAILY_CHALLENGE_QUESTION_TYPES], this.random),
+      pickFromPool([...DAILY_CHALLENGE_QUESTION_TYPES], this.random),
+    ];
+    return shuffleWith([...baseTypes, ...extraTypes], this.random);
+  }
+
+  private getDailyPoolForQuestionType(type: DailyChallengeQuestionType): Country[] {
+    return this.pool.filter((country) => {
+      switch (type) {
+        case "flag-to-country":
+        case "country-to-flag":
+          return country.hasFlag;
+        case "shape-to-country":
+          return country.hasShape;
+        case "country-to-capital":
+          return country.capital.length > 0;
+        default: {
+          const _exhaustive: never = type;
+          return _exhaustive;
+        }
+      }
+    });
+  }
+
   private buildDailyQuestions(): Question[] {
+    const questionTypes = this.buildDailyQuestionTypeSequence();
     const questions: Question[] = [];
     const used = new Set<string>();
-    for (let i = 0; i < DAILY_CHALLENGE_QUESTION_COUNT && i < this.pool.length; i += 1) {
-      let country = pickFromPool(this.pool, this.random);
+
+    for (const questionType of questionTypes) {
+      const typePool = this.getDailyPoolForQuestionType(questionType);
+      if (typePool.length === 0) continue;
+
+      let country = pickFromPool(typePool, this.random);
       let attempts = 0;
-      while (used.has(country.code) && attempts < 20) {
-        country = pickFromPool(this.pool, this.random);
+      while (used.has(country.code) && attempts < 40) {
+        country = pickFromPool(typePool, this.random);
         attempts += 1;
       }
       used.add(country.code);
-      questions.push(this.buildQuestion(country, "flag-to-country"));
+      questions.push(this.buildQuestion(country, questionType));
     }
+
     return questions;
   }
 
   private buildShuffledRoundCountries(): Country[] {
     if (this.mode === "marathon" || this.mode === "speed-round") {
-      return shuffle(this.pool);
+      return shuffleWith(this.pool, this.random);
     }
     const limit = resolveRoundQuestionLimit(this.questionLimit, this.pool.length);
-    return shuffle(this.pool).slice(0, limit);
+    return shuffleWith(this.pool, this.random).slice(0, limit);
   }
 
   nextQuestion(): Question | null {
@@ -277,7 +335,7 @@ export class GameEngine {
       case "weak-spots": {
         const mc =
           this.difficulty !== "hard"
-            ? buildNameMcOptions(country, this.pool, this.difficulty)
+            ? buildNameMcOptions(country, this.pool, this.difficulty, undefined, 4, this.random)
             : undefined;
         return {
           id,
@@ -293,7 +351,7 @@ export class GameEngine {
       case "capital-to-country": {
         const mc =
           this.difficulty !== "hard"
-            ? buildNameMcOptions(country, this.pool, this.difficulty, country.capital)
+            ? buildNameMcOptions(country, this.pool, this.difficulty, country.capital, 4, this.random)
             : undefined;
         return {
           id,
@@ -314,7 +372,7 @@ export class GameEngine {
       case "country-to-capital": {
         const mc =
           this.difficulty !== "hard"
-            ? buildCapitalMcOptions(country, this.scope)
+            ? buildCapitalMcOptions(country, this.scope, this.random)
             : undefined;
         return {
           id,
@@ -330,7 +388,7 @@ export class GameEngine {
       case "shape-to-country": {
         const mc =
           this.difficulty !== "hard"
-            ? buildNameMcOptions(country, this.pool, this.difficulty)
+            ? buildNameMcOptions(country, this.pool, this.difficulty, undefined, 4, this.random)
             : undefined;
         return {
           id,
@@ -345,7 +403,7 @@ export class GameEngine {
       }
       case "country-to-flag": {
         const optionCount = this.difficulty === "hard" ? 6 : 4;
-        const mc = buildNameMcOptions(country, this.pool, this.difficulty, undefined, optionCount);
+        const mc = buildNameMcOptions(country, this.pool, this.difficulty, undefined, optionCount, this.random);
         return {
           id,
           mode,
@@ -359,9 +417,9 @@ export class GameEngine {
         };
       }
       case "neighbor-quiz": {
-        const neighborCode = pickRandom(country.borders);
-        const neighbor = getCountryByCode(neighborCode);
-        const mc = buildNameMcOptions(neighbor ?? country, this.pool, this.difficulty);
+        const neighborCode = pickRandomWith(country.borders, this.random);
+        const neighbor = getCountryByCode(neighborCode ?? "");
+        const mc = buildNameMcOptions(neighbor ?? country, this.pool, this.difficulty, undefined, 4, this.random);
         return {
           id,
           mode,
@@ -399,7 +457,7 @@ export class GameEngine {
         };
       }
       case "daily-challenge":
-        return this.buildQuestion(country, "flag-to-country");
+        throw new Error("Daily challenge questions must use a concrete question type");
       default:
         return this.buildQuestion(country, "flag-to-country");
     }
@@ -461,6 +519,50 @@ export function formatDailyDate(date = new Date()): string {
   }).format(date);
 }
 
+const WEEKDAY_INDEX: Record<string, number> = {
+  Sun: 0,
+  Mon: 1,
+  Tue: 2,
+  Wed: 3,
+  Thu: 4,
+  Fri: 5,
+  Sat: 6,
+};
+
+function getWeekdayInEastern(dateKey: string): number {
+  const [year, month, day] = dateKey.split("-").map(Number);
+  for (let hour = 12; hour <= 20; hour += 1) {
+    const probe = new Date(Date.UTC(year, month - 1, day, hour));
+    if (getDailyDateKey(probe) === dateKey) {
+      const weekday = new Intl.DateTimeFormat("en-US", {
+        timeZone: DAILY_TIMEZONE,
+        weekday: "short",
+      }).format(probe);
+      return WEEKDAY_INDEX[weekday] ?? 0;
+    }
+  }
+  return 0;
+}
+
+export function getDailyCalendarParts(date = new Date()) {
+  const dateKey = getDailyDateKey(date);
+  const [year, month, day] = dateKey.split("-").map(Number);
+  const monthShort = new Intl.DateTimeFormat("en-US", {
+    timeZone: DAILY_TIMEZONE,
+    month: "short",
+  })
+    .format(date)
+    .toUpperCase();
+
+  return {
+    dateKey,
+    monthShort,
+    day,
+    daysInMonth: new Date(year, month, 0).getDate(),
+    firstWeekday: getWeekdayInEastern(`${year}-${String(month).padStart(2, "0")}-01`),
+  };
+}
+
 export function hasPlayedDailyToday(
   playedDates: string[] | undefined,
   scope: GameScope = "world",
@@ -490,6 +592,33 @@ export function offsetDailyDateKey(dateKey: string, dayOffset: number): string {
   const base = dateKeyToEstMidday(dateKey);
   base.setUTCDate(base.getUTCDate() + dayOffset);
   return getDailyDateKey(base);
+}
+
+export function getMillisecondsUntilDailyReset(now = new Date()): number {
+  const todayKey = getDailyDateKey(now);
+  const probe = new Date(now.getTime());
+  probe.setSeconds(0, 0);
+  probe.setMinutes(probe.getMinutes() + 1);
+
+  const limit = now.getTime() + 25 * 60 * 60 * 1000;
+  while (probe.getTime() < limit) {
+    if (getDailyDateKey(probe) !== todayKey) {
+      return probe.getTime() - now.getTime();
+    }
+    probe.setMinutes(probe.getMinutes() + 1);
+  }
+  return 0;
+}
+
+export function formatDailyResetCountdown(ms: number): string {
+  if (ms <= 0) return "Soon";
+  const totalSeconds = Math.floor(ms / 1000);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  if (hours > 0) return `${hours}h ${minutes}m`;
+  if (minutes > 0) return `${minutes}m ${seconds}s`;
+  return `${seconds}s`;
 }
 
 export function getDailyChallengeRun(
