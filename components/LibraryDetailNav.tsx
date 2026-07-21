@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LibrarySearch } from "@/components/LibrarySearch";
 import {
   buildLibraryDetailHref,
   buildLibraryListHref,
@@ -33,12 +34,19 @@ export function LibraryDetailNav({
   const positionLabel = index >= 0 && total > 0 ? `${index + 1} of ${total}` : null;
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3">
-      <Link href={buildLibraryListHref(scope, filter)} className={navButtonClass}>
+    <div className="flex items-center gap-2 sm:gap-3">
+      <Link href={buildLibraryListHref(scope, filter)} className={`${navButtonClass} shrink-0`}>
         {isState ? "← All states" : "← All countries"}
       </Link>
 
-      <div className="flex items-center gap-2 sm:gap-3">
+      <LibrarySearch
+        scope={scope}
+        filter={filter}
+        isState={isState}
+        className="min-w-0 flex-1"
+      />
+
+      <div className="flex shrink-0 items-center gap-2 sm:gap-3">
         {positionLabel ? (
           <p className="hidden text-sm font-semibold tabular-nums text-slate-500 dark:text-slate-400 sm:block">
             {positionLabel}

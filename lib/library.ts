@@ -1,4 +1,5 @@
 import { getPlacesForScope, getRegionsForScope } from "@/lib/countries";
+import { normalizeAnswerText } from "@/lib/answer-matcher";
 import type { Country, GameScope, Region } from "@/lib/types";
 
 export type LibraryFilter = "All" | Region;
@@ -24,6 +25,40 @@ export function getFilteredLibraryPlaces(
   return getPlacesForScope(scope)
     .filter((place) => filter === "All" || place.continent === filter)
     .toSorted((a, b) => a.name.localeCompare(b.name));
+}
+
+function getSearchableTexts(place: Country): string[] {
+  return [
+    place.name,
+    place.officialName,
+    place.code,
+    place.code3,
+    ...(place.aliases ?? []),
+  ].map(normalizeAnswerText);
+}
+
+/** Prefix matches rank above substring matches; searches the full scope pool. */
+export function searchLibraryPlaces(
+  scope: GameScope,
+  query: string,
+  limit = 8,
+): Country[] {
+  const normalizedQuery = normalizeAnswerText(query);
+  if (!normalizedQuery) return [];
+
+  return getPlacesForScope(scope)
+    .filter((place) =>
+      getSearchableTexts(place).some((text) => text.includes(normalizedQuery)),
+    )
+    .toSorted((a, b) => {
+      const aName = normalizeAnswerText(a.name);
+      const bName = normalizeAnswerText(b.name);
+      const aStarts = aName.startsWith(normalizedQuery) ? 0 : 1;
+      const bStarts = bName.startsWith(normalizedQuery) ? 0 : 1;
+      if (aStarts !== bStarts) return aStarts - bStarts;
+      return a.name.localeCompare(b.name);
+    })
+    .slice(0, limit);
 }
 
 export function getLibraryNeighbors(

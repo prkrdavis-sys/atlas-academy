@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { FlagImage } from "@/components/FlagDisplay";
 import { LibraryPlaceVisual } from "@/components/LibraryPlaceVisual";
+import { LibrarySearch } from "@/components/LibrarySearch";
 import { getRegionsForScope } from "@/lib/countries";
 import {
   buildLibraryDetailHref,
@@ -92,6 +93,13 @@ export function LibraryBrowser({ scope = "world" }: LibraryBrowserProps) {
           })}
         </div>
       </header>
+
+      <LibrarySearch
+        scope={scope}
+        filter={filter}
+        isState={isUsa}
+        className="w-full max-w-xl"
+      />
 
       <section aria-labelledby="library-filter-heading">
         <div className="mb-3 flex items-end justify-between gap-4">
