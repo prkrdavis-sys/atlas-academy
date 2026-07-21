@@ -536,18 +536,19 @@ export function GameBoard({
 
       <div className="relative z-50 shrink-0 px-0.5 py-1.5 sm:px-1 sm:py-2">
         <div className="flex items-center justify-between gap-1.5 sm:grid sm:grid-cols-[auto_minmax(0,1fr)_minmax(0,auto)] sm:items-center sm:gap-2">
-          <button
-            type="button"
+          <Button
+            variant="secondary"
+            size="sm"
             onClick={(e) => {
               e.stopPropagation();
               router.push("/");
             }}
             aria-label="Exit this round and return home"
-            className="inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-2xl border-2 border-slate-800 bg-slate-800 px-3 py-1.5 text-sm font-extrabold text-white shadow-[0_3px_0_var(--color-slate-950)] transition-all duration-100 hover:border-slate-700 hover:bg-slate-700 active:translate-y-[3px] active:shadow-none sm:px-4"
+            className="min-h-10 shrink-0 gap-1.5 font-extrabold sm:px-4"
           >
             <span aria-hidden>←</span>
             <span>Exit</span>
-          </button>
+          </Button>
           <div className="hidden min-w-0 px-1 text-center leading-tight sm:block">
             {roundTitlePanel}
           </div>
