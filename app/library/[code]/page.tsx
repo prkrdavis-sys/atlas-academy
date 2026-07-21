@@ -89,7 +89,13 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
 
   return (
     <article className="space-y-5 sm:space-y-7">
-      <Suspense fallback={<div className="h-11 animate-pulse rounded-full bg-slate-200/70 dark:bg-slate-800/70" />}>
+      <Suspense
+        fallback={
+          <div className="-mx-4 h-[3.75rem] animate-pulse px-4 py-2 max-sm:bg-white/85 max-sm:backdrop-blur-xl max-sm:dark:bg-slate-900/85 sm:mx-0 sm:h-11 sm:px-0 sm:py-0">
+            <div className="h-11 rounded-full bg-slate-200/70 dark:bg-slate-800/70" />
+          </div>
+        }
+      >
         <LibraryDetailNav
           scope={scope}
           filter={filter}
