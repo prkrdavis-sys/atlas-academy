@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { FlagImage } from "@/components/FlagDisplay";
 import { LibraryDetailNav } from "@/components/LibraryDetailNav";
+import { LibraryPlaceMapSection } from "@/components/LibraryPlaceMapSection";
 import { LibraryPlaceVisual } from "@/components/LibraryPlaceVisual";
 import {
   countries,
@@ -91,7 +92,7 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
     <article className="space-y-5 sm:space-y-7">
       <Suspense
         fallback={
-          <div className="-mx-4 h-[3.75rem] animate-pulse px-4 py-2 max-sm:bg-white/85 max-sm:backdrop-blur-xl max-sm:dark:bg-slate-900/85 sm:mx-0 sm:h-11 sm:px-0 sm:py-0">
+          <div className="-mx-4 h-[3.75rem] animate-pulse px-4 py-2 sm:mx-0 sm:px-0">
             <div className="h-11 rounded-full bg-slate-200/70 dark:bg-slate-800/70" />
           </div>
         }
@@ -173,6 +174,8 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
           ))}
         </dl>
       </section>
+
+      <LibraryPlaceMapSection country={country} />
 
       <section aria-labelledby="neighbors-heading">
         <h2 id="neighbors-heading" className="mb-3 font-display text-xl font-extrabold text-slate-800 dark:text-slate-100">

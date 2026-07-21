@@ -12,11 +12,13 @@
     "fetch-state-flags": "bash scripts/fetch-state-flags.sh",
     "generate-state-shapes": "tsx scripts/generate-state-shapes.ts",
     "generate-supplemental-shapes": "tsx scripts/generate-supplemental-shapes.ts",
+    "generate-context-maps": "tsx scripts/generate-context-maps.ts",
     "fetch-capital-images": "tsx scripts/fetch-capital-images.ts",
     "refresh-capital-images": "tsx scripts/fetch-capital-images.ts --refresh",
     "verify-integrity": "tsx scripts/verify-game-integrity.ts"
   },
   "dependencies": {
+    "@panzoom/panzoom": "^4.6.2",
     "@vercel/analytics": "^2.0.1",
     "clsx": "^2.1.1",
     "flag-icons": "^7.5.0",

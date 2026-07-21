@@ -10,6 +10,7 @@ import { join } from "node:path";
 import { GameEngine } from "../lib/game-engine";
 import { normalizeAnswerText } from "../lib/answer-matcher";
 import { countries, getCountryByCode, usStates } from "../lib/countries";
+import { CONTEXT_MAP_TEMPLATES } from "../lib/context-maps";
 import {
   CONTINENTS,
   US_REGIONS,
@@ -37,6 +38,16 @@ for (const c of [...countries, ...usStates]) {
     fail(`${c.name}: hasCapitalImage but capital image missing`);
   }
   if (c.shapeQuizEligible && !c.hasShape) fail(`${c.name}: shapeQuizEligible without shape`);
+}
+
+for (const template of CONTEXT_MAP_TEMPLATES) {
+  if (!existsSync(join("public", "maps", `${template}.svg`))) {
+    fail(`Missing context map template: public/maps/${template}.svg`);
+  }
+}
+
+if (!existsSync(join("public", "maps", "bounds.json"))) {
+  fail("Missing context map bounds manifest: public/maps/bounds.json");
 }
 
 const MODES: GameMode[] = [

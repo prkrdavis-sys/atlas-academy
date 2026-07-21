@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Analytics } from "@vercel/analytics/next";
+import { AppAnalytics } from "@/components/AppAnalytics";
 import { Geist, Geist_Mono, Nunito } from "next/font/google";
 import { AppShell } from "@/components/AppShell";
 import { ProfileProvider } from "@/components/ProfileProvider";
@@ -62,7 +62,7 @@ export default function RootLayout({
             <AppShell>{children}</AppShell>
           </ProfileProvider>
         </ThemeProvider>
-        <Analytics />
+        <AppAnalytics />
       </body>
     </html>
   );

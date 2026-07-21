@@ -13,7 +13,10 @@ function ExtrasPageFallback() {
           />
         ))}
       </div>
-      <div className="h-44 animate-pulse rounded-2xl bg-slate-200/70 dark:bg-slate-800/70" />
+      <div className="grid gap-3 sm:gap-4">
+        <div className="h-44 animate-pulse rounded-2xl bg-slate-200/70 dark:bg-slate-800/70" />
+        <div className="h-44 animate-pulse rounded-2xl bg-slate-200/70 dark:bg-slate-800/70" />
+      </div>
     </div>
   );
 }

@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { FlagImage } from "@/components/FlagDisplay";
+import { PlaceContextMap } from "@/components/PlaceContextMap";
 import {
   getCountryByCode,
   getShapePath,
@@ -17,6 +18,7 @@ type LearnCardProps = {
   wasCorrect: boolean;
   compareCountryCode?: string;
   heading?: ReactNode;
+  highlightNeighbors?: boolean;
   /** Embedded in the game panel between the header and answer choices. */
   variant?: "default" | "inline";
 };
@@ -128,6 +130,7 @@ function InlineLearnCard({
   heading,
   compareCountryCode,
   countryCode,
+  highlightNeighbors = false,
 }: {
   country: NonNullable<ReturnType<typeof getCountryByCode>>;
   isState: boolean;
@@ -135,6 +138,7 @@ function InlineLearnCard({
   heading?: ReactNode;
   compareCountryCode?: string;
   countryCode: string;
+  highlightNeighbors?: boolean;
 }) {
   return (
     <div
@@ -207,8 +211,13 @@ function InlineLearnCard({
           </div>
         </dl>
 
-        {country.hasShape && (
-          <div className="mt-3 w-full shrink-0 pb-1">
+        <div className="mt-3 w-full shrink-0 space-y-3 pb-1">
+          <PlaceContextMap
+            country={country}
+            variant="compact"
+            highlightNeighbors={highlightNeighbors}
+          />
+          {country.hasShape ? (
             <div className="flex min-h-[4.5rem] w-full items-center justify-center rounded-2xl border border-slate-200 bg-gradient-to-b from-sky-50 to-white px-3 py-3 dark:border-slate-700 dark:from-slate-800 dark:to-slate-900">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -217,8 +226,8 @@ function InlineLearnCard({
                 className="h-auto max-h-24 w-full max-w-full object-contain object-center [filter:brightness(0)] dark:[filter:brightness(0)_invert(1)]"
               />
             </div>
-          </div>
-        )}
+          ) : null}
+        </div>
       </div>
 
       <div
@@ -281,8 +290,14 @@ function InlineLearnCard({
           </dl>
         </div>
 
-        {country.hasShape && (
-          <div className="flex items-center justify-center">
+        {country.hasShape ? (
+          <div className="flex flex-col items-center justify-center gap-2">
+            <PlaceContextMap
+              country={country}
+              variant="compact"
+              highlightNeighbors={highlightNeighbors}
+              className="w-full"
+            />
             <div className="flex h-24 w-28 items-center justify-center rounded-xl border border-slate-200 bg-gradient-to-b from-sky-50 to-white p-2 dark:border-slate-700 dark:from-slate-800 dark:to-slate-900 lg:h-28 lg:w-32">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -292,6 +307,13 @@ function InlineLearnCard({
               />
             </div>
           </div>
+        ) : (
+          <PlaceContextMap
+            country={country}
+            variant="compact"
+            highlightNeighbors={highlightNeighbors}
+            className="w-full"
+          />
         )}
       </div>
 
@@ -307,6 +329,7 @@ export function LearnCard({
   wasCorrect,
   compareCountryCode,
   heading,
+  highlightNeighbors = false,
   variant = "default",
 }: LearnCardProps) {
   const country = getCountryByCode(countryCode);
@@ -322,6 +345,7 @@ export function LearnCard({
         heading={heading}
         compareCountryCode={compareCountryCode}
         countryCode={countryCode}
+        highlightNeighbors={highlightNeighbors}
       />
     );
   }
@@ -348,18 +372,25 @@ export function LearnCard({
             compareCountryCode={compareCountryCode}
           />
         )}
-        {country.hasShape && (
-          <div className="mb-4 flex justify-center">
-            <div className="flex h-28 w-full max-w-xs items-center justify-center rounded-2xl border border-slate-200 bg-gradient-to-b from-sky-50 to-white p-4 dark:border-slate-700 dark:from-slate-800 dark:to-slate-900 sm:h-32">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={getShapePath(country.code3)}
-                alt={`Outline of ${country.name}`}
-                className="max-h-full max-w-full object-contain [filter:brightness(0)] dark:[filter:brightness(0)_invert(1)]"
-              />
+        <div className="mb-4 space-y-3">
+          <PlaceContextMap
+            country={country}
+            variant="compact"
+            highlightNeighbors={highlightNeighbors}
+          />
+          {country.hasShape ? (
+            <div className="flex justify-center">
+              <div className="flex h-28 w-full max-w-xs items-center justify-center rounded-2xl border border-slate-200 bg-gradient-to-b from-sky-50 to-white p-4 dark:border-slate-700 dark:from-slate-800 dark:to-slate-900 sm:h-32">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={getShapePath(country.code3)}
+                  alt={`Outline of ${country.name}`}
+                  className="max-h-full max-w-full object-contain [filter:brightness(0)] dark:[filter:brightness(0)_invert(1)]"
+                />
+              </div>
             </div>
-          </div>
-        )}
+          ) : null}
+        </div>
         <div
           className={
             country.hasFlag

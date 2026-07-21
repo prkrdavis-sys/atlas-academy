@@ -223,6 +223,8 @@ export function getCapitalPath(code: string): string {
   return `/capitals/${code.toLowerCase()}.jpg`;
 }
 
+export { getContextMapPathIds, getContextMapTemplatePath } from "@/lib/context-maps";
+
 export function formatPopulation(population: number): string {
   return new Intl.NumberFormat("en-US").format(population);
 }

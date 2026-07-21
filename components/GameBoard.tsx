@@ -489,6 +489,7 @@ export function GameBoard({
     wasCorrect: lastCorrect,
     compareCountryCode:
       question.mode === "population-showdown" ? question.secondaryCountryCode : undefined,
+    highlightNeighbors: question.mode === "neighbor-quiz",
   };
   const inlineLearnCard = (
     <LearnCard {...learnCardProps} variant="inline" />

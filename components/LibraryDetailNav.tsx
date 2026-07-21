@@ -53,34 +53,25 @@ export function LibraryDetailNav({
     const sentinel = sentinelRef.current;
     if (!sentinel) return;
 
-    const mobileQuery = window.matchMedia("(max-width: 639px)");
     const observer = new IntersectionObserver(
       ([entry]) => {
-        setIsPinned(mobileQuery.matches && !entry.isIntersecting);
+        setIsPinned(!entry.isIntersecting);
       },
       { threshold: 0 },
     );
 
-    const handleViewportChange = () => {
-      if (!mobileQuery.matches) setIsPinned(false);
-    };
-
     observer.observe(sentinel);
-    mobileQuery.addEventListener("change", handleViewportChange);
-    return () => {
-      observer.disconnect();
-      mobileQuery.removeEventListener("change", handleViewportChange);
-    };
+    return () => observer.disconnect();
   }, []);
 
   return (
     <>
-      <div ref={sentinelRef} className="pointer-events-none -mb-2 h-px sm:hidden" aria-hidden />
+      <div ref={sentinelRef} className="pointer-events-none -mb-2 h-px" aria-hidden />
       <div
         className={cn(
-          "relative z-30 -mx-4 px-4 py-2 transition-[background-color,border-color,box-shadow] duration-200 max-sm:sticky max-sm:top-[var(--app-header-offset)] sm:static sm:mx-0 sm:px-0 sm:py-0",
+          "relative z-30 -mx-4 sticky top-[var(--app-header-offset)] px-4 py-2 transition-[background-color,border-color,box-shadow] duration-200 sm:mx-0 sm:px-0",
           isPinned &&
-            "max-sm:border-b max-sm:border-teal-900/10 max-sm:bg-white/85 max-sm:backdrop-blur-xl max-sm:dark:border-slate-700/50 max-sm:dark:bg-slate-900/85",
+            "border-b border-teal-900/10 bg-white/85 backdrop-blur-xl dark:border-slate-700/50 dark:bg-slate-900/85",
         )}
       >
         <div className="flex items-center gap-2 sm:gap-3">
