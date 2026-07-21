@@ -6,6 +6,8 @@ import { cn } from "@/lib/utils";
 
 export type FlagFrameVariant = "none" | "sm" | "md" | "lg" | "pill";
 
+type FlagFit = "intrinsic" | "cover";
+
 type FlagImageProps = {
   code: string;
   alt: string;
@@ -15,6 +17,8 @@ type FlagImageProps = {
   className?: string;
   /** Which axis is set via className — the other is set to auto for correct aspect ratio. */
   constrainedAxis?: "width" | "height";
+  /** Cover fills a uniform 3:2 frame — use in grids so mixed SVG ratios stay consistent. */
+  fit?: FlagFit;
   priority?: boolean;
 };
 
@@ -33,19 +37,32 @@ export function FlagImage({
   frame = "none",
   className,
   constrainedAxis = "width",
+  fit = "intrinsic",
   priority,
 }: FlagImageProps) {
-  const image = (
-    <Image
-      src={getFlagPath(code)}
-      alt={alt}
-      width={width}
-      height={Math.round(width * 0.75)}
-      className={cn("block max-w-full", className)}
-      style={constrainedAxis === "width" ? { height: "auto" } : { width: "auto" }}
-      priority={priority}
-    />
-  );
+  const image =
+    fit === "cover" ? (
+      <span className={cn("relative block aspect-[3/2] w-full overflow-hidden", className)}>
+        <Image
+          src={getFlagPath(code)}
+          alt={alt}
+          fill
+          className="object-cover"
+          sizes="(max-width: 768px) 45vw, (max-width: 1024px) 22vw, 18rem"
+          priority={priority}
+        />
+      </span>
+    ) : (
+      <Image
+        src={getFlagPath(code)}
+        alt={alt}
+        width={width}
+        height={Math.round(width * 0.75)}
+        className={cn("block max-w-full", className)}
+        style={constrainedAxis === "width" ? { height: "auto" } : { width: "auto" }}
+        priority={priority}
+      />
+    );
 
   if (frame === "none") {
     return image;
@@ -87,10 +104,19 @@ export function FlagGrid({
 }) {
   const flagWidth = compact ? 160 : 200;
   const gridCols = codes.length >= 6 ? "grid-cols-3" : "grid-cols-2";
+  const gridMaxWidth =
+    codes.length >= 6
+      ? "max-w-[min(100cqw,22rem)] md:max-w-[min(100cqw,40rem)] lg:max-w-[min(100cqw,44rem)]"
+      : "max-w-[min(100cqw,22rem)] md:max-w-[min(100cqw,34rem)] lg:max-w-[min(100cqw,38rem)]";
   return (
-    <div className="flex h-full w-full min-h-0 items-center justify-center">
+    <div className="flex h-full w-full min-h-0 items-center justify-center md:py-4">
       <div
-        className={`grid w-full max-w-[min(100cqw,22rem)] ${gridCols} items-start ${compact ? "gap-2" : "gap-3"}`}
+        className={cn(
+          "grid w-full",
+          gridMaxWidth,
+          gridCols,
+          compact ? "gap-2 md:gap-4" : "gap-3 md:gap-5",
+        )}
       >
         {codes.map((code) => {
           const isCorrect = revealed && correctCode === code;
@@ -101,12 +127,12 @@ export function FlagGrid({
               <div
                 key={code}
                 className={cn(
-                  "block overflow-hidden rounded-xl bg-white p-0 leading-none shadow-[0_3px_0_var(--color-slate-200)] dark:bg-slate-800 dark:shadow-[0_3px_0_var(--color-slate-700)]",
+                  "block w-full overflow-hidden rounded-xl border-2 bg-white p-0 leading-none shadow-[0_3px_0_var(--color-slate-200)] dark:bg-slate-800 dark:shadow-[0_3px_0_var(--color-slate-700)]",
                   isCorrect
-                    ? "border-4 border-emerald-400 bg-emerald-50 shadow-[0_3px_0_var(--color-emerald-300)] dark:border-emerald-500 dark:bg-emerald-950/50 dark:shadow-[0_3px_0_var(--color-emerald-800)]"
+                    ? "border-emerald-400 bg-emerald-50 shadow-[0_3px_0_var(--color-emerald-300)] ring-2 ring-inset ring-emerald-300 dark:border-emerald-500 dark:bg-emerald-950/50 dark:shadow-[0_3px_0_var(--color-emerald-800)] dark:ring-emerald-700"
                     : isIncorrect
-                      ? "border-4 border-rose-400 bg-rose-50 shadow-[0_3px_0_var(--color-rose-300)] dark:border-rose-500 dark:bg-rose-950/50 dark:shadow-[0_3px_0_var(--color-rose-800)]"
-                      : "border-2 border-slate-200 dark:border-slate-600",
+                      ? "border-rose-400 bg-rose-50 shadow-[0_3px_0_var(--color-rose-300)] ring-2 ring-inset ring-rose-300 dark:border-rose-500 dark:bg-rose-950/50 dark:shadow-[0_3px_0_var(--color-rose-800)] dark:ring-rose-700"
+                      : "border-slate-200 dark:border-slate-600",
                 )}
                 aria-hidden
               >
@@ -114,7 +140,7 @@ export function FlagGrid({
                   code={code}
                   alt={`Flag option ${code}`}
                   width={flagWidth}
-                  className="w-full"
+                  fit="cover"
                 />
               </div>
             ) : (
@@ -122,13 +148,13 @@ export function FlagGrid({
                 key={code}
                 type="button"
                 onClick={() => onSelect(code)}
-                className="block overflow-hidden rounded-xl border-2 border-slate-200 bg-white p-0 leading-none shadow-[0_3px_0_var(--color-slate-200)] transition-all duration-100 hover:border-sky-300 active:translate-y-[3px] active:shadow-none dark:border-slate-600 dark:bg-slate-800 dark:shadow-[0_3px_0_var(--color-slate-700)] dark:hover:border-sky-500"
+                className="block w-full overflow-hidden rounded-xl border-2 border-slate-200 bg-white p-0 leading-none shadow-[0_3px_0_var(--color-slate-200)] transition-all duration-100 hover:border-sky-300 active:translate-y-[3px] active:shadow-none dark:border-slate-600 dark:bg-slate-800 dark:shadow-[0_3px_0_var(--color-slate-700)] dark:hover:border-sky-500"
               >
                 <FlagImage
                   code={code}
                   alt={`Flag option ${code}`}
                   width={flagWidth}
-                  className="w-full"
+                  fit="cover"
                 />
               </button>
             )

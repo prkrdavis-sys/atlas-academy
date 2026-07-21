@@ -36,7 +36,7 @@ export function PopulationMatchupDisplay({ codes }: PopulationMatchupDisplayProp
                   alt=""
                   width={160}
                   frame="none"
-                  className="w-full"
+                  fit="cover"
                 />
               </div>
             </div>

@@ -16,7 +16,7 @@ import { StreakCounter } from "@/components/StreakCounter";
 import { GameActionButton } from "@/components/GameActionButton";
 import { Button } from "@/components/ui/Button";
 import { useProfiles, useRequiredProfile } from "@/components/ProfileProvider";
-import { getCountryName } from "@/lib/countries";
+import { getCountryName, getCountryByCode } from "@/lib/countries";
 import { GameEngine, formatDailyDate } from "@/lib/game-engine";
 import {
   checkAchievements,
@@ -26,23 +26,8 @@ import {
   recordDailyChallengeCompletion,
 } from "@/lib/storage";
 import { getGlobalStreakOrZero } from "@/lib/stats-helpers";
-import { scopeText, SCOPE_INFO } from "@/lib/scope";
+import { getQuestionTaskLabel, getTypeInPlacePlaceholder, scopeText, SCOPE_INFO } from "@/lib/scope";
 import type { Difficulty, GameMode, GameScope, Question, Region, RoundQuestionSetting, SpeedRoundQuestionType } from "@/lib/types";
-
-const ROUND_TASK_LABELS: Record<GameMode, string> = {
-  "flag-to-country": "Name the country",
-  "shape-to-country": "Name the country",
-  "capital-to-country": "Name the country",
-  "country-to-capital": "Name the capital",
-  "country-to-flag": "Pick the flag",
-  "neighbor-quiz": "Find the neighbor",
-  "population-showdown": "Pick the larger population",
-  "daily-challenge": "Daily challenge",
-  marathon: "Keep your streak alive",
-  "speed-round": "Beat the clock",
-  mixed: "All types, shuffled",
-  "weak-spots": "Practice missed countries",
-};
 
 type GameBoardProps = {
   mode: GameMode;
@@ -470,12 +455,12 @@ export function GameBoard({
 
   if (!question) return null;
 
-  const roundTaskLabel = scopeText(
-    mode === "speed-round" || mode === "mixed" || mode === "marathon"
-      ? ROUND_TASK_LABELS[question.mode]
-      : ROUND_TASK_LABELS[mode],
-    scope,
-  );
+  const answerCode =
+    question.mode === "neighbor-quiz" || question.mode === "population-showdown"
+      ? question.correctCode ?? question.countryCode
+      : question.countryCode;
+  const answerPlace = getCountryByCode(answerCode);
+  const roundTaskLabel = getQuestionTaskLabel(question, mode, scope, answerPlace);
   const dailyDateLabel = mode === "daily-challenge" ? formatDailyDate() : null;
   const isTextOnlyPrompt =
     (question.mode === "country-to-capital" && question.displayType === "text") ||
@@ -492,7 +477,9 @@ export function GameBoard({
     question.mode === "neighbor-quiz" ? (
       <>
         <span className="font-black">{getCountryName(question.countryCode)}</span>
-        <span className="font-bold opacity-95">&apos;s neighbor is </span>
+        <span className="font-bold opacity-95">
+          {answerPlace?.isTerritory ? "&apos;s neighboring territory is " : "&apos;s neighbor is "}
+        </span>
         <span className="font-black">{question.correctAnswer}</span>
       </>
     ) : undefined;
@@ -711,7 +698,7 @@ export function GameBoard({
                 placeholder={
                   question.mode === "country-to-capital"
                     ? "Type the capital..."
-                    : scopeText("Type the country...", scope)
+                    : getTypeInPlacePlaceholder(scope, answerPlace?.isTerritory ?? false)
                 }
               />
             ) : question.options ? (

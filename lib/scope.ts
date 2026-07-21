@@ -1,5 +1,7 @@
-import type { GameMode, GameScope } from "@/lib/types";
+import type { Country, GameMode, GameScope, Question } from "@/lib/types";
 import { GAME_MODES } from "@/lib/types";
+
+type PlaceLike = Pick<Country, "isTerritory">;
 
 export const SCOPE_STORAGE_KEY = "atlas-academy-scope";
 export const LIBRARY_SCOPE_STORAGE_KEY = "atlas-academy-library-scope";
@@ -79,6 +81,134 @@ export function scopeText(text: string, scope: GameScope): string {
     .replace(/Countries/g, "States")
     .replace(/country/g, "state")
     .replace(/Country/g, "State");
+}
+
+export function getPlaceNoun(scope: GameScope, isTerritory = false): {
+  lower: string;
+  upper: string;
+  plural: string;
+} {
+  if (scope === "usa") {
+    return { lower: "state", upper: "State", plural: "states" };
+  }
+  if (isTerritory) {
+    return { lower: "territory", upper: "Territory", plural: "territories" };
+  }
+  return { lower: "country", upper: "Country", plural: "countries" };
+}
+
+/**
+ * Rewords country-centric copy for the active scope and, in world mode,
+ * swaps country/countries to territory/territories when the place is a territory.
+ */
+export function placeText(text: string, scope: GameScope, place?: PlaceLike): string {
+  if (scope === "usa") return scopeText(text, scope);
+  if (!place?.isTerritory) return text;
+  return text
+    .replace(/\bcountries\b/g, "territories")
+    .replace(/\bCountries\b/g, "Territories")
+    .replace(/\bcountry\b/g, "territory")
+    .replace(/\bCountry\b/g, "Territory");
+}
+
+export function buildCapitalPrompt(country: Country, scope: GameScope): string {
+  if (scope === "usa") {
+    return `What is the capital of ${country.name}?`;
+  }
+  if (country.isTerritory) {
+    return `What is the capital of the territory of ${country.name}?`;
+  }
+  return `What is the capital of ${country.name}?`;
+}
+
+export function buildFlagFromPlacePrompt(country: Country, scope: GameScope): string {
+  if (scope === "usa") {
+    return scopeText(`Which flag belongs to ${country.name}?`, scope);
+  }
+  if (country.isTerritory) {
+    return `Which flag belongs to the territory of ${country.name}?`;
+  }
+  return `Which flag belongs to ${country.name}?`;
+}
+
+export function buildNeighborPrompt(
+  country: Country,
+  neighbor: Country | undefined,
+  scope: GameScope,
+): string {
+  if (scope === "usa") {
+    return scopeText(`Which state borders ${country.name}?`, scope);
+  }
+
+  const answerNoun = getPlaceNoun(scope, neighbor?.isTerritory ?? false).lower;
+  if (country.isTerritory) {
+    return `Which ${answerNoun} borders the territory of ${country.name}?`;
+  }
+  return `Which ${answerNoun} borders ${country.name}?`;
+}
+
+export function getNamePlaceTaskLabel(scope: GameScope, isTerritory: boolean): string {
+  return scopeText(
+    isTerritory && scope === "world" ? "Name the territory" : "Name the country",
+    scope,
+  );
+}
+
+export function getTypeInPlacePlaceholder(scope: GameScope, isTerritory: boolean): string {
+  return scopeText(
+    isTerritory && scope === "world" ? "Type the territory..." : "Type the country...",
+    scope,
+  );
+}
+
+export function getQuestionTaskLabel(
+  question: Question,
+  sessionMode: GameMode,
+  scope: GameScope,
+  place?: PlaceLike | null,
+): string {
+  if (sessionMode === "weak-spots") {
+    return scopeText(
+      scope === "world" ? "Practice missed countries and territories" : "Practice missed countries",
+      scope,
+    );
+  }
+  if (sessionMode === "daily-challenge") {
+    return "Daily challenge";
+  }
+
+  const effectiveMode =
+    sessionMode === "speed-round" || sessionMode === "mixed" || sessionMode === "marathon"
+      ? question.mode
+      : sessionMode;
+  const isTerritory = scope === "world" && (place?.isTerritory ?? false);
+
+  switch (effectiveMode) {
+    case "flag-to-country":
+    case "shape-to-country":
+    case "capital-to-country":
+      return getNamePlaceTaskLabel(scope, isTerritory);
+    case "country-to-flag":
+      return isTerritory ? "Pick the territory's flag" : "Pick the flag";
+    case "neighbor-quiz":
+      return isTerritory ? "Find the neighboring territory" : "Find the neighbor";
+    case "population-showdown":
+      return isTerritory ? "Pick the larger territory" : "Pick the larger population";
+    case "country-to-capital":
+      return "Name the capital";
+    case "marathon":
+      return "Keep your streak alive";
+    case "speed-round":
+      return "Beat the clock";
+    case "mixed":
+      return "All types, shuffled";
+    case "daily-challenge":
+      return "Daily challenge";
+    default: {
+      const _exhaustive: never = effectiveMode;
+      return _exhaustive;
+    }
+  }
 }
 
 export function getScopedModeInfo(mode: GameMode, scope: GameScope) {

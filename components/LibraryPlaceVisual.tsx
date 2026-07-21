@@ -78,7 +78,7 @@ export function LibraryPlaceVisual({
           alt={variant === "hero" ? `Flag of ${country.name}` : ""}
           width={width}
           frame={variant === "hero" ? "lg" : "md"}
-          className={variant === "hero" ? "w-[min(100%,17.5rem)]" : "w-[min(100%,11rem)] transition-transform group-hover:scale-105"}
+          className={variant === "hero" ? "w-[min(100%,21rem)]" : "w-[min(100%,11rem)] transition-transform group-hover:scale-105"}
           priority={variant === "hero"}
         />
       </div>

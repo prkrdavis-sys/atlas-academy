@@ -22,7 +22,13 @@ import {
   type RoundQuestionSetting,
   type SpeedRoundQuestionType,
 } from "@/lib/types";
-import { filterDailyDatesByScope, scopeText } from "@/lib/scope";
+import {
+  buildCapitalPrompt,
+  buildFlagFromPlacePrompt,
+  buildNeighborPrompt,
+  filterDailyDatesByScope,
+  placeText,
+} from "@/lib/scope";
 import { getCapitalCityDistractors } from "@/lib/city-distractors";
 import { uniqueBy } from "@/lib/utils";
 
@@ -341,7 +347,7 @@ export class GameEngine {
           id,
           mode: mode === "marathon" || mode === "weak-spots" ? mode : "flag-to-country",
           countryCode: country.code,
-          prompt: scopeText("Which country does this flag belong to?", this.scope),
+          prompt: placeText("Which country does this flag belong to?", this.scope, country),
           correctAnswer: country.name,
           correctCode: country.code,
           displayType: "flag",
@@ -357,11 +363,12 @@ export class GameEngine {
           id,
           mode,
           countryCode: country.code,
-          prompt: scopeText(
+          prompt: placeText(
             country.hasCapitalImage
               ? "What country has this capital?"
               : `What country has ${country.capital} as its capital?`,
             this.scope,
+            country,
           ),
           correctAnswer: country.name,
           correctCode: country.code,
@@ -378,7 +385,7 @@ export class GameEngine {
           id,
           mode,
           countryCode: country.code,
-          prompt: `What is the capital of ${country.name}?`,
+          prompt: buildCapitalPrompt(country, this.scope),
           correctAnswer: country.capital,
           correctCode: country.code,
           displayType: country.hasFlag ? "flag" : "text",
@@ -394,7 +401,7 @@ export class GameEngine {
           id,
           mode,
           countryCode: country.code,
-          prompt: scopeText("Which country matches this shape?", this.scope),
+          prompt: placeText("Which country matches this shape?", this.scope, country),
           correctAnswer: country.name,
           correctCode: country.code,
           displayType: "shape",
@@ -408,7 +415,7 @@ export class GameEngine {
           id,
           mode,
           countryCode: country.code,
-          prompt: `Which flag belongs to ${country.name}?`,
+          prompt: buildFlagFromPlacePrompt(country, this.scope),
           correctAnswer: country.code,
           correctCode: country.code,
           displayType: "flags-grid",
@@ -424,7 +431,7 @@ export class GameEngine {
           id,
           mode,
           countryCode: country.code,
-          prompt: scopeText(`Which country borders ${country.name}?`, this.scope),
+          prompt: buildNeighborPrompt(country, neighbor, this.scope),
           correctAnswer: neighbor?.name ?? "",
           correctCode: neighborCode,
           displayType: "text",
@@ -448,7 +455,7 @@ export class GameEngine {
           mode,
           countryCode: correct.code,
           secondaryCountryCode: correct.code === country.code ? other.code : country.code,
-          prompt: scopeText("Which country has more people?", this.scope),
+          prompt: placeText("Which country has more people?", this.scope, correct),
           correctAnswer: correct.name,
           correctCode: correct.code,
           displayType: "population",

@@ -99,35 +99,53 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
 
       <header className="overflow-hidden rounded-[1.75rem] border-2 border-teal-100 bg-white/85 shadow-sm backdrop-blur dark:border-teal-900/70 dark:bg-slate-900/85">
         <div className="grid gap-6 p-5 sm:grid-cols-[minmax(0,1fr)_minmax(16rem,0.8fr)] sm:items-center sm:p-8">
-          <div>
-            <div className="flex items-center gap-3">
-              {country.hasFlag ? (
+          <div className="relative min-w-0">
+            <p className="text-sm font-bold text-teal-700 dark:text-teal-300">{country.continent}</p>
+            {country.hasFlag && country.hasShape ? (
+              <div className="pointer-events-none absolute right-0 top-0 hidden max-w-[42%] sm:block lg:max-w-none">
                 <FlagImage
                   code={country.code}
                   alt={`Flag of ${country.name}`}
-                  width={64}
-                  frame="sm"
-                  className="w-16"
+                  width={176}
+                  frame="lg"
+                  className="w-[8.75rem] lg:w-[10.5rem]"
+                  priority
+                />
+              </div>
+            ) : null}
+            <div className="mt-4 flex items-start justify-between gap-3 sm:pr-[9.75rem] lg:pr-[11.5rem]">
+              <div className="min-w-0">
+                <h1 className="font-display text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 sm:text-5xl">
+                  {country.name}
+                </h1>
+                {country.officialName !== country.name ? (
+                  <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400 sm:text-base">
+                    {country.officialName}
+                  </p>
+                ) : null}
+              </div>
+              {country.hasFlag && country.hasShape ? (
+                <FlagImage
+                  code={country.code}
+                  alt={`Flag of ${country.name}`}
+                  width={140}
+                  frame="md"
+                  className="w-[5.75rem] shrink-0 sm:hidden"
                   priority
                 />
               ) : null}
-              <p className="text-sm font-bold text-teal-700 dark:text-teal-300">{country.continent}</p>
             </div>
-            <h1 className="mt-4 font-display text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 sm:text-5xl">
-              {country.name}
-            </h1>
-            {country.officialName !== country.name ? (
-              <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400 sm:text-base">
-                {country.officialName}
-              </p>
-            ) : null}
             <p className="mt-5 rounded-2xl bg-teal-50 p-4 text-sm font-semibold leading-relaxed text-teal-900 dark:bg-teal-950/60 dark:text-teal-200">
               {country.fact}
             </p>
           </div>
 
           <div className="flex min-h-56 items-center justify-center rounded-2xl bg-slate-50 p-6 dark:bg-slate-800/70 sm:min-h-72">
-            <LibraryPlaceVisual country={country} variant="hero" />
+            <LibraryPlaceVisual
+              country={country}
+              variant="hero"
+              visual={country.hasShape ? "shape" : "auto"}
+            />
           </div>
         </div>
       </header>
