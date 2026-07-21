@@ -156,6 +156,10 @@ export type Country = {
   code3: string;
   name: string;
   officialName: string;
+  /** Endonym when it differs from the English common name (e.g. 日本, Deutschland). */
+  nativeName?: string;
+  /** Official language(s), e.g. "Japanese" or "German · French · Dutch". */
+  languages?: string;
   capital: string;
   continent: Region;
   subregion: string;
@@ -218,6 +222,8 @@ export type Profile = {
   todayBestStreaks?: Partial<
     Record<GameScope, Partial<Record<Difficulty, { dateKey: string; value: number }>>>
   >;
+  /** Active pool of place codes the player commonly misses, per scope */
+  commonlyMissedCountries?: Partial<Record<GameScope, string[]>>;
 };
 
 export type AchievementSessionContext = {
@@ -346,7 +352,7 @@ export const GAME_MODES: {
   {
     id: "weak-spots",
     title: "Practice Weak Spots",
-    description: "Review countries you've missed most",
+    description: "Review places you commonly miss",
     icon: "🎯",
     phase: 2,
   },

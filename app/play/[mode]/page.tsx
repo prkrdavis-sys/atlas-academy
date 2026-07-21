@@ -9,9 +9,9 @@ import { GameBoard } from "@/components/GameBoard";
 import { useProfiles, useRequiredProfile } from "@/components/ProfileProvider";
 import { Select } from "@/components/ui/Select";
 import { getPlayablePoolSize } from "@/lib/countries";
-import { aggregateMissedCountries, DAILY_COUNTING_SESSION_KEY, formatDailyDate, getDailyChallengeRun, getDailyDateKey, getDailySeed, hasCompletedDailyToday, hasPlayedDailyToday } from "@/lib/game-engine";
-import { getScopedModeInfo, normalizeScope, SCOPE_INFO, scopedDailyKey, scopeText, isStateCode } from "@/lib/scope";
-import { collectMissedCountries } from "@/lib/stats-helpers";
+import { DAILY_COUNTING_SESSION_KEY, formatDailyDate, getDailyChallengeRun, getDailyDateKey, getDailySeed, hasCompletedDailyToday, hasPlayedDailyToday } from "@/lib/game-engine";
+import { getScopedModeInfo, normalizeScope, SCOPE_INFO, scopedDailyKey, scopeText } from "@/lib/scope";
+import { getCommonlyMissedCountries } from "@/lib/stats-helpers";
 import { updateProfileSettings } from "@/lib/storage";
 import {
   CONTINENTS,
@@ -139,11 +139,7 @@ function PlayPageInner() {
   const dailyDifficulty: Difficulty = "medium";
 
   const weakSpotCodes =
-    mode === "weak-spots"
-      ? aggregateMissedCountries(collectMissedCountries(profile, scope)).filter(
-          (code) => isStateCode(code) === isUsa,
-        )
-      : undefined;
+    mode === "weak-spots" ? getCommonlyMissedCountries(profile, scope) : undefined;
 
   const availableCountryCount = modeInfo
     ? getPlayablePoolSize({
@@ -327,7 +323,7 @@ function PlayPageInner() {
         <>
           {mode === "weak-spots" && (!weakSpotCodes || weakSpotCodes.length === 0) && (
             <p className="rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:bg-amber-950/50 dark:text-amber-200">
-              {scopeText("Play some games first to build a list of countries to practice.", scope)}
+              {scopeText("Play some games first — incorrect answers add places to your commonly missed pool.", scope)}
             </p>
           )}
 

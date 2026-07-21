@@ -6,7 +6,11 @@ import { isSupplementalShapeCode, isCustomShapeCode, writeCustomShape, writeSupp
 type RawCountry = {
   cca2: string;
   cca3: string;
-  name: { common: string; official: string };
+  name: {
+    common: string;
+    official: string;
+    native?: Record<string, { official: string; common: string }>;
+  };
   capital?: string[];
   region: string;
   subregion?: string;
@@ -15,6 +19,7 @@ type RawCountry = {
   independent?: boolean;
   status?: string;
   landlocked?: boolean;
+  languages?: Record<string, string>;
 };
 
 // mledoze/countries no longer ships population; World Bank omits some territories.
@@ -102,6 +107,39 @@ function mapContinent(region: string, subregion?: string): string {
     return "North America";
   }
   return "Asia";
+}
+
+function normalizeNativeText(value: string): string {
+  return value.normalize("NFKD").toLocaleLowerCase();
+}
+
+function extractNativeName(
+  commonName: string,
+  native?: Record<string, { official: string; common: string }>,
+): string | undefined {
+  if (!native) return undefined;
+
+  const normalizedCommon = normalizeNativeText(commonName);
+  const uniqueNames: string[] = [];
+  const seen = new Set<string>();
+
+  for (const entry of Object.values(native)) {
+    const normalized = normalizeNativeText(entry.common);
+    if (seen.has(normalized)) continue;
+    seen.add(normalized);
+    if (normalized !== normalizedCommon) {
+      uniqueNames.push(entry.common);
+    }
+  }
+
+  return uniqueNames.length > 0 ? uniqueNames.join(" · ") : undefined;
+}
+
+function extractLanguages(languages?: Record<string, string>): string {
+  if (!languages) return "";
+  return Object.values(languages)
+    .toSorted((a, b) => a.localeCompare(b))
+    .join(" · ");
 }
 
 function buildFact(code3: string, name: string): string {
@@ -224,11 +262,15 @@ async function main() {
 
     const population = populationByCode3.get(code3) ?? 0;
 
+    const nativeName = extractNativeName(raw.name.common, raw.name.native);
+
     countries.push({
       code,
       code3,
       name: raw.name.common,
       officialName: raw.name.official,
+      ...(nativeName ? { nativeName } : {}),
+      languages: extractLanguages(raw.languages),
       capital,
       continent,
       subregion: raw.subregion ?? "",
@@ -253,7 +295,9 @@ async function main() {
   console.log(`Shapes downloaded: ${shapeCount}`);
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
+if (import.meta.url === `file://${process.argv[1]}`) {
+  main().catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
+}

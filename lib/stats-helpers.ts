@@ -198,6 +198,22 @@ export function collectMissedCountries(profile: Profile, scope?: GameScope): str
   return codes;
 }
 
+export function getCommonlyMissedCountries(profile: Profile, scope: GameScope): string[] {
+  return profile.commonlyMissedCountries?.[scope] ?? [];
+}
+
+/** One-time migration from legacy per-mode missedCountries lists. */
+export function migrateCommonlyMissedCountries(profile: Profile): void {
+  if (!profile.commonlyMissedCountries) {
+    profile.commonlyMissedCountries = {};
+  }
+
+  for (const scope of GAME_SCOPES) {
+    if (profile.commonlyMissedCountries[scope]?.length) continue;
+    profile.commonlyMissedCountries[scope] = [...new Set(collectMissedCountries(profile, scope))];
+  }
+}
+
 export function modesWithMinCorrect(
   profile: Profile,
   minCorrect: number,

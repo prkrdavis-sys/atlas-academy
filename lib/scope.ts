@@ -169,7 +169,7 @@ export function getQuestionTaskLabel(
 ): string {
   if (sessionMode === "weak-spots") {
     return scopeText(
-      scope === "world" ? "Practice missed countries and territories" : "Practice missed countries",
+      scope === "world" ? "Practice commonly missed countries and territories" : "Practice commonly missed states",
       scope,
     );
   }
@@ -204,6 +204,11 @@ export function getQuestionTaskLabel(
       return "All types, shuffled";
     case "daily-challenge":
       return "Daily challenge";
+    case "weak-spots":
+      return scopeText(
+        scope === "world" ? "Practice commonly missed countries and territories" : "Practice commonly missed states",
+        scope,
+      );
     default: {
       const _exhaustive: never = effectiveMode;
       return _exhaustive;

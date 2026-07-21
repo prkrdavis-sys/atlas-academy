@@ -68,6 +68,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
       addProfile: (name, color) => {
         const profile = createProfile(name, color);
         upsertProfile(profile);
+        setActiveProfile(profile.id);
         setState(loadState());
         return profile;
       },

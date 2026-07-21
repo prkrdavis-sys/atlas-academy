@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { FlagImage } from "@/components/FlagDisplay";
 import { LibraryDetailNav } from "@/components/LibraryDetailNav";
@@ -13,15 +14,15 @@ import {
 } from "@/lib/countries";
 import {
   buildLibraryDetailHref,
-  getLibraryNeighbors,
   normalizeLibraryFilter,
+  normalizeLibrarySort,
 } from "@/lib/library";
 import { formatDisplayCode, isStateCode } from "@/lib/scope";
 import type { GameScope } from "@/lib/types";
 
 type CountryPageProps = {
   params: Promise<{ code: string }>;
-  searchParams: Promise<{ scope?: string; region?: string }>;
+  searchParams: Promise<{ scope?: string; region?: string; sort?: string }>;
 };
 
 export function generateStaticParams() {
@@ -50,7 +51,7 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
   const isState = isStateCode(country.code);
   const scope: GameScope = isState ? "usa" : "world";
   const filter = normalizeLibraryFilter(scope, query.region ?? null);
-  const libraryNav = getLibraryNeighbors(country.code, scope, filter);
+  const sort = normalizeLibrarySort(query.sort ?? null);
   const neighborLinkClass =
     "inline-flex min-h-11 items-center gap-2 rounded-full border-2 border-slate-200 bg-white/80 px-3 py-2 text-sm font-bold text-slate-700 transition-colors hover:border-teal-400 hover:text-teal-700 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-300 dark:hover:border-teal-500 dark:hover:text-teal-300";
 
@@ -70,11 +71,13 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
           value: country.area > 0 ? `${formatPopulation(country.area)} km²` : "Not available",
         },
         { label: "State code", value: formatDisplayCode(country.code) },
-        { label: "Status", value: "U.S. state" },
       ]
     : [
         { label: "Capital", value: country.capital || "No official capital" },
-        { label: "Continent", value: country.continent },
+        ...(country.nativeName
+          ? [{ label: "Native name", value: country.nativeName }]
+          : []),
+        { label: "Language", value: country.languages || "Not listed" },
         { label: "Region", value: country.subregion || "Not listed" },
         { label: "Population", value: country.population > 0 ? formatPopulation(country.population) : "Not available" },
         {
@@ -82,40 +85,29 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
           value: country.area > 0 ? `${formatPopulation(country.area)} km²` : "Not available",
         },
         { label: "Country codes", value: `${country.code} / ${country.code3}` },
-        { label: "Status", value: country.isTerritory ? "Territory" : "Sovereign country" },
       ];
 
   return (
     <article className="space-y-5 sm:space-y-7">
-      <LibraryDetailNav
-        scope={scope}
-        filter={libraryNav.filter}
-        isState={isState}
-        prev={libraryNav.prev}
-        next={libraryNav.next}
-        index={libraryNav.index}
-        total={libraryNav.total}
-      />
+      <Suspense fallback={<div className="h-11 animate-pulse rounded-full bg-slate-200/70 dark:bg-slate-800/70" />}>
+        <LibraryDetailNav
+          scope={scope}
+          filter={filter}
+          isState={isState}
+          currentCode={country.code}
+        />
+      </Suspense>
 
       <header className="overflow-hidden rounded-[1.75rem] border-2 border-teal-100 bg-white/85 shadow-sm backdrop-blur dark:border-teal-900/70 dark:bg-slate-900/85">
         <div className="grid gap-6 p-5 sm:grid-cols-[minmax(0,1fr)_minmax(16rem,0.8fr)] sm:items-center sm:p-8">
-          <div className="relative min-w-0">
-            <p className="text-sm font-bold text-teal-700 dark:text-teal-300">{country.continent}</p>
-            {country.hasFlag && country.hasShape ? (
-              <div className="pointer-events-none absolute right-0 top-0 hidden max-w-[42%] sm:block lg:max-w-none">
-                <FlagImage
-                  code={country.code}
-                  alt={`Flag of ${country.name}`}
-                  width={176}
-                  frame="lg"
-                  className="w-[8.75rem] lg:w-[10.5rem]"
-                  priority
-                />
-              </div>
-            ) : null}
-            <div className="mt-4 flex items-start justify-between gap-3 sm:pr-[9.75rem] lg:pr-[11.5rem]">
-              <div className="min-w-0">
-                <h1 className="font-display text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 sm:text-5xl">
+          <div className="min-w-0">
+            <p className="text-sm font-bold text-teal-700 dark:text-teal-300">
+              {country.continent}
+              {!isState && country.isTerritory ? " - Territory" : null}
+            </p>
+            <div className="mt-4 flex items-start justify-between gap-3 sm:mt-5 sm:gap-5">
+              <div className="min-w-0 flex-1">
+                <h1 className="break-words font-display text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 sm:text-5xl">
                   {country.name}
                 </h1>
                 {country.officialName !== country.name ? (
@@ -125,14 +117,24 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
                 ) : null}
               </div>
               {country.hasFlag && country.hasShape ? (
-                <FlagImage
-                  code={country.code}
-                  alt={`Flag of ${country.name}`}
-                  width={140}
-                  frame="md"
-                  className="w-[5.75rem] shrink-0 sm:hidden"
-                  priority
-                />
+                <>
+                  <FlagImage
+                    code={country.code}
+                    alt={`Flag of ${country.name}`}
+                    width={140}
+                    frame="md"
+                    className="w-[5.75rem] shrink-0 sm:hidden"
+                    priority
+                  />
+                  <FlagImage
+                    code={country.code}
+                    alt={`Flag of ${country.name}`}
+                    width={176}
+                    frame="lg"
+                    className="hidden w-[8.75rem] shrink-0 sm:block lg:w-[10.5rem]"
+                    priority
+                  />
+                </>
               ) : null}
             </div>
             <p className="mt-5 rounded-2xl bg-teal-50 p-4 text-sm font-semibold leading-relaxed text-teal-900 dark:bg-teal-950/60 dark:text-teal-200">
@@ -175,7 +177,7 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
             {neighbors.map((neighbor) => (
               <Link
                 key={neighbor.code}
-                href={buildLibraryDetailHref(neighbor.code, scope, libraryNav.filter)}
+                href={buildLibraryDetailHref(neighbor.code, scope, filter, sort)}
                 className={neighborLinkClass}
               >
                 {neighbor.hasFlag ? (

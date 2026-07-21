@@ -30,6 +30,7 @@ import {
   isLegacyFlatModeStats,
   isLegacyUnscopedGlobalStreaks,
   isLegacyUnscopedStats,
+  migrateCommonlyMissedCountries,
 } from "@/lib/stats-helpers";
 
 const STORAGE_KEY = "atlas-academy";
@@ -208,6 +209,7 @@ export function normalizeProfile(profile: Profile): Profile {
     }
   }
   normalized.achievements = reconcileAchievements(normalized as Profile);
+  migrateCommonlyMissedCountries(normalized as Profile);
   return normalized as Profile;
 }
 
@@ -336,6 +338,7 @@ export function recordAnswer(
   countryCode: string,
   skipped = false,
   scope: GameScope = "world",
+  isPracticeMode = mode === "weak-spots",
 ) {
   const state = loadState();
   const profile = state.profiles.find((p) => p.id === profileId);
@@ -370,6 +373,21 @@ export function recordAnswer(
   }
 
   if (!skipped) {
+    if (!profile.commonlyMissedCountries) profile.commonlyMissedCountries = {};
+    if (!profile.commonlyMissedCountries[scope]) profile.commonlyMissedCountries[scope] = [];
+    const pool = profile.commonlyMissedCountries[scope]!;
+
+    if (!correct) {
+      if (!pool.includes(countryCode)) {
+        pool.push(countryCode);
+      }
+    } else if (!isPracticeMode) {
+      const poolIndex = pool.indexOf(countryCode);
+      if (poolIndex >= 0) {
+        pool.splice(poolIndex, 1);
+      }
+    }
+
     if (!profile.countryProgress) profile.countryProgress = {};
     const entry = profile.countryProgress[countryCode] ?? { correct: 0, total: 0 };
     entry.total += 1;

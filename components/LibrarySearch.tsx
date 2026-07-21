@@ -7,6 +7,7 @@ import {
   buildLibraryDetailHref,
   searchLibraryPlaces,
   type LibraryFilter,
+  type LibrarySort,
 } from "@/lib/library";
 import { cn } from "@/lib/utils";
 import type { GameScope } from "@/lib/types";
@@ -14,6 +15,7 @@ import type { GameScope } from "@/lib/types";
 type LibrarySearchProps = {
   scope: GameScope;
   filter: LibraryFilter;
+  sort?: LibrarySort;
   isState?: boolean;
   className?: string;
 };
@@ -39,6 +41,7 @@ function SearchIcon({ className }: { className?: string }) {
 export function LibrarySearch({
   scope,
   filter,
+  sort = "alphabetical",
   isState = false,
   className,
 }: LibrarySearchProps) {
@@ -78,7 +81,7 @@ export function LibrarySearch({
     setQuery("");
     setIsOpen(false);
     setHighlightedIndex(-1);
-    router.push(buildLibraryDetailHref(code, scope, filter));
+    router.push(buildLibraryDetailHref(code, scope, filter, sort));
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -118,7 +121,19 @@ export function LibrarySearch({
     }
   };
 
-  const placeholder = isState ? "Search states…" : "Search countries…";
+  const fullPlaceholder = isState ? "Search states…" : "Search countries…";
+  const [placeholder, setPlaceholder] = useState("Search");
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(min-width: 640px)");
+    const updatePlaceholder = () => {
+      setPlaceholder(mediaQuery.matches ? fullPlaceholder : "Search");
+    };
+
+    updatePlaceholder();
+    mediaQuery.addEventListener("change", updatePlaceholder);
+    return () => mediaQuery.removeEventListener("change", updatePlaceholder);
+  }, [fullPlaceholder]);
 
   return (
     <div ref={containerRef} className={cn("relative", className)}>
@@ -137,6 +152,7 @@ export function LibrarySearch({
           }}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
+          aria-label={fullPlaceholder}
           autoComplete="off"
           spellCheck={false}
           role="combobox"

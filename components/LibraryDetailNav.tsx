@@ -1,20 +1,25 @@
+"use client";
+
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useMemo } from "react";
 import { LibrarySearch } from "@/components/LibrarySearch";
+import { useProfiles } from "@/components/ProfileProvider";
 import {
   buildLibraryDetailHref,
   buildLibraryListHref,
+  getLibraryNeighbors,
+  normalizeLibrarySort,
   type LibraryFilter,
 } from "@/lib/library";
-import type { Country, GameScope } from "@/lib/types";
+import { getCommonlyMissedCountries } from "@/lib/stats-helpers";
+import type { GameScope } from "@/lib/types";
 
 type LibraryDetailNavProps = {
   scope: GameScope;
   filter: LibraryFilter;
   isState: boolean;
-  prev: Country | null;
-  next: Country | null;
-  index: number;
-  total: number;
+  currentCode: string;
 };
 
 const navButtonClass =
@@ -26,22 +31,31 @@ export function LibraryDetailNav({
   scope,
   filter,
   isState,
-  prev,
-  next,
-  index,
-  total,
+  currentCode,
 }: LibraryDetailNavProps) {
+  const searchParams = useSearchParams();
+  const { activeProfile } = useProfiles();
+  const sort = normalizeLibrarySort(searchParams.get("sort"));
+  const commonlyMissedCodes = useMemo(
+    () => (activeProfile ? getCommonlyMissedCountries(activeProfile, scope) : []),
+    [activeProfile, scope],
+  );
+  const { prev, next, index, total, filter: resolvedFilter } = useMemo(
+    () => getLibraryNeighbors(currentCode, scope, filter, sort, commonlyMissedCodes),
+    [currentCode, scope, filter, sort, commonlyMissedCodes],
+  );
   const positionLabel = index >= 0 && total > 0 ? `${index + 1} of ${total}` : null;
 
   return (
     <div className="flex items-center gap-2 sm:gap-3">
-      <Link href={buildLibraryListHref(scope, filter)} className={`${navButtonClass} shrink-0`}>
+      <Link href={buildLibraryListHref(scope, resolvedFilter, sort)} className={`${navButtonClass} shrink-0`}>
         {isState ? "← All states" : "← All countries"}
       </Link>
 
       <LibrarySearch
         scope={scope}
-        filter={filter}
+        filter={resolvedFilter}
+        sort={sort}
         isState={isState}
         className="min-w-0 flex-1"
       />
@@ -54,7 +68,7 @@ export function LibraryDetailNav({
         ) : null}
         {prev ? (
           <Link
-            href={buildLibraryDetailHref(prev.code, scope, filter)}
+            href={buildLibraryDetailHref(prev.code, scope, resolvedFilter, sort)}
             aria-label={`Previous: ${prev.name}`}
             className={navButtonClass}
           >
@@ -69,7 +83,7 @@ export function LibraryDetailNav({
         )}
         {next ? (
           <Link
-            href={buildLibraryDetailHref(next.code, scope, filter)}
+            href={buildLibraryDetailHref(next.code, scope, resolvedFilter, sort)}
             aria-label={`Next: ${next.name}`}
             className={navButtonClass}
           >

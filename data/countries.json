@@ -4,6 +4,7 @@
     "code3": "AFG",
     "name": "Afghanistan",
     "officialName": "Islamic Republic of Afghanistan",
+    "nativeName": "افغانستان · Owganystan",
     "capital": "Kabul",
     "continent": "Asia",
     "subregion": "Southern Asia",
@@ -24,15 +25,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "The Buddhas of Bamiyan were two giant cliff carvings—among the largest in the world before their destruction in 2001.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "The Buddhas of Bamiyan were two giant cliff carvings—among the largest in the world before their destruction in 2001.",
+    "languages": "Dari · Pashto · Turkmen"
   },
   {
     "code": "AX",
     "code3": "ALA",
     "name": "Åland Islands",
     "officialName": "Åland Islands",
+    "nativeName": "Åland",
     "capital": "Mariehamn",
     "continent": "Europe",
     "subregion": "Northern Europe",
@@ -45,15 +48,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Åland is an autonomous, Swedish-speaking archipelago that belongs to Finland but has its own parliament and flag.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "Åland is an autonomous, Swedish-speaking archipelago that belongs to Finland but has its own parliament and flag.",
+    "languages": "Swedish"
   },
   {
     "code": "AL",
     "code3": "ALB",
     "name": "Albania",
     "officialName": "Republic of Albania",
+    "nativeName": "Shqipëria",
     "capital": "Tirana",
     "continent": "Europe",
     "subregion": "Southeast Europe",
@@ -72,15 +77,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "During the Cold War, Albania built hundreds of thousands of concrete bunkers—more per person than anywhere else on Earth.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "During the Cold War, Albania built hundreds of thousands of concrete bunkers—more per person than anywhere else on Earth.",
+    "languages": "Albanian"
   },
   {
     "code": "DZ",
     "code3": "DZA",
     "name": "Algeria",
     "officialName": "People's Democratic Republic of Algeria",
+    "nativeName": "الجزائر",
     "capital": "Algiers",
     "continent": "Africa",
     "subregion": "Northern Africa",
@@ -102,15 +109,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "About 90% of Algeria is covered by the Sahara, yet most of its people live along the Mediterranean coast.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "About 90% of Algeria is covered by the Sahara, yet most of its people live along the Mediterranean coast.",
+    "languages": "Arabic"
   },
   {
     "code": "AS",
     "code3": "ASM",
     "name": "American Samoa",
     "officialName": "American Samoa",
+    "nativeName": "Sāmoa Amelika",
     "capital": "Pago Pago",
     "continent": "Oceania",
     "subregion": "Polynesia",
@@ -123,9 +132,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "American Samoa is the only U.S. territory south of the equator and is famous for its NFL players and tuna industry.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "American Samoa is the only U.S. territory south of the equator and is famous for its NFL players and tuna industry.",
+    "languages": "English · Samoan"
   },
   {
     "code": "AD",
@@ -148,9 +158,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Andorra has no airport or railway—visitors arrive by road through mountain passes from France or Spain.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Andorra has no airport or railway—visitors arrive by road through mountain passes from France or Spain.",
+    "languages": "Catalan"
   },
   {
     "code": "AO",
@@ -175,9 +186,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Angola's Kalandula Falls are among the largest and most powerful waterfalls in Africa.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Angola's Kalandula Falls are among the largest and most powerful waterfalls in Africa.",
+    "languages": "Portuguese"
   },
   {
     "code": "AI",
@@ -196,9 +208,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Anguilla's beaches are so prized that the island has repeatedly voted against full independence to keep ties with Britain.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "Anguilla's beaches are so prized that the island has repeatedly voted against full independence to keep ties with Britain.",
+    "languages": "English"
   },
   {
     "code": "AQ",
@@ -217,9 +230,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Antarctica holds about 90% of the world's ice and roughly 70% of its fresh water.",
+    "hasCapitalImage": false,
     "isTerritory": true,
-    "hasCapitalImage": false
+    "fact": "Antarctica holds about 90% of the world's ice and roughly 70% of its fresh water.",
+    "languages": ""
   },
   {
     "code": "AG",
@@ -238,9 +252,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Antigua claims 365 beaches—one for every day of the year.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Antigua claims 365 beaches—one for every day of the year.",
+    "languages": "English"
   },
   {
     "code": "AR",
@@ -266,15 +281,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Argentina's Perito Moreno Glacier is one of the few major glaciers in the world that is still advancing.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Argentina's Perito Moreno Glacier is one of the few major glaciers in the world that is still advancing.",
+    "languages": "Guaraní · Spanish"
   },
   {
     "code": "AM",
     "code3": "ARM",
     "name": "Armenia",
     "officialName": "Republic of Armenia",
+    "nativeName": "Հայաստան",
     "capital": "Yerevan",
     "continent": "Asia",
     "subregion": "Western Asia",
@@ -293,9 +310,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Mount Ararat, visible from much of Armenia, is a national symbol though it lies just across the border in Türkiye.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Mount Ararat, visible from much of Armenia, is a national symbol though it lies just across the border in Türkiye.",
+    "languages": "Armenian"
   },
   {
     "code": "AW",
@@ -314,9 +332,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Aruba sits outside the Caribbean hurricane belt, giving it reliably sunny weather year-round.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "Aruba sits outside the Caribbean hurricane belt, giving it reliably sunny weather year-round.",
+    "languages": "Dutch · Papiamento"
   },
   {
     "code": "AU",
@@ -336,15 +355,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Australia is home to more venomous snakes than any other country—and most of its wildlife is found nowhere else.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Australia is home to more venomous snakes than any other country—and most of its wildlife is found nowhere else.",
+    "languages": "English"
   },
   {
     "code": "AT",
     "code3": "AUT",
     "name": "Austria",
     "officialName": "Republic of Austria",
+    "nativeName": "Österreich",
     "capital": "Vienna",
     "continent": "Europe",
     "subregion": "Central Europe",
@@ -367,15 +388,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Vienna ranked among Europe's great imperial capitals; Mozart, Beethoven, and Strauss all made their mark here.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Vienna ranked among Europe's great imperial capitals; Mozart, Beethoven, and Strauss all made their mark here.",
+    "languages": "Austro-Bavarian German"
   },
   {
     "code": "AZ",
     "code3": "AZE",
     "name": "Azerbaijan",
     "officialName": "Republic of Azerbaijan",
+    "nativeName": "Azərbaycan · Азербайджан",
     "capital": "Baku",
     "continent": "Asia",
     "subregion": "Western Asia",
@@ -395,9 +418,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Nearly half of Azerbaijan lies below sea level thanks to the Caspian shoreline and the low-lying Kura plain.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Nearly half of Azerbaijan lies below sea level thanks to the Caspian shoreline and the low-lying Kura plain.",
+    "languages": "Azerbaijani · Russian"
   },
   {
     "code": "BS",
@@ -417,15 +441,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "The Bahamas has more than 700 islands and cays spread across clear turquoise shallows.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "The Bahamas has more than 700 islands and cays spread across clear turquoise shallows.",
+    "languages": "English"
   },
   {
     "code": "BH",
     "code3": "BHR",
     "name": "Bahrain",
     "officialName": "Kingdom of Bahrain",
+    "nativeName": "البحرين",
     "capital": "Manama",
     "continent": "Asia",
     "subregion": "Western Asia",
@@ -439,15 +465,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Bahrain's Tree of Life is a lone mesquite tree thriving in the desert with no obvious water source for centuries.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Bahrain's Tree of Life is a lone mesquite tree thriving in the desert with no obvious water source for centuries.",
+    "languages": "Arabic"
   },
   {
     "code": "BD",
     "code3": "BGD",
     "name": "Bangladesh",
     "officialName": "People's Republic of Bangladesh",
+    "nativeName": "বাংলাদেশ",
     "capital": "Dhaka",
     "continent": "Asia",
     "subregion": "Southern Asia",
@@ -464,9 +492,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Bangladesh crams more than 170 million people into a delta the size of Iowa—one of the densest countries on Earth.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Bangladesh crams more than 170 million people into a delta the size of Iowa—one of the densest countries on Earth.",
+    "languages": "Bengali"
   },
   {
     "code": "BB",
@@ -485,15 +514,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Barbados is the easternmost island of the Caribbean and was once a major center of British sugar production.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Barbados is the easternmost island of the Caribbean and was once a major center of British sugar production.",
+    "languages": "English"
   },
   {
     "code": "BY",
     "code3": "BLR",
     "name": "Belarus",
     "officialName": "Republic of Belarus",
+    "nativeName": "Белару́сь · Беларусь",
     "capital": "Minsk",
     "continent": "Europe",
     "subregion": "Eastern Europe",
@@ -513,15 +544,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "About 40% of Belarus is forested, earning it the nickname 'the lungs of Europe.'",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "About 40% of Belarus is forested, earning it the nickname 'the lungs of Europe.'",
+    "languages": "Belarusian · Russian"
   },
   {
     "code": "BE",
     "code3": "BEL",
     "name": "Belgium",
     "officialName": "Kingdom of Belgium",
+    "nativeName": "Belgien · Belgique · België",
     "capital": "Brussels",
     "continent": "Europe",
     "subregion": "Western Europe",
@@ -540,15 +573,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Belgium produces more than 1,500 varieties of beer and has been brewing for centuries.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Belgium produces more than 1,500 varieties of beer and has been brewing for centuries.",
+    "languages": "Dutch · French · German"
   },
   {
     "code": "BZ",
     "code3": "BLZ",
     "name": "Belize",
     "officialName": "Belize",
+    "nativeName": "Belice",
     "capital": "Belmopan",
     "continent": "North America",
     "subregion": "Central America",
@@ -564,15 +599,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Belize is home to the Great Blue Hole, a perfect circular sinkhole visible from space.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Belize is home to the Great Blue Hole, a perfect circular sinkhole visible from space.",
+    "languages": "Belizean Creole · English · Spanish"
   },
   {
     "code": "BJ",
     "code3": "BEN",
     "name": "Benin",
     "officialName": "Republic of Benin",
+    "nativeName": "Bénin",
     "capital": "Porto-Novo",
     "continent": "Africa",
     "subregion": "Western Africa",
@@ -591,9 +628,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Benin was once the powerful Kingdom of Dahomey, whose all-female warrior units inspired the Dora Milaje in Black Panther.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Benin was once the powerful Kingdom of Dahomey, whose all-female warrior units inspired the Dora Milaje in Black Panther.",
+    "languages": "French"
   },
   {
     "code": "BM",
@@ -612,15 +650,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Bermuda's pink-sand beaches get their color from crushed coral and shell fragments mixed with white sand.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "Bermuda's pink-sand beaches get their color from crushed coral and shell fragments mixed with white sand.",
+    "languages": "English"
   },
   {
     "code": "BT",
     "code3": "BTN",
     "name": "Bhutan",
     "officialName": "Kingdom of Bhutan",
+    "nativeName": "འབྲུག་ཡུལ་",
     "capital": "Thimphu",
     "continent": "Asia",
     "subregion": "Southern Asia",
@@ -637,15 +677,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Bhutan measures progress with Gross National Happiness instead of focusing only on economic output.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Bhutan measures progress with Gross National Happiness instead of focusing only on economic output.",
+    "languages": "Dzongkha"
   },
   {
     "code": "BO",
     "code3": "BOL",
     "name": "Bolivia",
     "officialName": "Plurinational State of Bolivia",
+    "nativeName": "Wuliwya · Volívia · Buliwya",
     "capital": "Sucre",
     "continent": "South America",
     "subregion": "South America",
@@ -665,15 +707,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Bolivia has two capital cities: La Paz is the administrative seat and Sucre the constitutional capital.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Bolivia has two capital cities: La Paz is the administrative seat and Sucre the constitutional capital.",
+    "languages": "Aymara · Guaraní · Quechua · Spanish"
   },
   {
     "code": "BA",
     "code3": "BIH",
     "name": "Bosnia and Herzegovina",
     "officialName": "Bosnia and Herzegovina",
+    "nativeName": "Bosna i Hercegovina · Боснa и Херцеговина",
     "capital": "Sarajevo",
     "continent": "Europe",
     "subregion": "Southeast Europe",
@@ -690,9 +734,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Mostar's Ottoman-era Stari Most bridge was destroyed in 1993 and painstakingly rebuilt stone by stone.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Mostar's Ottoman-era Stari Most bridge was destroyed in 1993 and painstakingly rebuilt stone by stone.",
+    "languages": "Bosnian · Croatian · Serbian"
   },
   {
     "code": "BW",
@@ -717,15 +762,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Botswana's Okavango Delta is one of the world's largest inland deltas—a desert oasis teeming with wildlife.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Botswana's Okavango Delta is one of the world's largest inland deltas—a desert oasis teeming with wildlife.",
+    "languages": "English · Tswana"
   },
   {
     "code": "BV",
     "code3": "BVT",
     "name": "Bouvet Island",
     "officialName": "Bouvet Island",
+    "nativeName": "Bouvetøya",
     "capital": "",
     "continent": "Antarctica",
     "subregion": "",
@@ -738,15 +785,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Bouvet Island is one of the most remote uninhabited islands on Earth, more than 1,000 miles from Antarctica.",
+    "hasCapitalImage": false,
     "isTerritory": true,
-    "hasCapitalImage": false
+    "fact": "Bouvet Island is one of the most remote uninhabited islands on Earth, more than 1,000 miles from Antarctica.",
+    "languages": "Norwegian"
   },
   {
     "code": "BR",
     "code3": "BRA",
     "name": "Brazil",
     "officialName": "Federative Republic of Brazil",
+    "nativeName": "Brasil",
     "capital": "Brasília",
     "continent": "South America",
     "subregion": "South America",
@@ -771,9 +820,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Brazil contains about 60% of the Amazon rainforest—the largest tropical forest on the planet.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Brazil contains about 60% of the Amazon rainforest—the largest tropical forest on the planet.",
+    "languages": "Portuguese"
   },
   {
     "code": "IO",
@@ -792,9 +842,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "The Chagos Archipelago includes Diego Garcia, a strategically vital U.S.–U.K. military base in the Indian Ocean.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "The Chagos Archipelago includes Diego Garcia, a strategically vital U.S.–U.K. military base in the Indian Ocean.",
+    "languages": "English"
   },
   {
     "code": "VG",
@@ -814,15 +865,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "The British Virgin Islands are a sailing paradise with dozens of sheltered bays and reef-protected waters.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "The British Virgin Islands are a sailing paradise with dozens of sheltered bays and reef-protected waters.",
+    "languages": "English"
   },
   {
     "code": "BN",
     "code3": "BRN",
     "name": "Brunei",
     "officialName": "Nation of Brunei, Abode of Peace",
+    "nativeName": "Negara Brunei Darussalam",
     "capital": "Bandar Seri Begawan",
     "continent": "Asia",
     "subregion": "South-Eastern Asia",
@@ -838,15 +891,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Brunei is one of the world's richest nations per capita, built largely on offshore oil and gas.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Brunei is one of the world's richest nations per capita, built largely on offshore oil and gas.",
+    "languages": "Malay"
   },
   {
     "code": "BG",
     "code3": "BGR",
     "name": "Bulgaria",
     "officialName": "Republic of Bulgaria",
+    "nativeName": "България",
     "capital": "Sofia",
     "continent": "Europe",
     "subregion": "Southeast Europe",
@@ -866,9 +921,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Bulgaria is one of the world's oldest countries and still uses the Cyrillic alphabet invented by local saints.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Bulgaria is one of the world's oldest countries and still uses the Cyrillic alphabet invented by local saints.",
+    "languages": "Bulgarian"
   },
   {
     "code": "BF",
@@ -894,15 +950,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Burkina Faso means 'land of upright people' in Mossi and Dioula.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Burkina Faso means 'land of upright people' in Mossi and Dioula.",
+    "languages": "French"
   },
   {
     "code": "BI",
     "code3": "BDI",
     "name": "Burundi",
     "officialName": "Republic of Burundi",
+    "nativeName": "Uburundi",
     "capital": "Gitega",
     "continent": "Africa",
     "subregion": "Eastern Africa",
@@ -920,15 +978,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Burundi and Rwanda were once a single kingdom before European colonization split them.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Burundi and Rwanda were once a single kingdom before European colonization split them.",
+    "languages": "French · Kirundi"
   },
   {
     "code": "KH",
     "code3": "KHM",
     "name": "Cambodia",
     "officialName": "Kingdom of Cambodia",
+    "nativeName": "Kâmpŭchéa",
     "capital": "Phnom Penh",
     "continent": "Asia",
     "subregion": "South-Eastern Asia",
@@ -946,15 +1006,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Angkor Wat in Cambodia is the largest religious monument in the world by land area.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Angkor Wat in Cambodia is the largest religious monument in the world by land area.",
+    "languages": "Khmer"
   },
   {
     "code": "CM",
     "code3": "CMR",
     "name": "Cameroon",
     "officialName": "Republic of Cameroon",
+    "nativeName": "Cameroun",
     "capital": "Yaoundé",
     "continent": "Africa",
     "subregion": "Middle Africa",
@@ -975,9 +1037,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Cameroon is nicknamed 'Africa in miniature' for its coast, rainforest, savanna, and volcanic highlands in one country.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Cameroon is nicknamed 'Africa in miniature' for its coast, rainforest, savanna, and volcanic highlands in one country.",
+    "languages": "English · French"
   },
   {
     "code": "CA",
@@ -998,15 +1061,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Canada has more lakes than the rest of the world's countries combined.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Canada has more lakes than the rest of the world's countries combined.",
+    "languages": "English · French"
   },
   {
     "code": "CV",
     "code3": "CPV",
     "name": "Cape Verde",
     "officialName": "Republic of Cabo Verde",
+    "nativeName": "Cabo Verde",
     "capital": "Praia",
     "continent": "Africa",
     "subregion": "Western Africa",
@@ -1021,15 +1086,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Cape Verde's music—especially morna—has influenced styles across the Atlantic world.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Cape Verde's music—especially morna—has influenced styles across the Atlantic world.",
+    "languages": "Portuguese"
   },
   {
     "code": "BQ",
     "code3": "BES",
     "name": "Caribbean Netherlands",
     "officialName": "Bonaire, Sint Eustatius and Saba",
+    "nativeName": "Caribisch Nederland · Boneiru, Sint Eustatius y Saba",
     "capital": "Kralendijk",
     "continent": "North America",
     "subregion": "Caribbean",
@@ -1043,9 +1110,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Bonaire, Sint Eustatius, and Saba are Caribbean municipalities of the Netherlands known for diving and reefs.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "Bonaire, Sint Eustatius, and Saba are Caribbean municipalities of the Netherlands known for diving and reefs.",
+    "languages": "Dutch · English · Papiamento"
   },
   {
     "code": "KY",
@@ -1064,15 +1132,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "The Cayman Islands are a global financial hub with more registered companies than residents.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "The Cayman Islands are a global financial hub with more registered companies than residents.",
+    "languages": "English"
   },
   {
     "code": "CF",
     "code3": "CAF",
     "name": "Central African Republic",
     "officialName": "Central African Republic",
+    "nativeName": "République centrafricaine · Bêafrîka",
     "capital": "Bangui",
     "continent": "Africa",
     "subregion": "Middle Africa",
@@ -1092,15 +1162,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "The Central African Republic sits near the continent's geographic center, largely covered in rainforest.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "The Central African Republic sits near the continent's geographic center, largely covered in rainforest.",
+    "languages": "French · Sango"
   },
   {
     "code": "TD",
     "code3": "TCD",
     "name": "Chad",
     "officialName": "Republic of Chad",
+    "nativeName": "تشاد · Tchad",
     "capital": "N'Djamena",
     "continent": "Africa",
     "subregion": "Middle Africa",
@@ -1121,9 +1193,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Lake Chad, which Chad is named for, has shrunk dramatically since the 1960s—an environmental crisis for the region.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Lake Chad, which Chad is named for, has shrunk dramatically since the 1960s—an environmental crisis for the region.",
+    "languages": "Arabic · French"
   },
   {
     "code": "CL",
@@ -1147,15 +1220,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Chile is more than 4,000 km long but averages only about 177 km wide—one of the world's most stretched countries.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Chile is more than 4,000 km long but averages only about 177 km wide—one of the world's most stretched countries.",
+    "languages": "Spanish"
   },
   {
     "code": "CN",
     "code3": "CHN",
     "name": "China",
     "officialName": "People's Republic of China",
+    "nativeName": "中国",
     "capital": "Beijing",
     "continent": "Asia",
     "subregion": "Eastern Asia",
@@ -1186,9 +1261,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "China's Great Wall isn't one continuous wall—it's a network of fortifications built over many centuries.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "China's Great Wall isn't one continuous wall—it's a network of fortifications built over many centuries.",
+    "languages": "Chinese"
   },
   {
     "code": "CX",
@@ -1208,9 +1284,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Christmas Island is famous for the annual red crab migration, when millions of crabs cross roads and beaches.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "Christmas Island is famous for the annual red crab migration, when millions of crabs cross roads and beaches.",
+    "languages": "English"
   },
   {
     "code": "CC",
@@ -1230,9 +1307,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "The Cocos (Keeling) Islands are a remote coral atoll group in the Indian Ocean with a population under 600.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "The Cocos (Keeling) Islands are a remote coral atoll group in the Indian Ocean with a population under 600.",
+    "languages": "English"
   },
   {
     "code": "CO",
@@ -1258,15 +1336,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Colombia produces more emeralds than any other country and is one of the world's top coffee exporters.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Colombia produces more emeralds than any other country and is one of the world's top coffee exporters.",
+    "languages": "Spanish"
   },
   {
     "code": "KM",
     "code3": "COM",
     "name": "Comoros",
     "officialName": "Union of the Comoros",
+    "nativeName": "جزر القمر · Comores · Komori",
     "capital": "Moroni",
     "continent": "Africa",
     "subregion": "Eastern Africa",
@@ -1280,15 +1360,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Comoros is one of the world's largest producers of ylang-ylang, a flower essential to many perfumes.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Comoros is one of the world's largest producers of ylang-ylang, a flower essential to many perfumes.",
+    "languages": "Arabic · Comorian · French"
   },
   {
     "code": "CG",
     "code3": "COG",
     "name": "Congo",
     "officialName": "Republic of the Congo",
+    "nativeName": "République du Congo · Repubilika ya Kongo · Republíki ya Kongó",
     "capital": "Brazzaville",
     "continent": "Africa",
     "subregion": "Middle Africa",
@@ -1310,15 +1392,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "The Congo Basin rainforest is the world's second-largest tropical forest after the Amazon.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "The Congo Basin rainforest is the world's second-largest tropical forest after the Amazon.",
+    "languages": "French · Kikongo · Lingala"
   },
   {
     "code": "CK",
     "code3": "COK",
     "name": "Cook Islands",
     "officialName": "Cook Islands",
+    "nativeName": "Kūki 'Āirani",
     "capital": "Avarua",
     "continent": "Oceania",
     "subregion": "Polynesia",
@@ -1331,9 +1415,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Cook Islanders carry New Zealand passports but govern themselves in free association with Wellington.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "Cook Islanders carry New Zealand passports but govern themselves in free association with Wellington.",
+    "languages": "Cook Islands Māori · English"
   },
   {
     "code": "CR",
@@ -1356,15 +1441,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Costa Rica abolished its army in 1948 and redirected military spending to education and health care.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Costa Rica abolished its army in 1948 and redirected military spending to education and health care.",
+    "languages": "Spanish"
   },
   {
     "code": "HR",
     "code3": "HRV",
     "name": "Croatia",
     "officialName": "Republic of Croatia",
+    "nativeName": "Hrvatska",
     "capital": "Zagreb",
     "continent": "Europe",
     "subregion": "Southeast Europe",
@@ -1384,9 +1471,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Dubrovnik's medieval walls in Croatia became a filming location for King's Landing in Game of Thrones.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Dubrovnik's medieval walls in Croatia became a filming location for King's Landing in Game of Thrones.",
+    "languages": "Croatian"
   },
   {
     "code": "CU",
@@ -1406,15 +1494,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Cuba's classic 1950s American cars are still on the road thanks to decades of ingenious local repair.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Cuba's classic 1950s American cars are still on the road thanks to decades of ingenious local repair.",
+    "languages": "Spanish"
   },
   {
     "code": "CW",
     "code3": "CUW",
     "name": "Curaçao",
     "officialName": "Country of Curaçao",
+    "nativeName": "Pais Kòrsou",
     "capital": "Willemstad",
     "continent": "North America",
     "subregion": "Caribbean",
@@ -1428,15 +1518,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Curaçao's Handelskade waterfront is lined with pastel Dutch colonial buildings overlooking the harbor.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "Curaçao's Handelskade waterfront is lined with pastel Dutch colonial buildings overlooking the harbor.",
+    "languages": "Dutch · English · Papiamento"
   },
   {
     "code": "CY",
     "code3": "CYP",
     "name": "Cyprus",
     "officialName": "Republic of Cyprus",
+    "nativeName": "Κύπρος · Kıbrıs",
     "capital": "Nicosia",
     "continent": "Europe",
     "subregion": "Southern Europe",
@@ -1450,15 +1542,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Cyprus is said to be the birthplace of Aphrodite, the Greek goddess of love.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Cyprus is said to be the birthplace of Aphrodite, the Greek goddess of love.",
+    "languages": "Greek · Turkish"
   },
   {
     "code": "CZ",
     "code3": "CZE",
     "name": "Czechia",
     "officialName": "Czech Republic",
+    "nativeName": "Česko",
     "capital": "Prague",
     "continent": "Europe",
     "subregion": "Central Europe",
@@ -1477,15 +1571,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Prague's Astronomical Clock in Czechia has been keeping time since 1410—one of the oldest still working.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Prague's Astronomical Clock in Czechia has been keeping time since 1410—one of the oldest still working.",
+    "languages": "Czech · Slovak"
   },
   {
     "code": "DK",
     "code3": "DNK",
     "name": "Denmark",
     "officialName": "Kingdom of Denmark",
+    "nativeName": "Danmark",
     "capital": "Copenhagen",
     "continent": "Europe",
     "subregion": "Northern Europe",
@@ -1501,15 +1597,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Denmark's LEGO bricks were invented in Billund, where the original LEGOLAND theme park still stands.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Denmark's LEGO bricks were invented in Billund, where the original LEGOLAND theme park still stands.",
+    "languages": "Danish"
   },
   {
     "code": "DJ",
     "code3": "DJI",
     "name": "Djibouti",
     "officialName": "Republic of Djibouti",
+    "nativeName": "جيبوتي",
     "capital": "Djibouti",
     "continent": "Africa",
     "subregion": "Eastern Africa",
@@ -1527,9 +1625,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Djibouti sits on the Afar Triple Junction where three tectonic plates pull apart—creating dramatic rift landscapes.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Djibouti sits on the Afar Triple Junction where three tectonic plates pull apart—creating dramatic rift landscapes.",
+    "languages": "Arabic · French"
   },
   {
     "code": "DM",
@@ -1549,15 +1648,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Dominica's Boiling Lake is the world's second-largest hot spring and steams like a giant cauldron.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Dominica's Boiling Lake is the world's second-largest hot spring and steams like a giant cauldron.",
+    "languages": "English"
   },
   {
     "code": "DO",
     "code3": "DOM",
     "name": "Dominican Republic",
     "officialName": "Dominican Republic",
+    "nativeName": "República Dominicana",
     "capital": "Santo Domingo",
     "continent": "North America",
     "subregion": "Caribbean",
@@ -1572,15 +1673,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "The Dominican Republic shares Hispaniola with Haiti—the only island split between two nations in the Caribbean.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "The Dominican Republic shares Hispaniola with Haiti—the only island split between two nations in the Caribbean.",
+    "languages": "Spanish"
   },
   {
     "code": "CD",
     "code3": "COD",
     "name": "DR Congo",
     "officialName": "Democratic Republic of the Congo",
+    "nativeName": "RD Congo · Repubilika ya Kongo Demokratiki · Republiki ya Kongó Demokratiki · Ditunga dia Kongu wa Mungalaata · Jamhuri ya Kidemokrasia ya Kongo",
     "capital": "Kinshasa",
     "continent": "Africa",
     "subregion": "Middle Africa",
@@ -1606,9 +1709,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "The Congo River is the world's deepest river and second-largest by discharge, cutting through DR Congo's rainforests.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "The Congo River is the world's deepest river and second-largest by discharge, cutting through DR Congo's rainforests.",
+    "languages": "French · Kikongo · Lingala · Swahili · Tshiluba"
   },
   {
     "code": "EC",
@@ -1631,15 +1735,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Ecuador is named for the equator, which runs through the country—and the Galápagos Islands belong to it.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Ecuador is named for the equator, which runs through the country—and the Galápagos Islands belong to it.",
+    "languages": "Spanish"
   },
   {
     "code": "EG",
     "code3": "EGY",
     "name": "Egypt",
     "officialName": "Arab Republic of Egypt",
+    "nativeName": "مصر",
     "capital": "Cairo",
     "continent": "Africa",
     "subregion": "Northern Africa",
@@ -1658,9 +1764,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "The Great Pyramid of Giza was the tallest human-made structure in the world for nearly 4,000 years.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "The Great Pyramid of Giza was the tallest human-made structure in the world for nearly 4,000 years.",
+    "languages": "Arabic"
   },
   {
     "code": "SV",
@@ -1683,15 +1790,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "El Salvador is the smallest and most densely populated country in Central America.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "El Salvador is the smallest and most densely populated country in Central America.",
+    "languages": "Spanish"
   },
   {
     "code": "GQ",
     "code3": "GNQ",
     "name": "Equatorial Guinea",
     "officialName": "Republic of Equatorial Guinea",
+    "nativeName": "Guinée équatoriale · Guiné Equatorial · Guinea Ecuatorial",
     "capital": "Malabo",
     "continent": "Africa",
     "subregion": "Middle Africa",
@@ -1708,15 +1817,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Equatorial Guinea is the only African country with Spanish as an official language.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Equatorial Guinea is the only African country with Spanish as an official language.",
+    "languages": "French · Portuguese · Spanish"
   },
   {
     "code": "ER",
     "code3": "ERI",
     "name": "Eritrea",
     "officialName": "State of Eritrea",
+    "nativeName": "إريتريا · ኤርትራ",
     "capital": "Asmara",
     "continent": "Africa",
     "subregion": "Eastern Africa",
@@ -1734,15 +1845,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Eritrea's capital Asmara has one of the world's finest collections of Art Deco and Modernist architecture.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Eritrea's capital Asmara has one of the world's finest collections of Art Deco and Modernist architecture.",
+    "languages": "Arabic · English · Tigrinya"
   },
   {
     "code": "EE",
     "code3": "EST",
     "name": "Estonia",
     "officialName": "Republic of Estonia",
+    "nativeName": "Eesti",
     "capital": "Tallinn",
     "continent": "Europe",
     "subregion": "Northern Europe",
@@ -1759,9 +1872,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Estonia is one of the world's most digital societies—citizens can vote, sign documents, and file taxes online.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Estonia is one of the world's most digital societies—citizens can vote, sign documents, and file taxes online.",
+    "languages": "Estonian"
   },
   {
     "code": "SZ",
@@ -1785,15 +1899,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Eswatini (formerly Swaziland) is one of the world's last absolute monarchies in Africa.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Eswatini (formerly Swaziland) is one of the world's last absolute monarchies in Africa.",
+    "languages": "English · Swazi"
   },
   {
     "code": "ET",
     "code3": "ETH",
     "name": "Ethiopia",
     "officialName": "Federal Democratic Republic of Ethiopia",
+    "nativeName": "ኢትዮጵያ",
     "capital": "Addis Ababa",
     "continent": "Africa",
     "subregion": "Eastern Africa",
@@ -1814,9 +1930,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Ethiopia follows its own calendar—about seven to eight years behind the Gregorian calendar most of the world uses.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Ethiopia follows its own calendar—about seven to eight years behind the Gregorian calendar most of the world uses.",
+    "languages": "Amharic"
   },
   {
     "code": "FK",
@@ -1836,15 +1953,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "The Falkland Islands were the setting of a brief but intense war between Britain and Argentina in 1982.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "The Falkland Islands were the setting of a brief but intense war between Britain and Argentina in 1982.",
+    "languages": "English"
   },
   {
     "code": "FO",
     "code3": "FRO",
     "name": "Faroe Islands",
     "officialName": "Faroe Islands",
+    "nativeName": "Færøerne · Føroyar",
     "capital": "Tórshavn",
     "continent": "Europe",
     "subregion": "Northern Europe",
@@ -1857,15 +1976,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Faroe Islanders drive through tunnels between islands and generate much of their power from wind and hydro.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "Faroe Islanders drive through tunnels between islands and generate much of their power from wind and hydro.",
+    "languages": "Danish · Faroese"
   },
   {
     "code": "FJ",
     "code3": "FJI",
     "name": "Fiji",
     "officialName": "Republic of Fiji",
+    "nativeName": "Viti · फिजी",
     "capital": "Suva",
     "continent": "Oceania",
     "subregion": "Melanesia",
@@ -1879,15 +2000,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Fiji straddles the International Date Line, so it is among the first countries to greet each new day.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Fiji straddles the International Date Line, so it is among the first countries to greet each new day.",
+    "languages": "English · Fiji Hindi · Fijian"
   },
   {
     "code": "FI",
     "code3": "FIN",
     "name": "Finland",
     "officialName": "Republic of Finland",
+    "nativeName": "Suomi",
     "capital": "Helsinki",
     "continent": "Europe",
     "subregion": "Northern Europe",
@@ -1905,9 +2028,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Finland has more saunas than cars—roughly one sauna for every two people.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Finland has more saunas than cars—roughly one sauna for every two people.",
+    "languages": "Finnish · Swedish"
   },
   {
     "code": "FR",
@@ -1936,15 +2060,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "France is the most visited country on Earth, drawing more international tourists than any other nation.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "France is the most visited country on Earth, drawing more international tourists than any other nation.",
+    "languages": "French"
   },
   {
     "code": "GF",
     "code3": "GUF",
     "name": "French Guiana",
     "officialName": "Guiana",
+    "nativeName": "Guyane française",
     "capital": "Cayenne",
     "continent": "South America",
     "subregion": "South America",
@@ -1961,15 +2087,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "French Guiana hosts Europe's main spaceport at Kourou—rockets launch from South America but under French flag.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "French Guiana hosts Europe's main spaceport at Kourou—rockets launch from South America but under French flag.",
+    "languages": "French"
   },
   {
     "code": "PF",
     "code3": "PYF",
     "name": "French Polynesia",
     "officialName": "French Polynesia",
+    "nativeName": "Polynésie française",
     "capital": "Papeetē",
     "continent": "Oceania",
     "subregion": "Polynesia",
@@ -1982,15 +2110,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "French Polynesia's Bora Bora and Tahiti helped define the world's image of a tropical paradise.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "French Polynesia's Bora Bora and Tahiti helped define the world's image of a tropical paradise.",
+    "languages": "French"
   },
   {
     "code": "TF",
     "code3": "ATF",
     "name": "French Southern and Antarctic Lands",
     "officialName": "Territory of the French Southern and Antarctic Lands",
+    "nativeName": "Terres australes et antarctiques françaises",
     "capital": "Port-aux-Français",
     "continent": "Antarctica",
     "subregion": "",
@@ -2004,9 +2134,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "The French Southern Territories include remote sub-Antarctic islands with no permanent human population.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "The French Southern Territories include remote sub-Antarctic islands with no permanent human population.",
+    "languages": "French"
   },
   {
     "code": "GA",
@@ -2030,9 +2161,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Gabon preserves about 11% of its land in national parks—among the highest proportions in the world.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Gabon preserves about 11% of its land in national parks—among the highest proportions in the world.",
+    "languages": "French"
   },
   {
     "code": "GM",
@@ -2054,15 +2186,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "The Gambia is a narrow strip of land along the Gambia River, surrounded on three sides by Senegal.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "The Gambia is a narrow strip of land along the Gambia River, surrounded on three sides by Senegal.",
+    "languages": "English"
   },
   {
     "code": "GE",
     "code3": "GEO",
     "name": "Georgia",
     "officialName": "Georgia",
+    "nativeName": "საქართველო",
     "capital": "Tbilisi",
     "continent": "Asia",
     "subregion": "Western Asia",
@@ -2080,15 +2214,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Georgia claims to be the birthplace of wine—archaeologists found 8,000-year-old winemaking evidence here.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Georgia claims to be the birthplace of wine—archaeologists found 8,000-year-old winemaking evidence here.",
+    "languages": "Georgian"
   },
   {
     "code": "DE",
     "code3": "DEU",
     "name": "Germany",
     "officialName": "Federal Republic of Germany",
+    "nativeName": "Deutschland",
     "capital": "Berlin",
     "continent": "Europe",
     "subregion": "Western Europe",
@@ -2112,9 +2248,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Germany's Autobahn famously has long stretches with no official speed limit for cars.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Germany's Autobahn famously has long stretches with no official speed limit for cars.",
+    "languages": "German"
   },
   {
     "code": "GH",
@@ -2138,9 +2275,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Ghana was the first sub-Saharan African country to gain independence from colonial rule, in 1957.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Ghana was the first sub-Saharan African country to gain independence from colonial rule, in 1957.",
+    "languages": "English"
   },
   {
     "code": "GI",
@@ -2161,15 +2299,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "The Rock of Gibraltar is a limestone promontory guarded by wild Barbary macaques—the only wild monkeys in Europe.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "The Rock of Gibraltar is a limestone promontory guarded by wild Barbary macaques—the only wild monkeys in Europe.",
+    "languages": "English"
   },
   {
     "code": "GR",
     "code3": "GRC",
     "name": "Greece",
     "officialName": "Hellenic Republic",
+    "nativeName": "Ελλάδα",
     "capital": "Athens",
     "continent": "Europe",
     "subregion": "Southern Europe",
@@ -2188,15 +2328,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Greece has thousands of islands, though only a few hundred are inhabited.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Greece has thousands of islands, though only a few hundred are inhabited.",
+    "languages": "Greek"
   },
   {
     "code": "GL",
     "code3": "GRL",
     "name": "Greenland",
     "officialName": "Greenland",
+    "nativeName": "Kalaallit Nunaat",
     "capital": "Nuuk",
     "continent": "North America",
     "subregion": "North America",
@@ -2209,9 +2351,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Greenland is the world's largest island and is covered by an ice sheet up to three kilometers thick.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "Greenland is the world's largest island and is covered by an ice sheet up to three kilometers thick.",
+    "languages": "Greenlandic"
   },
   {
     "code": "GD",
@@ -2230,9 +2373,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Grenada is known as the 'Spice Isle' for its nutmeg, mace, and cinnamon exports.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Grenada is known as the 'Spice Isle' for its nutmeg, mace, and cinnamon exports.",
+    "languages": "English"
   },
   {
     "code": "GP",
@@ -2251,15 +2395,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Guadeloupe's La Soufrière volcano last erupted in 1976, forcing the evacuation of 73,000 people.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "Guadeloupe's La Soufrière volcano last erupted in 1976, forcing the evacuation of 73,000 people.",
+    "languages": "French"
   },
   {
     "code": "GU",
     "code3": "GUM",
     "name": "Guam",
     "officialName": "Guam",
+    "nativeName": "Guåhån",
     "capital": "Hagåtña",
     "continent": "Oceania",
     "subregion": "Micronesia",
@@ -2272,9 +2418,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Guam is the westernmost U.S. territory and a key military hub in the Pacific.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "Guam is the westernmost U.S. territory and a key military hub in the Pacific.",
+    "languages": "Chamorro · English · Spanish"
   },
   {
     "code": "GT",
@@ -2299,15 +2446,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Guatemala's Tikal ruins were a major Maya city—its temples rise above the Petén jungle canopy.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Guatemala's Tikal ruins were a major Maya city—its temples rise above the Petén jungle canopy.",
+    "languages": "Spanish"
   },
   {
     "code": "GG",
     "code3": "GGY",
     "name": "Guernsey",
     "officialName": "Bailiwick of Guernsey",
+    "nativeName": "Guernesey · Dgèrnésiais",
     "capital": "St. Peter Port",
     "continent": "Europe",
     "subregion": "Northern Europe",
@@ -2321,15 +2470,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Guernsey cows, famous worldwide for rich milk, take their name from this Channel Island.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "Guernsey cows, famous worldwide for rich milk, take their name from this Channel Island.",
+    "languages": "English · French · Guernésiais"
   },
   {
     "code": "GN",
     "code3": "GIN",
     "name": "Guinea",
     "officialName": "Republic of Guinea",
+    "nativeName": "Guinée",
     "capital": "Conakry",
     "continent": "Africa",
     "subregion": "Western Africa",
@@ -2350,15 +2501,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Guinea holds about one-third of the world's bauxite—the ore used to make aluminum.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Guinea holds about one-third of the world's bauxite—the ore used to make aluminum.",
+    "languages": "French"
   },
   {
     "code": "GW",
     "code3": "GNB",
     "name": "Guinea-Bissau",
     "officialName": "Republic of Guinea-Bissau",
+    "nativeName": "Guiné-Bissau",
     "capital": "Bissau",
     "continent": "Africa",
     "subregion": "Western Africa",
@@ -2375,9 +2528,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Guinea-Bissau's Bijagós Archipelago is a UNESCO biosphere reserve of mangroves and rare sea turtles.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Guinea-Bissau's Bijagós Archipelago is a UNESCO biosphere reserve of mangroves and rare sea turtles.",
+    "languages": "Portuguese · Upper Guinea Creole"
   },
   {
     "code": "GY",
@@ -2401,15 +2555,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "About 80% of Guyana is covered by pristine Amazon rainforest—one of the highest percentages in South America.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "About 80% of Guyana is covered by pristine Amazon rainforest—one of the highest percentages in South America.",
+    "languages": "English"
   },
   {
     "code": "HT",
     "code3": "HTI",
     "name": "Haiti",
     "officialName": "Republic of Haiti",
+    "nativeName": "Haïti · Ayiti",
     "capital": "Port-au-Prince",
     "continent": "North America",
     "subregion": "Caribbean",
@@ -2425,9 +2581,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Haiti was the first nation founded by formerly enslaved people who won independence, in 1804.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Haiti was the first nation founded by formerly enslaved people who won independence, in 1804.",
+    "languages": "French · Haitian Creole"
   },
   {
     "code": "HM",
@@ -2446,9 +2603,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Heard Island and McDonald Islands are among the most remote places on Earth, near Antarctica.",
+    "hasCapitalImage": false,
     "isTerritory": true,
-    "hasCapitalImage": false
+    "fact": "Heard Island and McDonald Islands are among the most remote places on Earth, near Antarctica.",
+    "languages": "English"
   },
   {
     "code": "HN",
@@ -2472,15 +2630,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Honduras's Copán ruins feature some of the finest Maya stone carving in Central America.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Honduras's Copán ruins feature some of the finest Maya stone carving in Central America.",
+    "languages": "Spanish"
   },
   {
     "code": "HK",
     "code3": "HKG",
     "name": "Hong Kong",
     "officialName": "Hong Kong Special Administrative Region of the People's Republic of China",
+    "nativeName": "香港",
     "capital": "City of Victoria",
     "continent": "Asia",
     "subregion": "Eastern Asia",
@@ -2496,15 +2656,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Hong Kong has more skyscrapers than any other city in the world—well over 500 buildings above 150 meters.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "Hong Kong has more skyscrapers than any other city in the world—well over 500 buildings above 150 meters.",
+    "languages": "Chinese · English"
   },
   {
     "code": "HU",
     "code3": "HUN",
     "name": "Hungary",
     "officialName": "Hungary",
+    "nativeName": "Magyarország",
     "capital": "Budapest",
     "continent": "Europe",
     "subregion": "Central Europe",
@@ -2525,15 +2687,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Hungary's capital Budapest was formed by merging three cities and sits atop more than 100 thermal springs.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Hungary's capital Budapest was formed by merging three cities and sits atop more than 100 thermal springs.",
+    "languages": "Hungarian"
   },
   {
     "code": "IS",
     "code3": "ISL",
     "name": "Iceland",
     "officialName": "Iceland",
+    "nativeName": "Ísland",
     "capital": "Reykjavik",
     "continent": "Europe",
     "subregion": "Northern Europe",
@@ -2546,15 +2710,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Iceland runs almost entirely on renewable energy and sits atop the Mid-Atlantic Ridge, splitting two continents.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Iceland runs almost entirely on renewable energy and sits atop the Mid-Atlantic Ridge, splitting two continents.",
+    "languages": "Icelandic"
   },
   {
     "code": "IN",
     "code3": "IND",
     "name": "India",
     "officialName": "Republic of India",
+    "nativeName": "भारत · இந்தியா",
     "capital": "New Delhi",
     "continent": "Asia",
     "subregion": "Southern Asia",
@@ -2575,9 +2741,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "India has 22 official languages and is on track to become the world's most populous country.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "India has 22 official languages and is on track to become the world's most populous country.",
+    "languages": "English · Hindi · Tamil"
   },
   {
     "code": "ID",
@@ -2601,15 +2768,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Indonesia is the world's largest archipelago—more than 17,000 islands spanning three time zones.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Indonesia is the world's largest archipelago—more than 17,000 islands spanning three time zones.",
+    "languages": "Indonesian"
   },
   {
     "code": "IR",
     "code3": "IRN",
     "name": "Iran",
     "officialName": "Islamic Republic of Iran",
+    "nativeName": "ایران",
     "capital": "Tehran",
     "continent": "Asia",
     "subregion": "Southern Asia",
@@ -2631,15 +2800,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Persian carpets from Iran are so prized that fine antique rugs can sell for millions of dollars.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Persian carpets from Iran are so prized that fine antique rugs can sell for millions of dollars.",
+    "languages": "Persian (Farsi)"
   },
   {
     "code": "IQ",
     "code3": "IRQ",
     "name": "Iraq",
     "officialName": "Republic of Iraq",
+    "nativeName": "العراق · ܩܘܼܛܢܵܐ · کۆماری",
     "capital": "Baghdad",
     "continent": "Asia",
     "subregion": "Western Asia",
@@ -2660,15 +2831,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Mesopotamia—'the land between the rivers'—in modern Iraq is where writing, the wheel, and cities first emerged.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Mesopotamia—'the land between the rivers'—in modern Iraq is where writing, the wheel, and cities first emerged.",
+    "languages": "Arabic · Aramaic · Sorani"
   },
   {
     "code": "IE",
     "code3": "IRL",
     "name": "Ireland",
     "officialName": "Republic of Ireland",
+    "nativeName": "Éire",
     "capital": "Dublin",
     "continent": "Europe",
     "subregion": "Northern Europe",
@@ -2684,15 +2857,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Ireland is called the Emerald Isle for its lush green countryside shaped by Gulf Stream rains.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Ireland is called the Emerald Isle for its lush green countryside shaped by Gulf Stream rains.",
+    "languages": "English · Irish"
   },
   {
     "code": "IM",
     "code3": "IMN",
     "name": "Isle of Man",
     "officialName": "Isle of Man",
+    "nativeName": "Mannin",
     "capital": "Douglas",
     "continent": "Europe",
     "subregion": "Northern Europe",
@@ -2705,15 +2880,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "The Isle of Man is a self-governing Crown dependency famous for the TT motorcycle races since 1907.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "The Isle of Man is a self-governing Crown dependency famous for the TT motorcycle races since 1907.",
+    "languages": "English · Manx"
   },
   {
     "code": "IL",
     "code3": "ISR",
     "name": "Israel",
     "officialName": "State of Israel",
+    "nativeName": "إسرائيل · ישראל",
     "capital": "Jerusalem",
     "continent": "Asia",
     "subregion": "Western Asia",
@@ -2733,15 +2910,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "The Dead Sea shoreline in Israel is the lowest dry land on Earth—about 430 meters below sea level.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "The Dead Sea shoreline in Israel is the lowest dry land on Earth—about 430 meters below sea level.",
+    "languages": "Arabic · Hebrew"
   },
   {
     "code": "IT",
     "code3": "ITA",
     "name": "Italy",
     "officialName": "Italian Republic",
+    "nativeName": "Italia",
     "capital": "Rome",
     "continent": "Europe",
     "subregion": "Southern Europe",
@@ -2762,15 +2941,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Italy has more UNESCO World Heritage Sites than any other country—58 and counting.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Italy has more UNESCO World Heritage Sites than any other country—58 and counting.",
+    "languages": "Italian"
   },
   {
     "code": "CI",
     "code3": "CIV",
     "name": "Ivory Coast",
     "officialName": "Republic of Côte d'Ivoire",
+    "nativeName": "Côte d'Ivoire",
     "capital": "Yamoussoukro",
     "continent": "Africa",
     "subregion": "Western Africa",
@@ -2792,9 +2973,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Ivory Coast produces about 40% of the world's cocoa, making it the top chocolate ingredient supplier.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Ivory Coast produces about 40% of the world's cocoa, making it the top chocolate ingredient supplier.",
+    "languages": "French"
   },
   {
     "code": "JM",
@@ -2813,15 +2995,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Jamaica gave the world reggae—Bob Marley's music turned a small island sound into a global movement.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Jamaica gave the world reggae—Bob Marley's music turned a small island sound into a global movement.",
+    "languages": "English · Jamaican Patois"
   },
   {
     "code": "JP",
     "code3": "JPN",
     "name": "Japan",
     "officialName": "Japan",
+    "nativeName": "日本",
     "capital": "Tokyo",
     "continent": "Asia",
     "subregion": "Eastern Asia",
@@ -2834,15 +3018,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Japan has more than 6,800 islands and sits on the Pacific Ring of Fire with over 100 active volcanoes.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Japan has more than 6,800 islands and sits on the Pacific Ring of Fire with over 100 active volcanoes.",
+    "languages": "Japanese"
   },
   {
     "code": "JE",
     "code3": "JEY",
     "name": "Jersey",
     "officialName": "Bailiwick of Jersey",
+    "nativeName": "Jèrri",
     "capital": "Saint Helier",
     "continent": "Europe",
     "subregion": "Northern Europe",
@@ -2856,15 +3042,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Jersey's tidal range is among the largest in the world—at low tide, the island nearly doubles in size.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "Jersey's tidal range is among the largest in the world—at low tide, the island nearly doubles in size.",
+    "languages": "English · French · Jèrriais"
   },
   {
     "code": "JO",
     "code3": "JOR",
     "name": "Jordan",
     "officialName": "Hashemite Kingdom of Jordan",
+    "nativeName": "الأردن",
     "capital": "Amman",
     "continent": "Asia",
     "subregion": "Western Asia",
@@ -2884,15 +3072,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Petra in Jordan is a rose-red city carved into sandstone cliffs by the Nabataeans over 2,000 years ago.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Petra in Jordan is a rose-red city carved into sandstone cliffs by the Nabataeans over 2,000 years ago.",
+    "languages": "Arabic"
   },
   {
     "code": "KZ",
     "code3": "KAZ",
     "name": "Kazakhstan",
     "officialName": "Republic of Kazakhstan",
+    "nativeName": "Қазақстан · Казахстан",
     "capital": "Astana",
     "continent": "Asia",
     "subregion": "Central Asia",
@@ -2912,9 +3102,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Kazakhstan is the world's largest landlocked country and was the last Soviet republic to declare independence.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Kazakhstan is the world's largest landlocked country and was the last Soviet republic to declare independence.",
+    "languages": "Kazakh · Russian"
   },
   {
     "code": "KE",
@@ -2940,9 +3131,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Kenya's Great Rift Valley lakes draw millions of flamingos, turning shores pink during migration.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Kenya's Great Rift Valley lakes draw millions of flamingos, turning shores pink during migration.",
+    "languages": "English · Swahili"
   },
   {
     "code": "KI",
@@ -2962,15 +3154,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Kiribati is one of the first countries likely to lose land to rising seas—some islands sit just two meters above water.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Kiribati is one of the first countries likely to lose land to rising seas—some islands sit just two meters above water.",
+    "languages": "English · Gilbertese"
   },
   {
     "code": "XK",
     "code3": "UNK",
     "name": "Kosovo",
     "officialName": "Republic of Kosovo",
+    "nativeName": "Kosova · Косово",
     "capital": "Pristina",
     "continent": "Europe",
     "subregion": "Southeast Europe",
@@ -2989,15 +3183,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Kosovo declared independence in 2008; its flag shows a map of the country with six stars for its main ethnic groups.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Kosovo declared independence in 2008; its flag shows a map of the country with six stars for its main ethnic groups.",
+    "languages": "Albanian · Serbian"
   },
   {
     "code": "KW",
     "code3": "KWT",
     "name": "Kuwait",
     "officialName": "State of Kuwait",
+    "nativeName": "الكويت",
     "capital": "Kuwait City",
     "continent": "Asia",
     "subregion": "Western Asia",
@@ -3014,15 +3210,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Kuwait's Liberation Tower was named after the 1991 Gulf War that ended the Iraqi occupation.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Kuwait's Liberation Tower was named after the 1991 Gulf War that ended the Iraqi occupation.",
+    "languages": "Arabic"
   },
   {
     "code": "KG",
     "code3": "KGZ",
     "name": "Kyrgyzstan",
     "officialName": "Kyrgyz Republic",
+    "nativeName": "Кыргызстан · Киргизия",
     "capital": "Bishkek",
     "continent": "Asia",
     "subregion": "Central Asia",
@@ -3041,15 +3239,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Kyrgyzstan is over 90% mountainous—the Tian Shan range dominates the landscape.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Kyrgyzstan is over 90% mountainous—the Tian Shan range dominates the landscape.",
+    "languages": "Kyrgyz · Russian"
   },
   {
     "code": "LA",
     "code3": "LAO",
     "name": "Laos",
     "officialName": "Lao People's Democratic Republic",
+    "nativeName": "ສປປລາວ",
     "capital": "Vientiane",
     "continent": "Asia",
     "subregion": "South-Eastern Asia",
@@ -3069,15 +3269,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Laos is the most heavily bombed country per capita in history due to the Secret War during the Vietnam era.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Laos is the most heavily bombed country per capita in history due to the Secret War during the Vietnam era.",
+    "languages": "Lao"
   },
   {
     "code": "LV",
     "code3": "LVA",
     "name": "Latvia",
     "officialName": "Republic of Latvia",
+    "nativeName": "Latvija",
     "capital": "Riga",
     "continent": "Europe",
     "subregion": "Northern Europe",
@@ -3096,15 +3298,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Riga, Latvia's capital, has one of Europe's largest collections of Art Nouveau architecture.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Riga, Latvia's capital, has one of Europe's largest collections of Art Nouveau architecture.",
+    "languages": "Latvian"
   },
   {
     "code": "LB",
     "code3": "LBN",
     "name": "Lebanon",
     "officialName": "Lebanese Republic",
+    "nativeName": "لبنان · Liban",
     "capital": "Beirut",
     "continent": "Asia",
     "subregion": "Western Asia",
@@ -3121,9 +3325,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Lebanon's cedars appear on its flag and were prized by ancient Egyptians and Phoenicians for shipbuilding.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Lebanon's cedars appear on its flag and were prized by ancient Egyptians and Phoenicians for shipbuilding.",
+    "languages": "Arabic · French"
   },
   {
     "code": "LS",
@@ -3145,9 +3350,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Lesotho is entirely surrounded by South Africa and is the only country in the world that lies entirely above 1,000 meters.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Lesotho is entirely surrounded by South Africa and is the only country in the world that lies entirely above 1,000 meters.",
+    "languages": "English · Sotho"
   },
   {
     "code": "LR",
@@ -3171,15 +3377,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Liberia was founded in the 19th century by freed American slaves—its flag echoes the U.S. stars and stripes.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Liberia was founded in the 19th century by freed American slaves—its flag echoes the U.S. stars and stripes.",
+    "languages": "English"
   },
   {
     "code": "LY",
     "code3": "LBY",
     "name": "Libya",
     "officialName": "State of Libya",
+    "nativeName": "ليبيا",
     "capital": "Tripoli",
     "continent": "Africa",
     "subregion": "Northern Africa",
@@ -3200,9 +3408,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Much of Libya lies within the Sahara, including the ancient Roman ruins of Leptis Magna on the coast.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Much of Libya lies within the Sahara, including the ancient Roman ruins of Leptis Magna on the coast.",
+    "languages": "Arabic"
   },
   {
     "code": "LI",
@@ -3225,15 +3434,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Liechtenstein is one of only two doubly landlocked countries—surrounded by landlocked nations.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Liechtenstein is one of only two doubly landlocked countries—surrounded by landlocked nations.",
+    "languages": "German"
   },
   {
     "code": "LT",
     "code3": "LTU",
     "name": "Lithuania",
     "officialName": "Republic of Lithuania",
+    "nativeName": "Lietuva",
     "capital": "Vilnius",
     "continent": "Europe",
     "subregion": "Northern Europe",
@@ -3252,15 +3463,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Lithuania was the last European nation to abandon paganism and the first Soviet republic to declare independence.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Lithuania was the last European nation to abandon paganism and the first Soviet republic to declare independence.",
+    "languages": "Lithuanian"
   },
   {
     "code": "LU",
     "code3": "LUX",
     "name": "Luxembourg",
     "officialName": "Grand Duchy of Luxembourg",
+    "nativeName": "Luxemburg · Lëtzebuerg",
     "capital": "Luxembourg",
     "continent": "Europe",
     "subregion": "Western Europe",
@@ -3278,15 +3491,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Luxembourg has the highest GDP per capita in the world and is a founding member of the European Union.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Luxembourg has the highest GDP per capita in the world and is a founding member of the European Union.",
+    "languages": "French · German · Luxembourgish"
   },
   {
     "code": "MO",
     "code3": "MAC",
     "name": "Macau",
     "officialName": "Macao Special Administrative Region of the People's Republic of China",
+    "nativeName": "澳门",
     "capital": "",
     "continent": "Asia",
     "subregion": "Eastern Asia",
@@ -3302,15 +3517,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Macau was a Portuguese colony for 400 years before returning to China in 1999—it rivals Las Vegas for gambling revenue.",
+    "hasCapitalImage": false,
     "isTerritory": true,
-    "hasCapitalImage": false
+    "fact": "Macau was a Portuguese colony for 400 years before returning to China in 1999—it rivals Las Vegas for gambling revenue.",
+    "languages": "Chinese · Portuguese"
   },
   {
     "code": "MG",
     "code3": "MDG",
     "name": "Madagascar",
     "officialName": "Republic of Madagascar",
+    "nativeName": "Madagasikara",
     "capital": "Antananarivo",
     "continent": "Africa",
     "subregion": "Eastern Africa",
@@ -3324,15 +3541,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Madagascar broke away from Africa 88 million years ago—about 90% of its wildlife is found nowhere else.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Madagascar broke away from Africa 88 million years ago—about 90% of its wildlife is found nowhere else.",
+    "languages": "French · Malagasy"
   },
   {
     "code": "MW",
     "code3": "MWI",
     "name": "Malawi",
     "officialName": "Republic of Malawi",
+    "nativeName": "Malaŵi",
     "capital": "Lilongwe",
     "continent": "Africa",
     "subregion": "Eastern Africa",
@@ -3350,15 +3569,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Lake Malawi contains more species of fish than any other lake on Earth—hundreds of colorful cichlids.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Lake Malawi contains more species of fish than any other lake on Earth—hundreds of colorful cichlids.",
+    "languages": "Chewa · English"
   },
   {
     "code": "MY",
     "code3": "MYS",
     "name": "Malaysia",
     "officialName": "Malaysia",
+    "nativeName": "مليسيا",
     "capital": "Kuala Lumpur",
     "continent": "Asia",
     "subregion": "South-Eastern Asia",
@@ -3375,15 +3596,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Malaysia's Petronas Towers in Kuala Lumpur were the world's tallest buildings from 1998 to 2004.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Malaysia's Petronas Towers in Kuala Lumpur were the world's tallest buildings from 1998 to 2004.",
+    "languages": "English · Malay"
   },
   {
     "code": "MV",
     "code3": "MDV",
     "name": "Maldives",
     "officialName": "Republic of the Maldives",
+    "nativeName": "ދިވެހިރާއްޖޭގެ",
     "capital": "Malé",
     "continent": "Asia",
     "subregion": "Southern Asia",
@@ -3397,9 +3620,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "The Maldives is the world's lowest country—its highest natural point is only about 2.4 meters above sea level.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "The Maldives is the world's lowest country—its highest natural point is only about 2.4 meters above sea level.",
+    "languages": "Maldivian"
   },
   {
     "code": "ML",
@@ -3427,9 +3651,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Timbuktu in Mali was once a legendary center of Islamic learning and trans-Saharan trade.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Timbuktu in Mali was once a legendary center of Islamic learning and trans-Saharan trade.",
+    "languages": "French"
   },
   {
     "code": "MT",
@@ -3449,15 +3674,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Malta's Megalithic Temples are older than Stonehenge and the Egyptian pyramids.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Malta's Megalithic Temples are older than Stonehenge and the Egyptian pyramids.",
+    "languages": "English · Maltese"
   },
   {
     "code": "MH",
     "code3": "MHL",
     "name": "Marshall Islands",
     "officialName": "Republic of the Marshall Islands",
+    "nativeName": "M̧ajeļ",
     "capital": "Majuro",
     "continent": "Oceania",
     "subregion": "Micronesia",
@@ -3471,9 +3698,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "The Marshall Islands include Bikini Atoll, where U.S. nuclear tests in the 1940s–50s forced entire communities to relocate.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "The Marshall Islands include Bikini Atoll, where U.S. nuclear tests in the 1940s–50s forced entire communities to relocate.",
+    "languages": "English · Marshallese"
   },
   {
     "code": "MQ",
@@ -3492,15 +3720,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Martinique's Mount Pelée erupted in 1902, destroying the city of Saint-Pierre in minutes.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "Martinique's Mount Pelée erupted in 1902, destroying the city of Saint-Pierre in minutes.",
+    "languages": "French"
   },
   {
     "code": "MR",
     "code3": "MRT",
     "name": "Mauritania",
     "officialName": "Islamic Republic of Mauritania",
+    "nativeName": "موريتانيا",
     "capital": "Nouakchott",
     "continent": "Africa",
     "subregion": "Western Africa",
@@ -3519,15 +3749,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Mauritania's Richat Structure—a giant bull's-eye in the Sahara—is visible from space and was once thought to be an impact crater.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Mauritania's Richat Structure—a giant bull's-eye in the Sahara—is visible from space and was once thought to be an impact crater.",
+    "languages": "Arabic"
   },
   {
     "code": "MU",
     "code3": "MUS",
     "name": "Mauritius",
     "officialName": "Republic of Mauritius",
+    "nativeName": "Maurice · Moris",
     "capital": "Port Louis",
     "continent": "Africa",
     "subregion": "Eastern Africa",
@@ -3541,9 +3773,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Mauritius was the only known home of the dodo before the flightless bird was hunted to extinction by the 1680s.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Mauritius was the only known home of the dodo before the flightless bird was hunted to extinction by the 1680s.",
+    "languages": "English · French · Mauritian Creole"
   },
   {
     "code": "YT",
@@ -3563,15 +3796,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Mayotte sits in the Comoros archipelago but chose to remain French—a source of ongoing regional tension.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "Mayotte sits in the Comoros archipelago but chose to remain French—a source of ongoing regional tension.",
+    "languages": "French"
   },
   {
     "code": "MX",
     "code3": "MEX",
     "name": "Mexico",
     "officialName": "United Mexican States",
+    "nativeName": "México",
     "capital": "Mexico City",
     "continent": "North America",
     "subregion": "North America",
@@ -3589,9 +3824,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Mexico City was built on the ruins of Tenochtitlán, the Aztec capital that once floated on a lake.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Mexico City was built on the ruins of Tenochtitlán, the Aztec capital that once floated on a lake.",
+    "languages": "Spanish"
   },
   {
     "code": "FM",
@@ -3611,9 +3847,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Micronesia spans more than 2.7 million square kilometers of ocean but has a land area smaller than Rhode Island.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Micronesia spans more than 2.7 million square kilometers of ocean but has a land area smaller than Rhode Island.",
+    "languages": "English"
   },
   {
     "code": "MD",
@@ -3636,9 +3873,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Moldova's Mileștii Mici holds one of the world's largest wine cellars—over 200 km of underground tunnels.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Moldova's Mileștii Mici holds one of the world's largest wine cellars—over 200 km of underground tunnels.",
+    "languages": "Moldavian"
   },
   {
     "code": "MC",
@@ -3660,15 +3898,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Monaco is smaller than Central Park in New York yet packs luxury casinos, a Grand Prix, and a royal palace.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Monaco is smaller than Central Park in New York yet packs luxury casinos, a Grand Prix, and a royal palace.",
+    "languages": "French"
   },
   {
     "code": "MN",
     "code3": "MNG",
     "name": "Mongolia",
     "officialName": "Mongolia",
+    "nativeName": "Монгол улс",
     "capital": "Ulan Bator",
     "continent": "Asia",
     "subregion": "Eastern Asia",
@@ -3684,15 +3924,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Genghis Khan's empire began on the Mongolian steppe—the country still celebrates him as a founding father.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Genghis Khan's empire began on the Mongolian steppe—the country still celebrates him as a founding father.",
+    "languages": "Mongolian"
   },
   {
     "code": "ME",
     "code3": "MNE",
     "name": "Montenegro",
     "officialName": "Montenegro",
+    "nativeName": "Црна Гора",
     "capital": "Podgorica",
     "continent": "Europe",
     "subregion": "Southeast Europe",
@@ -3711,9 +3953,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Montenegro means 'Black Mountain' in Venetian Italian, named for the dark forests on Mount Lovćen.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Montenegro means 'Black Mountain' in Venetian Italian, named for the dark forests on Mount Lovćen.",
+    "languages": "Montenegrin"
   },
   {
     "code": "MS",
@@ -3732,15 +3975,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Montserrat's Soufrière Hills volcano erupted in 1995, burying the capital Plymouth in ash and forcing evacuation.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "Montserrat's Soufrière Hills volcano erupted in 1995, burying the capital Plymouth in ash and forcing evacuation.",
+    "languages": "English"
   },
   {
     "code": "MA",
     "code3": "MAR",
     "name": "Morocco",
     "officialName": "Kingdom of Morocco",
+    "nativeName": "المغرب · ⵍⵎⴰⵖⵔⵉⴱ",
     "capital": "Rabat",
     "continent": "Africa",
     "subregion": "Northern Africa",
@@ -3758,15 +4003,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Morocco's Chefchaouen is famous for its buildings painted in shades of blue.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Morocco's Chefchaouen is famous for its buildings painted in shades of blue.",
+    "languages": "Arabic · Berber"
   },
   {
     "code": "MZ",
     "code3": "MOZ",
     "name": "Mozambique",
     "officialName": "Republic of Mozambique",
+    "nativeName": "Moçambique",
     "capital": "Maputo",
     "continent": "Africa",
     "subregion": "Eastern Africa",
@@ -3787,15 +4034,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Mozambique's Bazaruto Archipelago protects dugongs—rare sea cows once mistaken for mermaids by sailors.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Mozambique's Bazaruto Archipelago protects dugongs—rare sea cows once mistaken for mermaids by sailors.",
+    "languages": "Portuguese"
   },
   {
     "code": "MM",
     "code3": "MMR",
     "name": "Myanmar",
     "officialName": "Republic of the Union of Myanmar",
+    "nativeName": "မြန်မာ",
     "capital": "Naypyidaw",
     "continent": "Asia",
     "subregion": "South-Eastern Asia",
@@ -3816,15 +4065,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Myanmar's Shwedagon Pagoda in Yangon is covered in gold leaf and topped with thousands of diamonds and rubies.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Myanmar's Shwedagon Pagoda in Yangon is covered in gold leaf and topped with thousands of diamonds and rubies.",
+    "languages": "Burmese"
   },
   {
     "code": "NA",
     "code3": "NAM",
     "name": "Namibia",
     "officialName": "Republic of Namibia",
+    "nativeName": "Namibië",
     "capital": "Windhoek",
     "continent": "Africa",
     "subregion": "Southern Africa",
@@ -3843,9 +4094,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Namibia's Namib Desert is considered the world's oldest desert—some dunes are millions of years old.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Namibia's Namib Desert is considered the world's oldest desert—some dunes are millions of years old.",
+    "languages": "Afrikaans · English · German · Herero · Khoekhoe · Kwangali · Lozi · Ndonga · Tswana"
   },
   {
     "code": "NR",
@@ -3865,15 +4117,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Nauru was once among the richest countries per capita thanks to phosphate mining—but the deposits are nearly gone.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Nauru was once among the richest countries per capita thanks to phosphate mining—but the deposits are nearly gone.",
+    "languages": "English · Nauru"
   },
   {
     "code": "NP",
     "code3": "NPL",
     "name": "Nepal",
     "officialName": "Federal Democratic Republic of Nepal",
+    "nativeName": "नेपाल",
     "capital": "Kathmandu",
     "continent": "Asia",
     "subregion": "Southern Asia",
@@ -3890,15 +4144,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Mount Everest's summit sits on the Nepal–China border—the world's highest point at 8,849 meters.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Mount Everest's summit sits on the Nepal–China border—the world's highest point at 8,849 meters.",
+    "languages": "Nepali"
   },
   {
     "code": "NL",
     "code3": "NLD",
     "name": "Netherlands",
     "officialName": "Kingdom of the Netherlands",
+    "nativeName": "Nederland",
     "capital": "Amsterdam",
     "continent": "Europe",
     "subregion": "Western Europe",
@@ -3917,15 +4173,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "About a quarter of the Netherlands lies below sea level, protected by an elaborate system of dikes and pumps.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "About a quarter of the Netherlands lies below sea level, protected by an elaborate system of dikes and pumps.",
+    "languages": "Dutch"
   },
   {
     "code": "NC",
     "code3": "NCL",
     "name": "New Caledonia",
     "officialName": "New Caledonia",
+    "nativeName": "Nouvelle-Calédonie",
     "capital": "Nouméa",
     "continent": "Oceania",
     "subregion": "Melanesia",
@@ -3938,15 +4196,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "New Caledonia has the world's largest lagoon, surrounded by the world's second-longest barrier reef.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "New Caledonia has the world's largest lagoon, surrounded by the world's second-longest barrier reef.",
+    "languages": "French"
   },
   {
     "code": "NZ",
     "code3": "NZL",
     "name": "New Zealand",
     "officialName": "New Zealand",
+    "nativeName": "Aotearoa",
     "capital": "Wellington",
     "continent": "Oceania",
     "subregion": "Australia and New Zealand",
@@ -3959,9 +4219,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "New Zealand was the first country to give women the right to vote, in 1893.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "New Zealand was the first country to give women the right to vote, in 1893.",
+    "languages": "English · Māori · New Zealand Sign Language"
   },
   {
     "code": "NI",
@@ -3984,9 +4245,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Nicaragua has the two largest freshwater lakes in Central America—Lake Nicaragua even has freshwater sharks.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Nicaragua has the two largest freshwater lakes in Central America—Lake Nicaragua even has freshwater sharks.",
+    "languages": "Spanish"
   },
   {
     "code": "NE",
@@ -4014,9 +4276,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "The Sahara covers most of Niger, yet the country takes its name from the Niger River that arcs through its southwest.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "The Sahara covers most of Niger, yet the country takes its name from the Niger River that arcs through its southwest.",
+    "languages": "French"
   },
   {
     "code": "NG",
@@ -4041,15 +4304,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Nigeria has Africa's largest population and Nollywood produces more films than Hollywood by volume.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Nigeria has Africa's largest population and Nollywood produces more films than Hollywood by volume.",
+    "languages": "English"
   },
   {
     "code": "NU",
     "code3": "NIU",
     "name": "Niue",
     "officialName": "Niue",
+    "nativeName": "Niuē",
     "capital": "Alofi",
     "continent": "Oceania",
     "subregion": "Polynesia",
@@ -4062,15 +4327,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Niue is one of the world's largest raised coral atolls and uses New Zealand currency.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "Niue is one of the world's largest raised coral atolls and uses New Zealand currency.",
+    "languages": "English · Niuean"
   },
   {
     "code": "NF",
     "code3": "NFK",
     "name": "Norfolk Island",
     "officialName": "Territory of Norfolk Island",
+    "nativeName": "Norf'k Ailen",
     "capital": "Kingston",
     "continent": "Oceania",
     "subregion": "Australia and New Zealand",
@@ -4084,15 +4351,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Norfolk Island was settled by descendants of the Bounty mutineers after they left Pitcairn.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "Norfolk Island was settled by descendants of the Bounty mutineers after they left Pitcairn.",
+    "languages": "English · Norfuk"
   },
   {
     "code": "KP",
     "code3": "PRK",
     "name": "North Korea",
     "officialName": "Democratic People's Republic of Korea",
+    "nativeName": "조선",
     "capital": "Pyongyang",
     "continent": "Asia",
     "subregion": "Eastern Asia",
@@ -4111,15 +4380,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "North Korea and South Korea are still technically at war—the 1953 armistice never became a peace treaty.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "North Korea and South Korea are still technically at war—the 1953 armistice never became a peace treaty.",
+    "languages": "Korean"
   },
   {
     "code": "MK",
     "code3": "MKD",
     "name": "North Macedonia",
     "officialName": "Republic of North Macedonia",
+    "nativeName": "Македонија",
     "capital": "Skopje",
     "continent": "Europe",
     "subregion": "Southeast Europe",
@@ -4140,15 +4411,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "North Macedonia's Lake Ohrid is one of Europe's oldest and deepest lakes, home to species found nowhere else.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "North Macedonia's Lake Ohrid is one of Europe's oldest and deepest lakes, home to species found nowhere else.",
+    "languages": "Macedonian"
   },
   {
     "code": "MP",
     "code3": "MNP",
     "name": "Northern Mariana Islands",
     "officialName": "Commonwealth of the Northern Mariana Islands",
+    "nativeName": "Na Islas Mariånas",
     "capital": "Saipan",
     "continent": "Oceania",
     "subregion": "Micronesia",
@@ -4162,15 +4435,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "The Mariana Trench near the Northern Mariana Islands is the deepest point in the ocean—almost 11 km down.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "The Mariana Trench near the Northern Mariana Islands is the deepest point in the ocean—almost 11 km down.",
+    "languages": "Carolinian · Chamorro · English"
   },
   {
     "code": "NO",
     "code3": "NOR",
     "name": "Norway",
     "officialName": "Kingdom of Norway",
+    "nativeName": "Noreg · Norge · Norgga",
     "capital": "Oslo",
     "continent": "Europe",
     "subregion": "Northern Europe",
@@ -4188,15 +4463,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Norway's fjords were carved by Ice Age glaciers and its coastline would stretch halfway around the equator if straightened.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Norway's fjords were carved by Ice Age glaciers and its coastline would stretch halfway around the equator if straightened.",
+    "languages": "Norwegian Bokmål · Norwegian Nynorsk · Sami"
   },
   {
     "code": "OM",
     "code3": "OMN",
     "name": "Oman",
     "officialName": "Sultanate of Oman",
+    "nativeName": "عمان",
     "capital": "Muscat",
     "continent": "Asia",
     "subregion": "Western Asia",
@@ -4214,15 +4491,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Oman's Sultan Qaboos transformed the country from an isolated sultanate into a modern nation over his 50-year reign.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Oman's Sultan Qaboos transformed the country from an isolated sultanate into a modern nation over his 50-year reign.",
+    "languages": "Arabic"
   },
   {
     "code": "PK",
     "code3": "PAK",
     "name": "Pakistan",
     "officialName": "Islamic Republic of Pakistan",
+    "nativeName": "پاكستان",
     "capital": "Islamabad",
     "continent": "Asia",
     "subregion": "Southern Asia",
@@ -4241,15 +4520,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Pakistan is home to K2, the world's second-highest mountain—harder to climb than Everest and nicknamed the Savage Mountain.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Pakistan is home to K2, the world's second-highest mountain—harder to climb than Everest and nicknamed the Savage Mountain.",
+    "languages": "English · Urdu"
   },
   {
     "code": "PW",
     "code3": "PLW",
     "name": "Palau",
     "officialName": "Republic of Palau",
+    "nativeName": "Belau",
     "capital": "Ngerulmud",
     "continent": "Oceania",
     "subregion": "Micronesia",
@@ -4263,15 +4544,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Palau's Jellyfish Lake lets swimmers snorkel among millions of harmless golden jellyfish.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Palau's Jellyfish Lake lets swimmers snorkel among millions of harmless golden jellyfish.",
+    "languages": "English · Palauan"
   },
   {
     "code": "PS",
     "code3": "PSE",
     "name": "Palestine",
     "officialName": "State of Palestine",
+    "nativeName": "فلسطين",
     "capital": "Ramallah",
     "continent": "Asia",
     "subregion": "Western Asia",
@@ -4289,15 +4572,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Jericho in the Palestinian territories is one of the oldest continuously inhabited cities in the world.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "Jericho in the Palestinian territories is one of the oldest continuously inhabited cities in the world.",
+    "languages": "Arabic"
   },
   {
     "code": "PA",
     "code3": "PAN",
     "name": "Panama",
     "officialName": "Republic of Panama",
+    "nativeName": "Panamá",
     "capital": "Panama City",
     "continent": "North America",
     "subregion": "Central America",
@@ -4314,15 +4599,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "The Panama Canal saves ships a 13,000-km journey around South America by cutting through the isthmus.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "The Panama Canal saves ships a 13,000-km journey around South America by cutting through the isthmus.",
+    "languages": "Spanish"
   },
   {
     "code": "PG",
     "code3": "PNG",
     "name": "Papua New Guinea",
     "officialName": "Independent State of Papua New Guinea",
+    "nativeName": "Papua Niu Gini · Papua Niugini",
     "capital": "Port Moresby",
     "continent": "Oceania",
     "subregion": "Melanesia",
@@ -4338,15 +4625,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Papua New Guinea has more than 800 living languages—more than any other country.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Papua New Guinea has more than 800 living languages—more than any other country.",
+    "languages": "English · Hiri Motu · Tok Pisin"
   },
   {
     "code": "PY",
     "code3": "PRY",
     "name": "Paraguay",
     "officialName": "Republic of Paraguay",
+    "nativeName": "Paraguái",
     "capital": "Asunción",
     "continent": "South America",
     "subregion": "South America",
@@ -4364,15 +4653,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Paraguay's Guaraní language is one of the few indigenous American languages with official status alongside Spanish.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Paraguay's Guaraní language is one of the few indigenous American languages with official status alongside Spanish.",
+    "languages": "Guaraní · Spanish"
   },
   {
     "code": "PE",
     "code3": "PER",
     "name": "Peru",
     "officialName": "Republic of Peru",
+    "nativeName": "Piruw · Perú",
     "capital": "Lima",
     "continent": "South America",
     "subregion": "South America",
@@ -4392,15 +4683,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Machu Picchu in Peru is a 15th-century Inca citadel perched 2,430 meters above sea level in the Andes.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Machu Picchu in Peru is a 15th-century Inca citadel perched 2,430 meters above sea level in the Andes.",
+    "languages": "Aymara · Quechua · Spanish"
   },
   {
     "code": "PH",
     "code3": "PHL",
     "name": "Philippines",
     "officialName": "Republic of the Philippines",
+    "nativeName": "Pilipinas",
     "capital": "Manila",
     "continent": "Asia",
     "subregion": "South-Eastern Asia",
@@ -4414,9 +4707,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "The Philippines consists of about 7,641 islands and is the world's top exporter of nurses.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "The Philippines consists of about 7,641 islands and is the world's top exporter of nurses.",
+    "languages": "English · Filipino"
   },
   {
     "code": "PN",
@@ -4436,15 +4730,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Pitcairn Island was settled by mutineers from HMS Bounty—today fewer than 50 people live there.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "Pitcairn Island was settled by mutineers from HMS Bounty—today fewer than 50 people live there.",
+    "languages": "English"
   },
   {
     "code": "PL",
     "code3": "POL",
     "name": "Poland",
     "officialName": "Republic of Poland",
+    "nativeName": "Polska",
     "capital": "Warsaw",
     "continent": "Europe",
     "subregion": "Central Europe",
@@ -4466,9 +4762,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Poland's Wieliczka Salt Mine has chapels, sculptures, and chandeliers carved entirely from salt.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Poland's Wieliczka Salt Mine has chapels, sculptures, and chandeliers carved entirely from salt.",
+    "languages": "Polish"
   },
   {
     "code": "PT",
@@ -4490,9 +4787,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Portugal's explorers opened sea routes to India, Brazil, and Japan—shaping the first global age of trade.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Portugal's explorers opened sea routes to India, Brazil, and Japan—shaping the first global age of trade.",
+    "languages": "Portuguese"
   },
   {
     "code": "PR",
@@ -4512,15 +4810,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Puerto Rico's bioluminescent bays glow blue at night when microscopic organisms are disturbed in the water.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "Puerto Rico's bioluminescent bays glow blue at night when microscopic organisms are disturbed in the water.",
+    "languages": "English · Spanish"
   },
   {
     "code": "QA",
     "code3": "QAT",
     "name": "Qatar",
     "officialName": "State of Qatar",
+    "nativeName": "قطر",
     "capital": "Doha",
     "continent": "Asia",
     "subregion": "Western Asia",
@@ -4536,15 +4836,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Qatar will have hosted a FIFA World Cup where every stadium was within about an hour's drive of each other.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Qatar will have hosted a FIFA World Cup where every stadium was within about an hour's drive of each other.",
+    "languages": "Arabic"
   },
   {
     "code": "RE",
     "code3": "REU",
     "name": "Réunion",
     "officialName": "Réunion Island",
+    "nativeName": "La Réunion",
     "capital": "Saint-Denis",
     "continent": "Africa",
     "subregion": "Eastern Africa",
@@ -4558,15 +4860,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Réunion's Piton de la Fournaise is one of the world's most active volcanoes, erupting dozens of times since 2000.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "Réunion's Piton de la Fournaise is one of the world's most active volcanoes, erupting dozens of times since 2000.",
+    "languages": "French"
   },
   {
     "code": "RO",
     "code3": "ROU",
     "name": "Romania",
     "officialName": "Romania",
+    "nativeName": "România",
     "capital": "Bucharest",
     "continent": "Europe",
     "subregion": "Southeast Europe",
@@ -4585,15 +4889,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Romania's Transylvania region inspired Bram Stoker's Dracula—though Vlad the Impaler never lived in Bran Castle.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Romania's Transylvania region inspired Bram Stoker's Dracula—though Vlad the Impaler never lived in Bran Castle.",
+    "languages": "Romanian"
   },
   {
     "code": "RU",
     "code3": "RUS",
     "name": "Russia",
     "officialName": "Russian Federation",
+    "nativeName": "Россия",
     "capital": "Moscow",
     "continent": "Europe",
     "subregion": "Eastern Europe",
@@ -4622,9 +4928,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Russia spans 11 time zones and crosses both Europe and Asia—it is the largest country on Earth by area.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Russia spans 11 time zones and crosses both Europe and Asia—it is the largest country on Earth by area.",
+    "languages": "Russian"
   },
   {
     "code": "RW",
@@ -4649,15 +4956,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Rwanda banned plastic bags nationwide in 2008 and holds a monthly community cleanup called Umuganda.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Rwanda banned plastic bags nationwide in 2008 and holds a monthly community cleanup called Umuganda.",
+    "languages": "English · French · Kinyarwanda"
   },
   {
     "code": "BL",
     "code3": "BLM",
     "name": "Saint Barthélemy",
     "officialName": "Collectivity of Saint Barthélemy",
+    "nativeName": "Saint-Barthélemy",
     "capital": "Gustavia",
     "continent": "North America",
     "subregion": "Caribbean",
@@ -4671,9 +4980,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Saint Barthélemy is a glamorous Caribbean island nicknamed St. Barts, popular with yachts and celebrities.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "Saint Barthélemy is a glamorous Caribbean island nicknamed St. Barts, popular with yachts and celebrities.",
+    "languages": "French"
   },
   {
     "code": "SH",
@@ -4692,9 +5002,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Saint Helena is where Napoleon was exiled after Waterloo—it took ships weeks to reach from Europe.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "Saint Helena is where Napoleon was exiled after Waterloo—it took ships weeks to reach from Europe.",
+    "languages": "English"
   },
   {
     "code": "KN",
@@ -4714,9 +5025,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Saint Kitts and Nevis is the smallest sovereign country in the Western Hemisphere by both area and population.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Saint Kitts and Nevis is the smallest sovereign country in the Western Hemisphere by both area and population.",
+    "languages": "English"
   },
   {
     "code": "LC",
@@ -4735,15 +5047,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Saint Lucia's twin Pitons—volcanic spires rising from the sea—are a UNESCO World Heritage Site.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Saint Lucia's twin Pitons—volcanic spires rising from the sea—are a UNESCO World Heritage Site.",
+    "languages": "English"
   },
   {
     "code": "MF",
     "code3": "MAF",
     "name": "Saint Martin",
     "officialName": "Saint Martin",
+    "nativeName": "Saint-Martin",
     "capital": "Marigot",
     "continent": "North America",
     "subregion": "Caribbean",
@@ -4758,15 +5072,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Saint Martin is split between France and the Netherlands—the smallest landmass shared by two nations.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "Saint Martin is split between France and the Netherlands—the smallest landmass shared by two nations.",
+    "languages": "French"
   },
   {
     "code": "PM",
     "code3": "SPM",
     "name": "Saint Pierre and Miquelon",
     "officialName": "Saint Pierre and Miquelon",
+    "nativeName": "Saint-Pierre-et-Miquelon",
     "capital": "Saint-Pierre",
     "continent": "North America",
     "subregion": "North America",
@@ -4779,9 +5095,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Saint Pierre and Miquelon are French islands off Canada's coast—residents use the euro just 25 km from Newfoundland.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "Saint Pierre and Miquelon are French islands off Canada's coast—residents use the euro just 25 km from Newfoundland.",
+    "languages": "French"
   },
   {
     "code": "VC",
@@ -4800,15 +5117,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Saint Vincent's La Soufrière volcano erupted in 2021, covering much of the island in ash.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Saint Vincent's La Soufrière volcano erupted in 2021, covering much of the island in ash.",
+    "languages": "English"
   },
   {
     "code": "WS",
     "code3": "WSM",
     "name": "Samoa",
     "officialName": "Independent State of Samoa",
+    "nativeName": "Sāmoa",
     "capital": "Apia",
     "continent": "Oceania",
     "subregion": "Polynesia",
@@ -4822,9 +5141,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Samoa skipped December 30, 2011 entirely when it moved across the International Date Line to align with trading partners.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Samoa skipped December 30, 2011 entirely when it moved across the International Date Line to align with trading partners.",
+    "languages": "English · Samoan"
   },
   {
     "code": "SM",
@@ -4846,15 +5166,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "San Marino claims to be the world's oldest republic, founded in 301 AD on Mount Titano.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "San Marino claims to be the world's oldest republic, founded in 301 AD on Mount Titano.",
+    "languages": "Italian"
   },
   {
     "code": "ST",
     "code3": "STP",
     "name": "São Tomé and Príncipe",
     "officialName": "Democratic Republic of São Tomé and Príncipe",
+    "nativeName": "São Tomé e Príncipe",
     "capital": "São Tomé",
     "continent": "Africa",
     "subregion": "Middle Africa",
@@ -4868,15 +5190,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "São Tomé and Príncipe's cocoa plantations once made it a major chocolate supplier to Europe.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "São Tomé and Príncipe's cocoa plantations once made it a major chocolate supplier to Europe.",
+    "languages": "Portuguese"
   },
   {
     "code": "SA",
     "code3": "SAU",
     "name": "Saudi Arabia",
     "officialName": "Kingdom of Saudi Arabia",
+    "nativeName": "السعودية",
     "capital": "Riyadh",
     "continent": "Asia",
     "subregion": "Western Asia",
@@ -4898,15 +5222,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Saudi Arabia has no permanent rivers—the country is mostly desert, including the vast Empty Quarter.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Saudi Arabia has no permanent rivers—the country is mostly desert, including the vast Empty Quarter.",
+    "languages": "Arabic"
   },
   {
     "code": "SN",
     "code3": "SEN",
     "name": "Senegal",
     "officialName": "Republic of Senegal",
+    "nativeName": "Sénégal",
     "capital": "Dakar",
     "continent": "Africa",
     "subregion": "Western Africa",
@@ -4926,15 +5252,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Senegal's Lake Retba is bright pink from salt-loving algae and is harvested for salt like the Dead Sea.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Senegal's Lake Retba is bright pink from salt-loving algae and is harvested for salt like the Dead Sea.",
+    "languages": "French"
   },
   {
     "code": "RS",
     "code3": "SRB",
     "name": "Serbia",
     "officialName": "Republic of Serbia",
+    "nativeName": "Србија",
     "capital": "Belgrade",
     "continent": "Europe",
     "subregion": "Southeast Europe",
@@ -4957,15 +5285,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Serbia sits at a crossroads of empires—Belgrade is one of Europe's oldest continuously inhabited cities.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Serbia sits at a crossroads of empires—Belgrade is one of Europe's oldest continuously inhabited cities.",
+    "languages": "Serbian"
   },
   {
     "code": "SC",
     "code3": "SYC",
     "name": "Seychelles",
     "officialName": "Republic of Seychelles",
+    "nativeName": "Sesel",
     "capital": "Victoria",
     "continent": "Africa",
     "subregion": "Eastern Africa",
@@ -4979,9 +5309,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Seychelles's Vallée de Mai preserves the coco de mer, a palm that produces the world's heaviest seed.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Seychelles's Vallée de Mai preserves the coco de mer, a palm that produces the world's heaviest seed.",
+    "languages": "English · French · Seychellois Creole"
   },
   {
     "code": "SL",
@@ -5004,15 +5335,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Sierra Leone's name means 'lion mountains' in Portuguese, though lions no longer live there.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Sierra Leone's name means 'lion mountains' in Portuguese, though lions no longer live there.",
+    "languages": "English"
   },
   {
     "code": "SG",
     "code3": "SGP",
     "name": "Singapore",
     "officialName": "Republic of Singapore",
+    "nativeName": "Singapura · சிங்கப்பூர் · 新加坡",
     "capital": "Singapore",
     "continent": "Asia",
     "subregion": "South-Eastern Asia",
@@ -5026,15 +5359,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Singapore transformed from a fishing village to a global financial hub in a single generation.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Singapore transformed from a fishing village to a global financial hub in a single generation.",
+    "languages": "Chinese · English · Malay · Tamil"
   },
   {
     "code": "SX",
     "code3": "SXM",
     "name": "Sint Maarten",
     "officialName": "Sint Maarten",
+    "nativeName": "Saint-Martin",
     "capital": "Philipsburg",
     "continent": "North America",
     "subregion": "Caribbean",
@@ -5049,15 +5384,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Sint Maarten's Maho Beach is famous for airliners passing just meters overhead on approach to the runway.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "Sint Maarten's Maho Beach is famous for airliners passing just meters overhead on approach to the runway.",
+    "languages": "Dutch · English · French"
   },
   {
     "code": "SK",
     "code3": "SVK",
     "name": "Slovakia",
     "officialName": "Slovak Republic",
+    "nativeName": "Slovensko",
     "capital": "Bratislava",
     "continent": "Europe",
     "subregion": "Central Europe",
@@ -5077,15 +5414,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Slovakia has more castles and châteaux per capita than almost any other country in Europe.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Slovakia has more castles and châteaux per capita than almost any other country in Europe.",
+    "languages": "Slovak"
   },
   {
     "code": "SI",
     "code3": "SVN",
     "name": "Slovenia",
     "officialName": "Republic of Slovenia",
+    "nativeName": "Slovenija",
     "capital": "Ljubljana",
     "continent": "Europe",
     "subregion": "Central Europe",
@@ -5104,9 +5443,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Slovenia's Postojna Cave holds a unique species of blind salamander called the olm—or 'human fish.'",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Slovenia's Postojna Cave holds a unique species of blind salamander called the olm—or 'human fish.'",
+    "languages": "Slovene"
   },
   {
     "code": "SB",
@@ -5125,15 +5465,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Solomon Islanders fought alongside U.S. Marines in World War II's brutal Guadalcanal campaign.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Solomon Islanders fought alongside U.S. Marines in World War II's brutal Guadalcanal campaign.",
+    "languages": "English"
   },
   {
     "code": "SO",
     "code3": "SOM",
     "name": "Somalia",
     "officialName": "Federal Republic of Somalia",
+    "nativeName": "الصومال · Soomaaliya",
     "capital": "Mogadishu",
     "continent": "Africa",
     "subregion": "Eastern Africa",
@@ -5151,15 +5493,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Somalia has the longest coastline on mainland Africa but has struggled with piracy off its shores.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Somalia has the longest coastline on mainland Africa but has struggled with piracy off its shores.",
+    "languages": "Arabic · Somali"
   },
   {
     "code": "ZA",
     "code3": "ZAF",
     "name": "South Africa",
     "officialName": "Republic of South Africa",
+    "nativeName": "Sewula Afrika · Afrika-Borwa · Afrika Borwa · Ningizimu Afrika · Aforika Borwa · Afrika Dzonga · Afurika Tshipembe · Mzantsi Afrika",
     "capital": "Pretoria",
     "continent": "Africa",
     "subregion": "Southern Africa",
@@ -5180,9 +5524,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "South Africa has three capital cities—each hosts a different branch of government.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "South Africa has three capital cities—each hosts a different branch of government.",
+    "languages": "Afrikaans · English · Northern Sotho · Southern Ndebele · Southern Sotho · Swazi · Tsonga · Tswana · Venda · Xhosa · Zulu"
   },
   {
     "code": "GS",
@@ -5202,15 +5547,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "South Georgia's Grytviken whaling station is where explorer Ernest Shackleton is buried.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "South Georgia's Grytviken whaling station is where explorer Ernest Shackleton is buried.",
+    "languages": "English"
   },
   {
     "code": "KR",
     "code3": "KOR",
     "name": "South Korea",
     "officialName": "Republic of Korea",
+    "nativeName": "한국",
     "capital": "Seoul",
     "continent": "Asia",
     "subregion": "Eastern Asia",
@@ -5226,9 +5573,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "South Korea's Hangul alphabet was scientifically designed in 1443 so anyone could learn to read.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "South Korea's Hangul alphabet was scientifically designed in 1443 so anyone could learn to read.",
+    "languages": "Korean"
   },
   {
     "code": "SS",
@@ -5255,15 +5603,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "South Sudan is the world's newest widely recognized country, gaining independence from Sudan in 2011.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "South Sudan is the world's newest widely recognized country, gaining independence from Sudan in 2011.",
+    "languages": "English"
   },
   {
     "code": "ES",
     "code3": "ESP",
     "name": "Spain",
     "officialName": "Kingdom of Spain",
+    "nativeName": "España",
     "capital": "Madrid",
     "continent": "Europe",
     "subregion": "Southern Europe",
@@ -5283,15 +5633,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Spain's Sagrada Família in Barcelona has been under construction since 1882 and is still not finished.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Spain's Sagrada Família in Barcelona has been under construction since 1882 and is still not finished.",
+    "languages": "Spanish"
   },
   {
     "code": "LK",
     "code3": "LKA",
     "name": "Sri Lanka",
     "officialName": "Democratic Socialist Republic of Sri Lanka",
+    "nativeName": "ශ්‍රී ලංකාව · இலங்கை",
     "capital": "Colombo",
     "continent": "Asia",
     "subregion": "Southern Asia",
@@ -5307,15 +5659,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Sri Lanka was once called Ceylon and produces Ceylon tea from highland plantations.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Sri Lanka was once called Ceylon and produces Ceylon tea from highland plantations.",
+    "languages": "Sinhala · Tamil"
   },
   {
     "code": "SD",
     "code3": "SDN",
     "name": "Sudan",
     "officialName": "Republic of the Sudan",
+    "nativeName": "السودان",
     "capital": "Khartoum",
     "continent": "Africa",
     "subregion": "Northern Africa",
@@ -5337,9 +5691,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Sudan has more pyramids than Egypt—ancient Nubian kingdoms left hundreds along the Nile.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Sudan has more pyramids than Egypt—ancient Nubian kingdoms left hundreds along the Nile.",
+    "languages": "Arabic · English"
   },
   {
     "code": "SR",
@@ -5363,15 +5718,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Suriname is the smallest independent country in South America and one of the most forested.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Suriname is the smallest independent country in South America and one of the most forested.",
+    "languages": "Dutch"
   },
   {
     "code": "SJ",
     "code3": "SJM",
     "name": "Svalbard and Jan Mayen",
     "officialName": "Svalbard og Jan Mayen",
+    "nativeName": "Svalbard og Jan Mayen",
     "capital": "Longyearbyen",
     "continent": "Europe",
     "subregion": "Northern Europe",
@@ -5385,15 +5742,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Svalbard's Global Seed Vault stores backup copies of crop seeds from around the world in Arctic permafrost.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "Svalbard's Global Seed Vault stores backup copies of crop seeds from around the world in Arctic permafrost.",
+    "languages": "Norwegian"
   },
   {
     "code": "SE",
     "code3": "SWE",
     "name": "Sweden",
     "officialName": "Kingdom of Sweden",
+    "nativeName": "Sverige",
     "capital": "Stockholm",
     "continent": "Europe",
     "subregion": "Northern Europe",
@@ -5410,15 +5769,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Sweden's Nobel Prizes are awarded each year in Stockholm—except Peace, which is given in Oslo.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Sweden's Nobel Prizes are awarded each year in Stockholm—except Peace, which is given in Oslo.",
+    "languages": "Swedish"
   },
   {
     "code": "CH",
     "code3": "CHE",
     "name": "Switzerland",
     "officialName": "Swiss Confederation",
+    "nativeName": "Suisse · Schweiz · Svizzera · Svizra",
     "capital": "Bern",
     "continent": "Europe",
     "subregion": "Western Europe",
@@ -5438,15 +5799,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Switzerland has four official languages and has not fought a foreign war since 1815.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Switzerland has four official languages and has not fought a foreign war since 1815.",
+    "languages": "French · Italian · Romansh · Swiss German"
   },
   {
     "code": "SY",
     "code3": "SYR",
     "name": "Syria",
     "officialName": "Syrian Arab Republic",
+    "nativeName": "سوريا",
     "capital": "Damascus",
     "continent": "Asia",
     "subregion": "Western Asia",
@@ -5466,15 +5829,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Damascus in Syria is one of the oldest continuously inhabited cities in the world.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Damascus in Syria is one of the oldest continuously inhabited cities in the world.",
+    "languages": "Arabic"
   },
   {
     "code": "TW",
     "code3": "TWN",
     "name": "Taiwan",
     "officialName": "Republic of China (Taiwan)",
+    "nativeName": "台灣",
     "capital": "Taipei",
     "continent": "Asia",
     "subregion": "Eastern Asia",
@@ -5488,15 +5853,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Taiwan's Taipei 101 was the world's tallest building from 2004 to 2010 and is designed to withstand typhoons and earthquakes.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "Taiwan's Taipei 101 was the world's tallest building from 2004 to 2010 and is designed to withstand typhoons and earthquakes.",
+    "languages": "Chinese"
   },
   {
     "code": "TJ",
     "code3": "TJK",
     "name": "Tajikistan",
     "officialName": "Republic of Tajikistan",
+    "nativeName": "Таджикистан · Тоҷикистон",
     "capital": "Dushanbe",
     "continent": "Asia",
     "subregion": "Central Asia",
@@ -5515,9 +5882,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Tajikistan is over 90% mountainous—the Pamir range is nicknamed the 'Roof of the World.'",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Tajikistan is over 90% mountainous—the Pamir range is nicknamed the 'Roof of the World.'",
+    "languages": "Russian · Tajik"
   },
   {
     "code": "TZ",
@@ -5546,15 +5914,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Tanzania's Serengeti hosts the largest terrestrial mammal migration on Earth—over a million wildebeest.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Tanzania's Serengeti hosts the largest terrestrial mammal migration on Earth—over a million wildebeest.",
+    "languages": "English · Swahili"
   },
   {
     "code": "TH",
     "code3": "THA",
     "name": "Thailand",
     "officialName": "Kingdom of Thailand",
+    "nativeName": "ประเทศไทย",
     "capital": "Bangkok",
     "continent": "Asia",
     "subregion": "South-Eastern Asia",
@@ -5573,15 +5943,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Thailand is the only Southeast Asian country never colonized by a European power.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Thailand is the only Southeast Asian country never colonized by a European power.",
+    "languages": "Thai"
   },
   {
     "code": "TL",
     "code3": "TLS",
     "name": "Timor-Leste",
     "officialName": "Democratic Republic of Timor-Leste",
+    "nativeName": "Timór-Leste",
     "capital": "Dili",
     "continent": "Asia",
     "subregion": "South-Eastern Asia",
@@ -5597,9 +5969,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Timor-Leste is one of the world's youngest countries, gaining full independence in 2002 after centuries of occupation.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Timor-Leste is one of the world's youngest countries, gaining full independence in 2002 after centuries of occupation.",
+    "languages": "Portuguese · Tetum"
   },
   {
     "code": "TG",
@@ -5623,9 +5996,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Togo is one of the world's top producers of phosphates, used in fertilizer.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Togo is one of the world's top producers of phosphates, used in fertilizer.",
+    "languages": "French"
   },
   {
     "code": "TK",
@@ -5644,9 +6018,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Tokelau is one of the first territories to produce more than 100% of its electricity from solar power.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "Tokelau is one of the first territories to produce more than 100% of its electricity from solar power.",
+    "languages": "English · Samoan · Tokelauan"
   },
   {
     "code": "TO",
@@ -5666,9 +6041,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Tonga is the only Pacific nation that was never fully colonized—it became a constitutional monarchy in 1875.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Tonga is the only Pacific nation that was never fully colonized—it became a constitutional monarchy in 1875.",
+    "languages": "English · Tongan"
   },
   {
     "code": "TT",
@@ -5688,15 +6064,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Trinidad and Tobago invented the steelpan—the only acoustic instrument invented in the 20th century.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Trinidad and Tobago invented the steelpan—the only acoustic instrument invented in the 20th century.",
+    "languages": "English"
   },
   {
     "code": "TN",
     "code3": "TUN",
     "name": "Tunisia",
     "officialName": "Tunisian Republic",
+    "nativeName": "تونس",
     "capital": "Tunis",
     "continent": "Africa",
     "subregion": "Northern Africa",
@@ -5713,9 +6091,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Tunisia's ancient city of Carthage once rivaled Rome before being destroyed and rebuilt by the Romans.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Tunisia's ancient city of Carthage once rivaled Rome before being destroyed and rebuilt by the Romans.",
+    "languages": "Arabic"
   },
   {
     "code": "TR",
@@ -5746,15 +6125,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Istanbul in Türkiye is the only major city spanning two continents—Europe and Asia.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Istanbul in Türkiye is the only major city spanning two continents—Europe and Asia.",
+    "languages": "Turkish"
   },
   {
     "code": "TM",
     "code3": "TKM",
     "name": "Turkmenistan",
     "officialName": "Turkmenistan",
+    "nativeName": "Туркмения · Türkmenistan",
     "capital": "Ashgabat",
     "continent": "Asia",
     "subregion": "Central Asia",
@@ -5772,9 +6153,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Turkmenistan's Darvaza gas crater has burned continuously in the desert since Soviet engineers lit it in 1971.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Turkmenistan's Darvaza gas crater has burned continuously in the desert since Soviet engineers lit it in 1971.",
+    "languages": "Russian · Turkmen"
   },
   {
     "code": "TC",
@@ -5793,9 +6175,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Turks and Caicos has some of the clearest turquoise water in the Caribbean and a thriving conch fishery.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "Turks and Caicos has some of the clearest turquoise water in the Caribbean and a thriving conch fishery.",
+    "languages": "English"
   },
   {
     "code": "TV",
@@ -5814,9 +6197,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Tuvalu is among the world's smallest and most low-lying countries—rising seas threaten its very existence.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Tuvalu is among the world's smallest and most low-lying countries—rising seas threaten its very existence.",
+    "languages": "English · Tuvaluan"
   },
   {
     "code": "UG",
@@ -5842,15 +6226,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Uganda is one of the few places where you can see mountain gorillas in the wild—about half the world's population lives here.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Uganda is one of the few places where you can see mountain gorillas in the wild—about half the world's population lives here.",
+    "languages": "English · Swahili"
   },
   {
     "code": "UA",
     "code3": "UKR",
     "name": "Ukraine",
     "officialName": "Ukraine",
+    "nativeName": "Україна",
     "capital": "Kyiv",
     "continent": "Europe",
     "subregion": "Eastern Europe",
@@ -5871,15 +6257,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Ukraine is one of the world's largest grain exporters—the 'breadbasket of Europe.'",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Ukraine is one of the world's largest grain exporters—the 'breadbasket of Europe.'",
+    "languages": "Ukrainian"
   },
   {
     "code": "AE",
     "code3": "ARE",
     "name": "United Arab Emirates",
     "officialName": "United Arab Emirates",
+    "nativeName": "الإمارات",
     "capital": "Abu Dhabi",
     "continent": "Asia",
     "subregion": "Western Asia",
@@ -5897,9 +6285,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Dubai in the UAE built the world's tallest building, the Burj Khalifa, at 828 meters.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Dubai in the UAE built the world's tallest building, the Burj Khalifa, at 828 meters.",
+    "languages": "Arabic"
   },
   {
     "code": "GB",
@@ -5926,9 +6315,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "The United Kingdom is made up of four countries—England, Scotland, Wales, and Northern Ireland.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "The United Kingdom is made up of four countries—England, Scotland, Wales, and Northern Ireland.",
+    "languages": "English"
   },
   {
     "code": "US",
@@ -5955,9 +6345,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "The United States has the world's largest economy and is the third most populous country.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "The United States has the world's largest economy and is the third most populous country.",
+    "languages": "English"
   },
   {
     "code": "UM",
@@ -5976,9 +6367,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "The U.S. Minor Outlying Islands include Midway Atoll, site of a pivotal 1942 naval battle in World War II.",
+    "hasCapitalImage": false,
     "isTerritory": true,
-    "hasCapitalImage": false
+    "fact": "The U.S. Minor Outlying Islands include Midway Atoll, site of a pivotal 1942 naval battle in World War II.",
+    "languages": "English"
   },
   {
     "code": "VI",
@@ -5998,9 +6390,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "The U.S. Virgin Islands were purchased from Denmark in 1917 for $25 million in gold.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "The U.S. Virgin Islands were purchased from Denmark in 1917 for $25 million in gold.",
+    "languages": "English"
   },
   {
     "code": "UY",
@@ -6023,15 +6416,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Uruguay was the first country to legalize recreational cannabis nationwide, in 2013.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Uruguay was the first country to legalize recreational cannabis nationwide, in 2013.",
+    "languages": "Spanish"
   },
   {
     "code": "UZ",
     "code3": "UZB",
     "name": "Uzbekistan",
     "officialName": "Republic of Uzbekistan",
+    "nativeName": "Узбекистан · O‘zbekiston",
     "capital": "Tashkent",
     "continent": "Asia",
     "subregion": "Central Asia",
@@ -6051,9 +6446,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Uzbekistan's Registan in Samarkand was a glittering center of the Silk Road trade route.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Uzbekistan's Registan in Samarkand was a glittering center of the Silk Road trade route.",
+    "languages": "Russian · Uzbek"
   },
   {
     "code": "VU",
@@ -6073,15 +6469,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Vanuatu invented bungee jumping—local land divers on Pentecost Island inspired the modern sport.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Vanuatu invented bungee jumping—local land divers on Pentecost Island inspired the modern sport.",
+    "languages": "Bislama · English · French"
   },
   {
     "code": "VA",
     "code3": "VAT",
     "name": "Vatican City",
     "officialName": "Vatican City State",
+    "nativeName": "Vaticano · Vaticanæ",
     "capital": "Vatican City",
     "continent": "Europe",
     "subregion": "Southern Europe",
@@ -6098,9 +6496,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Vatican City is the world's smallest independent state—about 44 hectares enclosed within Rome.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Vatican City is the world's smallest independent state—about 44 hectares enclosed within Rome.",
+    "languages": "Italian · Latin"
   },
   {
     "code": "VE",
@@ -6124,15 +6523,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Venezuela's Angel Falls is the world's highest uninterrupted waterfall, plunging 979 meters.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Venezuela's Angel Falls is the world's highest uninterrupted waterfall, plunging 979 meters.",
+    "languages": "Spanish"
   },
   {
     "code": "VN",
     "code3": "VNM",
     "name": "Vietnam",
     "officialName": "Socialist Republic of Vietnam",
+    "nativeName": "Việt Nam",
     "capital": "Hanoi",
     "continent": "Asia",
     "subregion": "South-Eastern Asia",
@@ -6151,15 +6552,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Vietnam's Ha Long Bay has thousands of limestone karsts rising from emerald water—a UNESCO World Heritage Site.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Vietnam's Ha Long Bay has thousands of limestone karsts rising from emerald water—a UNESCO World Heritage Site.",
+    "languages": "Vietnamese"
   },
   {
     "code": "WF",
     "code3": "WLF",
     "name": "Wallis and Futuna",
     "officialName": "Territory of the Wallis and Futuna Islands",
+    "nativeName": "Wallis et Futuna",
     "capital": "Mata-Utu",
     "continent": "Oceania",
     "subregion": "Polynesia",
@@ -6173,15 +6576,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Wallis and Futuna is one of the last French territories where traditional kings still hold official authority.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "Wallis and Futuna is one of the last French territories where traditional kings still hold official authority.",
+    "languages": "French"
   },
   {
     "code": "EH",
     "code3": "ESH",
     "name": "Western Sahara",
     "officialName": "Sahrawi Arab Democratic Republic",
+    "nativeName": "الصحراء الغربية · Sahara Occidental",
     "capital": "El Aaiún",
     "continent": "Africa",
     "subregion": "Northern Africa",
@@ -6199,15 +6604,17 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Western Sahara is one of the most sparsely populated places on Earth—mostly desert with a disputed political status.",
+    "hasCapitalImage": true,
     "isTerritory": true,
-    "hasCapitalImage": true
+    "fact": "Western Sahara is one of the most sparsely populated places on Earth—mostly desert with a disputed political status.",
+    "languages": "Berber · Hassaniya · Spanish"
   },
   {
     "code": "YE",
     "code3": "YEM",
     "name": "Yemen",
     "officialName": "Republic of Yemen",
+    "nativeName": "اليمن",
     "capital": "Sana'a",
     "continent": "Asia",
     "subregion": "Western Asia",
@@ -6224,9 +6631,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Yemen's Old City of Sana'a has distinctive multi-story tower houses decorated with white gypsum patterns.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Yemen's Old City of Sana'a has distinctive multi-story tower houses decorated with white gypsum patterns.",
+    "languages": "Arabic"
   },
   {
     "code": "ZM",
@@ -6255,9 +6663,10 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Zambia's Victoria Falls—locally called Mosi-oa-Tunya, 'the smoke that thunders'—is one of the world's largest waterfalls.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Zambia's Victoria Falls—locally called Mosi-oa-Tunya, 'the smoke that thunders'—is one of the world's largest waterfalls.",
+    "languages": "English"
   },
   {
     "code": "ZW",
@@ -6282,8 +6691,9 @@
     "shapeQuizEligible": true,
     "hasFlag": true,
     "hasShape": true,
-    "fact": "Zimbabwe's Great Zimbabwe ruins were the capital of a medieval trading empire that exported gold to the Indian Ocean.",
+    "hasCapitalImage": true,
     "isTerritory": false,
-    "hasCapitalImage": true
+    "fact": "Zimbabwe's Great Zimbabwe ruins were the capital of a medieval trading empire that exported gold to the Indian Ocean.",
+    "languages": "Chewa · Chibarwe · English · Kalanga · Khoisan · Ndau · Northern Ndebele · Shona · Sotho · Tonga · Tsonga · Tswana · Venda · Xhosa · Zimbabwean Sign Language"
   }
 ]
