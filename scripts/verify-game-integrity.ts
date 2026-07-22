@@ -75,7 +75,7 @@ for (const mode of MODES) {
     mode === "country-to-flag" ? ["easy", "medium", "hard"] : ["easy", "medium"];
   for (const difficulty of difficulties) {
     for (let run = 0; run < RUNS; run += 1) {
-      const engine = new GameEngine(mode, regions, difficulty, undefined, run, undefined, "all", true, scope);
+      const engine = new GameEngine(mode, regions, difficulty, undefined, run, "all", true, scope);
       let q: Question | null;
       while ((q = engine.nextQuestion())) {
         questionsChecked += 1;
@@ -161,7 +161,7 @@ for (const mode of MODES) {
 }
 
 // Type-in (hard mode) checks on name-answer modes
-const nameEngine = new GameEngine("flag-to-country", [...CONTINENTS], "hard", undefined, 1, undefined, "all", true);
+const nameEngine = new GameEngine("flag-to-country", [...CONTINENTS], "hard", undefined, 1, "all", true);
 for (const c of [...countries, ...usStates].filter((x) => x.hasFlag)) {
   const q: Question = {
     id: "t",
