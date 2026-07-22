@@ -27,11 +27,13 @@ import {
 } from "@/lib/storage";
 import { getGlobalStreakOrZero } from "@/lib/stats-helpers";
 import { getQuestionTaskLabel, getTypeInPlacePlaceholder, scopeText, SCOPE_INFO } from "@/lib/scope";
-import type { Difficulty, GameMode, GameScope, Question, Region, RoundQuestionSetting, SpeedRoundQuestionType } from "@/lib/types";
+import { getStatsMode } from "@/lib/game-setup";
+import type { ChallengeModifier, Difficulty, GameMode, GameScope, Question, Region, RoundQuestionSetting } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 type GameBoardProps = {
   mode: GameMode;
+  challengeModifier?: ChallengeModifier;
   continents: Region[];
   scope?: GameScope;
   includeTerritories?: boolean;
@@ -41,7 +43,6 @@ type GameBoardProps = {
   timed?: boolean;
   stopOnWrong?: boolean;
   maxQuestions?: RoundQuestionSetting;
-  questionType?: SpeedRoundQuestionType;
   countStats?: boolean;
   onPlayAgain?: () => void;
   interactionLocked?: boolean;
@@ -49,6 +50,7 @@ type GameBoardProps = {
 
 export function GameBoard({
   mode,
+  challengeModifier = "none",
   continents,
   scope = "world",
   includeTerritories = false,
@@ -58,7 +60,6 @@ export function GameBoard({
   timed = false,
   stopOnWrong = false,
   maxQuestions,
-  questionType,
   countStats = true,
   onPlayAgain,
   interactionLocked = false,
@@ -66,6 +67,7 @@ export function GameBoard({
   const router = useRouter();
   const { refresh } = useProfiles();
   const activeProfile = useRequiredProfile();
+  const statsMode = getStatsMode(mode, challengeModifier);
   const [{ engine, firstQuestion, sessionQuestionLimit }] = useState(() => {
     const gameEngine = new GameEngine(
       mode,
@@ -73,10 +75,10 @@ export function GameBoard({
       difficulty,
       weakSpotCodes,
       seed,
-      questionType,
       maxQuestions,
       includeTerritories,
       scope,
+      challengeModifier,
     );
     return {
       engine: gameEngine,
@@ -104,6 +106,7 @@ export function GameBoard({
   const [timeLeft, setTimeLeft] = useState(60);
   const [gameOver, setGameOver] = useState(false);
   const [sessionComplete, setSessionComplete] = useState(false);
+  const [exitedEarly, setExitedEarly] = useState(false);
   const [newAchievements, setNewAchievements] = useState<string[]>([]);
   const speedSessionCheckedRef = useRef(false);
   const dailyCompletionRecordedRef = useRef(false);
@@ -131,7 +134,7 @@ export function GameBoard({
     const state = loadState();
     const updatedProfile = state.profiles.find((p) => p.id === activeProfile.id);
     if (!updatedProfile) return;
-    const earned = checkAchievements(updatedProfile, mode, difficulty, session, scope);
+    const earned = checkAchievements(updatedProfile, statsMode, difficulty, session, scope);
     if (earned.length) setNewAchievements((prev) => [...prev, ...earned]);
   }
 
@@ -195,7 +198,11 @@ export function GameBoard({
     sessionQuestionLimit && questionCount >= sessionQuestionLimit,
   );
   const roundEnded =
-    gameOver || sessionComplete || hasFinishedQuestions || hasReachedQuestionLimit;
+    exitedEarly ||
+    gameOver ||
+    sessionComplete ||
+    hasFinishedQuestions ||
+    hasReachedQuestionLimit;
   const showSummary = roundEnded && !showLearnCard;
 
   useEffect(() => {
@@ -251,7 +258,7 @@ export function GameBoard({
     spawnBurst(correct);
 
     if (countStats) {
-      recordAnswer(activeProfile.id, mode, difficulty, correct, question.countryCode, false, scope);
+      recordAnswer(activeProfile.id, statsMode, difficulty, correct, question.countryCode, false, scope);
       if (mode === "daily-challenge") {
         markDailyChallengePlayed(activeProfile.id, scope);
       }
@@ -305,7 +312,7 @@ export function GameBoard({
       setSessionComplete(true);
     }
     if (countStats) {
-      recordAnswer(activeProfile.id, mode, difficulty, false, question.countryCode, true, scope);
+      recordAnswer(activeProfile.id, statsMode, difficulty, false, question.countryCode, true, scope);
       if (mode === "daily-challenge") {
         markDailyChallengePlayed(activeProfile.id, scope);
       }
@@ -331,6 +338,15 @@ export function GameBoard({
     const wrong = question.options.filter((o) => o !== question.correctAnswer);
     setHiddenOptions(wrong.slice(0, 2));
     setUsedFiftyFifty(true);
+  }
+
+  function handleExit() {
+    if (questionCount === 0) {
+      router.push("/");
+      return;
+    }
+    setShowLearnCard(false);
+    setExitedEarly(true);
   }
 
   function handleContinue() {
@@ -363,19 +379,30 @@ export function GameBoard({
     const accuracy = questionCount > 0
       ? Math.round((correctAnswers / questionCount) * 100)
       : 0;
-    const challengeComplete = !gameOver && (sessionComplete || hasFinishedQuestions || hasReachedQuestionLimit);
-    const title = challengeComplete
+    const challengeComplete =
+      !exitedEarly &&
+      !gameOver &&
+      (sessionComplete || hasFinishedQuestions || hasReachedQuestionLimit);
+    const title = exitedEarly
       ? mode === "daily-challenge" && !countStats
-        ? "Review complete!"
-        : "Challenge complete!"
-      : "Game over";
-    const description = challengeComplete
+        ? "Review ended"
+        : "Round ended"
+      : challengeComplete
+        ? mode === "daily-challenge" && !countStats
+          ? "Review complete!"
+          : "Challenge complete!"
+        : "Game over";
+    const description = exitedEarly
       ? mode === "daily-challenge" && !countStats
-        ? `You reviewed all ${questionCount} questions. Stats were not recorded.`
-        : `You completed all ${questionCount} questions.`
-      : timed
-        ? `Time's up after ${questionCount} questions.`
-        : `Your streak ended at ${streak}.`;
+        ? `You attempted ${questionCount} question${questionCount === 1 ? "" : "s"}. Stats were not recorded.`
+        : `You attempted ${questionCount} question${questionCount === 1 ? "" : "s"}.`
+      : challengeComplete
+        ? mode === "daily-challenge" && !countStats
+          ? `You reviewed all ${questionCount} questions. Stats were not recorded.`
+          : `You completed all ${questionCount} questions.`
+        : timed
+          ? `Time's up after ${questionCount} questions.`
+          : `Your streak ended at ${streak}.`;
 
     return (
       <>
@@ -385,7 +412,7 @@ export function GameBoard({
           onDismiss={dismissAchievements}
         />
         <div className="animate-card-pop-in my-auto rounded-[1.75rem] border-2 border-slate-200 bg-white/90 p-5 text-center shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90 sm:p-8">
-          <p className="text-4xl">{challengeComplete ? "🎉" : "🧭"}</p>
+          <p className="text-4xl">{challengeComplete || exitedEarly ? "🎉" : "🧭"}</p>
           <h2 className="mt-2 font-display text-3xl font-extrabold">{title}</h2>
           <p className="mt-2 text-slate-600 dark:text-slate-400">{description}</p>
           <div className={`mx-auto mt-6 grid max-w-sm gap-3 ${difficulty === "easy" ? "grid-cols-3" : "grid-cols-2"}`}>
@@ -538,7 +565,7 @@ export function GameBoard({
             size="sm"
             onClick={(e) => {
               e.stopPropagation();
-              router.push("/");
+              handleExit();
             }}
             aria-label="Exit this round and return home"
             className="min-h-10 shrink-0 gap-1.5 font-extrabold sm:px-4"

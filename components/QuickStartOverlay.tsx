@@ -1,16 +1,16 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { getQuestionTypeLabel, getRoundCountLabel } from "@/lib/game-setup";
+import { getChallengeModifierLabel, getRoundCountLabel } from "@/lib/game-setup";
 import { getScopedModeInfo, scopeText, SCOPE_INFO } from "@/lib/scope";
 import { getTodayBestStreakDisplay, getTodayBestStreakOrZero } from "@/lib/stats-helpers";
 import {
   DIFFICULTY_LABELS,
+  type ChallengeModifier,
   type Difficulty,
   type GameMode,
   type GameScope,
   type Profile,
-  type SpeedRoundQuestionType,
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -19,9 +19,9 @@ const OVERLAY_DURATION_MS = 3000;
 type QuickStartOverlayProps = {
   mode: GameMode;
   scope: GameScope;
+  challengeModifier?: ChallengeModifier;
   difficulty: Difficulty;
   roundQuestionCount: Profile["settings"]["roundQuestionCount"];
-  questionType?: SpeedRoundQuestionType;
   profile: Profile;
   dailyDateLabel?: string | null;
   dailyRun?: number;
@@ -32,9 +32,9 @@ type QuickStartOverlayProps = {
 export function QuickStartOverlay({
   mode,
   scope,
+  challengeModifier = "none",
   difficulty,
   roundQuestionCount,
-  questionType,
   profile,
   dailyDateLabel,
   dailyRun = 0,
@@ -46,6 +46,7 @@ export function QuickStartOverlay({
   const modeInfo = getScopedModeInfo(mode, scope);
   const scopeInfo = SCOPE_INFO[scope];
   const isDaily = mode === "daily-challenge";
+  const modifierLabel = getChallengeModifierLabel(challengeModifier);
 
   const dismiss = useCallback(() => {
     setPhase("exit");
@@ -128,14 +129,14 @@ export function QuickStartOverlay({
                   {DIFFICULTY_LABELS[difficulty]}
                 </span>
               ) : null}
-              <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-200">
-                {getRoundCountLabel(mode, roundQuestionCount)}
-              </span>
-              {(mode === "speed-round" || mode === "marathon") && questionType ? (
+              {modifierLabel ? (
                 <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-200">
-                  {getQuestionTypeLabel(questionType, scope)}
+                  {modifierLabel}
                 </span>
               ) : null}
+              <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-200">
+                {getRoundCountLabel(mode, roundQuestionCount, challengeModifier)}
+              </span>
               <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-200">
                 {scopeInfo.icon} {scopeInfo.shortLabel}
               </span>

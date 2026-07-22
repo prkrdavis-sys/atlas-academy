@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "refresh-data": "tsx scripts/refresh-country-data.ts",
+    "enrich-currency-data": "tsx scripts/enrich-currency-data.ts",
     "refresh-state-data": "tsx scripts/refresh-state-data.ts",
     "fetch-state-flags": "bash scripts/fetch-state-flags.sh",
     "generate-state-shapes": "tsx scripts/generate-state-shapes.ts",

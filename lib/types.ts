@@ -129,7 +129,42 @@ export const PLAY_MODES: GameMode[] = [
   "mixed",
 ];
 
-export const CHALLENGE_MODES: GameMode[] = ["daily-challenge", "speed-round", "marathon"];
+/** Legacy standalone modes kept for stats, achievements, and direct play routes. */
+export const LEGACY_CHALLENGE_MODES: GameMode[] = ["speed-round", "marathon"];
+
+export type ChallengeModifier = "none" | "speed-round" | "marathon";
+
+export const CHALLENGE_MODIFIER_OPTIONS: readonly {
+  id: ChallengeModifier;
+  title: string;
+  description: string;
+  icon: string;
+}[] = [
+  {
+    id: "none",
+    title: "Standard",
+    description: "Play a fixed round length",
+    icon: "🎯",
+  },
+  {
+    id: "speed-round",
+    title: "Speed Round",
+    description: "60 seconds — how many can you get?",
+    icon: "⚡",
+  },
+  {
+    id: "marathon",
+    title: "Marathon",
+    description: "Keep going until your first mistake",
+    icon: "🏃",
+  },
+] as const;
+
+export function isChallengeModifierActive(
+  modifier: ChallengeModifier,
+): modifier is Exclude<ChallengeModifier, "none"> {
+  return modifier !== "none";
+}
 
 export const MAX_RECENT_MODES = 4;
 
@@ -159,6 +194,14 @@ export function getDifficultyHint(mode: GameMode, level: Difficulty): string {
   }
 }
 
+export type CountryCurrency = {
+  code: string;
+  name: string;
+  symbol: string;
+  /** Local currency units received for 1 USD, when available. */
+  usdRate?: number;
+};
+
 export type Country = {
   code: string;
   code3: string;
@@ -168,6 +211,8 @@ export type Country = {
   nativeName?: string;
   /** Official language(s), e.g. "Japanese" or "German · French · Dutch". */
   languages?: string;
+  /** Primary official currency, with optional USD conversion rate. */
+  currency?: CountryCurrency;
   capital: string;
   continent: Region;
   subregion: string;
@@ -218,6 +263,7 @@ export type Profile = {
     includeTerritories: boolean;
     speedRoundQuestionType: SpeedRoundQuestionType;
     marathonQuestionType: SpeedRoundQuestionType;
+    challengeModifier: ChallengeModifier;
     roundQuestionCount: RoundQuestionSetting;
     lastSelectedMode: GameMode;
     recentModes?: GameMode[];
@@ -270,13 +316,16 @@ export type AnswerResult = {
 /** Personalized review mode on the game setup page. */
 export const PRACTICE_MODES: GameMode[] = ["weak-spots"];
 
-/** Phase-2 quiz modes shown on the game setup page (not core Play, Challenges, or Practice). */
+/** Phase-2 quiz modes shown on the game setup page (not core Play or Practice). */
 export const EXTRA_QUIZ_MODES: GameMode[] = [
   "country-to-flag",
   "neighbor-quiz",
   "population-showdown",
   "fact-to-country",
 ];
+
+/** Modes available on the pre-game setup screen (excludes daily and legacy challenge modes). */
+export const SETUP_MODES: GameMode[] = [...PLAY_MODES, ...PRACTICE_MODES, ...EXTRA_QUIZ_MODES];
 
 export const GAME_MODES: {
   id: GameMode;

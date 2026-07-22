@@ -23,8 +23,8 @@ export function RecentModeShortcuts({
 
   return (
     <section className={className}>
-      <h2 className="mb-3 font-display text-sm font-extrabold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-        Recent modes
+      <h2 className="mb-3 font-display text-sm font-extrabold uppercase tracking-wider text-emerald-50/90">
+        Quick swap
       </h2>
       <div className="flex flex-wrap gap-2">
         {modes.map((mode) => {

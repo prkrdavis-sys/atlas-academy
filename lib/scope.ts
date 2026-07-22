@@ -177,10 +177,7 @@ export function getQuestionTaskLabel(
     return "Daily challenge";
   }
 
-  const effectiveMode =
-    sessionMode === "speed-round" || sessionMode === "mixed" || sessionMode === "marathon"
-      ? question.mode
-      : sessionMode;
+  const effectiveMode = sessionMode === "mixed" ? question.mode : sessionMode;
   const isTerritory = scope === "world" && (place?.isTerritory ?? false);
 
   switch (effectiveMode) {

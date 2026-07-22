@@ -5,12 +5,14 @@ import type {
   GameScope,
   Profile,
   AchievementSessionContext,
+  SpeedRoundQuestionType,
 } from "@/lib/types";
 import {
   AVATAR_COLORS,
   DEFAULT_ROUND_QUESTION_COUNT,
   DIFFICULTIES,
   GAME_MODES,
+  SPEED_ROUND_ALL_TYPES,
   US_REGIONS,
   normalizeRoundQuestionSetting,
 } from "@/lib/types";
@@ -52,6 +54,10 @@ function createEmptyGlobalStreaks(): Profile["globalStreaks"] {
   return createEmptyScopedGlobalStreaks();
 }
 
+function questionTypeToBaseMode(questionType: SpeedRoundQuestionType): GameMode {
+  return questionType === SPEED_ROUND_ALL_TYPES ? "mixed" : questionType;
+}
+
 function getDefaultProfileSettings(): Profile["settings"] {
   return {
     difficulty: "easy",
@@ -67,6 +73,7 @@ function getDefaultProfileSettings(): Profile["settings"] {
     includeTerritories: false,
     speedRoundQuestionType: "flag-to-country",
     marathonQuestionType: "flag-to-country",
+    challengeModifier: "none",
     roundQuestionCount: DEFAULT_ROUND_QUESTION_COUNT,
     lastSelectedMode: "mixed",
     recentModes: ["mixed"],
@@ -172,6 +179,47 @@ export function normalizeProfile(profile: Profile): Profile {
     normalized.settings.marathonQuestionType = "all-types";
   }
   normalized.settings.roundQuestionCount = normalizeRoundQuestionSetting(normalized.settings.roundQuestionCount);
+  if (!normalized.settings.challengeModifier) {
+    if (normalized.settings.lastSelectedMode === "speed-round") {
+      normalized.settings.challengeModifier = "speed-round";
+      normalized.settings.lastSelectedMode = questionTypeToBaseMode(
+        normalized.settings.speedRoundQuestionType ?? "flag-to-country",
+      );
+    } else if (normalized.settings.lastSelectedMode === "marathon") {
+      normalized.settings.challengeModifier = "marathon";
+      normalized.settings.lastSelectedMode = questionTypeToBaseMode(
+        normalized.settings.marathonQuestionType ?? "flag-to-country",
+      );
+    } else {
+      normalized.settings.challengeModifier = "none";
+    }
+  }
+  if (normalized.settings.recentModes?.length) {
+    normalized.settings.recentModes = [
+      ...new Set(
+        normalized.settings.recentModes
+          .map((recentMode) => {
+            if (recentMode === "speed-round") {
+              return questionTypeToBaseMode(
+                normalized.settings.speedRoundQuestionType ?? "flag-to-country",
+              );
+            }
+            if (recentMode === "marathon") {
+              return questionTypeToBaseMode(
+                normalized.settings.marathonQuestionType ?? "flag-to-country",
+              );
+            }
+            return recentMode;
+          })
+          .filter(
+            (recentMode) =>
+              recentMode !== "daily-challenge" &&
+              recentMode !== "speed-round" &&
+              recentMode !== "marathon",
+          ),
+      ),
+    ].slice(0, 4);
+  }
   if (!normalized.settings.lastRegionFilter) {
     normalized.settings.lastRegionFilter = [...US_REGIONS];
   }

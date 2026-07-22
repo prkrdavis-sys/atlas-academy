@@ -21,6 +21,13 @@ const MAP_FEATURES = [
   { icon: "📚", label: "Library links" },
 ] as const;
 
+const USA_MAP_FEATURES = [
+  { icon: "🇺🇸", label: "All 50 states" },
+  { icon: "🔍", label: "Pan & zoom" },
+  { icon: "👆", label: "Click to explore" },
+  { icon: "📚", label: "Library links" },
+] as const;
+
 export function ExtrasPageContent() {
   const { activeProfile, hydrated } = useProfiles();
   const profile = hydrated ? activeProfile : null;
@@ -34,7 +41,7 @@ export function ExtrasPageContent() {
           🧭 Explore
         </h1>
         <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-          Reference tools, the Library, and the World Map
+          Reference tools, the Library, and interactive maps
         </p>
       </header>
 
@@ -59,26 +66,6 @@ export function ExtrasPageContent() {
           </span>
         </Link>
       ) : null}
-
-      <Link
-        href="/play/setup"
-        className="group flex items-center gap-4 rounded-2xl border-2 border-emerald-200 bg-emerald-50/80 p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:border-emerald-400 hover:shadow-md dark:border-emerald-800 dark:bg-emerald-950/50 dark:hover:border-emerald-600"
-      >
-        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-100 text-2xl dark:bg-emerald-900/60">
-          ⚙️
-        </span>
-        <div className="min-w-0 flex-1">
-          <h2 className="font-display font-extrabold text-slate-900 dark:text-slate-100">
-            Customize your game
-          </h2>
-          <p className="mt-0.5 text-sm text-slate-600 dark:text-slate-400">
-            Change mode, difficulty, regions, and more
-          </p>
-        </div>
-        <span className="shrink-0 font-display text-sm font-extrabold text-emerald-700 dark:text-emerald-300">
-          Setup →
-        </span>
-      </Link>
 
       <section>
         <h2 className="mb-3 font-display text-xl font-extrabold text-slate-800 dark:text-slate-100 sm:mb-4">
@@ -177,6 +164,55 @@ export function ExtrasPageContent() {
                   ))}
                 </div>
                 <span className="shrink-0 font-display text-sm font-extrabold text-sky-700 transition-transform group-hover:translate-x-0.5 dark:text-sky-300">
+                  Explore →
+                </span>
+              </div>
+            </div>
+          </Link>
+
+          <Link
+            href="/map/usa"
+            className="group relative block min-h-[10.5rem] overflow-hidden rounded-2xl border-2 border-rose-200 bg-gradient-to-br from-rose-50/90 via-white to-amber-50/70 p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-rose-400 hover:shadow-md dark:border-rose-800 dark:from-rose-950/50 dark:via-slate-900 dark:to-amber-950/40 dark:hover:border-rose-500 sm:min-h-[11.5rem] sm:p-6"
+          >
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -bottom-3 -right-2 text-[5.5rem] opacity-[0.07] transition-transform duration-300 group-hover:scale-105 group-hover:opacity-[0.1] sm:text-[7rem]"
+            >
+              🇺🇸
+            </div>
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(244,63,94,0.12),transparent_55%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(244,63,94,0.18),transparent_55%)]"
+            />
+
+            <div className="relative flex h-full flex-col justify-between gap-5">
+              <div className="flex items-start gap-4">
+                <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-rose-100 text-3xl shadow-sm transition-transform group-hover:scale-110 dark:bg-rose-900/60 sm:h-16 sm:w-16">
+                  🇺🇸
+                </span>
+                <div className="min-w-0 flex-1 pt-0.5">
+                  <h3 className="font-display text-xl font-extrabold text-slate-900 dark:text-slate-100 sm:text-2xl">
+                    USA Map
+                  </h3>
+                  <p className="mt-1 max-w-md text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                    Explore all 50 states on an interactive U.S. map — pan, zoom, and click to jump into the Library.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex flex-wrap gap-2">
+                  {USA_MAP_FEATURES.map((feature) => (
+                    <span
+                      key={feature.label}
+                      className="inline-flex items-center gap-1 rounded-full border border-rose-200/80 bg-white/80 px-2.5 py-1 text-xs font-semibold text-rose-800 dark:border-rose-700/60 dark:bg-rose-950/40 dark:text-rose-200"
+                    >
+                      <span aria-hidden>{feature.icon}</span>
+                      {feature.label}
+                    </span>
+                  ))}
+                </div>
+                <span className="shrink-0 font-display text-sm font-extrabold text-rose-700 transition-transform group-hover:translate-x-0.5 dark:text-rose-300">
                   Explore →
                 </span>
               </div>

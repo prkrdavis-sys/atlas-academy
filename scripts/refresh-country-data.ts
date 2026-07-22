@@ -1,6 +1,11 @@
 import { copyFileSync, existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { getCountryFact } from "./place-facts";
+import {
+  attachUsdRate,
+  fetchUsdExchangeRates,
+  pickPrimaryCurrency,
+} from "./currency-data";
 import { isSupplementalShapeCode, isCustomShapeCode, writeCustomShape, writeSupplementalShape } from "./supplemental-shapes";
 
 type RawCountry = {
@@ -20,6 +25,7 @@ type RawCountry = {
   status?: string;
   landlocked?: boolean;
   languages?: Record<string, string>;
+  currencies?: Record<string, { name: string; symbol: string }>;
 };
 
 // mledoze/countries no longer ships population; World Bank omits some territories.
@@ -227,6 +233,7 @@ async function main() {
   if (!response.ok) throw new Error("Failed to fetch countries.json");
   const rawCountries = (await response.json()) as RawCountry[];
   const populationByCode3 = await fetchPopulationByCode3();
+  const usdRates = await fetchUsdExchangeRates();
 
   const countries = [];
   let flagCount = 0;
@@ -263,6 +270,7 @@ async function main() {
     const population = populationByCode3.get(code3) ?? 0;
 
     const nativeName = extractNativeName(raw.name.common, raw.name.native);
+    const currency = pickPrimaryCurrency(code, raw.currencies);
 
     countries.push({
       code,
@@ -271,6 +279,7 @@ async function main() {
       officialName: raw.name.official,
       ...(nativeName ? { nativeName } : {}),
       languages: extractLanguages(raw.languages),
+      ...(currency ? { currency: attachUsdRate(currency, usdRates) } : {}),
       capital,
       continent,
       subregion: raw.subregion ?? "",

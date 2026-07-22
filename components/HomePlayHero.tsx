@@ -8,7 +8,7 @@ import { HomeStreakHighlights } from "@/components/HomeStreakHighlights";
 import { ProfileRequiredDialog } from "@/components/ProfileRequiredDialog";
 import { RecentModeShortcuts } from "@/components/RecentModeShortcuts";
 import { resolvePlayMode } from "@/lib/game-setup";
-import { formatDailyDate, hasPlayedDailyToday } from "@/lib/game-engine";
+import { hasPlayedDailyToday } from "@/lib/game-engine";
 import { scopeQuery } from "@/lib/scope";
 import { recordModeSelection, updateProfileSettings } from "@/lib/storage";
 import type { GameMode, GameScope, Profile } from "@/lib/types";
@@ -45,7 +45,6 @@ export function HomePlayHero({
 
   const activeMode = profile?.settings.lastSelectedMode ?? "mixed";
   const recentModes = profile?.settings.recentModes ?? [activeMode];
-  const dailyDateLabel = formatDailyDate();
   const dailyPlayedToday = profile
     ? hasPlayedDailyToday(profile.dailyChallengePlayedDates, scope)
     : false;
@@ -160,13 +159,23 @@ export function HomePlayHero({
                   Play
                 </button>
 
-                <Link
-                  href="/play/setup"
-                  className="flex min-h-12 w-full items-center justify-center gap-2 rounded-[1.25rem] border-2 border-white/70 bg-white/15 px-6 py-3 font-display text-base font-extrabold text-white shadow-[0_3px_0_rgb(255_255_255_/_0.2)] backdrop-blur-sm transition-transform hover:scale-[1.01] hover:border-white hover:bg-white/25 active:translate-y-0.5 active:shadow-none sm:min-h-[3.25rem] sm:text-lg"
-                >
-                  <span aria-hidden className="text-lg">⚙️</span>
-                  Customize game
-                </Link>
+                <div className="flex w-full gap-3">
+                  <Link
+                    href="/play/setup"
+                    className="flex min-h-12 flex-1 min-w-0 items-center justify-center gap-1.5 rounded-[1.25rem] border-2 border-white/70 bg-white/15 px-3 py-3 text-center font-display text-sm font-extrabold text-white shadow-[0_3px_0_rgb(255_255_255_/_0.2)] backdrop-blur-sm transition-transform hover:scale-[1.01] hover:border-white hover:bg-white/25 active:translate-y-0.5 active:shadow-none sm:min-h-[3.25rem] sm:gap-2 sm:px-4 sm:text-base"
+                  >
+                    <span aria-hidden className="text-lg">🌍</span>
+                    Pick your challenge
+                  </Link>
+
+                  <Link
+                    href={`/play/daily-challenge${scopeQuery(scope)}?autostart=1`}
+                    className="flex min-h-12 flex-1 min-w-0 items-center justify-center gap-1.5 rounded-[1.25rem] border-2 border-white/70 bg-white/15 px-3 py-3 text-center font-display text-sm font-extrabold text-white shadow-[0_3px_0_rgb(255_255_255_/_0.2)] backdrop-blur-sm transition-transform hover:scale-[1.01] hover:border-white hover:bg-white/25 active:translate-y-0.5 active:shadow-none sm:min-h-[3.25rem] sm:gap-2 sm:px-4 sm:text-base"
+                  >
+                    <span aria-hidden className="text-lg">📅</span>
+                    {dailyPlayedToday ? "Review today" : "Daily challenge"}
+                  </Link>
+                </div>
 
                 <ActiveGameSummary
                   profile={profile}
@@ -174,13 +183,6 @@ export function HomePlayHero({
                   scope={scope}
                   onClick={() => router.push("/play/setup")}
                 />
-
-                <Link
-                  href={`/play/daily-challenge${scopeQuery(scope)}?autostart=1`}
-                  className="text-center text-sm font-semibold text-emerald-50/80 transition-colors hover:text-white"
-                >
-                  📅 {dailyPlayedToday ? "Review today's challenge" : "Play today's challenge"} · {dailyDateLabel}
-                </Link>
               </>
             ) : (
               <Link

@@ -5,8 +5,12 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { GameBoard } from "@/components/GameBoard";
 import { QuickStartOverlay } from "@/components/QuickStartOverlay";
 import { useProfiles, useRequiredProfile } from "@/components/ProfileProvider";
-import { createSetupDraftFromProfile, resolvePlayMode } from "@/lib/game-setup";
-import { getPlayablePoolSize } from "@/lib/countries";
+import {
+  buildSettingsPatch,
+  createSetupDraftFromProfile,
+  getPlayablePoolForDraft,
+  resolvePlayConfig,
+} from "@/lib/game-setup";
 import {
   DAILY_COUNTING_SESSION_KEY,
   formatDailyDate,
@@ -24,6 +28,7 @@ import {
   DAILY_CHALLENGE_QUESTION_COUNT,
   US_REGIONS,
   clampRoundQuestionSetting,
+  isChallengeModifierActive,
   type Continent,
   type Difficulty,
   type GameMode,
@@ -41,18 +46,23 @@ function PlayPageInner() {
   const scope = normalizeScope(useSearchParams().get("scope"));
   const isUsa = scope === "usa";
 
-  const resolved = resolvePlayMode(
+  const resolved = resolvePlayConfig(
     {
       ...profile,
       settings: { ...profile.settings, lastSelectedMode: requestedMode },
     },
+    requestedMode,
     scope,
   );
   const mode = resolved.mode;
+  const challengeModifier = resolved.challengeModifier;
   const modeInfo = getScopedModeInfo(mode, scope);
   const draft = createSetupDraftFromProfile(profile, mode, scope);
+  const activeChallengeModifier = isChallengeModifierActive(challengeModifier)
+    ? challengeModifier
+    : draft.challengeModifier;
 
-  const isDailyChallenge = mode === "daily-challenge";
+  const isDailyChallenge = requestedMode === "daily-challenge";
   const dailyDateLabel = isDailyChallenge ? formatDailyDate() : null;
   const dailyCompletedToday = isDailyChallenge
     ? hasCompletedDailyToday(profile.dailyChallengeCompletions, scope)
@@ -67,15 +77,7 @@ function PlayPageInner() {
     mode === "weak-spots" ? getCommonlyMissedCountries(profile, scope) : undefined;
 
   const availableCountryCount = modeInfo
-    ? getPlayablePoolSize({
-        continents: draft.continents,
-        includeTerritories: draft.includeTerritories,
-        mode,
-        questionType:
-          mode === "speed-round" || mode === "marathon" ? draft.questionType : undefined,
-        weakSpotCodes,
-        scope,
-      })
+    ? getPlayablePoolForDraft(profile, { ...draft, mode, challengeModifier: activeChallengeModifier }, scope)
     : 0;
   const effectiveRoundQuestionCount = clampRoundQuestionSetting(
     draft.roundQuestionCount,
@@ -113,22 +115,12 @@ function PlayPageInner() {
       if (shouldCountStats && typeof window !== "undefined") {
         sessionStorage.setItem(DAILY_COUNTING_SESSION_KEY, today);
       }
-      recordModeSelection(profile.id, mode);
+      recordModeSelection(profile.id, "daily-challenge");
       setCountStats(shouldCountStats);
     } else {
-      updateProfileSettings(profile.id, {
-        lastSelectedMode: mode,
-        ...(isUsa
-          ? { lastRegionFilter: draft.continents as UsRegion[] }
-          : {
-              lastContinentFilter: draft.continents as Continent[],
-              includeTerritories: draft.includeTerritories,
-            }),
-        difficulty: draft.difficulty,
-        roundQuestionCount: effectiveRoundQuestionCount,
-        ...(mode === "speed-round" ? { speedRoundQuestionType: draft.questionType } : {}),
-        ...(mode === "marathon" ? { marathonQuestionType: draft.questionType } : {}),
-      });
+      const settingsDraft = { ...draft, mode, challengeModifier: activeChallengeModifier };
+      const poolSize = getPlayablePoolForDraft(profile, settingsDraft, scope);
+      updateProfileSettings(profile.id, buildSettingsPatch(settingsDraft, scope, poolSize));
       recordModeSelection(profile.id, mode);
       refresh();
     }
@@ -145,27 +137,28 @@ function PlayPageInner() {
     setShowOverlay(true);
   }
 
-  if (!modeInfo) {
+  if (!modeInfo && !isDailyChallenge) {
     return <p>Unknown game mode.</p>;
   }
+
+  const challengeActive = isChallengeModifierActive(activeChallengeModifier);
 
   const gameProps = {
     mode,
     scope,
+    challengeModifier: activeChallengeModifier,
     continents: isDailyChallenge ? dailyContinents : draft.continents,
     includeTerritories: isDailyChallenge ? false : draft.includeTerritories,
     difficulty: isDailyChallenge ? dailyDifficulty : draft.difficulty,
     weakSpotCodes,
     seed: isDailyChallenge ? getDailySeed(scope) : undefined,
-    timed: mode === "speed-round",
-    stopOnWrong: mode === "marathon",
+    timed: challengeActive && activeChallengeModifier === "speed-round",
+    stopOnWrong: challengeActive && activeChallengeModifier === "marathon",
     maxQuestions: isDailyChallenge
       ? DAILY_CHALLENGE_QUESTION_COUNT
-      : mode === "speed-round"
+      : challengeActive
         ? undefined
         : effectiveRoundQuestionCount,
-    questionType:
-      mode === "speed-round" || mode === "marathon" ? draft.questionType : undefined,
     countStats: isDailyChallenge ? countStats : true,
     interactionLocked: showOverlay,
   };
@@ -190,14 +183,12 @@ function PlayPageInner() {
       </div>
       {showOverlay ? (
         <QuickStartOverlay
-          mode={mode}
+          mode={isDailyChallenge ? "daily-challenge" : mode}
           scope={scope}
+          challengeModifier={isDailyChallenge ? "none" : activeChallengeModifier}
           difficulty={isDailyChallenge ? dailyDifficulty : draft.difficulty}
           roundQuestionCount={
             isDailyChallenge ? DAILY_CHALLENGE_QUESTION_COUNT : effectiveRoundQuestionCount
-          }
-          questionType={
-            mode === "speed-round" || mode === "marathon" ? draft.questionType : undefined
           }
           profile={profile}
           dailyDateLabel={dailyDateLabel}

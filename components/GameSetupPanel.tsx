@@ -2,39 +2,39 @@
 
 import { ContinentFilter } from "@/components/ContinentFilter";
 import { Select } from "@/components/ui/Select";
-import { getScopedModeInfo, scopeText, SCOPE_INFO } from "@/lib/scope";
+import { scopeText, SCOPE_INFO } from "@/lib/scope";
 import {
-  CORE_QUESTION_TYPES,
+  CHALLENGE_MODIFIER_OPTIONS,
   DIFFICULTY_LABELS,
   getDifficultyHint,
   ROUND_ALL_QUESTIONS,
-  SPEED_ROUND_ALL_TYPES,
   clampRoundQuestionSetting,
   getRoundQuestionOptions,
+  isChallengeModifierActive,
   normalizeRoundQuestionSetting,
+  type ChallengeModifier,
   type Difficulty,
   type GameMode,
   type GameScope,
   type Region,
   type RoundQuestionSetting,
-  type SpeedRoundQuestionType,
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 type GameSetupPanelProps = {
   mode: GameMode;
   scope: GameScope;
+  challengeModifier: ChallengeModifier;
   continents: Region[];
   includeTerritories: boolean;
   difficulty: Difficulty;
-  questionType: SpeedRoundQuestionType;
   roundQuestionCount: RoundQuestionSetting;
   availableCountryCount: number;
   weakSpotWarning?: boolean;
+  onChallengeModifierChange: (challengeModifier: ChallengeModifier) => void;
   onContinentsChange: (continents: Region[]) => void;
   onIncludeTerritoriesChange: (includeTerritories: boolean) => void;
   onDifficultyChange: (difficulty: Difficulty) => void;
-  onQuestionTypeChange: (questionType: SpeedRoundQuestionType) => void;
   onRoundQuestionCountChange: (roundQuestionCount: RoundQuestionSetting) => void;
   className?: string;
 };
@@ -50,42 +50,27 @@ const optionButtonClass = (active: boolean) =>
 export function GameSetupPanel({
   mode,
   scope,
+  challengeModifier,
   continents,
   includeTerritories,
   difficulty,
-  questionType,
   roundQuestionCount,
   availableCountryCount,
   weakSpotWarning = false,
+  onChallengeModifierChange,
   onContinentsChange,
   onIncludeTerritoriesChange,
   onDifficultyChange,
-  onQuestionTypeChange,
   onRoundQuestionCountChange,
   className,
 }: GameSetupPanelProps) {
   const scopeInfo = SCOPE_INFO[scope];
-  const isDailyChallenge = mode === "daily-challenge";
   const roundQuestionOptions = getRoundQuestionOptions(availableCountryCount);
   const effectiveRoundQuestionCount = clampRoundQuestionSetting(
     roundQuestionCount,
     availableCountryCount,
   );
-
-  if (isDailyChallenge) {
-    return (
-      <div
-        className={cn(
-          "rounded-[1.75rem] border-2 border-slate-200 bg-white/90 p-4 shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90 sm:p-6",
-          className,
-        )}
-      >
-        <p className="text-sm text-slate-600 dark:text-slate-400">
-          Fixed format — 10 mixed questions at Normal difficulty with the full {scopeInfo.nounPlural} pool.
-        </p>
-      </div>
-    );
-  }
+  const challengeActive = isChallengeModifierActive(challengeModifier);
 
   return (
     <div
@@ -103,43 +88,25 @@ export function GameSetupPanel({
         </p>
       ) : null}
 
-      {(mode === "speed-round" || mode === "marathon") && (
-        <div>
-          <h2 className="mb-3 font-semibold">Question type</h2>
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-            {CORE_QUESTION_TYPES.map((type) => {
-              const typeInfo = getScopedModeInfo(type, scope);
-              if (!typeInfo) return null;
-              return (
-                <button
-                  key={type}
-                  type="button"
-                  onClick={() => onQuestionTypeChange(type)}
-                  className={optionButtonClass(questionType === type)}
-                >
-                  <span className="mr-1.5">{typeInfo.icon}</span>
-                  {typeInfo.title}
-                </button>
-              );
-            })}
+      <div>
+        <h2 className="mb-3 font-semibold">Challenge modifier</h2>
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+          {CHALLENGE_MODIFIER_OPTIONS.map((option) => (
             <button
+              key={option.id}
               type="button"
-              onClick={() => onQuestionTypeChange(SPEED_ROUND_ALL_TYPES)}
-              className={cn(optionButtonClass(questionType === SPEED_ROUND_ALL_TYPES), "sm:col-span-2")}
+              onClick={() => onChallengeModifierChange(option.id)}
+              className={optionButtonClass(challengeModifier === option.id)}
             >
-              <span className="mr-1.5">🎲</span>
-              Mixed
-              <span className="mt-0.5 block text-xs font-normal opacity-80">
-                {mode === "marathon"
-                  ? "All four types, shuffled until your first miss"
-                  : "All four types, shuffled"}
-              </span>
+              <span className="mr-1.5">{option.icon}</span>
+              {option.title}
+              <span className="mt-0.5 block text-xs font-normal opacity-80">{option.description}</span>
             </button>
-          </div>
+          ))}
         </div>
-      )}
+      </div>
 
-      {mode !== "marathon" && mode !== "speed-round" && (
+      {!challengeActive ? (
         <div>
           <h2 className="mb-3 font-semibold">Questions per round</h2>
           <Select
@@ -164,7 +131,7 @@ export function GameSetupPanel({
             </option>
           </Select>
         </div>
-      )}
+      ) : null}
 
       <div>
         <h2 className="mb-3 font-semibold">Difficulty</h2>

@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { subtleBackLinkClass } from "@/lib/utils";
 import { GameModeTile } from "@/components/GameModeTile";
 import { ScopeSelector } from "@/components/ScopeSelector";
 import { useGameScope } from "@/lib/use-game-scope";
-import { CHALLENGE_MODES, EXTRA_QUIZ_MODES, PLAY_MODES, PRACTICE_MODES } from "@/lib/types";
+import { EXTRA_QUIZ_MODES, PLAY_MODES, PRACTICE_MODES } from "@/lib/types";
 
 const CORE_MODE_STYLES: Record<string, { tile: string; iconBg: string; hover: string }> = {
   "flag-to-country": {
@@ -74,7 +75,7 @@ export function GameSetupPageContent() {
         <div>
           <Link
             href="/"
-            className="inline-flex items-center gap-1 rounded-xl border border-slate-200/80 bg-slate-50/50 px-2.5 py-1.5 text-xs font-semibold text-slate-500 transition-colors hover:border-slate-300 hover:bg-slate-100/70 hover:text-slate-700 dark:border-slate-700/60 dark:bg-slate-800/30 dark:text-slate-400 dark:hover:border-slate-600 dark:hover:bg-slate-800/60 dark:hover:text-slate-200"
+            className={subtleBackLinkClass}
           >
             ← Back home
           </Link>
@@ -101,17 +102,6 @@ export function GameSetupPageContent() {
               style={CORE_MODE_STYLES[id]}
               className={id === "mixed" ? "sm:col-span-2" : undefined}
             />
-          ))}
-        </div>
-      </section>
-
-      <section>
-        <h2 className="mb-3 font-display text-xl font-extrabold text-slate-800 dark:text-slate-100 sm:mb-4">
-          Challenges
-        </h2>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {CHALLENGE_MODES.map((id) => (
-            <GameModeTile key={id} mode={id} scope={scope} />
           ))}
         </div>
       </section>

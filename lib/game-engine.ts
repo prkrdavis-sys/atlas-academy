@@ -1,7 +1,6 @@
 import {
   getCountryByCode,
   getCountryName,
-  getEligibleCoreQuestionTypes,
   getEligibleMixedQuestionTypes,
   getPlayablePool,
 } from "@/lib/countries";
@@ -11,7 +10,7 @@ import {
   DAILY_CHALLENGE_QUESTION_TYPES,
   DEFAULT_ROUND_QUESTION_COUNT,
   resolveRoundQuestionLimit,
-  SPEED_ROUND_ALL_TYPES,
+  type ChallengeModifier,
   type Country,
   type DailyChallengeQuestionType,
   type Difficulty,
@@ -20,7 +19,6 @@ import {
   type Region,
   type Question,
   type RoundQuestionSetting,
-  type SpeedRoundQuestionType,
 } from "@/lib/types";
 import {
   buildCapitalPrompt,
@@ -184,16 +182,15 @@ export class GameEngine {
     private difficulty: Difficulty,
     weakSpotCodes?: string[],
     seed?: number,
-    private questionType?: SpeedRoundQuestionType,
     private questionLimit: RoundQuestionSetting = DEFAULT_ROUND_QUESTION_COUNT,
     includeTerritories = false,
     private scope: GameScope = "world",
+    private challengeModifier: ChallengeModifier = "none",
   ) {
     this.pool = getPlayablePool({
       continents,
       includeTerritories,
       mode,
-      questionType,
       weakSpotCodes,
       scope,
     });
@@ -210,7 +207,7 @@ export class GameEngine {
     if (this.mode === "daily-challenge") {
       return Math.min(DAILY_CHALLENGE_QUESTION_COUNT, this.pool.length);
     }
-    if (this.mode === "marathon" || this.mode === "speed-round") {
+    if (this.challengeModifier === "marathon" || this.challengeModifier === "speed-round") {
       return undefined;
     }
     return resolveRoundQuestionLimit(this.questionLimit, this.pool.length);
@@ -273,7 +270,7 @@ export class GameEngine {
   }
 
   private buildShuffledRoundCountries(): Country[] {
-    if (this.mode === "marathon" || this.mode === "speed-round") {
+    if (this.challengeModifier === "marathon" || this.challengeModifier === "speed-round") {
       return shuffleWith(this.pool, this.random);
     }
     const limit = resolveRoundQuestionLimit(this.questionLimit, this.pool.length);
@@ -291,7 +288,7 @@ export class GameEngine {
 
     const country = this.roundCountries[this.questionIndex];
     if (!country) {
-      if (this.mode === "marathon" || this.mode === "speed-round") {
+      if (this.challengeModifier === "marathon" || this.challengeModifier === "speed-round") {
         const recycled = pickFromPool(this.pool, this.random);
         this.questionIndex += 1;
         return this.buildNextQuestionForCountry(recycled);
@@ -311,21 +308,6 @@ export class GameEngine {
         eligibleTypes.length > 0
           ? pickFromPool(eligibleTypes, this.random)
           : "flag-to-country";
-    } else if (
-      (this.mode === "speed-round" || this.mode === "marathon") &&
-      this.questionType === SPEED_ROUND_ALL_TYPES
-    ) {
-      const eligibleTypes = getEligibleCoreQuestionTypes(country);
-      questionMode =
-        eligibleTypes.length > 0
-          ? pickFromPool(eligibleTypes, this.random)
-          : "flag-to-country";
-    } else if (
-      (this.mode === "speed-round" || this.mode === "marathon") &&
-      this.questionType &&
-      this.questionType !== SPEED_ROUND_ALL_TYPES
-    ) {
-      questionMode = this.questionType;
     } else {
       questionMode = this.mode;
     }

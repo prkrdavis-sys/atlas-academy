@@ -5,7 +5,6 @@ import {
   CORE_QUESTION_TYPES,
   DAILY_CHALLENGE_QUESTION_TYPES,
   MIXED_QUESTION_TYPES,
-  SPEED_ROUND_ALL_TYPES,
   US_REGIONS,
   type CoreQuestionType,
   type Country,
@@ -13,7 +12,6 @@ import {
   type GameScope,
   type MixedQuestionType,
   type Region,
-  type SpeedRoundQuestionType,
 } from "@/lib/types";
 
 export const countries = countriesData as Country[];
@@ -43,21 +41,31 @@ type FilterOptions = {
   scope?: GameScope;
 };
 
+/** Whether a place belongs to the selected continent filters. */
+function matchesContinentSelection(country: Country, continents: Region[]): boolean {
+  if (!continents.includes(country.continent)) return false;
+  // Antarctica has no sovereign states in our dataset — all entries are territories.
+  if (country.continent === "Antarctica") return true;
+  return !country.isTerritory;
+}
+
 export function filterCountries(options: FilterOptions): Country[] {
   const scope = options.scope ?? "world";
   const dataset = getPlacesForScope(scope);
   // The USA scope has no territories; the toggle only applies to the world.
   const includeTerritories = scope === "world" && (options.includeTerritories ?? false);
-  const sovereignPool = options.continents.length > 0
-    ? dataset.filter(
-        (c) => !c.isTerritory && options.continents.includes(c.continent),
-      )
+  const continentPool = options.continents.length > 0
+    ? dataset.filter((c) => matchesContinentSelection(c, options.continents))
     : [];
   const territoryPool = includeTerritories
     ? dataset.filter((c) => c.isTerritory)
     : [];
 
-  let pool = [...sovereignPool, ...territoryPool];
+  const byCode = new Map<string, Country>();
+  for (const country of [...continentPool, ...territoryPool]) {
+    byCode.set(country.code, country);
+  }
+  let pool = [...byCode.values()];
 
   if (options.mode === "shape-to-country") {
     pool = pool.filter((c) => c.hasShape);
@@ -99,8 +107,8 @@ export function countSovereignCountriesByContinents(
   continents: Region[],
   scope: GameScope = "world",
 ): number {
-  return getPlacesForScope(scope).filter(
-    (c) => !c.isTerritory && continents.includes(c.continent),
+  return getPlacesForScope(scope).filter((c) =>
+    matchesContinentSelection(c, continents),
   ).length;
 }
 
@@ -169,7 +177,6 @@ export function getDailyChallengePool(options: Omit<FilterOptions, "mode">): Cou
 
 type PoolOptions = FilterOptions & {
   mode: GameMode;
-  questionType?: SpeedRoundQuestionType;
 };
 
 export function getPlayablePool(options: PoolOptions): Country[] {
@@ -182,11 +189,7 @@ export function getPlayablePool(options: PoolOptions): Country[] {
     });
   }
 
-  if (
-    options.mode === "mixed" ||
-    ((options.mode === "speed-round" || options.mode === "marathon") &&
-      options.questionType === SPEED_ROUND_ALL_TYPES)
-  ) {
+  if (options.mode === "mixed") {
     return getMixedCoreQuestionPool({
       continents: options.continents,
       includeTerritories: options.includeTerritories,
@@ -195,17 +198,10 @@ export function getPlayablePool(options: PoolOptions): Country[] {
     });
   }
 
-  const filterMode: GameMode =
-    (options.mode === "speed-round" || options.mode === "marathon") &&
-    options.questionType &&
-    options.questionType !== SPEED_ROUND_ALL_TYPES
-      ? options.questionType
-      : options.mode;
-
   return filterCountries({
     continents: options.continents,
     includeTerritories: options.includeTerritories,
-    mode: filterMode,
+    mode: options.mode,
     weakSpotCodes: options.weakSpotCodes,
     scope: options.scope,
   });

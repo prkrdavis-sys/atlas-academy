@@ -15,7 +15,8 @@ import {
 import { getScopedModeInfo, normalizeScope, scopeQuery, scopeText, SCOPE_INFO } from "@/lib/scope";
 import { getCommonlyMissedCountries } from "@/lib/stats-helpers";
 import { recordModeSelection, updateProfileSettings } from "@/lib/storage";
-import { clampRoundQuestionSetting, type GameMode, type SpeedRoundQuestionType } from "@/lib/types";
+import { clampRoundQuestionSetting, type ChallengeModifier, type GameMode } from "@/lib/types";
+import { subtleBackLinkClass } from "@/lib/utils";
 
 type GameModeSettingsPageContentProps = {
   mode: GameMode;
@@ -30,9 +31,14 @@ export function GameModeSettingsPageContent({ mode }: GameModeSettingsPageConten
   const scopeInfo = SCOPE_INFO[scope];
   const modeInfo = getScopedModeInfo(mode, scope);
 
-  const [draft, setDraft] = useState<GameSetupDraft>(() =>
-    createSetupDraftFromProfile(profile, mode, scope),
-  );
+  const [draft, setDraft] = useState<GameSetupDraft>(() => {
+    const initial = createSetupDraftFromProfile(profile, mode, scope);
+    const modifierParam = searchParams.get("modifier");
+    if (modifierParam === "speed-round" || modifierParam === "marathon") {
+      return { ...initial, challengeModifier: modifierParam };
+    }
+    return initial;
+  });
   const draftRef = useRef(draft);
   const [startBarPinned, setStartBarPinned] = useState(false);
   const [startBarHeight, setStartBarHeight] = useState(0);
@@ -95,16 +101,13 @@ export function GameModeSettingsPageContent({ mode }: GameModeSettingsPageConten
     // eslint-disable-next-line react-hooks/exhaustive-deps -- save draft snapshot on tab close
   }, [profile.id, scope]);
 
-  const normalizedDraft =
-    draft.mode === "daily-challenge"
-      ? draft
-      : {
-          ...draft,
-          roundQuestionCount: clampRoundQuestionSetting(
-            draft.roundQuestionCount,
-            getPlayablePoolForDraft(profile, draft, scope),
-          ),
-        };
+  const normalizedDraft = {
+    ...draft,
+    roundQuestionCount: clampRoundQuestionSetting(
+      draft.roundQuestionCount,
+      getPlayablePoolForDraft(profile, draft, scope),
+    ),
+  };
 
   const availableCountryCount = getPlayablePoolForDraft(profile, normalizedDraft, scope);
   const weakSpotCodes =
@@ -113,10 +116,8 @@ export function GameModeSettingsPageContent({ mode }: GameModeSettingsPageConten
       : undefined;
 
   const setupBackHref = `/play/setup${scopeQuery(scope)}`;
-  const isDailyChallenge = mode === "daily-challenge";
   const startDisabled =
-    (mode === "weak-spots" && !weakSpotCodes?.length) ||
-    (!isDailyChallenge && availableCountryCount === 0);
+    (mode === "weak-spots" && !weakSpotCodes?.length) || availableCountryCount === 0;
 
   const handleDone = () => {
     persistCurrentDraft();
@@ -166,12 +167,8 @@ export function GameModeSettingsPageContent({ mode }: GameModeSettingsPageConten
             }
           >
             <div className="px-1 pb-1">
-              <GameActionButton
-                onClick={handlePlay}
-                disabled={startDisabled}
-                icon={scopeInfo.icon}
-              >
-                {isDailyChallenge ? "Start today's challenge" : "Start Game"}
+              <GameActionButton onClick={handlePlay} disabled={startDisabled} icon={scopeInfo.icon}>
+                Start Game
               </GameActionButton>
             </div>
           </div>
@@ -185,7 +182,7 @@ export function GameModeSettingsPageContent({ mode }: GameModeSettingsPageConten
       <header ref={pageHeaderRef}>
         <Link
           href={setupBackHref}
-          className="inline-flex items-center gap-1 rounded-xl border border-slate-200/80 bg-slate-50/50 px-2.5 py-1.5 text-xs font-semibold text-slate-500 transition-colors hover:border-slate-300 hover:bg-slate-100/70 hover:text-slate-700 dark:border-slate-700/60 dark:bg-slate-800/30 dark:text-slate-400 dark:hover:border-slate-600 dark:hover:bg-slate-800/60 dark:hover:text-slate-200"
+          className={subtleBackLinkClass}
         >
           ← Back to modes
         </Link>
@@ -213,21 +210,21 @@ export function GameModeSettingsPageContent({ mode }: GameModeSettingsPageConten
         <GameSetupPanel
           mode={normalizedDraft.mode}
           scope={scope}
+          challengeModifier={normalizedDraft.challengeModifier}
           continents={normalizedDraft.continents}
           includeTerritories={normalizedDraft.includeTerritories}
           difficulty={normalizedDraft.difficulty}
-          questionType={normalizedDraft.questionType}
           roundQuestionCount={normalizedDraft.roundQuestionCount}
           availableCountryCount={availableCountryCount}
           weakSpotWarning={normalizedDraft.mode === "weak-spots" && !weakSpotCodes?.length}
+          onChallengeModifierChange={(challengeModifier: ChallengeModifier) =>
+            setDraft((current) => ({ ...current, challengeModifier }))
+          }
           onContinentsChange={(continents) => setDraft((current) => ({ ...current, continents }))}
           onIncludeTerritoriesChange={(includeTerritories) =>
             setDraft((current) => ({ ...current, includeTerritories }))
           }
           onDifficultyChange={(difficulty) => setDraft((current) => ({ ...current, difficulty }))}
-          onQuestionTypeChange={(questionType: SpeedRoundQuestionType) =>
-            setDraft((current) => ({ ...current, questionType }))
-          }
           onRoundQuestionCountChange={(roundQuestionCount) =>
             setDraft((current) => ({ ...current, roundQuestionCount }))
           }

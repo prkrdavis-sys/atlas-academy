@@ -14,6 +14,7 @@ import {
   getCountryByCode,
   usStates,
 } from "@/lib/countries";
+import { formatCurrencyChipLabel, formatCurrencyChipValue } from "@/lib/currency";
 import {
   buildLibraryDetailHref,
   normalizeLibraryFilter,
@@ -80,6 +81,12 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
           ? [{ label: "Native name", value: country.nativeName }]
           : []),
         { label: "Language", value: country.languages || "Not listed" },
+        ...(country.currency
+          ? [{
+              label: formatCurrencyChipLabel(country.currency),
+              value: formatCurrencyChipValue(country.currency),
+            }]
+          : []),
         { label: "Region", value: country.subregion || "Not listed" },
         { label: "Population", value: country.population > 0 ? formatPopulation(country.population) : "Not available" },
         {

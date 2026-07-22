@@ -28,7 +28,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "The Buddhas of Bamiyan were two giant cliff carvings—among the largest in the world before their destruction in 2001.",
-    "languages": "Dari · Pashto · Turkmen"
+    "languages": "Dari · Pashto · Turkmen",
+    "currency": {
+      "code": "AFN",
+      "name": "Afghan afghani",
+      "symbol": "؋",
+      "usdRate": 66.297576
+    }
   },
   {
     "code": "AX",
@@ -51,7 +57,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "Åland is an autonomous, Swedish-speaking archipelago that belongs to Finland but has its own parliament and flag.",
-    "languages": "Swedish"
+    "languages": "Swedish",
+    "currency": {
+      "code": "EUR",
+      "name": "Euro",
+      "symbol": "€",
+      "usdRate": 0.876691
+    }
   },
   {
     "code": "AL",
@@ -80,7 +92,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "During the Cold War, Albania built hundreds of thousands of concrete bunkers—more per person than anywhere else on Earth.",
-    "languages": "Albanian"
+    "languages": "Albanian",
+    "currency": {
+      "code": "ALL",
+      "name": "Albanian lek",
+      "symbol": "L",
+      "usdRate": 82.088135
+    }
   },
   {
     "code": "DZ",
@@ -112,7 +130,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "About 90% of Algeria is covered by the Sahara, yet most of its people live along the Mediterranean coast.",
-    "languages": "Arabic"
+    "languages": "Arabic",
+    "currency": {
+      "code": "DZD",
+      "name": "Algerian dinar",
+      "symbol": "د.ج",
+      "usdRate": 133.229912
+    }
   },
   {
     "code": "AS",
@@ -135,7 +159,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "American Samoa is the only U.S. territory south of the equator and is famous for its NFL players and tuna industry.",
-    "languages": "English · Samoan"
+    "languages": "English · Samoan",
+    "currency": {
+      "code": "USD",
+      "name": "United States dollar",
+      "symbol": "$",
+      "usdRate": 1
+    }
   },
   {
     "code": "AD",
@@ -161,7 +191,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Andorra has no airport or railway—visitors arrive by road through mountain passes from France or Spain.",
-    "languages": "Catalan"
+    "languages": "Catalan",
+    "currency": {
+      "code": "EUR",
+      "name": "Euro",
+      "symbol": "€",
+      "usdRate": 0.876691
+    }
   },
   {
     "code": "AO",
@@ -189,7 +225,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Angola's Kalandula Falls are among the largest and most powerful waterfalls in Africa.",
-    "languages": "Portuguese"
+    "languages": "Portuguese",
+    "currency": {
+      "code": "AOA",
+      "name": "Angolan kwanza",
+      "symbol": "Kz",
+      "usdRate": 929.484375
+    }
   },
   {
     "code": "AI",
@@ -211,7 +253,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "Anguilla's beaches are so prized that the island has repeatedly voted against full independence to keep ties with Britain.",
-    "languages": "English"
+    "languages": "English",
+    "currency": {
+      "code": "XCD",
+      "name": "Eastern Caribbean dollar",
+      "symbol": "$",
+      "usdRate": 2.7
+    }
   },
   {
     "code": "AQ",
@@ -255,7 +303,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Antigua claims 365 beaches—one for every day of the year.",
-    "languages": "English"
+    "languages": "English",
+    "currency": {
+      "code": "XCD",
+      "name": "Eastern Caribbean dollar",
+      "symbol": "$",
+      "usdRate": 2.7
+    }
   },
   {
     "code": "AR",
@@ -284,7 +338,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Argentina's Perito Moreno Glacier is one of the few major glaciers in the world that is still advancing.",
-    "languages": "Guaraní · Spanish"
+    "languages": "Guaraní · Spanish",
+    "currency": {
+      "code": "ARS",
+      "name": "Argentine peso",
+      "symbol": "$",
+      "usdRate": 1477.7
+    }
   },
   {
     "code": "AM",
@@ -313,7 +373,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Mount Ararat, visible from much of Armenia, is a national symbol though it lies just across the border in Türkiye.",
-    "languages": "Armenian"
+    "languages": "Armenian",
+    "currency": {
+      "code": "AMD",
+      "name": "Armenian dram",
+      "symbol": "֏",
+      "usdRate": 366.257897
+    }
   },
   {
     "code": "AW",
@@ -335,7 +401,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "Aruba sits outside the Caribbean hurricane belt, giving it reliably sunny weather year-round.",
-    "languages": "Dutch · Papiamento"
+    "languages": "Dutch · Papiamento",
+    "currency": {
+      "code": "AWG",
+      "name": "Aruban florin",
+      "symbol": "ƒ",
+      "usdRate": 1.79
+    }
   },
   {
     "code": "AU",
@@ -358,7 +430,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Australia is home to more venomous snakes than any other country—and most of its wildlife is found nowhere else.",
-    "languages": "English"
+    "languages": "English",
+    "currency": {
+      "code": "AUD",
+      "name": "Australian dollar",
+      "symbol": "$",
+      "usdRate": 1.428082
+    }
   },
   {
     "code": "AT",
@@ -391,7 +469,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Vienna ranked among Europe's great imperial capitals; Mozart, Beethoven, and Strauss all made their mark here.",
-    "languages": "Austro-Bavarian German"
+    "languages": "Austro-Bavarian German",
+    "currency": {
+      "code": "EUR",
+      "name": "Euro",
+      "symbol": "€",
+      "usdRate": 0.876691
+    }
   },
   {
     "code": "AZ",
@@ -421,7 +505,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Nearly half of Azerbaijan lies below sea level thanks to the Caspian shoreline and the low-lying Kura plain.",
-    "languages": "Azerbaijani · Russian"
+    "languages": "Azerbaijani · Russian",
+    "currency": {
+      "code": "AZN",
+      "name": "Azerbaijani manat",
+      "symbol": "₼",
+      "usdRate": 1.700145
+    }
   },
   {
     "code": "BS",
@@ -444,7 +534,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "The Bahamas has more than 700 islands and cays spread across clear turquoise shallows.",
-    "languages": "English"
+    "languages": "English",
+    "currency": {
+      "code": "BSD",
+      "name": "Bahamian dollar",
+      "symbol": "$",
+      "usdRate": 1
+    }
   },
   {
     "code": "BH",
@@ -468,7 +564,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Bahrain's Tree of Life is a lone mesquite tree thriving in the desert with no obvious water source for centuries.",
-    "languages": "Arabic"
+    "languages": "Arabic",
+    "currency": {
+      "code": "BHD",
+      "name": "Bahraini dinar",
+      "symbol": ".د.ب",
+      "usdRate": 0.376
+    }
   },
   {
     "code": "BD",
@@ -495,7 +597,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Bangladesh crams more than 170 million people into a delta the size of Iowa—one of the densest countries on Earth.",
-    "languages": "Bengali"
+    "languages": "Bengali",
+    "currency": {
+      "code": "BDT",
+      "name": "Bangladeshi taka",
+      "symbol": "৳",
+      "usdRate": 123.355712
+    }
   },
   {
     "code": "BB",
@@ -517,7 +625,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Barbados is the easternmost island of the Caribbean and was once a major center of British sugar production.",
-    "languages": "English"
+    "languages": "English",
+    "currency": {
+      "code": "BBD",
+      "name": "Barbadian dollar",
+      "symbol": "$",
+      "usdRate": 2
+    }
   },
   {
     "code": "BY",
@@ -547,7 +661,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "About 40% of Belarus is forested, earning it the nickname 'the lungs of Europe.'",
-    "languages": "Belarusian · Russian"
+    "languages": "Belarusian · Russian",
+    "currency": {
+      "code": "BYN",
+      "name": "Belarusian ruble",
+      "symbol": "Br",
+      "usdRate": 2.889388
+    }
   },
   {
     "code": "BE",
@@ -576,7 +696,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Belgium produces more than 1,500 varieties of beer and has been brewing for centuries.",
-    "languages": "Dutch · French · German"
+    "languages": "Dutch · French · German",
+    "currency": {
+      "code": "EUR",
+      "name": "Euro",
+      "symbol": "€",
+      "usdRate": 0.876691
+    }
   },
   {
     "code": "BZ",
@@ -602,7 +728,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Belize is home to the Great Blue Hole, a perfect circular sinkhole visible from space.",
-    "languages": "Belizean Creole · English · Spanish"
+    "languages": "Belizean Creole · English · Spanish",
+    "currency": {
+      "code": "BZD",
+      "name": "Belize dollar",
+      "symbol": "$",
+      "usdRate": 2
+    }
   },
   {
     "code": "BJ",
@@ -631,7 +763,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Benin was once the powerful Kingdom of Dahomey, whose all-female warrior units inspired the Dora Milaje in Black Panther.",
-    "languages": "French"
+    "languages": "French",
+    "currency": {
+      "code": "XOF",
+      "name": "West African CFA franc",
+      "symbol": "Fr",
+      "usdRate": 575.082836
+    }
   },
   {
     "code": "BM",
@@ -653,7 +791,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "Bermuda's pink-sand beaches get their color from crushed coral and shell fragments mixed with white sand.",
-    "languages": "English"
+    "languages": "English",
+    "currency": {
+      "code": "BMD",
+      "name": "Bermudian dollar",
+      "symbol": "$",
+      "usdRate": 1
+    }
   },
   {
     "code": "BT",
@@ -680,7 +824,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Bhutan measures progress with Gross National Happiness instead of focusing only on economic output.",
-    "languages": "Dzongkha"
+    "languages": "Dzongkha",
+    "currency": {
+      "code": "BTN",
+      "name": "Bhutanese ngultrum",
+      "symbol": "Nu.",
+      "usdRate": 96.337696
+    }
   },
   {
     "code": "BO",
@@ -710,7 +860,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Bolivia has two capital cities: La Paz is the administrative seat and Sucre the constitutional capital.",
-    "languages": "Aymara · Guaraní · Quechua · Spanish"
+    "languages": "Aymara · Guaraní · Quechua · Spanish",
+    "currency": {
+      "code": "BOB",
+      "name": "Bolivian boliviano",
+      "symbol": "Bs.",
+      "usdRate": 10.775878
+    }
   },
   {
     "code": "BA",
@@ -737,7 +893,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Mostar's Ottoman-era Stari Most bridge was destroyed in 1993 and painstakingly rebuilt stone by stone.",
-    "languages": "Bosnian · Croatian · Serbian"
+    "languages": "Bosnian · Croatian · Serbian",
+    "currency": {
+      "code": "BAM",
+      "name": "Bosnia and Herzegovina convertible mark",
+      "symbol": "KM",
+      "usdRate": 1.714692
+    }
   },
   {
     "code": "BW",
@@ -765,7 +927,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Botswana's Okavango Delta is one of the world's largest inland deltas—a desert oasis teeming with wildlife.",
-    "languages": "English · Tswana"
+    "languages": "English · Tswana",
+    "currency": {
+      "code": "BWP",
+      "name": "Botswana pula",
+      "symbol": "P",
+      "usdRate": 14.390566
+    }
   },
   {
     "code": "BV",
@@ -823,7 +991,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Brazil contains about 60% of the Amazon rainforest—the largest tropical forest on the planet.",
-    "languages": "Portuguese"
+    "languages": "Portuguese",
+    "currency": {
+      "code": "BRL",
+      "name": "Brazilian real",
+      "symbol": "R$",
+      "usdRate": 5.077823
+    }
   },
   {
     "code": "IO",
@@ -845,7 +1019,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "The Chagos Archipelago includes Diego Garcia, a strategically vital U.S.–U.K. military base in the Indian Ocean.",
-    "languages": "English"
+    "languages": "English",
+    "currency": {
+      "code": "USD",
+      "name": "United States dollar",
+      "symbol": "$",
+      "usdRate": 1
+    }
   },
   {
     "code": "VG",
@@ -868,7 +1048,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "The British Virgin Islands are a sailing paradise with dozens of sheltered bays and reef-protected waters.",
-    "languages": "English"
+    "languages": "English",
+    "currency": {
+      "code": "USD",
+      "name": "United States dollar",
+      "symbol": "$",
+      "usdRate": 1
+    }
   },
   {
     "code": "BN",
@@ -894,7 +1080,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Brunei is one of the world's richest nations per capita, built largely on offshore oil and gas.",
-    "languages": "Malay"
+    "languages": "Malay",
+    "currency": {
+      "code": "BND",
+      "name": "Brunei dollar",
+      "symbol": "$",
+      "usdRate": 1.291586
+    }
   },
   {
     "code": "BG",
@@ -924,7 +1116,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Bulgaria is one of the world's oldest countries and still uses the Cyrillic alphabet invented by local saints.",
-    "languages": "Bulgarian"
+    "languages": "Bulgarian",
+    "currency": {
+      "code": "EUR",
+      "name": "Euro",
+      "symbol": "€",
+      "usdRate": 0.876691
+    }
   },
   {
     "code": "BF",
@@ -953,7 +1151,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Burkina Faso means 'land of upright people' in Mossi and Dioula.",
-    "languages": "French"
+    "languages": "French",
+    "currency": {
+      "code": "XOF",
+      "name": "West African CFA franc",
+      "symbol": "Fr",
+      "usdRate": 575.082836
+    }
   },
   {
     "code": "BI",
@@ -981,7 +1185,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Burundi and Rwanda were once a single kingdom before European colonization split them.",
-    "languages": "French · Kirundi"
+    "languages": "French · Kirundi",
+    "currency": {
+      "code": "BIF",
+      "name": "Burundian franc",
+      "symbol": "Fr",
+      "usdRate": 2992.937831
+    }
   },
   {
     "code": "KH",
@@ -1009,7 +1219,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Angkor Wat in Cambodia is the largest religious monument in the world by land area.",
-    "languages": "Khmer"
+    "languages": "Khmer",
+    "currency": {
+      "code": "KHR",
+      "name": "Cambodian riel",
+      "symbol": "៛",
+      "usdRate": 4048.568017
+    }
   },
   {
     "code": "CM",
@@ -1040,7 +1256,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Cameroon is nicknamed 'Africa in miniature' for its coast, rainforest, savanna, and volcanic highlands in one country.",
-    "languages": "English · French"
+    "languages": "English · French",
+    "currency": {
+      "code": "XAF",
+      "name": "Central African CFA franc",
+      "symbol": "Fr",
+      "usdRate": 575.082836
+    }
   },
   {
     "code": "CA",
@@ -1064,7 +1286,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Canada has more lakes than the rest of the world's countries combined.",
-    "languages": "English · French"
+    "languages": "English · French",
+    "currency": {
+      "code": "CAD",
+      "name": "Canadian dollar",
+      "symbol": "$",
+      "usdRate": 1.409459
+    }
   },
   {
     "code": "CV",
@@ -1089,7 +1317,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Cape Verde's music—especially morna—has influenced styles across the Atlantic world.",
-    "languages": "Portuguese"
+    "languages": "Portuguese",
+    "currency": {
+      "code": "CVE",
+      "name": "Cape Verdean escudo",
+      "symbol": "Esc",
+      "usdRate": 96.670222
+    }
   },
   {
     "code": "BQ",
@@ -1113,7 +1347,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "Bonaire, Sint Eustatius, and Saba are Caribbean municipalities of the Netherlands known for diving and reefs.",
-    "languages": "Dutch · English · Papiamento"
+    "languages": "Dutch · English · Papiamento",
+    "currency": {
+      "code": "USD",
+      "name": "United States dollar",
+      "symbol": "$",
+      "usdRate": 1
+    }
   },
   {
     "code": "KY",
@@ -1135,7 +1375,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "The Cayman Islands are a global financial hub with more registered companies than residents.",
-    "languages": "English"
+    "languages": "English",
+    "currency": {
+      "code": "KYD",
+      "name": "Cayman Islands dollar",
+      "symbol": "$",
+      "usdRate": 0.833333
+    }
   },
   {
     "code": "CF",
@@ -1165,7 +1411,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "The Central African Republic sits near the continent's geographic center, largely covered in rainforest.",
-    "languages": "French · Sango"
+    "languages": "French · Sango",
+    "currency": {
+      "code": "XAF",
+      "name": "Central African CFA franc",
+      "symbol": "Fr",
+      "usdRate": 575.082836
+    }
   },
   {
     "code": "TD",
@@ -1196,7 +1448,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Lake Chad, which Chad is named for, has shrunk dramatically since the 1960s—an environmental crisis for the region.",
-    "languages": "Arabic · French"
+    "languages": "Arabic · French",
+    "currency": {
+      "code": "XAF",
+      "name": "Central African CFA franc",
+      "symbol": "Fr",
+      "usdRate": 575.082836
+    }
   },
   {
     "code": "CL",
@@ -1223,7 +1481,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Chile is more than 4,000 km long but averages only about 177 km wide—one of the world's most stretched countries.",
-    "languages": "Spanish"
+    "languages": "Spanish",
+    "currency": {
+      "code": "CLP",
+      "name": "Chilean peso",
+      "symbol": "$",
+      "usdRate": 934.68866
+    }
   },
   {
     "code": "CN",
@@ -1264,7 +1528,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "China's Great Wall isn't one continuous wall—it's a network of fortifications built over many centuries.",
-    "languages": "Chinese"
+    "languages": "Chinese",
+    "currency": {
+      "code": "CNY",
+      "name": "Chinese yuan",
+      "symbol": "¥",
+      "usdRate": 6.776686
+    }
   },
   {
     "code": "CX",
@@ -1287,7 +1557,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "Christmas Island is famous for the annual red crab migration, when millions of crabs cross roads and beaches.",
-    "languages": "English"
+    "languages": "English",
+    "currency": {
+      "code": "AUD",
+      "name": "Australian dollar",
+      "symbol": "$",
+      "usdRate": 1.428082
+    }
   },
   {
     "code": "CC",
@@ -1310,7 +1586,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "The Cocos (Keeling) Islands are a remote coral atoll group in the Indian Ocean with a population under 600.",
-    "languages": "English"
+    "languages": "English",
+    "currency": {
+      "code": "AUD",
+      "name": "Australian dollar",
+      "symbol": "$",
+      "usdRate": 1.428082
+    }
   },
   {
     "code": "CO",
@@ -1339,7 +1621,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Colombia produces more emeralds than any other country and is one of the world's top coffee exporters.",
-    "languages": "Spanish"
+    "languages": "Spanish",
+    "currency": {
+      "code": "COP",
+      "name": "Colombian peso",
+      "symbol": "$",
+      "usdRate": 3250.798233
+    }
   },
   {
     "code": "KM",
@@ -1363,7 +1651,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Comoros is one of the world's largest producers of ylang-ylang, a flower essential to many perfumes.",
-    "languages": "Arabic · Comorian · French"
+    "languages": "Arabic · Comorian · French",
+    "currency": {
+      "code": "KMF",
+      "name": "Comorian franc",
+      "symbol": "Fr",
+      "usdRate": 431.312127
+    }
   },
   {
     "code": "CG",
@@ -1395,7 +1689,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "The Congo Basin rainforest is the world's second-largest tropical forest after the Amazon.",
-    "languages": "French · Kikongo · Lingala"
+    "languages": "French · Kikongo · Lingala",
+    "currency": {
+      "code": "XAF",
+      "name": "Central African CFA franc",
+      "symbol": "Fr",
+      "usdRate": 575.082836
+    }
   },
   {
     "code": "CK",
@@ -1418,7 +1718,12 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "Cook Islanders carry New Zealand passports but govern themselves in free association with Wellington.",
-    "languages": "Cook Islands Māori · English"
+    "languages": "Cook Islands Māori · English",
+    "currency": {
+      "code": "CKD",
+      "name": "Cook Islands dollar",
+      "symbol": "$"
+    }
   },
   {
     "code": "CR",
@@ -1444,7 +1749,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Costa Rica abolished its army in 1948 and redirected military spending to education and health care.",
-    "languages": "Spanish"
+    "languages": "Spanish",
+    "currency": {
+      "code": "CRC",
+      "name": "Costa Rican colón",
+      "symbol": "₡",
+      "usdRate": 454.027923
+    }
   },
   {
     "code": "HR",
@@ -1474,7 +1785,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Dubrovnik's medieval walls in Croatia became a filming location for King's Landing in Game of Thrones.",
-    "languages": "Croatian"
+    "languages": "Croatian",
+    "currency": {
+      "code": "EUR",
+      "name": "Euro",
+      "symbol": "€",
+      "usdRate": 0.876691
+    }
   },
   {
     "code": "CU",
@@ -1497,7 +1814,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Cuba's classic 1950s American cars are still on the road thanks to decades of ingenious local repair.",
-    "languages": "Spanish"
+    "languages": "Spanish",
+    "currency": {
+      "code": "CUP",
+      "name": "Cuban peso",
+      "symbol": "$",
+      "usdRate": 24
+    }
   },
   {
     "code": "CW",
@@ -1521,7 +1844,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "Curaçao's Handelskade waterfront is lined with pastel Dutch colonial buildings overlooking the harbor.",
-    "languages": "Dutch · English · Papiamento"
+    "languages": "Dutch · English · Papiamento",
+    "currency": {
+      "code": "ANG",
+      "name": "Netherlands Antillean guilder",
+      "symbol": "ƒ",
+      "usdRate": 1.79
+    }
   },
   {
     "code": "CY",
@@ -1545,7 +1874,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Cyprus is said to be the birthplace of Aphrodite, the Greek goddess of love.",
-    "languages": "Greek · Turkish"
+    "languages": "Greek · Turkish",
+    "currency": {
+      "code": "EUR",
+      "name": "Euro",
+      "symbol": "€",
+      "usdRate": 0.876691
+    }
   },
   {
     "code": "CZ",
@@ -1574,7 +1909,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Prague's Astronomical Clock in Czechia has been keeping time since 1410—one of the oldest still working.",
-    "languages": "Czech · Slovak"
+    "languages": "Czech · Slovak",
+    "currency": {
+      "code": "CZK",
+      "name": "Czech koruna",
+      "symbol": "Kč",
+      "usdRate": 21.205386
+    }
   },
   {
     "code": "DK",
@@ -1600,7 +1941,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Denmark's LEGO bricks were invented in Billund, where the original LEGOLAND theme park still stands.",
-    "languages": "Danish"
+    "languages": "Danish",
+    "currency": {
+      "code": "DKK",
+      "name": "Danish krone",
+      "symbol": "kr",
+      "usdRate": 6.542063
+    }
   },
   {
     "code": "DJ",
@@ -1628,7 +1975,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Djibouti sits on the Afar Triple Junction where three tectonic plates pull apart—creating dramatic rift landscapes.",
-    "languages": "Arabic · French"
+    "languages": "Arabic · French",
+    "currency": {
+      "code": "DJF",
+      "name": "Djiboutian franc",
+      "symbol": "Fr",
+      "usdRate": 177.721
+    }
   },
   {
     "code": "DM",
@@ -1651,7 +2004,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Dominica's Boiling Lake is the world's second-largest hot spring and steams like a giant cauldron.",
-    "languages": "English"
+    "languages": "English",
+    "currency": {
+      "code": "XCD",
+      "name": "Eastern Caribbean dollar",
+      "symbol": "$",
+      "usdRate": 2.7
+    }
   },
   {
     "code": "DO",
@@ -1676,7 +2035,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "The Dominican Republic shares Hispaniola with Haiti—the only island split between two nations in the Caribbean.",
-    "languages": "Spanish"
+    "languages": "Spanish",
+    "currency": {
+      "code": "DOP",
+      "name": "Dominican peso",
+      "symbol": "$",
+      "usdRate": 58.487939
+    }
   },
   {
     "code": "CD",
@@ -1712,7 +2077,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "The Congo River is the world's deepest river and second-largest by discharge, cutting through DR Congo's rainforests.",
-    "languages": "French · Kikongo · Lingala · Swahili · Tshiluba"
+    "languages": "French · Kikongo · Lingala · Swahili · Tshiluba",
+    "currency": {
+      "code": "CDF",
+      "name": "Congolese franc",
+      "symbol": "FC",
+      "usdRate": 2277.763814
+    }
   },
   {
     "code": "EC",
@@ -1738,7 +2109,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Ecuador is named for the equator, which runs through the country—and the Galápagos Islands belong to it.",
-    "languages": "Spanish"
+    "languages": "Spanish",
+    "currency": {
+      "code": "USD",
+      "name": "United States dollar",
+      "symbol": "$",
+      "usdRate": 1
+    }
   },
   {
     "code": "EG",
@@ -1767,7 +2144,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "The Great Pyramid of Giza was the tallest human-made structure in the world for nearly 4,000 years.",
-    "languages": "Arabic"
+    "languages": "Arabic",
+    "currency": {
+      "code": "EGP",
+      "name": "Egyptian pound",
+      "symbol": "£",
+      "usdRate": 51.008475
+    }
   },
   {
     "code": "SV",
@@ -1793,7 +2176,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "El Salvador is the smallest and most densely populated country in Central America.",
-    "languages": "Spanish"
+    "languages": "Spanish",
+    "currency": {
+      "code": "USD",
+      "name": "United States dollar",
+      "symbol": "$",
+      "usdRate": 1
+    }
   },
   {
     "code": "GQ",
@@ -1820,7 +2209,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Equatorial Guinea is the only African country with Spanish as an official language.",
-    "languages": "French · Portuguese · Spanish"
+    "languages": "French · Portuguese · Spanish",
+    "currency": {
+      "code": "XAF",
+      "name": "Central African CFA franc",
+      "symbol": "Fr",
+      "usdRate": 575.082836
+    }
   },
   {
     "code": "ER",
@@ -1848,7 +2243,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Eritrea's capital Asmara has one of the world's finest collections of Art Deco and Modernist architecture.",
-    "languages": "Arabic · English · Tigrinya"
+    "languages": "Arabic · English · Tigrinya",
+    "currency": {
+      "code": "ERN",
+      "name": "Eritrean nakfa",
+      "symbol": "Nfk",
+      "usdRate": 15
+    }
   },
   {
     "code": "EE",
@@ -1875,7 +2276,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Estonia is one of the world's most digital societies—citizens can vote, sign documents, and file taxes online.",
-    "languages": "Estonian"
+    "languages": "Estonian",
+    "currency": {
+      "code": "EUR",
+      "name": "Euro",
+      "symbol": "€",
+      "usdRate": 0.876691
+    }
   },
   {
     "code": "SZ",
@@ -1902,7 +2309,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Eswatini (formerly Swaziland) is one of the world's last absolute monarchies in Africa.",
-    "languages": "English · Swazi"
+    "languages": "English · Swazi",
+    "currency": {
+      "code": "SZL",
+      "name": "Swazi lilangeni",
+      "symbol": "L",
+      "usdRate": 16.461323
+    }
   },
   {
     "code": "ET",
@@ -1933,7 +2346,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Ethiopia follows its own calendar—about seven to eight years behind the Gregorian calendar most of the world uses.",
-    "languages": "Amharic"
+    "languages": "Amharic",
+    "currency": {
+      "code": "ETB",
+      "name": "Ethiopian birr",
+      "symbol": "Br",
+      "usdRate": 160.33367
+    }
   },
   {
     "code": "FK",
@@ -1956,7 +2375,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "The Falkland Islands were the setting of a brief but intense war between Britain and Argentina in 1982.",
-    "languages": "English"
+    "languages": "English",
+    "currency": {
+      "code": "FKP",
+      "name": "Falkland Islands pound",
+      "symbol": "£",
+      "usdRate": 0.747079
+    }
   },
   {
     "code": "FO",
@@ -1979,7 +2404,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "Faroe Islanders drive through tunnels between islands and generate much of their power from wind and hydro.",
-    "languages": "Danish · Faroese"
+    "languages": "Danish · Faroese",
+    "currency": {
+      "code": "DKK",
+      "name": "Danish krone",
+      "symbol": "kr",
+      "usdRate": 6.542063
+    }
   },
   {
     "code": "FJ",
@@ -2003,7 +2434,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Fiji straddles the International Date Line, so it is among the first countries to greet each new day.",
-    "languages": "English · Fiji Hindi · Fijian"
+    "languages": "English · Fiji Hindi · Fijian",
+    "currency": {
+      "code": "FJD",
+      "name": "Fijian dollar",
+      "symbol": "$",
+      "usdRate": 2.22223
+    }
   },
   {
     "code": "FI",
@@ -2031,7 +2468,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Finland has more saunas than cars—roughly one sauna for every two people.",
-    "languages": "Finnish · Swedish"
+    "languages": "Finnish · Swedish",
+    "currency": {
+      "code": "EUR",
+      "name": "Euro",
+      "symbol": "€",
+      "usdRate": 0.876691
+    }
   },
   {
     "code": "FR",
@@ -2063,7 +2506,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "France is the most visited country on Earth, drawing more international tourists than any other nation.",
-    "languages": "French"
+    "languages": "French",
+    "currency": {
+      "code": "EUR",
+      "name": "Euro",
+      "symbol": "€",
+      "usdRate": 0.876691
+    }
   },
   {
     "code": "GF",
@@ -2090,7 +2539,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "French Guiana hosts Europe's main spaceport at Kourou—rockets launch from South America but under French flag.",
-    "languages": "French"
+    "languages": "French",
+    "currency": {
+      "code": "EUR",
+      "name": "Euro",
+      "symbol": "€",
+      "usdRate": 0.876691
+    }
   },
   {
     "code": "PF",
@@ -2113,7 +2568,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "French Polynesia's Bora Bora and Tahiti helped define the world's image of a tropical paradise.",
-    "languages": "French"
+    "languages": "French",
+    "currency": {
+      "code": "XPF",
+      "name": "CFP franc",
+      "symbol": "₣",
+      "usdRate": 104.619335
+    }
   },
   {
     "code": "TF",
@@ -2137,7 +2598,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "The French Southern Territories include remote sub-Antarctic islands with no permanent human population.",
-    "languages": "French"
+    "languages": "French",
+    "currency": {
+      "code": "EUR",
+      "name": "Euro",
+      "symbol": "€",
+      "usdRate": 0.876691
+    }
   },
   {
     "code": "GA",
@@ -2164,7 +2631,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Gabon preserves about 11% of its land in national parks—among the highest proportions in the world.",
-    "languages": "French"
+    "languages": "French",
+    "currency": {
+      "code": "XAF",
+      "name": "Central African CFA franc",
+      "symbol": "Fr",
+      "usdRate": 575.082836
+    }
   },
   {
     "code": "GM",
@@ -2189,7 +2662,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "The Gambia is a narrow strip of land along the Gambia River, surrounded on three sides by Senegal.",
-    "languages": "English"
+    "languages": "English",
+    "currency": {
+      "code": "GMD",
+      "name": "dalasi",
+      "symbol": "D",
+      "usdRate": 74.412388
+    }
   },
   {
     "code": "GE",
@@ -2217,7 +2696,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Georgia claims to be the birthplace of wine—archaeologists found 8,000-year-old winemaking evidence here.",
-    "languages": "Georgian"
+    "languages": "Georgian",
+    "currency": {
+      "code": "GEL",
+      "name": "lari",
+      "symbol": "₾",
+      "usdRate": 2.627584
+    }
   },
   {
     "code": "DE",
@@ -2251,7 +2736,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Germany's Autobahn famously has long stretches with no official speed limit for cars.",
-    "languages": "German"
+    "languages": "German",
+    "currency": {
+      "code": "EUR",
+      "name": "Euro",
+      "symbol": "€",
+      "usdRate": 0.876691
+    }
   },
   {
     "code": "GH",
@@ -2278,7 +2769,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Ghana was the first sub-Saharan African country to gain independence from colonial rule, in 1957.",
-    "languages": "English"
+    "languages": "English",
+    "currency": {
+      "code": "GHS",
+      "name": "Ghanaian cedi",
+      "symbol": "₵",
+      "usdRate": 11.594989
+    }
   },
   {
     "code": "GI",
@@ -2302,7 +2799,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "The Rock of Gibraltar is a limestone promontory guarded by wild Barbary macaques—the only wild monkeys in Europe.",
-    "languages": "English"
+    "languages": "English",
+    "currency": {
+      "code": "GIP",
+      "name": "Gibraltar pound",
+      "symbol": "£",
+      "usdRate": 0.747079
+    }
   },
   {
     "code": "GR",
@@ -2331,7 +2834,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Greece has thousands of islands, though only a few hundred are inhabited.",
-    "languages": "Greek"
+    "languages": "Greek",
+    "currency": {
+      "code": "EUR",
+      "name": "Euro",
+      "symbol": "€",
+      "usdRate": 0.876691
+    }
   },
   {
     "code": "GL",
@@ -2354,7 +2863,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "Greenland is the world's largest island and is covered by an ice sheet up to three kilometers thick.",
-    "languages": "Greenlandic"
+    "languages": "Greenlandic",
+    "currency": {
+      "code": "DKK",
+      "name": "krone",
+      "symbol": "kr.",
+      "usdRate": 6.542063
+    }
   },
   {
     "code": "GD",
@@ -2376,7 +2891,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Grenada is known as the 'Spice Isle' for its nutmeg, mace, and cinnamon exports.",
-    "languages": "English"
+    "languages": "English",
+    "currency": {
+      "code": "XCD",
+      "name": "Eastern Caribbean dollar",
+      "symbol": "$",
+      "usdRate": 2.7
+    }
   },
   {
     "code": "GP",
@@ -2398,7 +2919,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "Guadeloupe's La Soufrière volcano last erupted in 1976, forcing the evacuation of 73,000 people.",
-    "languages": "French"
+    "languages": "French",
+    "currency": {
+      "code": "EUR",
+      "name": "Euro",
+      "symbol": "€",
+      "usdRate": 0.876691
+    }
   },
   {
     "code": "GU",
@@ -2421,7 +2948,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "Guam is the westernmost U.S. territory and a key military hub in the Pacific.",
-    "languages": "Chamorro · English · Spanish"
+    "languages": "Chamorro · English · Spanish",
+    "currency": {
+      "code": "USD",
+      "name": "United States dollar",
+      "symbol": "$",
+      "usdRate": 1
+    }
   },
   {
     "code": "GT",
@@ -2449,7 +2982,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Guatemala's Tikal ruins were a major Maya city—its temples rise above the Petén jungle canopy.",
-    "languages": "Spanish"
+    "languages": "Spanish",
+    "currency": {
+      "code": "GTQ",
+      "name": "Guatemalan quetzal",
+      "symbol": "Q",
+      "usdRate": 7.631616
+    }
   },
   {
     "code": "GG",
@@ -2473,7 +3012,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "Guernsey cows, famous worldwide for rich milk, take their name from this Channel Island.",
-    "languages": "English · French · Guernésiais"
+    "languages": "English · French · Guernésiais",
+    "currency": {
+      "code": "GBP",
+      "name": "British pound",
+      "symbol": "£",
+      "usdRate": 0.747063
+    }
   },
   {
     "code": "GN",
@@ -2504,7 +3049,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Guinea holds about one-third of the world's bauxite—the ore used to make aluminum.",
-    "languages": "French"
+    "languages": "French",
+    "currency": {
+      "code": "GNF",
+      "name": "Guinean franc",
+      "symbol": "Fr",
+      "usdRate": 8782.205095
+    }
   },
   {
     "code": "GW",
@@ -2531,7 +3082,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Guinea-Bissau's Bijagós Archipelago is a UNESCO biosphere reserve of mangroves and rare sea turtles.",
-    "languages": "Portuguese · Upper Guinea Creole"
+    "languages": "Portuguese · Upper Guinea Creole",
+    "currency": {
+      "code": "XOF",
+      "name": "West African CFA franc",
+      "symbol": "Fr",
+      "usdRate": 575.082836
+    }
   },
   {
     "code": "GY",
@@ -2558,7 +3115,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "About 80% of Guyana is covered by pristine Amazon rainforest—one of the highest percentages in South America.",
-    "languages": "English"
+    "languages": "English",
+    "currency": {
+      "code": "GYD",
+      "name": "Guyanese dollar",
+      "symbol": "$",
+      "usdRate": 209.179097
+    }
   },
   {
     "code": "HT",
@@ -2584,7 +3147,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Haiti was the first nation founded by formerly enslaved people who won independence, in 1804.",
-    "languages": "French · Haitian Creole"
+    "languages": "French · Haitian Creole",
+    "currency": {
+      "code": "HTG",
+      "name": "Haitian gourde",
+      "symbol": "G",
+      "usdRate": 130.667411
+    }
   },
   {
     "code": "HM",
@@ -2633,7 +3202,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Honduras's Copán ruins feature some of the finest Maya stone carving in Central America.",
-    "languages": "Spanish"
+    "languages": "Spanish",
+    "currency": {
+      "code": "HNL",
+      "name": "Honduran lempira",
+      "symbol": "L",
+      "usdRate": 26.799781
+    }
   },
   {
     "code": "HK",
@@ -2659,7 +3234,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "Hong Kong has more skyscrapers than any other city in the world—well over 500 buildings above 150 meters.",
-    "languages": "Chinese · English"
+    "languages": "Chinese · English",
+    "currency": {
+      "code": "HKD",
+      "name": "Hong Kong dollar",
+      "symbol": "$",
+      "usdRate": 7.842023
+    }
   },
   {
     "code": "HU",
@@ -2690,7 +3271,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Hungary's capital Budapest was formed by merging three cities and sits atop more than 100 thermal springs.",
-    "languages": "Hungarian"
+    "languages": "Hungarian",
+    "currency": {
+      "code": "HUF",
+      "name": "Hungarian forint",
+      "symbol": "Ft",
+      "usdRate": 316.957688
+    }
   },
   {
     "code": "IS",
@@ -2713,7 +3300,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Iceland runs almost entirely on renewable energy and sits atop the Mid-Atlantic Ridge, splitting two continents.",
-    "languages": "Icelandic"
+    "languages": "Icelandic",
+    "currency": {
+      "code": "ISK",
+      "name": "Icelandic króna",
+      "symbol": "kr",
+      "usdRate": 125.226659
+    }
   },
   {
     "code": "IN",
@@ -2744,7 +3337,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "India has 22 official languages and is on track to become the world's most populous country.",
-    "languages": "English · Hindi · Tamil"
+    "languages": "English · Hindi · Tamil",
+    "currency": {
+      "code": "INR",
+      "name": "Indian rupee",
+      "symbol": "₹",
+      "usdRate": 96.339012
+    }
   },
   {
     "code": "ID",
@@ -2771,7 +3370,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Indonesia is the world's largest archipelago—more than 17,000 islands spanning three time zones.",
-    "languages": "Indonesian"
+    "languages": "Indonesian",
+    "currency": {
+      "code": "IDR",
+      "name": "Indonesian rupiah",
+      "symbol": "Rp",
+      "usdRate": 17905.298943
+    }
   },
   {
     "code": "IR",
@@ -2803,7 +3408,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Persian carpets from Iran are so prized that fine antique rugs can sell for millions of dollars.",
-    "languages": "Persian (Farsi)"
+    "languages": "Persian (Farsi)",
+    "currency": {
+      "code": "IRR",
+      "name": "Iranian rial",
+      "symbol": "﷼",
+      "usdRate": 1353382.13832
+    }
   },
   {
     "code": "IQ",
@@ -2834,7 +3445,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Mesopotamia—'the land between the rivers'—in modern Iraq is where writing, the wheel, and cities first emerged.",
-    "languages": "Arabic · Aramaic · Sorani"
+    "languages": "Arabic · Aramaic · Sorani",
+    "currency": {
+      "code": "IQD",
+      "name": "Iraqi dinar",
+      "symbol": "ع.د",
+      "usdRate": 1309.378705
+    }
   },
   {
     "code": "IE",
@@ -2860,7 +3477,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Ireland is called the Emerald Isle for its lush green countryside shaped by Gulf Stream rains.",
-    "languages": "English · Irish"
+    "languages": "English · Irish",
+    "currency": {
+      "code": "EUR",
+      "name": "Euro",
+      "symbol": "€",
+      "usdRate": 0.876691
+    }
   },
   {
     "code": "IM",
@@ -2883,7 +3506,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "The Isle of Man is a self-governing Crown dependency famous for the TT motorcycle races since 1907.",
-    "languages": "English · Manx"
+    "languages": "English · Manx",
+    "currency": {
+      "code": "GBP",
+      "name": "British pound",
+      "symbol": "£",
+      "usdRate": 0.747063
+    }
   },
   {
     "code": "IL",
@@ -2913,7 +3542,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "The Dead Sea shoreline in Israel is the lowest dry land on Earth—about 430 meters below sea level.",
-    "languages": "Arabic · Hebrew"
+    "languages": "Arabic · Hebrew",
+    "currency": {
+      "code": "ILS",
+      "name": "Israeli new shekel",
+      "symbol": "₪",
+      "usdRate": 3.048643
+    }
   },
   {
     "code": "IT",
@@ -2944,7 +3579,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Italy has more UNESCO World Heritage Sites than any other country—58 and counting.",
-    "languages": "Italian"
+    "languages": "Italian",
+    "currency": {
+      "code": "EUR",
+      "name": "Euro",
+      "symbol": "€",
+      "usdRate": 0.876691
+    }
   },
   {
     "code": "CI",
@@ -2976,7 +3617,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Ivory Coast produces about 40% of the world's cocoa, making it the top chocolate ingredient supplier.",
-    "languages": "French"
+    "languages": "French",
+    "currency": {
+      "code": "XOF",
+      "name": "West African CFA franc",
+      "symbol": "Fr",
+      "usdRate": 575.082836
+    }
   },
   {
     "code": "JM",
@@ -2998,7 +3645,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Jamaica gave the world reggae—Bob Marley's music turned a small island sound into a global movement.",
-    "languages": "English · Jamaican Patois"
+    "languages": "English · Jamaican Patois",
+    "currency": {
+      "code": "JMD",
+      "name": "Jamaican dollar",
+      "symbol": "$",
+      "usdRate": 158.627294
+    }
   },
   {
     "code": "JP",
@@ -3021,7 +3674,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Japan has more than 6,800 islands and sits on the Pacific Ring of Fire with over 100 active volcanoes.",
-    "languages": "Japanese"
+    "languages": "Japanese",
+    "currency": {
+      "code": "JPY",
+      "name": "Japanese yen",
+      "symbol": "¥",
+      "usdRate": 163.013007
+    }
   },
   {
     "code": "JE",
@@ -3045,7 +3704,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "Jersey's tidal range is among the largest in the world—at low tide, the island nearly doubles in size.",
-    "languages": "English · French · Jèrriais"
+    "languages": "English · French · Jèrriais",
+    "currency": {
+      "code": "GBP",
+      "name": "British pound",
+      "symbol": "£",
+      "usdRate": 0.747063
+    }
   },
   {
     "code": "JO",
@@ -3075,7 +3740,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Petra in Jordan is a rose-red city carved into sandstone cliffs by the Nabataeans over 2,000 years ago.",
-    "languages": "Arabic"
+    "languages": "Arabic",
+    "currency": {
+      "code": "JOD",
+      "name": "Jordanian dinar",
+      "symbol": "د.ا",
+      "usdRate": 0.709
+    }
   },
   {
     "code": "KZ",
@@ -3105,7 +3776,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Kazakhstan is the world's largest landlocked country and was the last Soviet republic to declare independence.",
-    "languages": "Kazakh · Russian"
+    "languages": "Kazakh · Russian",
+    "currency": {
+      "code": "KZT",
+      "name": "Kazakhstani tenge",
+      "symbol": "₸",
+      "usdRate": 468.495614
+    }
   },
   {
     "code": "KE",
@@ -3134,7 +3811,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Kenya's Great Rift Valley lakes draw millions of flamingos, turning shores pink during migration.",
-    "languages": "English · Swahili"
+    "languages": "English · Swahili",
+    "currency": {
+      "code": "KES",
+      "name": "Kenyan shilling",
+      "symbol": "Sh",
+      "usdRate": 129.382422
+    }
   },
   {
     "code": "KI",
@@ -3157,7 +3840,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Kiribati is one of the first countries likely to lose land to rising seas—some islands sit just two meters above water.",
-    "languages": "English · Gilbertese"
+    "languages": "English · Gilbertese",
+    "currency": {
+      "code": "AUD",
+      "name": "Australian dollar",
+      "symbol": "$",
+      "usdRate": 1.428082
+    }
   },
   {
     "code": "XK",
@@ -3186,7 +3875,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Kosovo declared independence in 2008; its flag shows a map of the country with six stars for its main ethnic groups.",
-    "languages": "Albanian · Serbian"
+    "languages": "Albanian · Serbian",
+    "currency": {
+      "code": "EUR",
+      "name": "Euro",
+      "symbol": "€",
+      "usdRate": 0.876691
+    }
   },
   {
     "code": "KW",
@@ -3213,7 +3908,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Kuwait's Liberation Tower was named after the 1991 Gulf War that ended the Iraqi occupation.",
-    "languages": "Arabic"
+    "languages": "Arabic",
+    "currency": {
+      "code": "KWD",
+      "name": "Kuwaiti dinar",
+      "symbol": "د.ك",
+      "usdRate": 0.309775
+    }
   },
   {
     "code": "KG",
@@ -3242,7 +3943,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Kyrgyzstan is over 90% mountainous—the Tian Shan range dominates the landscape.",
-    "languages": "Kyrgyz · Russian"
+    "languages": "Kyrgyz · Russian",
+    "currency": {
+      "code": "KGS",
+      "name": "Kyrgyzstani som",
+      "symbol": "с",
+      "usdRate": 87.451377
+    }
   },
   {
     "code": "LA",
@@ -3272,7 +3979,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Laos is the most heavily bombed country per capita in history due to the Secret War during the Vietnam era.",
-    "languages": "Lao"
+    "languages": "Lao",
+    "currency": {
+      "code": "LAK",
+      "name": "Lao kip",
+      "symbol": "₭",
+      "usdRate": 22431.530479
+    }
   },
   {
     "code": "LV",
@@ -3301,7 +4014,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Riga, Latvia's capital, has one of Europe's largest collections of Art Nouveau architecture.",
-    "languages": "Latvian"
+    "languages": "Latvian",
+    "currency": {
+      "code": "EUR",
+      "name": "Euro",
+      "symbol": "€",
+      "usdRate": 0.876691
+    }
   },
   {
     "code": "LB",
@@ -3328,7 +4047,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Lebanon's cedars appear on its flag and were prized by ancient Egyptians and Phoenicians for shipbuilding.",
-    "languages": "Arabic · French"
+    "languages": "Arabic · French",
+    "currency": {
+      "code": "LBP",
+      "name": "Lebanese pound",
+      "symbol": "ل.ل",
+      "usdRate": 89500
+    }
   },
   {
     "code": "LS",
@@ -3353,7 +4078,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Lesotho is entirely surrounded by South Africa and is the only country in the world that lies entirely above 1,000 meters.",
-    "languages": "English · Sotho"
+    "languages": "English · Sotho",
+    "currency": {
+      "code": "LSL",
+      "name": "Lesotho loti",
+      "symbol": "L",
+      "usdRate": 16.461323
+    }
   },
   {
     "code": "LR",
@@ -3380,7 +4111,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Liberia was founded in the 19th century by freed American slaves—its flag echoes the U.S. stars and stripes.",
-    "languages": "English"
+    "languages": "English",
+    "currency": {
+      "code": "LRD",
+      "name": "Liberian dollar",
+      "symbol": "$",
+      "usdRate": 181.167029
+    }
   },
   {
     "code": "LY",
@@ -3411,7 +4148,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Much of Libya lies within the Sahara, including the ancient Roman ruins of Leptis Magna on the coast.",
-    "languages": "Arabic"
+    "languages": "Arabic",
+    "currency": {
+      "code": "LYD",
+      "name": "Libyan dinar",
+      "symbol": "ل.د",
+      "usdRate": 6.393734
+    }
   },
   {
     "code": "LI",
@@ -3437,7 +4180,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Liechtenstein is one of only two doubly landlocked countries—surrounded by landlocked nations.",
-    "languages": "German"
+    "languages": "German",
+    "currency": {
+      "code": "CHF",
+      "name": "Swiss franc",
+      "symbol": "Fr",
+      "usdRate": 0.812218
+    }
   },
   {
     "code": "LT",
@@ -3466,7 +4215,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Lithuania was the last European nation to abandon paganism and the first Soviet republic to declare independence.",
-    "languages": "Lithuanian"
+    "languages": "Lithuanian",
+    "currency": {
+      "code": "EUR",
+      "name": "Euro",
+      "symbol": "€",
+      "usdRate": 0.876691
+    }
   },
   {
     "code": "LU",
@@ -3494,7 +4249,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Luxembourg has the highest GDP per capita in the world and is a founding member of the European Union.",
-    "languages": "French · German · Luxembourgish"
+    "languages": "French · German · Luxembourgish",
+    "currency": {
+      "code": "EUR",
+      "name": "Euro",
+      "symbol": "€",
+      "usdRate": 0.876691
+    }
   },
   {
     "code": "MO",
@@ -3520,7 +4281,13 @@
     "hasCapitalImage": false,
     "isTerritory": true,
     "fact": "Macau was a Portuguese colony for 400 years before returning to China in 1999—it rivals Las Vegas for gambling revenue.",
-    "languages": "Chinese · Portuguese"
+    "languages": "Chinese · Portuguese",
+    "currency": {
+      "code": "MOP",
+      "name": "Macanese pataca",
+      "symbol": "P",
+      "usdRate": 8.077185
+    }
   },
   {
     "code": "MG",
@@ -3544,7 +4311,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Madagascar broke away from Africa 88 million years ago—about 90% of its wildlife is found nowhere else.",
-    "languages": "French · Malagasy"
+    "languages": "French · Malagasy",
+    "currency": {
+      "code": "MGA",
+      "name": "Malagasy ariary",
+      "symbol": "Ar",
+      "usdRate": 4314.993562
+    }
   },
   {
     "code": "MW",
@@ -3572,7 +4345,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Lake Malawi contains more species of fish than any other lake on Earth—hundreds of colorful cichlids.",
-    "languages": "Chewa · English"
+    "languages": "Chewa · English",
+    "currency": {
+      "code": "MWK",
+      "name": "Malawian kwacha",
+      "symbol": "MK",
+      "usdRate": 1745.497087
+    }
   },
   {
     "code": "MY",
@@ -3599,7 +4378,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Malaysia's Petronas Towers in Kuala Lumpur were the world's tallest buildings from 1998 to 2004.",
-    "languages": "English · Malay"
+    "languages": "English · Malay",
+    "currency": {
+      "code": "MYR",
+      "name": "Malaysian ringgit",
+      "symbol": "RM",
+      "usdRate": 4.088918
+    }
   },
   {
     "code": "MV",
@@ -3623,7 +4408,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "The Maldives is the world's lowest country—its highest natural point is only about 2.4 meters above sea level.",
-    "languages": "Maldivian"
+    "languages": "Maldivian",
+    "currency": {
+      "code": "MVR",
+      "name": "Maldivian rufiyaa",
+      "symbol": ".ރ",
+      "usdRate": 15.448708
+    }
   },
   {
     "code": "ML",
@@ -3654,7 +4445,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Timbuktu in Mali was once a legendary center of Islamic learning and trans-Saharan trade.",
-    "languages": "French"
+    "languages": "French",
+    "currency": {
+      "code": "XOF",
+      "name": "West African CFA franc",
+      "symbol": "Fr",
+      "usdRate": 575.082836
+    }
   },
   {
     "code": "MT",
@@ -3677,7 +4474,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Malta's Megalithic Temples are older than Stonehenge and the Egyptian pyramids.",
-    "languages": "English · Maltese"
+    "languages": "English · Maltese",
+    "currency": {
+      "code": "EUR",
+      "name": "Euro",
+      "symbol": "€",
+      "usdRate": 0.876691
+    }
   },
   {
     "code": "MH",
@@ -3701,7 +4504,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "The Marshall Islands include Bikini Atoll, where U.S. nuclear tests in the 1940s–50s forced entire communities to relocate.",
-    "languages": "English · Marshallese"
+    "languages": "English · Marshallese",
+    "currency": {
+      "code": "USD",
+      "name": "United States dollar",
+      "symbol": "$",
+      "usdRate": 1
+    }
   },
   {
     "code": "MQ",
@@ -3723,7 +4532,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "Martinique's Mount Pelée erupted in 1902, destroying the city of Saint-Pierre in minutes.",
-    "languages": "French"
+    "languages": "French",
+    "currency": {
+      "code": "EUR",
+      "name": "Euro",
+      "symbol": "€",
+      "usdRate": 0.876691
+    }
   },
   {
     "code": "MR",
@@ -3752,7 +4567,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Mauritania's Richat Structure—a giant bull's-eye in the Sahara—is visible from space and was once thought to be an impact crater.",
-    "languages": "Arabic"
+    "languages": "Arabic",
+    "currency": {
+      "code": "MRU",
+      "name": "Mauritanian ouguiya",
+      "symbol": "UM",
+      "usdRate": 40.059953
+    }
   },
   {
     "code": "MU",
@@ -3776,7 +4597,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Mauritius was the only known home of the dodo before the flightless bird was hunted to extinction by the 1680s.",
-    "languages": "English · French · Mauritian Creole"
+    "languages": "English · French · Mauritian Creole",
+    "currency": {
+      "code": "MUR",
+      "name": "Mauritian rupee",
+      "symbol": "₨",
+      "usdRate": 47.220323
+    }
   },
   {
     "code": "YT",
@@ -3799,7 +4626,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "Mayotte sits in the Comoros archipelago but chose to remain French—a source of ongoing regional tension.",
-    "languages": "French"
+    "languages": "French",
+    "currency": {
+      "code": "EUR",
+      "name": "Euro",
+      "symbol": "€",
+      "usdRate": 0.876691
+    }
   },
   {
     "code": "MX",
@@ -3827,7 +4660,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Mexico City was built on the ruins of Tenochtitlán, the Aztec capital that once floated on a lake.",
-    "languages": "Spanish"
+    "languages": "Spanish",
+    "currency": {
+      "code": "MXN",
+      "name": "Mexican peso",
+      "symbol": "$",
+      "usdRate": 17.404263
+    }
   },
   {
     "code": "FM",
@@ -3850,7 +4689,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Micronesia spans more than 2.7 million square kilometers of ocean but has a land area smaller than Rhode Island.",
-    "languages": "English"
+    "languages": "English",
+    "currency": {
+      "code": "USD",
+      "name": "United States dollar",
+      "symbol": "$",
+      "usdRate": 1
+    }
   },
   {
     "code": "MD",
@@ -3876,7 +4721,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Moldova's Mileștii Mici holds one of the world's largest wine cellars—over 200 km of underground tunnels.",
-    "languages": "Moldavian"
+    "languages": "Moldavian",
+    "currency": {
+      "code": "MDL",
+      "name": "Moldovan leu",
+      "symbol": "L",
+      "usdRate": 17.567872
+    }
   },
   {
     "code": "MC",
@@ -3901,7 +4752,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Monaco is smaller than Central Park in New York yet packs luxury casinos, a Grand Prix, and a royal palace.",
-    "languages": "French"
+    "languages": "French",
+    "currency": {
+      "code": "EUR",
+      "name": "Euro",
+      "symbol": "€",
+      "usdRate": 0.876691
+    }
   },
   {
     "code": "MN",
@@ -3927,7 +4784,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Genghis Khan's empire began on the Mongolian steppe—the country still celebrates him as a founding father.",
-    "languages": "Mongolian"
+    "languages": "Mongolian",
+    "currency": {
+      "code": "MNT",
+      "name": "Mongolian tögrög",
+      "symbol": "₮",
+      "usdRate": 3607.087356
+    }
   },
   {
     "code": "ME",
@@ -3956,7 +4819,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Montenegro means 'Black Mountain' in Venetian Italian, named for the dark forests on Mount Lovćen.",
-    "languages": "Montenegrin"
+    "languages": "Montenegrin",
+    "currency": {
+      "code": "EUR",
+      "name": "Euro",
+      "symbol": "€",
+      "usdRate": 0.876691
+    }
   },
   {
     "code": "MS",
@@ -3978,7 +4847,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "Montserrat's Soufrière Hills volcano erupted in 1995, burying the capital Plymouth in ash and forcing evacuation.",
-    "languages": "English"
+    "languages": "English",
+    "currency": {
+      "code": "XCD",
+      "name": "Eastern Caribbean dollar",
+      "symbol": "$",
+      "usdRate": 2.7
+    }
   },
   {
     "code": "MA",
@@ -4006,7 +4881,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Morocco's Chefchaouen is famous for its buildings painted in shades of blue.",
-    "languages": "Arabic · Berber"
+    "languages": "Arabic · Berber",
+    "currency": {
+      "code": "MAD",
+      "name": "Moroccan dirham",
+      "symbol": "د.م.",
+      "usdRate": 9.378687
+    }
   },
   {
     "code": "MZ",
@@ -4037,7 +4918,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Mozambique's Bazaruto Archipelago protects dugongs—rare sea cows once mistaken for mermaids by sailors.",
-    "languages": "Portuguese"
+    "languages": "Portuguese",
+    "currency": {
+      "code": "MZN",
+      "name": "Mozambican metical",
+      "symbol": "MT",
+      "usdRate": 63.562138
+    }
   },
   {
     "code": "MM",
@@ -4068,7 +4955,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Myanmar's Shwedagon Pagoda in Yangon is covered in gold leaf and topped with thousands of diamonds and rubies.",
-    "languages": "Burmese"
+    "languages": "Burmese",
+    "currency": {
+      "code": "MMK",
+      "name": "Burmese kyat",
+      "symbol": "Ks",
+      "usdRate": 2102.646218
+    }
   },
   {
     "code": "NA",
@@ -4097,7 +4990,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Namibia's Namib Desert is considered the world's oldest desert—some dunes are millions of years old.",
-    "languages": "Afrikaans · English · German · Herero · Khoekhoe · Kwangali · Lozi · Ndonga · Tswana"
+    "languages": "Afrikaans · English · German · Herero · Khoekhoe · Kwangali · Lozi · Ndonga · Tswana",
+    "currency": {
+      "code": "NAD",
+      "name": "Namibian dollar",
+      "symbol": "$",
+      "usdRate": 16.461323
+    }
   },
   {
     "code": "NR",
@@ -4120,7 +5019,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Nauru was once among the richest countries per capita thanks to phosphate mining—but the deposits are nearly gone.",
-    "languages": "English · Nauru"
+    "languages": "English · Nauru",
+    "currency": {
+      "code": "AUD",
+      "name": "Australian dollar",
+      "symbol": "$",
+      "usdRate": 1.428082
+    }
   },
   {
     "code": "NP",
@@ -4147,7 +5052,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Mount Everest's summit sits on the Nepal–China border—the world's highest point at 8,849 meters.",
-    "languages": "Nepali"
+    "languages": "Nepali",
+    "currency": {
+      "code": "NPR",
+      "name": "Nepalese rupee",
+      "symbol": "₨",
+      "usdRate": 154.140313
+    }
   },
   {
     "code": "NL",
@@ -4176,7 +5087,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "About a quarter of the Netherlands lies below sea level, protected by an elaborate system of dikes and pumps.",
-    "languages": "Dutch"
+    "languages": "Dutch",
+    "currency": {
+      "code": "EUR",
+      "name": "Euro",
+      "symbol": "€",
+      "usdRate": 0.876691
+    }
   },
   {
     "code": "NC",
@@ -4199,7 +5116,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "New Caledonia has the world's largest lagoon, surrounded by the world's second-longest barrier reef.",
-    "languages": "French"
+    "languages": "French",
+    "currency": {
+      "code": "XPF",
+      "name": "CFP franc",
+      "symbol": "₣",
+      "usdRate": 104.619335
+    }
   },
   {
     "code": "NZ",
@@ -4222,7 +5145,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "New Zealand was the first country to give women the right to vote, in 1893.",
-    "languages": "English · Māori · New Zealand Sign Language"
+    "languages": "English · Māori · New Zealand Sign Language",
+    "currency": {
+      "code": "NZD",
+      "name": "New Zealand dollar",
+      "symbol": "$",
+      "usdRate": 1.715316
+    }
   },
   {
     "code": "NI",
@@ -4248,7 +5177,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Nicaragua has the two largest freshwater lakes in Central America—Lake Nicaragua even has freshwater sharks.",
-    "languages": "Spanish"
+    "languages": "Spanish",
+    "currency": {
+      "code": "NIO",
+      "name": "Nicaraguan córdoba",
+      "symbol": "C$",
+      "usdRate": 36.821579
+    }
   },
   {
     "code": "NE",
@@ -4279,7 +5214,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "The Sahara covers most of Niger, yet the country takes its name from the Niger River that arcs through its southwest.",
-    "languages": "French"
+    "languages": "French",
+    "currency": {
+      "code": "XOF",
+      "name": "West African CFA franc",
+      "symbol": "Fr",
+      "usdRate": 575.082836
+    }
   },
   {
     "code": "NG",
@@ -4307,7 +5248,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Nigeria has Africa's largest population and Nollywood produces more films than Hollywood by volume.",
-    "languages": "English"
+    "languages": "English",
+    "currency": {
+      "code": "NGN",
+      "name": "Nigerian naira",
+      "symbol": "₦",
+      "usdRate": 1377.172985
+    }
   },
   {
     "code": "NU",
@@ -4330,7 +5277,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "Niue is one of the world's largest raised coral atolls and uses New Zealand currency.",
-    "languages": "English · Niuean"
+    "languages": "English · Niuean",
+    "currency": {
+      "code": "NZD",
+      "name": "New Zealand dollar",
+      "symbol": "$",
+      "usdRate": 1.715316
+    }
   },
   {
     "code": "NF",
@@ -4354,7 +5307,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "Norfolk Island was settled by descendants of the Bounty mutineers after they left Pitcairn.",
-    "languages": "English · Norfuk"
+    "languages": "English · Norfuk",
+    "currency": {
+      "code": "AUD",
+      "name": "Australian dollar",
+      "symbol": "$",
+      "usdRate": 1.428082
+    }
   },
   {
     "code": "KP",
@@ -4383,7 +5342,12 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "North Korea and South Korea are still technically at war—the 1953 armistice never became a peace treaty.",
-    "languages": "Korean"
+    "languages": "Korean",
+    "currency": {
+      "code": "KPW",
+      "name": "North Korean won",
+      "symbol": "₩"
+    }
   },
   {
     "code": "MK",
@@ -4414,7 +5378,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "North Macedonia's Lake Ohrid is one of Europe's oldest and deepest lakes, home to species found nowhere else.",
-    "languages": "Macedonian"
+    "languages": "Macedonian",
+    "currency": {
+      "code": "MKD",
+      "name": "denar",
+      "symbol": "den",
+      "usdRate": 53.842037
+    }
   },
   {
     "code": "MP",
@@ -4438,7 +5408,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "The Mariana Trench near the Northern Mariana Islands is the deepest point in the ocean—almost 11 km down.",
-    "languages": "Carolinian · Chamorro · English"
+    "languages": "Carolinian · Chamorro · English",
+    "currency": {
+      "code": "USD",
+      "name": "United States dollar",
+      "symbol": "$",
+      "usdRate": 1
+    }
   },
   {
     "code": "NO",
@@ -4466,7 +5442,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Norway's fjords were carved by Ice Age glaciers and its coastline would stretch halfway around the equator if straightened.",
-    "languages": "Norwegian Bokmål · Norwegian Nynorsk · Sami"
+    "languages": "Norwegian Bokmål · Norwegian Nynorsk · Sami",
+    "currency": {
+      "code": "NOK",
+      "name": "Norwegian krone",
+      "symbol": "kr",
+      "usdRate": 9.633253
+    }
   },
   {
     "code": "OM",
@@ -4494,7 +5476,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Oman's Sultan Qaboos transformed the country from an isolated sultanate into a modern nation over his 50-year reign.",
-    "languages": "Arabic"
+    "languages": "Arabic",
+    "currency": {
+      "code": "OMR",
+      "name": "Omani rial",
+      "symbol": "ر.ع.",
+      "usdRate": 0.384497
+    }
   },
   {
     "code": "PK",
@@ -4523,7 +5511,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Pakistan is home to K2, the world's second-highest mountain—harder to climb than Everest and nicknamed the Savage Mountain.",
-    "languages": "English · Urdu"
+    "languages": "English · Urdu",
+    "currency": {
+      "code": "PKR",
+      "name": "Pakistani rupee",
+      "symbol": "₨",
+      "usdRate": 278.003
+    }
   },
   {
     "code": "PW",
@@ -4547,7 +5541,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Palau's Jellyfish Lake lets swimmers snorkel among millions of harmless golden jellyfish.",
-    "languages": "English · Palauan"
+    "languages": "English · Palauan",
+    "currency": {
+      "code": "USD",
+      "name": "United States dollar",
+      "symbol": "$",
+      "usdRate": 1
+    }
   },
   {
     "code": "PS",
@@ -4575,7 +5575,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "Jericho in the Palestinian territories is one of the oldest continuously inhabited cities in the world.",
-    "languages": "Arabic"
+    "languages": "Arabic",
+    "currency": {
+      "code": "EGP",
+      "name": "Egyptian pound",
+      "symbol": "E£",
+      "usdRate": 51.008475
+    }
   },
   {
     "code": "PA",
@@ -4602,7 +5608,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "The Panama Canal saves ships a 13,000-km journey around South America by cutting through the isthmus.",
-    "languages": "Spanish"
+    "languages": "Spanish",
+    "currency": {
+      "code": "PAB",
+      "name": "Panamanian balboa",
+      "symbol": "B/.",
+      "usdRate": 1
+    }
   },
   {
     "code": "PG",
@@ -4628,7 +5640,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Papua New Guinea has more than 800 living languages—more than any other country.",
-    "languages": "English · Hiri Motu · Tok Pisin"
+    "languages": "English · Hiri Motu · Tok Pisin",
+    "currency": {
+      "code": "PGK",
+      "name": "Papua New Guinean kina",
+      "symbol": "K",
+      "usdRate": 4.47379
+    }
   },
   {
     "code": "PY",
@@ -4656,7 +5674,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Paraguay's Guaraní language is one of the few indigenous American languages with official status alongside Spanish.",
-    "languages": "Guaraní · Spanish"
+    "languages": "Guaraní · Spanish",
+    "currency": {
+      "code": "PYG",
+      "name": "Paraguayan guaraní",
+      "symbol": "₲",
+      "usdRate": 6055.67788
+    }
   },
   {
     "code": "PE",
@@ -4686,7 +5710,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Machu Picchu in Peru is a 15th-century Inca citadel perched 2,430 meters above sea level in the Andes.",
-    "languages": "Aymara · Quechua · Spanish"
+    "languages": "Aymara · Quechua · Spanish",
+    "currency": {
+      "code": "PEN",
+      "name": "Peruvian sol",
+      "symbol": "S/.",
+      "usdRate": 3.397041
+    }
   },
   {
     "code": "PH",
@@ -4710,7 +5740,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "The Philippines consists of about 7,641 islands and is the world's top exporter of nurses.",
-    "languages": "English · Filipino"
+    "languages": "English · Filipino",
+    "currency": {
+      "code": "PHP",
+      "name": "Philippine peso",
+      "symbol": "₱",
+      "usdRate": 61.778739
+    }
   },
   {
     "code": "PN",
@@ -4733,7 +5769,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "Pitcairn Island was settled by mutineers from HMS Bounty—today fewer than 50 people live there.",
-    "languages": "English"
+    "languages": "English",
+    "currency": {
+      "code": "NZD",
+      "name": "New Zealand dollar",
+      "symbol": "$",
+      "usdRate": 1.715316
+    }
   },
   {
     "code": "PL",
@@ -4765,7 +5807,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Poland's Wieliczka Salt Mine has chapels, sculptures, and chandeliers carved entirely from salt.",
-    "languages": "Polish"
+    "languages": "Polish",
+    "currency": {
+      "code": "PLN",
+      "name": "Polish złoty",
+      "symbol": "zł",
+      "usdRate": 3.794625
+    }
   },
   {
     "code": "PT",
@@ -4790,7 +5838,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Portugal's explorers opened sea routes to India, Brazil, and Japan—shaping the first global age of trade.",
-    "languages": "Portuguese"
+    "languages": "Portuguese",
+    "currency": {
+      "code": "EUR",
+      "name": "Euro",
+      "symbol": "€",
+      "usdRate": 0.876691
+    }
   },
   {
     "code": "PR",
@@ -4813,7 +5867,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "Puerto Rico's bioluminescent bays glow blue at night when microscopic organisms are disturbed in the water.",
-    "languages": "English · Spanish"
+    "languages": "English · Spanish",
+    "currency": {
+      "code": "USD",
+      "name": "United States dollar",
+      "symbol": "$",
+      "usdRate": 1
+    }
   },
   {
     "code": "QA",
@@ -4839,7 +5899,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Qatar will have hosted a FIFA World Cup where every stadium was within about an hour's drive of each other.",
-    "languages": "Arabic"
+    "languages": "Arabic",
+    "currency": {
+      "code": "QAR",
+      "name": "Qatari riyal",
+      "symbol": "ر.ق",
+      "usdRate": 3.64
+    }
   },
   {
     "code": "RE",
@@ -4863,7 +5929,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "Réunion's Piton de la Fournaise is one of the world's most active volcanoes, erupting dozens of times since 2000.",
-    "languages": "French"
+    "languages": "French",
+    "currency": {
+      "code": "EUR",
+      "name": "Euro",
+      "symbol": "€",
+      "usdRate": 0.876691
+    }
   },
   {
     "code": "RO",
@@ -4892,7 +5964,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Romania's Transylvania region inspired Bram Stoker's Dracula—though Vlad the Impaler never lived in Bran Castle.",
-    "languages": "Romanian"
+    "languages": "Romanian",
+    "currency": {
+      "code": "RON",
+      "name": "Romanian leu",
+      "symbol": "lei",
+      "usdRate": 4.588323
+    }
   },
   {
     "code": "RU",
@@ -4931,7 +6009,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Russia spans 11 time zones and crosses both Europe and Asia—it is the largest country on Earth by area.",
-    "languages": "Russian"
+    "languages": "Russian",
+    "currency": {
+      "code": "RUB",
+      "name": "Russian ruble",
+      "symbol": "₽",
+      "usdRate": 78.486585
+    }
   },
   {
     "code": "RW",
@@ -4959,7 +6043,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Rwanda banned plastic bags nationwide in 2008 and holds a monthly community cleanup called Umuganda.",
-    "languages": "English · French · Kinyarwanda"
+    "languages": "English · French · Kinyarwanda",
+    "currency": {
+      "code": "RWF",
+      "name": "Rwandan franc",
+      "symbol": "Fr",
+      "usdRate": 1471.350212
+    }
   },
   {
     "code": "BL",
@@ -4983,7 +6073,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "Saint Barthélemy is a glamorous Caribbean island nicknamed St. Barts, popular with yachts and celebrities.",
-    "languages": "French"
+    "languages": "French",
+    "currency": {
+      "code": "EUR",
+      "name": "Euro",
+      "symbol": "€",
+      "usdRate": 0.876691
+    }
   },
   {
     "code": "SH",
@@ -5005,7 +6101,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "Saint Helena is where Napoleon was exiled after Waterloo—it took ships weeks to reach from Europe.",
-    "languages": "English"
+    "languages": "English",
+    "currency": {
+      "code": "GBP",
+      "name": "Pound sterling",
+      "symbol": "£",
+      "usdRate": 0.747063
+    }
   },
   {
     "code": "KN",
@@ -5028,7 +6130,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Saint Kitts and Nevis is the smallest sovereign country in the Western Hemisphere by both area and population.",
-    "languages": "English"
+    "languages": "English",
+    "currency": {
+      "code": "XCD",
+      "name": "Eastern Caribbean dollar",
+      "symbol": "$",
+      "usdRate": 2.7
+    }
   },
   {
     "code": "LC",
@@ -5050,7 +6158,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Saint Lucia's twin Pitons—volcanic spires rising from the sea—are a UNESCO World Heritage Site.",
-    "languages": "English"
+    "languages": "English",
+    "currency": {
+      "code": "XCD",
+      "name": "Eastern Caribbean dollar",
+      "symbol": "$",
+      "usdRate": 2.7
+    }
   },
   {
     "code": "MF",
@@ -5075,7 +6189,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "Saint Martin is split between France and the Netherlands—the smallest landmass shared by two nations.",
-    "languages": "French"
+    "languages": "French",
+    "currency": {
+      "code": "EUR",
+      "name": "Euro",
+      "symbol": "€",
+      "usdRate": 0.876691
+    }
   },
   {
     "code": "PM",
@@ -5098,7 +6218,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "Saint Pierre and Miquelon are French islands off Canada's coast—residents use the euro just 25 km from Newfoundland.",
-    "languages": "French"
+    "languages": "French",
+    "currency": {
+      "code": "EUR",
+      "name": "Euro",
+      "symbol": "€",
+      "usdRate": 0.876691
+    }
   },
   {
     "code": "VC",
@@ -5120,7 +6246,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Saint Vincent's La Soufrière volcano erupted in 2021, covering much of the island in ash.",
-    "languages": "English"
+    "languages": "English",
+    "currency": {
+      "code": "XCD",
+      "name": "Eastern Caribbean dollar",
+      "symbol": "$",
+      "usdRate": 2.7
+    }
   },
   {
     "code": "WS",
@@ -5144,7 +6276,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Samoa skipped December 30, 2011 entirely when it moved across the International Date Line to align with trading partners.",
-    "languages": "English · Samoan"
+    "languages": "English · Samoan",
+    "currency": {
+      "code": "WST",
+      "name": "Samoan tālā",
+      "symbol": "T",
+      "usdRate": 2.706612
+    }
   },
   {
     "code": "SM",
@@ -5169,7 +6307,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "San Marino claims to be the world's oldest republic, founded in 301 AD on Mount Titano.",
-    "languages": "Italian"
+    "languages": "Italian",
+    "currency": {
+      "code": "EUR",
+      "name": "Euro",
+      "symbol": "€",
+      "usdRate": 0.876691
+    }
   },
   {
     "code": "ST",
@@ -5193,7 +6337,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "São Tomé and Príncipe's cocoa plantations once made it a major chocolate supplier to Europe.",
-    "languages": "Portuguese"
+    "languages": "Portuguese",
+    "currency": {
+      "code": "STN",
+      "name": "São Tomé and Príncipe dobra",
+      "symbol": "Db",
+      "usdRate": 21.479349
+    }
   },
   {
     "code": "SA",
@@ -5225,7 +6375,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Saudi Arabia has no permanent rivers—the country is mostly desert, including the vast Empty Quarter.",
-    "languages": "Arabic"
+    "languages": "Arabic",
+    "currency": {
+      "code": "SAR",
+      "name": "Saudi riyal",
+      "symbol": "ر.س",
+      "usdRate": 3.75
+    }
   },
   {
     "code": "SN",
@@ -5255,7 +6411,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Senegal's Lake Retba is bright pink from salt-loving algae and is harvested for salt like the Dead Sea.",
-    "languages": "French"
+    "languages": "French",
+    "currency": {
+      "code": "XOF",
+      "name": "West African CFA franc",
+      "symbol": "Fr",
+      "usdRate": 575.082836
+    }
   },
   {
     "code": "RS",
@@ -5288,7 +6450,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Serbia sits at a crossroads of empires—Belgrade is one of Europe's oldest continuously inhabited cities.",
-    "languages": "Serbian"
+    "languages": "Serbian",
+    "currency": {
+      "code": "RSD",
+      "name": "Serbian dinar",
+      "symbol": "дин.",
+      "usdRate": 102.780119
+    }
   },
   {
     "code": "SC",
@@ -5312,7 +6480,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Seychelles's Vallée de Mai preserves the coco de mer, a palm that produces the world's heaviest seed.",
-    "languages": "English · French · Seychellois Creole"
+    "languages": "English · French · Seychellois Creole",
+    "currency": {
+      "code": "SCR",
+      "name": "Seychellois rupee",
+      "symbol": "₨",
+      "usdRate": 14.000401
+    }
   },
   {
     "code": "SL",
@@ -5338,7 +6512,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Sierra Leone's name means 'lion mountains' in Portuguese, though lions no longer live there.",
-    "languages": "English"
+    "languages": "English",
+    "currency": {
+      "code": "SLE",
+      "name": "Sierra Leonean leone",
+      "symbol": "Le",
+      "usdRate": 24.357914
+    }
   },
   {
     "code": "SG",
@@ -5362,7 +6542,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Singapore transformed from a fishing village to a global financial hub in a single generation.",
-    "languages": "Chinese · English · Malay · Tamil"
+    "languages": "Chinese · English · Malay · Tamil",
+    "currency": {
+      "code": "SGD",
+      "name": "Singapore dollar",
+      "symbol": "$",
+      "usdRate": 1.291588
+    }
   },
   {
     "code": "SX",
@@ -5387,7 +6573,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "Sint Maarten's Maho Beach is famous for airliners passing just meters overhead on approach to the runway.",
-    "languages": "Dutch · English · French"
+    "languages": "Dutch · English · French",
+    "currency": {
+      "code": "ANG",
+      "name": "Netherlands Antillean guilder",
+      "symbol": "ƒ",
+      "usdRate": 1.79
+    }
   },
   {
     "code": "SK",
@@ -5417,7 +6609,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Slovakia has more castles and châteaux per capita than almost any other country in Europe.",
-    "languages": "Slovak"
+    "languages": "Slovak",
+    "currency": {
+      "code": "EUR",
+      "name": "Euro",
+      "symbol": "€",
+      "usdRate": 0.876691
+    }
   },
   {
     "code": "SI",
@@ -5446,7 +6644,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Slovenia's Postojna Cave holds a unique species of blind salamander called the olm—or 'human fish.'",
-    "languages": "Slovene"
+    "languages": "Slovene",
+    "currency": {
+      "code": "EUR",
+      "name": "Euro",
+      "symbol": "€",
+      "usdRate": 0.876691
+    }
   },
   {
     "code": "SB",
@@ -5468,7 +6672,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Solomon Islanders fought alongside U.S. Marines in World War II's brutal Guadalcanal campaign.",
-    "languages": "English"
+    "languages": "English",
+    "currency": {
+      "code": "SBD",
+      "name": "Solomon Islands dollar",
+      "symbol": "$",
+      "usdRate": 7.96279
+    }
   },
   {
     "code": "SO",
@@ -5496,7 +6706,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Somalia has the longest coastline on mainland Africa but has struggled with piracy off its shores.",
-    "languages": "Arabic · Somali"
+    "languages": "Arabic · Somali",
+    "currency": {
+      "code": "SOS",
+      "name": "Somali shilling",
+      "symbol": "Sh",
+      "usdRate": 571.930366
+    }
   },
   {
     "code": "ZA",
@@ -5527,7 +6743,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "South Africa has three capital cities—each hosts a different branch of government.",
-    "languages": "Afrikaans · English · Northern Sotho · Southern Ndebele · Southern Sotho · Swazi · Tsonga · Tswana · Venda · Xhosa · Zulu"
+    "languages": "Afrikaans · English · Northern Sotho · Southern Ndebele · Southern Sotho · Swazi · Tsonga · Tswana · Venda · Xhosa · Zulu",
+    "currency": {
+      "code": "ZAR",
+      "name": "South African rand",
+      "symbol": "R",
+      "usdRate": 16.461425
+    }
   },
   {
     "code": "GS",
@@ -5550,7 +6772,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "South Georgia's Grytviken whaling station is where explorer Ernest Shackleton is buried.",
-    "languages": "English"
+    "languages": "English",
+    "currency": {
+      "code": "SHP",
+      "name": "Saint Helena pound",
+      "symbol": "£",
+      "usdRate": 0.747079
+    }
   },
   {
     "code": "KR",
@@ -5576,7 +6804,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "South Korea's Hangul alphabet was scientifically designed in 1443 so anyone could learn to read.",
-    "languages": "Korean"
+    "languages": "Korean",
+    "currency": {
+      "code": "KRW",
+      "name": "South Korean won",
+      "symbol": "₩",
+      "usdRate": 1480.020746
+    }
   },
   {
     "code": "SS",
@@ -5606,7 +6840,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "South Sudan is the world's newest widely recognized country, gaining independence from Sudan in 2011.",
-    "languages": "English"
+    "languages": "English",
+    "currency": {
+      "code": "SSP",
+      "name": "South Sudanese pound",
+      "symbol": "£",
+      "usdRate": 4850.71167
+    }
   },
   {
     "code": "ES",
@@ -5636,7 +6876,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Spain's Sagrada Família in Barcelona has been under construction since 1882 and is still not finished.",
-    "languages": "Spanish"
+    "languages": "Spanish",
+    "currency": {
+      "code": "EUR",
+      "name": "Euro",
+      "symbol": "€",
+      "usdRate": 0.876691
+    }
   },
   {
     "code": "LK",
@@ -5662,7 +6908,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Sri Lanka was once called Ceylon and produces Ceylon tea from highland plantations.",
-    "languages": "Sinhala · Tamil"
+    "languages": "Sinhala · Tamil",
+    "currency": {
+      "code": "LKR",
+      "name": "Sri Lankan rupee",
+      "symbol": "Rs රු",
+      "usdRate": 336.190656
+    }
   },
   {
     "code": "SD",
@@ -5694,7 +6946,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Sudan has more pyramids than Egypt—ancient Nubian kingdoms left hundreds along the Nile.",
-    "languages": "Arabic · English"
+    "languages": "Arabic · English",
+    "currency": {
+      "code": "SDG",
+      "name": "Sudanese pound",
+      "symbol": "PT",
+      "usdRate": 449.443084
+    }
   },
   {
     "code": "SR",
@@ -5721,7 +6979,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Suriname is the smallest independent country in South America and one of the most forested.",
-    "languages": "Dutch"
+    "languages": "Dutch",
+    "currency": {
+      "code": "SRD",
+      "name": "Surinamese dollar",
+      "symbol": "$",
+      "usdRate": 37.751053
+    }
   },
   {
     "code": "SJ",
@@ -5745,7 +7009,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "Svalbard's Global Seed Vault stores backup copies of crop seeds from around the world in Arctic permafrost.",
-    "languages": "Norwegian"
+    "languages": "Norwegian",
+    "currency": {
+      "code": "NOK",
+      "name": "krone",
+      "symbol": "kr",
+      "usdRate": 9.633253
+    }
   },
   {
     "code": "SE",
@@ -5772,7 +7042,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Sweden's Nobel Prizes are awarded each year in Stockholm—except Peace, which is given in Oslo.",
-    "languages": "Swedish"
+    "languages": "Swedish",
+    "currency": {
+      "code": "SEK",
+      "name": "Swedish krona",
+      "symbol": "kr",
+      "usdRate": 9.699263
+    }
   },
   {
     "code": "CH",
@@ -5802,7 +7078,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Switzerland has four official languages and has not fought a foreign war since 1815.",
-    "languages": "French · Italian · Romansh · Swiss German"
+    "languages": "French · Italian · Romansh · Swiss German",
+    "currency": {
+      "code": "CHF",
+      "name": "Swiss franc",
+      "symbol": "Fr.",
+      "usdRate": 0.812218
+    }
   },
   {
     "code": "SY",
@@ -5832,7 +7114,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Damascus in Syria is one of the oldest continuously inhabited cities in the world.",
-    "languages": "Arabic"
+    "languages": "Arabic",
+    "currency": {
+      "code": "SYP",
+      "name": "Syrian pound",
+      "symbol": "£",
+      "usdRate": 121.76991
+    }
   },
   {
     "code": "TW",
@@ -5856,7 +7144,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "Taiwan's Taipei 101 was the world's tallest building from 2004 to 2010 and is designed to withstand typhoons and earthquakes.",
-    "languages": "Chinese"
+    "languages": "Chinese",
+    "currency": {
+      "code": "TWD",
+      "name": "New Taiwan dollar",
+      "symbol": "$",
+      "usdRate": 32.34328
+    }
   },
   {
     "code": "TJ",
@@ -5885,7 +7179,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Tajikistan is over 90% mountainous—the Pamir range is nicknamed the 'Roof of the World.'",
-    "languages": "Russian · Tajik"
+    "languages": "Russian · Tajik",
+    "currency": {
+      "code": "TJS",
+      "name": "Tajikistani somoni",
+      "symbol": "ЅМ",
+      "usdRate": 9.238437
+    }
   },
   {
     "code": "TZ",
@@ -5917,7 +7217,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Tanzania's Serengeti hosts the largest terrestrial mammal migration on Earth—over a million wildebeest.",
-    "languages": "English · Swahili"
+    "languages": "English · Swahili",
+    "currency": {
+      "code": "TZS",
+      "name": "Tanzanian shilling",
+      "symbol": "Sh",
+      "usdRate": 2628.102311
+    }
   },
   {
     "code": "TH",
@@ -5946,7 +7252,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Thailand is the only Southeast Asian country never colonized by a European power.",
-    "languages": "Thai"
+    "languages": "Thai",
+    "currency": {
+      "code": "THB",
+      "name": "Thai baht",
+      "symbol": "฿",
+      "usdRate": 33.69783
+    }
   },
   {
     "code": "TL",
@@ -5972,7 +7284,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Timor-Leste is one of the world's youngest countries, gaining full independence in 2002 after centuries of occupation.",
-    "languages": "Portuguese · Tetum"
+    "languages": "Portuguese · Tetum",
+    "currency": {
+      "code": "USD",
+      "name": "United States dollar",
+      "symbol": "$",
+      "usdRate": 1
+    }
   },
   {
     "code": "TG",
@@ -5999,7 +7317,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Togo is one of the world's top producers of phosphates, used in fertilizer.",
-    "languages": "French"
+    "languages": "French",
+    "currency": {
+      "code": "XOF",
+      "name": "West African CFA franc",
+      "symbol": "Fr",
+      "usdRate": 575.082836
+    }
   },
   {
     "code": "TK",
@@ -6021,7 +7345,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "Tokelau is one of the first territories to produce more than 100% of its electricity from solar power.",
-    "languages": "English · Samoan · Tokelauan"
+    "languages": "English · Samoan · Tokelauan",
+    "currency": {
+      "code": "NZD",
+      "name": "New Zealand dollar",
+      "symbol": "$",
+      "usdRate": 1.715316
+    }
   },
   {
     "code": "TO",
@@ -6044,7 +7374,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Tonga is the only Pacific nation that was never fully colonized—it became a constitutional monarchy in 1875.",
-    "languages": "English · Tongan"
+    "languages": "English · Tongan",
+    "currency": {
+      "code": "TOP",
+      "name": "Tongan paʻanga",
+      "symbol": "T$",
+      "usdRate": 2.38493
+    }
   },
   {
     "code": "TT",
@@ -6067,7 +7403,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Trinidad and Tobago invented the steelpan—the only acoustic instrument invented in the 20th century.",
-    "languages": "English"
+    "languages": "English",
+    "currency": {
+      "code": "TTD",
+      "name": "Trinidad and Tobago dollar",
+      "symbol": "$",
+      "usdRate": 6.768211
+    }
   },
   {
     "code": "TN",
@@ -6094,7 +7436,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Tunisia's ancient city of Carthage once rivaled Rome before being destroyed and rebuilt by the Romans.",
-    "languages": "Arabic"
+    "languages": "Arabic",
+    "currency": {
+      "code": "TND",
+      "name": "Tunisian dinar",
+      "symbol": "د.ت",
+      "usdRate": 2.947032
+    }
   },
   {
     "code": "TR",
@@ -6128,7 +7476,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Istanbul in Türkiye is the only major city spanning two continents—Europe and Asia.",
-    "languages": "Turkish"
+    "languages": "Turkish",
+    "currency": {
+      "code": "TRY",
+      "name": "Turkish lira",
+      "symbol": "₺",
+      "usdRate": 47.203836
+    }
   },
   {
     "code": "TM",
@@ -6156,7 +7510,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Turkmenistan's Darvaza gas crater has burned continuously in the desert since Soviet engineers lit it in 1971.",
-    "languages": "Russian · Turkmen"
+    "languages": "Russian · Turkmen",
+    "currency": {
+      "code": "TMT",
+      "name": "Turkmenistan manat",
+      "symbol": "m",
+      "usdRate": 3.499985
+    }
   },
   {
     "code": "TC",
@@ -6178,7 +7538,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "Turks and Caicos has some of the clearest turquoise water in the Caribbean and a thriving conch fishery.",
-    "languages": "English"
+    "languages": "English",
+    "currency": {
+      "code": "USD",
+      "name": "United States dollar",
+      "symbol": "$",
+      "usdRate": 1
+    }
   },
   {
     "code": "TV",
@@ -6200,7 +7566,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Tuvalu is among the world's smallest and most low-lying countries—rising seas threaten its very existence.",
-    "languages": "English · Tuvaluan"
+    "languages": "English · Tuvaluan",
+    "currency": {
+      "code": "AUD",
+      "name": "Australian dollar",
+      "symbol": "$",
+      "usdRate": 1.428082
+    }
   },
   {
     "code": "UG",
@@ -6229,7 +7601,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Uganda is one of the few places where you can see mountain gorillas in the wild—about half the world's population lives here.",
-    "languages": "English · Swahili"
+    "languages": "English · Swahili",
+    "currency": {
+      "code": "UGX",
+      "name": "Ugandan shilling",
+      "symbol": "Sh",
+      "usdRate": 3692.47881
+    }
   },
   {
     "code": "UA",
@@ -6260,7 +7638,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Ukraine is one of the world's largest grain exporters—the 'breadbasket of Europe.'",
-    "languages": "Ukrainian"
+    "languages": "Ukrainian",
+    "currency": {
+      "code": "UAH",
+      "name": "Ukrainian hryvnia",
+      "symbol": "₴",
+      "usdRate": 44.775914
+    }
   },
   {
     "code": "AE",
@@ -6288,7 +7672,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Dubai in the UAE built the world's tallest building, the Burj Khalifa, at 828 meters.",
-    "languages": "Arabic"
+    "languages": "Arabic",
+    "currency": {
+      "code": "AED",
+      "name": "United Arab Emirates dirham",
+      "symbol": "د.إ",
+      "usdRate": 3.6725
+    }
   },
   {
     "code": "GB",
@@ -6318,7 +7708,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "The United Kingdom is made up of four countries—England, Scotland, Wales, and Northern Ireland.",
-    "languages": "English"
+    "languages": "English",
+    "currency": {
+      "code": "GBP",
+      "name": "British pound",
+      "symbol": "£",
+      "usdRate": 0.747063
+    }
   },
   {
     "code": "US",
@@ -6348,7 +7744,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "The United States has the world's largest economy and is the third most populous country.",
-    "languages": "English"
+    "languages": "English",
+    "currency": {
+      "code": "USD",
+      "name": "United States dollar",
+      "symbol": "$",
+      "usdRate": 1
+    }
   },
   {
     "code": "UM",
@@ -6370,7 +7772,13 @@
     "hasCapitalImage": false,
     "isTerritory": true,
     "fact": "The U.S. Minor Outlying Islands include Midway Atoll, site of a pivotal 1942 naval battle in World War II.",
-    "languages": "English"
+    "languages": "English",
+    "currency": {
+      "code": "USD",
+      "name": "United States dollar",
+      "symbol": "$",
+      "usdRate": 1
+    }
   },
   {
     "code": "VI",
@@ -6393,7 +7801,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "The U.S. Virgin Islands were purchased from Denmark in 1917 for $25 million in gold.",
-    "languages": "English"
+    "languages": "English",
+    "currency": {
+      "code": "USD",
+      "name": "United States dollar",
+      "symbol": "$",
+      "usdRate": 1
+    }
   },
   {
     "code": "UY",
@@ -6419,7 +7833,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Uruguay was the first country to legalize recreational cannabis nationwide, in 2013.",
-    "languages": "Spanish"
+    "languages": "Spanish",
+    "currency": {
+      "code": "UYU",
+      "name": "Uruguayan peso",
+      "symbol": "$",
+      "usdRate": 40.270807
+    }
   },
   {
     "code": "UZ",
@@ -6449,7 +7869,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Uzbekistan's Registan in Samarkand was a glittering center of the Silk Road trade route.",
-    "languages": "Russian · Uzbek"
+    "languages": "Russian · Uzbek",
+    "currency": {
+      "code": "UZS",
+      "name": "Uzbekistani soʻm",
+      "symbol": "so'm",
+      "usdRate": 11930.641883
+    }
   },
   {
     "code": "VU",
@@ -6472,7 +7898,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Vanuatu invented bungee jumping—local land divers on Pentecost Island inspired the modern sport.",
-    "languages": "Bislama · English · French"
+    "languages": "Bislama · English · French",
+    "currency": {
+      "code": "VUV",
+      "name": "Vanuatu vatu",
+      "symbol": "Vt",
+      "usdRate": 118.972771
+    }
   },
   {
     "code": "VA",
@@ -6499,7 +7931,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Vatican City is the world's smallest independent state—about 44 hectares enclosed within Rome.",
-    "languages": "Italian · Latin"
+    "languages": "Italian · Latin",
+    "currency": {
+      "code": "EUR",
+      "name": "Euro",
+      "symbol": "€",
+      "usdRate": 0.876691
+    }
   },
   {
     "code": "VE",
@@ -6526,7 +7964,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Venezuela's Angel Falls is the world's highest uninterrupted waterfall, plunging 979 meters.",
-    "languages": "Spanish"
+    "languages": "Spanish",
+    "currency": {
+      "code": "VES",
+      "name": "Venezuelan bolívar soberano",
+      "symbol": "Bs.S.",
+      "usdRate": 737.2321
+    }
   },
   {
     "code": "VN",
@@ -6555,7 +7999,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Vietnam's Ha Long Bay has thousands of limestone karsts rising from emerald water—a UNESCO World Heritage Site.",
-    "languages": "Vietnamese"
+    "languages": "Vietnamese",
+    "currency": {
+      "code": "VND",
+      "name": "Vietnamese đồng",
+      "symbol": "₫",
+      "usdRate": 26238.632049
+    }
   },
   {
     "code": "WF",
@@ -6579,7 +8029,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "Wallis and Futuna is one of the last French territories where traditional kings still hold official authority.",
-    "languages": "French"
+    "languages": "French",
+    "currency": {
+      "code": "XPF",
+      "name": "CFP franc",
+      "symbol": "₣",
+      "usdRate": 104.619335
+    }
   },
   {
     "code": "EH",
@@ -6607,7 +8063,13 @@
     "hasCapitalImage": true,
     "isTerritory": true,
     "fact": "Western Sahara is one of the most sparsely populated places on Earth—mostly desert with a disputed political status.",
-    "languages": "Berber · Hassaniya · Spanish"
+    "languages": "Berber · Hassaniya · Spanish",
+    "currency": {
+      "code": "DZD",
+      "name": "Algerian dinar",
+      "symbol": "دج",
+      "usdRate": 133.229912
+    }
   },
   {
     "code": "YE",
@@ -6634,7 +8096,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Yemen's Old City of Sana'a has distinctive multi-story tower houses decorated with white gypsum patterns.",
-    "languages": "Arabic"
+    "languages": "Arabic",
+    "currency": {
+      "code": "YER",
+      "name": "Yemeni rial",
+      "symbol": "﷼",
+      "usdRate": 238.142523
+    }
   },
   {
     "code": "ZM",
@@ -6666,7 +8134,13 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Zambia's Victoria Falls—locally called Mosi-oa-Tunya, 'the smoke that thunders'—is one of the world's largest waterfalls.",
-    "languages": "English"
+    "languages": "English",
+    "currency": {
+      "code": "ZMW",
+      "name": "Zambian kwacha",
+      "symbol": "ZK",
+      "usdRate": 18.372644
+    }
   },
   {
     "code": "ZW",
@@ -6694,6 +8168,12 @@
     "hasCapitalImage": true,
     "isTerritory": false,
     "fact": "Zimbabwe's Great Zimbabwe ruins were the capital of a medieval trading empire that exported gold to the Indian Ocean.",
-    "languages": "Chewa · Chibarwe · English · Kalanga · Khoisan · Ndau · Northern Ndebele · Shona · Sotho · Tonga · Tsonga · Tswana · Venda · Xhosa · Zimbabwean Sign Language"
+    "languages": "Chewa · Chibarwe · English · Kalanga · Khoisan · Ndau · Northern Ndebele · Shona · Sotho · Tonga · Tsonga · Tswana · Venda · Xhosa · Zimbabwean Sign Language",
+    "currency": {
+      "code": "USD",
+      "name": "United States dollar",
+      "symbol": "$",
+      "usdRate": 1
+    }
   }
 ]

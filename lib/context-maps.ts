@@ -1,10 +1,12 @@
 import countriesData from "@/data/countries.json";
+import statesData from "@/data/states.json";
 import type { Continent, Country } from "@/lib/types";
 import { CONTINENTS } from "@/lib/types";
 import { getCountryByCode } from "@/lib/countries";
 import { isStateCode } from "@/lib/scope";
 
 const worldCountries = countriesData as Country[];
+const usStates = statesData as Country[];
 
 /** Alpha-2 codes whose @svg-maps/world id differs from lowercase code. */
 export const SUPPLEMENTAL_MAP_IDS: Record<string, string | string[]> = {
@@ -116,6 +118,36 @@ export function getWorldMapPathIds(country: Country): string[] {
 
 export function buildWorldMapHref(code: string): string {
   return `/map?place=${encodeURIComponent(code.toLowerCase())}`;
+}
+
+const USA_MAP_PATH_ID_TO_STATE_CODE = buildUsaMapPathIdToStateCodeMap();
+
+function buildUsaMapPathIdToStateCodeMap(): Map<string, string> {
+  const map = new Map<string, string>();
+  for (const state of usStates) {
+    for (const pathId of getContextMapPathIds(state)) {
+      map.set(pathId, state.code);
+    }
+  }
+  return map;
+}
+
+export function getStateCodeByUsaMapPathId(pathId: string): string | undefined {
+  return USA_MAP_PATH_ID_TO_STATE_CODE.get(pathId);
+}
+
+/** Path ids on the USA template used to focus the interactive USA map. */
+export function getUsaMapPathIds(country: Country): string[] {
+  if (!isStateCode(country.code)) return [];
+  return getContextMapPathIds(country);
+}
+
+export function buildUsaMapHref(code: string): string {
+  return `/map/usa?place=${encodeURIComponent(code.toLowerCase())}`;
+}
+
+export function buildPlaceMapHref(code: string): string {
+  return isStateCode(code) ? buildUsaMapHref(code) : buildWorldMapHref(code);
 }
 
 export function resolvePlaceCodeFromParam(param: string | null | undefined): string | undefined {
