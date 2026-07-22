@@ -24,7 +24,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "The Saturn V rockets that carried Apollo astronauts to the Moon were designed and built in Huntsville."
+    "fact": "The Saturn V rockets that carried Apollo astronauts to the Moon were designed and built in Huntsville.",
+    "factQuestion": "Which state designed and built the Saturn V rockets that carried Apollo astronauts to the Moon in Huntsville?"
   },
   {
     "code": "US-AK",
@@ -46,7 +47,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Alaska is the northernmost, westernmost, and easternmost U.S. state—the Aleutian Islands cross the 180th meridian into the Eastern Hemisphere."
+    "fact": "The northernmost, westernmost, and easternmost U.S. state—the Aleutian Islands cross the 180th meridian into the Eastern Hemisphere.",
+    "factQuestion": "Which state is the northernmost, westernmost, and easternmost in the U.S., with Aleutian Islands crossing the 180th meridian?"
   },
   {
     "code": "US-AZ",
@@ -74,7 +76,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "The Grand Canyon exposes nearly two billion years of geology in its colorful layered walls."
+    "fact": "The Grand Canyon exposes nearly two billion years of geology in its colorful layered walls.",
+    "factQuestion": "Which state is home to the Grand Canyon, exposing nearly two billion years of geology?"
   },
   {
     "code": "US-AR",
@@ -103,7 +106,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Hot Springs National Park in Arkansas predates Yellowstone and was the first U.S. federal reserve."
+    "fact": "Hot Springs National Park predates Yellowstone and was the first U.S. federal reserve.",
+    "factQuestion": "Which state has Hot Springs National Park, the first U.S. federal reserve, predating Yellowstone?"
   },
   {
     "code": "US-CA",
@@ -129,7 +133,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "California's economy is larger than that of most countries—if it were independent, it would rank among the world's biggest."
+    "fact": "The economy here is larger than that of most countries—if it were independent, it would rank among the world's biggest.",
+    "factQuestion": "Which state's economy is larger than that of most countries and would rank among the world's biggest if independent?"
   },
   {
     "code": "US-CO",
@@ -159,7 +164,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Denver sits exactly one mile above sea level, giving Colorado its 'Mile High City' nickname."
+    "fact": "Denver sits exactly one mile above sea level, giving the capital its 'Mile High City' nickname.",
+    "factQuestion": "Which state's capital Denver sits exactly one mile above sea level, earning the 'Mile High City' nickname?"
   },
   {
     "code": "US-CT",
@@ -185,7 +191,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "The Fundamental Orders of Connecticut, adopted in 1639, are often called the first written constitution in the Americas."
+    "fact": "The Fundamental Orders, adopted in 1639, are often called the first written constitution in the Americas.",
+    "factQuestion": "Which state's Fundamental Orders of 1639 are often called the first written constitution in the Americas?"
   },
   {
     "code": "US-DE",
@@ -211,7 +218,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Delaware was the first state to ratify the U.S. Constitution on December 7, 1787."
+    "fact": "The first to ratify the U.S. Constitution on December 7, 1787.",
+    "factQuestion": "Which state was the first to ratify the U.S. Constitution on December 7, 1787?"
   },
   {
     "code": "US-FL",
@@ -236,7 +244,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Florida has more coastline than any U.S. state except Alaska and is the only state bordering both the Atlantic and Gulf."
+    "fact": "More coastline than any U.S. state except Alaska and the only one bordering both the Atlantic and Gulf.",
+    "factQuestion": "Which state has more coastline than any except Alaska and borders both the Atlantic and Gulf?"
   },
   {
     "code": "US-GA",
@@ -264,7 +273,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Coca-Cola was invented by a pharmacist in Atlanta in 1886 and first sold at a local drugstore."
+    "fact": "Coca-Cola was invented by a pharmacist in Atlanta in 1886 and first sold at a local drugstore.",
+    "factQuestion": "Which state is where Coca-Cola was invented by a pharmacist in Atlanta in 1886?"
   },
   {
     "code": "US-HI",
@@ -286,7 +296,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Hawaii is the only U.S. state that grows coffee commercially and sits 2,400 miles from the mainland."
+    "fact": "The only U.S. state that grows coffee commercially and sits 2,400 miles from the mainland.",
+    "factQuestion": "Which state is the only one that grows coffee commercially and sits 2,400 miles from the mainland?"
   },
   {
     "code": "US-ID",
@@ -315,7 +326,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Idaho produces about one-third of all potatoes grown in the United States."
+    "fact": "Produces about one-third of all potatoes grown in the United States.",
+    "factQuestion": "Which state produces about one-third of all potatoes grown in the United States?"
   },
   {
     "code": "US-IL",
@@ -343,7 +355,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Chicago reversed the flow of its river in 1900 so wastewater would drain away from Lake Michigan."
+    "fact": "Chicago reversed the flow of its river in 1900 so wastewater would drain away from Lake Michigan.",
+    "factQuestion": "Which state saw Chicago reverse the flow of its river in 1900 to drain wastewater away from Lake Michigan?"
   },
   {
     "code": "US-IN",
@@ -370,7 +383,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "The Indianapolis 500, first held in 1911, is one of the oldest and most famous car races in the world."
+    "fact": "The Indianapolis 500, first held in 1911, is one of the oldest and most famous car races in the world.",
+    "factQuestion": "Which state hosts the Indianapolis 500, first held in 1911, one of the world's most famous car races?"
   },
   {
     "code": "US-IA",
@@ -399,7 +413,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Iowa leads the nation in corn production and raises more pigs than any other state."
+    "fact": "Leads the nation in corn production and raises more pigs than any other state.",
+    "factQuestion": "Which state leads the nation in corn production and raises more pigs than any other?"
   },
   {
     "code": "US-KS",
@@ -426,7 +441,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "The geographic center of the contiguous United States lies near Lebanon, Kansas."
+    "fact": "The geographic center of the contiguous United States lies near Lebanon.",
+    "factQuestion": "Which state contains the geographic center of the contiguous United States near Lebanon?"
   },
   {
     "code": "US-KY",
@@ -456,7 +472,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Kentucky produces about 95% of the world's bourbon and has more barrels of aging whiskey than people."
+    "fact": "Produces about 95% of the world's bourbon and has more barrels of aging whiskey than people.",
+    "factQuestion": "Which state produces about 95% of the world's bourbon and has more whiskey barrels than people?"
   },
   {
     "code": "US-LA",
@@ -482,7 +499,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "New Orleans sits largely below sea level and relies on levees, pumps, and Mississippi River silt to stay dry."
+    "fact": "New Orleans sits largely below sea level and relies on levees, pumps, and Mississippi River silt to stay dry.",
+    "factQuestion": "Which state has New Orleans sitting largely below sea level, relying on levees and pumps to stay dry?"
   },
   {
     "code": "US-ME",
@@ -506,7 +524,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Maine supplies roughly 90% of the United States' lobster catch."
+    "fact": "Supplies roughly 90% of the United States' lobster catch.",
+    "factQuestion": "Which state supplies roughly 90% of the United States' lobster catch?"
   },
   {
     "code": "US-MD",
@@ -533,7 +552,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "The Star-Spangled Banner was written during the 1814 Battle of Baltimore at Fort McHenry."
+    "fact": "The Star-Spangled Banner was written during the 1814 Battle of Baltimore at Fort McHenry.",
+    "factQuestion": "Which state is where the Star-Spangled Banner was written during the 1814 Battle of Baltimore?"
   },
   {
     "code": "US-MA",
@@ -561,7 +581,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "The first subway system in the Americas opened in Boston in 1897."
+    "fact": "The first subway system in the Americas opened in Boston in 1897.",
+    "factQuestion": "Which state opened the first subway system in the Americas in Boston in 1897?"
   },
   {
     "code": "US-MI",
@@ -587,7 +608,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Michigan touches four of the five Great Lakes and has more freshwater shoreline than any other state."
+    "fact": "Touches four of the five Great Lakes and has more freshwater shoreline than any other state.",
+    "factQuestion": "Which state touches four of the five Great Lakes and has more freshwater shoreline than any other?"
   },
   {
     "code": "US-MN",
@@ -614,7 +636,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Minnesota has more than 11,000 lakes and is the birthplace of water skiing and the Mall of America."
+    "fact": "More than 11,000 lakes and the birthplace of water skiing and the Mall of America.",
+    "factQuestion": "Which state has more than 11,000 lakes and is the birthplace of water skiing and the Mall of America?"
   },
   {
     "code": "US-MS",
@@ -641,7 +664,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "The Mississippi River forms most of the state's western border and gave the state its name."
+    "fact": "A great river forms most of the western border and inspired the state's name.",
+    "factQuestion": "Which state has a namesake river forming most of its western border?"
   },
   {
     "code": "US-MO",
@@ -672,7 +696,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "The Gateway Arch in St. Louis is 630 feet tall—the tallest monument in the United States."
+    "fact": "The Gateway Arch in St. Louis is 630 feet tall—the tallest monument in the United States.",
+    "factQuestion": "Which state is home to the 630-foot Gateway Arch in St. Louis, the tallest U.S. monument?"
   },
   {
     "code": "US-MT",
@@ -699,7 +724,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Montana's name comes from the Spanish word montaña, though it is not the most mountainous U.S. state."
+    "fact": "The name comes from the Spanish word montaña, though it is not the most mountainous U.S. state.",
+    "factQuestion": "Which state's name comes from the Spanish word montaña, though it is not the most mountainous?"
   },
   {
     "code": "US-NE",
@@ -728,7 +754,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Carhenge in Alliance is a full-scale replica of England's Stonehenge built from vintage American cars."
+    "fact": "Carhenge in Alliance is a full-scale replica of England's Stonehenge built from vintage American cars.",
+    "factQuestion": "Which state has Carhenge in Alliance, a full-scale Stonehenge replica built from vintage cars?"
   },
   {
     "code": "US-NV",
@@ -756,7 +783,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "About three-quarters of Nevada's population lives in the Las Vegas metro area."
+    "fact": "About three-quarters of the population lives in the Las Vegas metro area.",
+    "factQuestion": "Which state has about three-quarters of its population living in the Las Vegas metro area?"
   },
   {
     "code": "US-NH",
@@ -782,7 +810,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "New Hampshire's license plates carry the bold motto 'Live Free or Die.'"
+    "fact": "License plates carry the bold motto 'Live Free or Die.'",
+    "factQuestion": "Which state's license plates carry the bold motto 'Live Free or Die'?"
   },
   {
     "code": "US-NJ",
@@ -808,7 +837,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Thomas Edison developed the practical light bulb, phonograph, and motion picture in his Menlo Park laboratory."
+    "fact": "Thomas Edison developed the practical light bulb, phonograph, and motion picture in his Menlo Park laboratory.",
+    "factQuestion": "Which state is where Thomas Edison developed the light bulb, phonograph, and motion picture in Menlo Park?"
   },
   {
     "code": "US-NM",
@@ -836,7 +866,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Roswell became synonymous with UFO lore after a 1947 incident that still fuels conspiracy theories."
+    "fact": "Roswell became synonymous with UFO lore after a 1947 incident that still fuels conspiracy theories.",
+    "factQuestion": "Which state's Roswell became synonymous with UFO lore after a 1947 incident?"
   },
   {
     "code": "US-NY",
@@ -864,7 +895,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "More people live in New York City than in all but a handful of U.S. states."
+    "fact": "More people live in the largest city here than in all but a handful of U.S. states.",
+    "factQuestion": "Which state has a largest city with more people than all but a handful of other U.S. states?"
   },
   {
     "code": "US-NC",
@@ -891,7 +923,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "The Wright brothers achieved the first powered airplane flight at Kitty Hawk in 1903."
+    "fact": "The Wright brothers achieved the first powered airplane flight at Kitty Hawk in 1903.",
+    "factQuestion": "Which state is where the Wright brothers achieved the first powered airplane flight at Kitty Hawk in 1903?"
   },
   {
     "code": "US-ND",
@@ -917,7 +950,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Theodore Roosevelt National Park preserves the badlands where the future president ranched and found inspiration."
+    "fact": "Theodore Roosevelt National Park preserves the badlands where the future president ranched and found inspiration.",
+    "factQuestion": "Which state has Theodore Roosevelt National Park, preserving badlands where the future president ranched?"
   },
   {
     "code": "US-OH",
@@ -945,7 +979,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Seven U.S. presidents were born in Ohio—more than any state except Virginia."
+    "fact": "Seven U.S. presidents were born here—more than any state except Virginia.",
+    "factQuestion": "Which state was the birthplace of seven U.S. presidents—more than any except Virginia?"
   },
   {
     "code": "US-OK",
@@ -974,7 +1009,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Oklahoma City lies close to the geographic center of the contiguous United States."
+    "fact": "The capital lies close to the geographic center of the contiguous United States.",
+    "factQuestion": "Which state's capital lies close to the geographic center of the contiguous United States?"
   },
   {
     "code": "US-OR",
@@ -1001,7 +1037,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Crater Lake is the deepest lake in the United States, formed when a volcano collapsed about 7,700 years ago."
+    "fact": "Crater Lake is the deepest lake in the United States, formed when a volcano collapsed about 7,700 years ago.",
+    "factQuestion": "Which state is home to Crater Lake, the deepest lake in the United States?"
   },
   {
     "code": "US-PA",
@@ -1030,7 +1067,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Independence Hall in Philadelphia is where the Declaration of Independence and U.S. Constitution were signed."
+    "fact": "Independence Hall in Philadelphia is where the Declaration of Independence and U.S. Constitution were signed.",
+    "factQuestion": "Which state is home to Independence Hall, where the Declaration of Independence and Constitution were signed?"
   },
   {
     "code": "US-RI",
@@ -1055,7 +1093,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Rhode Island is the smallest U.S. state but has over 400 miles of coastline."
+    "fact": "The smallest U.S. state but with over 400 miles of coastline.",
+    "factQuestion": "Which state is the smallest in the U.S. but has over 400 miles of coastline?"
   },
   {
     "code": "US-SC",
@@ -1080,7 +1119,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "The first shots of the Civil War were fired at Fort Sumter in Charleston Harbor in 1861."
+    "fact": "The first shots of the Civil War were fired at Fort Sumter in Charleston Harbor in 1861.",
+    "factQuestion": "Which state is where the first shots of the Civil War were fired at Fort Sumter in 1861?"
   },
   {
     "code": "US-SD",
@@ -1109,7 +1149,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Mount Rushmore's 60-foot presidential faces were carved into the Black Hills over 14 years."
+    "fact": "Mount Rushmore's 60-foot presidential faces were carved into the Black Hills over 14 years.",
+    "factQuestion": "Which state is home to Mount Rushmore, with 60-foot presidential faces carved over 14 years?"
   },
   {
     "code": "US-TN",
@@ -1140,7 +1181,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Memphis is a cradle of blues and rock and roll—Elvis Presley's Graceland draws visitors from around the world."
+    "fact": "Memphis is a cradle of blues and rock and roll—Elvis Presley's Graceland draws visitors from around the world.",
+    "factQuestion": "Which state has Memphis as a cradle of blues and rock and roll, home to Elvis Presley's Graceland?"
   },
   {
     "code": "US-TX",
@@ -1167,7 +1209,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Texas was an independent republic for nearly ten years before joining the United States in 1845."
+    "fact": "Was an independent republic for nearly ten years before joining the United States in 1845.",
+    "factQuestion": "Which state was an independent republic for nearly ten years before joining the United States in 1845?"
   },
   {
     "code": "US-UT",
@@ -1196,7 +1239,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "The Great Salt Lake is saltier than the ocean, so swimmers float effortlessly on its surface."
+    "fact": "The Great Salt Lake is saltier than the ocean, so swimmers float effortlessly on its surface.",
+    "factQuestion": "Which state is home to the Great Salt Lake, saltier than the ocean so swimmers float effortlessly?"
   },
   {
     "code": "US-VT",
@@ -1222,7 +1266,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Ben & Jerry's ice cream began in a renovated gas station in Burlington in 1978."
+    "fact": "Ben & Jerry's ice cream began in a renovated gas station in Burlington in 1978.",
+    "factQuestion": "Which state is where Ben & Jerry's ice cream began in a renovated gas station in Burlington in 1978?"
   },
   {
     "code": "US-VA",
@@ -1250,7 +1295,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Eight U.S. presidents were born in Virginia—more than any other state."
+    "fact": "Eight U.S. presidents were born here—more than any other state.",
+    "factQuestion": "Which state was the birthplace of eight U.S. presidents—more than any other?"
   },
   {
     "code": "US-WA",
@@ -1275,7 +1321,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Mount Rainier is an active volcano towering over Seattle and visible across much of the Puget Sound."
+    "fact": "Mount Rainier is an active volcano towering over Seattle and visible across much of the Puget Sound.",
+    "factQuestion": "Which state has Mount Rainier, an active volcano towering over Seattle and visible across the Puget Sound?"
   },
   {
     "code": "US-WV",
@@ -1303,7 +1350,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "West Virginia split from Virginia during the Civil War and joined the Union as its own state in 1863."
+    "fact": "Split from Virginia during the Civil War and joined the Union as its own state in 1863.",
+    "factQuestion": "Which state split from Virginia during the Civil War and joined the Union in 1863?"
   },
   {
     "code": "US-WI",
@@ -1330,7 +1378,8 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Wisconsin produces more cheese than any other U.S. state and hosts the Green Bay Packers' Lambeau Field."
+    "fact": "Produces more cheese than any other U.S. state and hosts the Green Bay Packers' Lambeau Field.",
+    "factQuestion": "Which state produces more cheese than any other and hosts the Green Bay Packers' Lambeau Field?"
   },
   {
     "code": "US-WY",
@@ -1359,6 +1408,7 @@
     "hasShape": true,
     "hasCapitalImage": true,
     "isTerritory": false,
-    "fact": "Yellowstone National Park—mostly in Wyoming—was the world's first national park, established in 1872."
+    "fact": "Yellowstone National Park—mostly within these borders—was the world's first national park, established in 1872.",
+    "factQuestion": "Which state contains most of Yellowstone, the world's first national park, established in 1872?"
   }
 ]

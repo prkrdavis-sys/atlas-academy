@@ -26,6 +26,21 @@ export type Difficulty = "easy" | "medium" | "hard";
 
 export const DIFFICULTIES: Difficulty[] = ["easy", "medium", "hard"];
 
+/** Difficulties that count toward stats map progress. */
+export type MapProgressDifficulty = Extract<Difficulty, "medium" | "hard">;
+
+export const MAP_PROGRESS_DIFFICULTIES: MapProgressDifficulty[] = ["medium", "hard"];
+
+export const MAP_PROGRESS_CATEGORIES = ["flag", "shape", "capital", "trivia"] as const;
+
+export type MapProgressCategory = (typeof MAP_PROGRESS_CATEGORIES)[number];
+
+export type PlaceMapProgressByDifficulty = Partial<
+  Record<MapProgressDifficulty, Partial<Record<MapProgressCategory, true>>>
+>;
+
+export type PlaceMasteryLevel = 0 | 1 | 2 | 3 | 4;
+
 export const DIFFICULTY_LABELS: Record<Difficulty, string> = {
   easy: "Easy",
   medium: "Normal",
@@ -226,6 +241,8 @@ export type Country = {
   hasCapitalImage: boolean;
   isTerritory: boolean;
   fact: string;
+  /** Spoiler-free prompt for fact-to-country game mode. */
+  factQuestion: string;
 };
 
 export type ModeStats = {
@@ -270,6 +287,8 @@ export type Profile = {
   };
   achievements: string[];
   countryProgress?: Record<string, { correct: number; total: number }>;
+  /** Per-place category mastery for stats map progress (Normal/Hard only). */
+  placeMapProgress?: Record<string, PlaceMapProgressByDifficulty>;
   /** EST date keys (YYYY-MM-DD) when the daily challenge was first played with stats */
   dailyChallengePlayedDates?: string[];
   /** EST date keys (YYYY-MM-DD) when the daily challenge was fully completed */
@@ -385,8 +404,8 @@ export const GAME_MODES: {
   },
   {
     id: "fact-to-country",
-    title: "Countries from facts",
-    description: "Read a library fact — which country is it about?",
+    title: "Country Profiles",
+    description: "Read a geographic profile — which country does it describe?",
     icon: "💡",
     phase: 2,
   },
@@ -475,7 +494,7 @@ export const ACHIEVEMENTS = [
   { id: "mixed-veteran", title: "Mixed Veteran", description: "Answer 75 mixed mode questions correctly" },
   { id: "border-boss", title: "Border Boss", description: "Answer 50 neighbor quiz questions correctly" },
   { id: "population-prophet", title: "Population Prophet", description: "Answer 50 population showdown questions correctly" },
-  { id: "fact-finder", title: "Fact Finder", description: "Answer 50 fact quiz questions correctly" },
+  { id: "fact-finder", title: "Profile Expert", description: "Answer 50 Country Profiles questions correctly" },
   { id: "marathon-25", title: "Endurance", description: "Reach a best marathon run of 25" },
   { id: "marathon-45", title: "Long Distance", description: "Reach a best marathon run of 45" },
   { id: "marathon-65", title: "Ultra Mapper", description: "Reach a best marathon run of 65" },

@@ -192,7 +192,7 @@ export function getQuestionTaskLabel(
     case "population-showdown":
       return isTerritory ? "Pick the larger territory" : "Pick the larger population";
     case "fact-to-country":
-      return placeText("Which country does this fact describe?", scope, place ?? undefined);
+      return placeText("Which country does this profile describe?", scope, place ?? undefined);
     case "country-to-capital":
       return "Name the capital";
     case "marathon":

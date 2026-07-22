@@ -258,7 +258,17 @@ export function GameBoard({
     spawnBurst(correct);
 
     if (countStats) {
-      recordAnswer(activeProfile.id, statsMode, difficulty, correct, question.countryCode, false, scope);
+      recordAnswer(
+        activeProfile.id,
+        statsMode,
+        difficulty,
+        correct,
+        question.countryCode,
+        false,
+        scope,
+        mode === "weak-spots",
+        question,
+      );
       if (mode === "daily-challenge") {
         markDailyChallengePlayed(activeProfile.id, scope);
       }

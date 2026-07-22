@@ -1,3 +1,4 @@
+import { modeRef } from "@/lib/mode-ref";
 import { getScopedModeInfo, SCOPE_INFO } from "@/lib/scope";
 import {
   getCommonlyMissedCountries,
@@ -23,9 +24,26 @@ function pickRandom<T>(items: T[]): T {
   return items[Math.floor(Math.random() * items.length)]!;
 }
 
+function pickRandomExcluding<T>(items: T[], exclude?: T): T {
+  if (!exclude || items.length <= 1) {
+    return pickRandom(items);
+  }
+
+  const filtered = items.filter((item) => item !== exclude);
+  return pickRandom(filtered.length ? filtered : items);
+}
+
 export function pickHomeHeroTagline(context: HomeHeroTaglineContext): string {
   const candidates = buildHomeHeroTaglineCandidates(context);
   return pickRandom(candidates);
+}
+
+export function pickHomeHeroTaglineExcluding(
+  context: HomeHeroTaglineContext,
+  exclude?: string,
+): string {
+  const candidates = buildHomeHeroTaglineCandidates(context);
+  return pickRandomExcluding(candidates, exclude);
 }
 
 export function buildHomeHeroTaglineCandidates({
@@ -82,10 +100,13 @@ export function buildHomeHeroTaglineCandidates({
     );
   }
 
+  const dailyChallenge = modeRef("daily-challenge");
+  const practiceWeakSpots = modeRef("weak-spots");
+
   if (dailyRun > 0 && !dailyCompletedToday) {
     candidates.push(
-      `${dailyRun}-day daily run on the line — finish today's challenge to keep the chain alive.`,
-      `Your ${dailyRun}-day daily run is waiting. Complete today's challenge before midnight Eastern.`,
+      `${dailyRun}-day daily run on the line — finish today's ${dailyChallenge} to keep the chain alive.`,
+      `Your ${dailyRun}-day daily run is waiting. Complete today's ${dailyChallenge} before midnight Eastern.`,
     );
   } else if (dailyRun > 0 && dailyCompletedToday) {
     candidates.push(
@@ -94,21 +115,21 @@ export function buildHomeHeroTaglineCandidates({
     );
   } else if (!dailyCompletedToday) {
     candidates.push(
-      "Finish today's daily challenge to start your daily run streak.",
-      "The daily challenge is 10 mixed questions — a quick way to warm up every day.",
+      `Finish today's ${dailyChallenge} to start your daily run streak.`,
+      `${dailyChallenge} is 10 mixed questions — a quick way to warm up every day.`,
     );
   }
 
   if (weakSpotCount > 0) {
     candidates.push(
-      `Practice Weak Spots is ready with ${weakSpotCount} commonly missed ${weakSpotCount === 1 ? scopeInfo.noun : scopeInfo.nounPlural}.`,
-      `You have ${weakSpotCount} weak spots saved — Practice mode drills the places you miss most.`,
-      `Try Practice mode to review ${weakSpotCount} ${weakSpotCount === 1 ? "place" : "places"} you commonly miss.`,
+      `${practiceWeakSpots} is ready with ${weakSpotCount} commonly missed ${weakSpotCount === 1 ? scopeInfo.noun : scopeInfo.nounPlural}.`,
+      `You have ${weakSpotCount} weak spots saved — ${practiceWeakSpots} drills the places you miss most.`,
+      `Try ${practiceWeakSpots} to review ${weakSpotCount} ${weakSpotCount === 1 ? "place" : "places"} you commonly miss.`,
     );
   } else {
     candidates.push(
-      "Practice Weak Spots builds a personalized review list from the places you miss.",
-      "Miss a few answers and Practice mode will start collecting weak spots for you.",
+      `${practiceWeakSpots} builds a personalized review list from the places you miss.`,
+      `Miss a few answers and ${practiceWeakSpots} will start collecting weak spots for you.`,
     );
   }
 
@@ -141,45 +162,53 @@ export function buildHomeHeroTaglineCandidates({
   }
 
   if (modesTried >= 4 && lastMode) {
+    const lastModeRef = modeRef(lastMode.id);
     candidates.push(
-      `${modesTried} modes tried — last up was ${lastMode.title}.`,
-      `You've explored ${modesTried} different modes. ${lastMode.title} is queued up if you want more.`,
+      `${modesTried} modes tried — last up was ${lastModeRef}.`,
+      `You've explored ${modesTried} different modes. ${lastModeRef} is queued up if you want more.`,
     );
   }
 
   candidates.push(
-    "Mixed mode shuffles flags, capitals, shapes, and more — great when you want variety.",
-    "Speed Round gives you 60 seconds — how many can you get?",
-    "Marathon keeps going until your first mistake. How far can you run?",
-    "Neighbor Quiz is perfect for learning which countries share borders.",
-    "Population Showdown asks a simple question: which place has more people?",
-    "Countries from facts pulls trivia straight from the Library.",
-    "Country shapes are a signature mode — identify places from silhouettes alone.",
-    `Browse the ${scopeInfo.libraryTitle} for flags, capitals, shapes, neighbors, and facts.`,
+    `${modeRef("mixed")} shuffles flags, capitals, shapes, and more — great when you want variety.`,
+    `${modeRef("speed-round")} gives you 60 seconds — how many can you get?`,
+    `${modeRef("marathon")} keeps going until your first mistake. How far can you run?`,
+    `${modeRef("neighbor-quiz")} is perfect for learning which countries share borders.`,
+    `${modeRef("population-showdown")} asks a simple question: which place has more people?`,
+    `${modeRef("fact-to-country")} draws on curated geographic details from the Library.`,
+    `${modeRef("shape-to-country")} is a signature mode — identify places from silhouettes alone.`,
+    `Browse the ${scopeInfo.libraryTitle} for flags, capitals, shapes, neighbors, and geographic profiles.`,
     "Pan and zoom the World Map, then click any country to open its Library page.",
     "The USA Map covers all 50 states with the same click-to-explore flow.",
     `Switch to ${otherScopeInfo.shortLabel} anytime — separate streaks and daily runs for each scope.`,
-    "Hard mode makes you type your answer — the real challenge tier.",
-    "Explore the globe from setup to pick your mode, difficulty, and region filters.",
-    "The daily challenge resets at midnight Eastern — one fresh set every day.",
+    "Hard difficulty makes you type your answer — the real challenge tier.",
+    "Tap Choose your Journey to pick your mode, difficulty, and region filters.",
+    `${dailyChallenge} resets at midnight Eastern — one fresh set every day.`,
     "Review today's daily answers after you finish to see what you missed.",
     "Stats tracks streaks, mode breakdowns, and achievements in one place.",
     "Library pages include context maps so you can see where each place sits.",
-    "Use recent mode shortcuts below Play to jump between your favorite challenges.",
+    "Use Quick swap below Play to jump between your recently played modes.",
   );
 
   return candidates;
 }
 
-export function getGuestHomeHeroTagline(scope: GameScope): string {
+function buildGuestHomeHeroTaglineCandidates(scope: GameScope): string[] {
   const scopeInfo = SCOPE_INFO[scope];
-  const tips = [
+  return [
     scopeInfo.tagline,
     "Create a profile to save streaks, stats, and daily progress on this device.",
-    "Practice Weak Spots reviews the places you miss most once you start playing.",
+    `${modeRef("weak-spots")} reviews the places you miss most once you start playing.`,
     "Pan and zoom the World Map or USA Map, then click any place to open the Library.",
-    "Mixed mode shuffles flags, capitals, shapes, and more.",
-    "The daily challenge is 10 mixed questions — a fresh set every day.",
+    `${modeRef("mixed")} shuffles flags, capitals, shapes, and more.`,
+    `${modeRef("daily-challenge")} is 10 mixed questions — a fresh set every day.`,
   ];
-  return pickRandom(tips);
+}
+
+export function getGuestHomeHeroTagline(scope: GameScope): string {
+  return pickRandom(buildGuestHomeHeroTaglineCandidates(scope));
+}
+
+export function getGuestHomeHeroTaglineExcluding(scope: GameScope, exclude?: string): string {
+  return pickRandomExcluding(buildGuestHomeHeroTaglineCandidates(scope), exclude);
 }

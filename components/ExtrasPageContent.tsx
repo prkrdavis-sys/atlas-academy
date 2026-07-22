@@ -11,7 +11,7 @@ const LIBRARY_FEATURES = [
   { icon: "🏛️", label: "Capitals" },
   { icon: "👥", label: "Population" },
   { icon: "🔗", label: "Neighbors" },
-  { icon: "💡", label: "Facts" },
+  { icon: "💡", label: "Profiles" },
 ] as const;
 
 const MAP_FEATURES = [
@@ -97,7 +97,7 @@ export function ExtrasPageContent() {
                     Library
                   </h3>
                   <p className="mt-1 max-w-md text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-                    Browse countries and states — flags, shapes, capitals, populations, neighbors, and facts.
+                    Browse countries and states — flags, shapes, capitals, populations, neighbors, and geographic profiles.
                   </p>
                 </div>
               </div>

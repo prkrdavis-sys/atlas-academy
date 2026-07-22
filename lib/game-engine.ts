@@ -26,6 +26,7 @@ import {
   buildNeighborPrompt,
   filterDailyDatesByScope,
   placeText,
+  scopeText,
 } from "@/lib/scope";
 import { getCapitalCityDistractors } from "@/lib/city-distractors";
 import { uniqueBy } from "@/lib/utils";
@@ -450,11 +451,15 @@ export class GameEngine {
           this.difficulty !== "hard"
             ? buildNameMcOptions(country, this.pool, this.difficulty, undefined, 4, this.random)
             : undefined;
+        const prompt =
+          this.scope === "usa"
+            ? scopeText(country.factQuestion, this.scope)
+            : placeText(country.factQuestion, this.scope, country);
         return {
           id,
           mode,
           countryCode: country.code,
-          prompt: country.fact,
+          prompt,
           correctAnswer: country.name,
           correctCode: country.code,
           displayType: "text",

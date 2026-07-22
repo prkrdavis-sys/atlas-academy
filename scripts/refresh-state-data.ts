@@ -9,7 +9,7 @@
  */
 import { existsSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { getStateFact } from "./place-facts";
+import { getStateFact, getStateFactQuestion } from "./place-facts";
 
 type StateRow = [
   postal: string,
@@ -125,6 +125,11 @@ const states = STATE_ROWS.map(
         const fact = getStateFact(code);
         if (!fact) throw new Error(`Missing curated fact for ${name} (${code})`);
         return fact;
+      })(),
+      factQuestion: (() => {
+        const question = getStateFactQuestion(code);
+        if (!question) throw new Error(`Missing curated fact question for ${name} (${code})`);
+        return question;
       })(),
     };
   },

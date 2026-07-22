@@ -85,3 +85,26 @@ export function sortMapPathsForRender<T extends { id: string }>(
     return roleOrder[roleA] - roleOrder[roleB];
   });
 }
+
+const LIGHT_PROGRESS_FILLS: Record<0 | 1 | 2 | 3 | 4, MapPathStyle> = {
+  0: LIGHT_MAP_PALETTE.default,
+  1: { fill: "#ecfdf5", stroke: "#99f6e4", strokeWidth: 0.6 },
+  2: { fill: "#99f6e4", stroke: "#2dd4bf", strokeWidth: 0.7 },
+  3: { fill: "#2dd4bf", stroke: "#14b8a6", strokeWidth: 0.8 },
+  4: { fill: "#0d9488", stroke: "#115e59", strokeWidth: 1 },
+};
+
+const DARK_PROGRESS_FILLS: Record<0 | 1 | 2 | 3 | 4, MapPathStyle> = {
+  0: DARK_MAP_PALETTE.default,
+  1: { fill: "#134e4a", stroke: "#115e59", strokeWidth: 0.6 },
+  2: { fill: "#115e59", stroke: "#14b8a6", strokeWidth: 0.7 },
+  3: { fill: "#0f766e", stroke: "#2dd4bf", strokeWidth: 0.8 },
+  4: { fill: "#2dd4bf", stroke: "#99f6e4", strokeWidth: 1 },
+};
+
+export function getProgressPathStyle(
+  level: 0 | 1 | 2 | 3 | 4,
+  isDark: boolean,
+): MapPathStyle {
+  return isDark ? DARK_PROGRESS_FILLS[level] : LIGHT_PROGRESS_FILLS[level];
+}

@@ -205,6 +205,17 @@ input:focus-visible {
     linear-gradient(to left, rgb(16 185 129 / 0.48) 0%, transparent 18vmin);
 }
 
+@keyframes hero-tip-in {
+  0% {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @keyframes learn-card-pop-in {
   0% {
     transform: scale(0.97);

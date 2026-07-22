@@ -21,6 +21,7 @@ import {
   getMapPathRole,
   parseMapViewBox,
   sortMapPathsForRender,
+  type MapPathStyle,
 } from "@/lib/map-colors";
 import { isStateCode } from "@/lib/scope";
 import type { Country } from "@/lib/types";
@@ -38,6 +39,11 @@ const CROP_OPTIONS = {
   compact: {
     aspectRatio: 2.2,
     paddingRatio: 0.18,
+    minSizeRatio: 0.05,
+  },
+  learn: {
+    aspectRatio: 2.45,
+    paddingRatio: 0.26,
     minSizeRatio: 0.05,
   },
   hero: {
@@ -73,7 +79,7 @@ export async function loadContextMapTemplate(templateKey: string): Promise<Parse
 
 type PlaceContextMapProps = {
   country: Country;
-  variant?: "compact" | "hero";
+  variant?: "compact" | "learn" | "hero";
   highlightNeighbors?: boolean;
   /** Crop and render only the featured country (no neighbors or other land). */
   countryOnly?: boolean;
@@ -90,6 +96,7 @@ type ContextMapSvgProps = {
   isDark?: boolean;
   interactive?: boolean;
   viewBox?: string;
+  pathStyleResolver?: (pathId: string) => MapPathStyle | null;
   onPathClick?: (pathId: string) => void;
   onPathHover?: (pathId: string | null) => void;
 };
@@ -103,6 +110,7 @@ export function ContextMapSvg({
   isDark = false,
   interactive = false,
   viewBox,
+  pathStyleResolver,
   onPathClick,
   onPathHover,
 }: ContextMapSvgProps) {
@@ -130,8 +138,9 @@ export function ContextMapSvg({
         fill={palette.ocean}
       />
       {orderedPaths.map((path) => {
+        const resolvedStyle = pathStyleResolver?.(path.id);
         const role = getMapPathRole(path.id, highlightIds, neighborIds);
-        const style = palette[role];
+        const style: MapPathStyle = resolvedStyle ?? palette[role];
 
         return (
           <path
@@ -236,7 +245,11 @@ export function PlaceContextMap({
     <div
       className={cn(
         "overflow-hidden rounded-2xl border border-teal-100 bg-sky-50 dark:border-teal-900/50 dark:bg-slate-950",
-        variant === "compact" ? "h-20 sm:h-24" : "aspect-[16/10] w-full",
+        variant === "compact"
+          ? "h-20 sm:h-24"
+          : variant === "learn"
+            ? "aspect-[5/2] w-full min-h-[8.75rem] sm:aspect-[5/2] sm:min-h-[6.5rem]"
+            : "aspect-[16/10] w-full",
         interactive && "touch-none",
         className,
       )}

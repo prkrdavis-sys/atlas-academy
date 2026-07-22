@@ -162,16 +162,20 @@ function InlineLearnCard({
 
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4 py-3 sm:hidden">
         {country.hasFlag && (
-          <div className="mb-3 w-full shrink-0 overflow-hidden rounded-xl">
+          <div className="mb-2.5 flex shrink-0 justify-center">
             <FlagImage
               code={country.code}
               alt={country.name}
-              width={360}
+              width={240}
               frame="md"
-              className="mx-auto block w-full max-w-full"
+              className="mx-auto block w-full max-w-[11rem]"
             />
           </div>
         )}
+
+        <div className="mb-3 w-full shrink-0">
+          <PlaceContextMap country={country} variant="learn" highlightNeighbors />
+        </div>
 
         {compareCountryCode && (
           <PopulationComparison
@@ -181,7 +185,7 @@ function InlineLearnCard({
           />
         )}
 
-        <dl className="grid w-full shrink-0 grid-cols-2 content-start gap-x-6 gap-y-3 self-stretch text-sm">
+        <dl className="grid w-full shrink-0 grid-cols-2 content-start gap-x-6 gap-y-3 self-stretch pb-1 text-sm">
           <div>
             <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Capital</dt>
             <dd className="mt-1 text-base font-semibold text-slate-800 dark:text-slate-200">{country.capital || "N/A"}</dd>
@@ -205,75 +209,71 @@ function InlineLearnCard({
             </dd>
           </div>
         </dl>
-
-        <div className="mt-3 w-full shrink-0 pb-1">
-          <PlaceContextMap country={country} variant="compact" countryOnly />
-        </div>
       </div>
 
-      <div
-        className={cn(
-          "hidden items-center gap-5 p-4 sm:grid lg:px-6 lg:py-4",
-          country.hasFlag
-            ? "grid-cols-[6.5rem_1fr_6.5rem] lg:grid-cols-[7.5rem_1fr_7.5rem]"
-            : "grid-cols-[1fr_6.5rem] lg:grid-cols-[1fr_7.5rem]",
-        )}
-      >
-        {country.hasFlag && (
-          <div className="flex items-center justify-center">
-            <FlagImage
-              code={country.code}
-              alt={country.name}
-              width={128}
-              frame="md"
-              className="w-24 lg:w-28"
-            />
-          </div>
-        )}
-
-        <div className="min-w-0">
-          {compareCountryCode && (
-            <PopulationComparison
-              countryCode={countryCode}
-              compareCountryCode={compareCountryCode}
-              inline
-            />
+      <div className="hidden flex-col gap-3 p-4 sm:flex lg:px-6 lg:py-4">
+        <div
+          className={cn(
+            "grid gap-4",
+            country.hasFlag ? "grid-cols-[4.5rem_minmax(0,1fr)] lg:grid-cols-[5rem_minmax(0,1fr)]" : "grid-cols-1",
           )}
-          <dl
-            className={cn(
-              "grid grid-cols-2 gap-x-4 gap-y-2 text-[0.9rem] leading-snug",
-              compareCountryCode ? "mt-0" : "",
+        >
+          {country.hasFlag && (
+            <div className="flex items-start justify-center pt-0.5">
+              <FlagImage
+                code={country.code}
+                alt={country.name}
+                width={96}
+                frame="md"
+                className="w-[4.5rem] lg:w-20"
+              />
+            </div>
+          )}
+
+          <div className="min-w-0">
+            {compareCountryCode && (
+              <PopulationComparison
+                countryCode={countryCode}
+                compareCountryCode={compareCountryCode}
+                inline
+              />
             )}
-          >
-            <div>
-              <dt className="font-semibold text-slate-500 dark:text-slate-400">Capital</dt>
-              <dd className="font-medium text-slate-800 dark:text-slate-200">{country.capital || "N/A"}</dd>
-            </div>
-            <div>
-              <dt className="font-semibold text-slate-500 dark:text-slate-400">{isState ? "Region" : "Continent"}</dt>
-              <dd className="font-medium text-slate-800 dark:text-slate-200">
-                <ContinentValue country={country} isState={isState} />
-              </dd>
-            </div>
-            {!compareCountryCode && (
+            <dl
+              className={cn(
+                "grid grid-cols-2 gap-x-4 gap-y-2 text-[0.9rem] leading-snug",
+                compareCountryCode ? "mt-0" : "",
+              )}
+            >
               <div>
-                <dt className="font-semibold text-slate-500 dark:text-slate-400">Population</dt>
-                <dd className="font-medium text-slate-800 dark:text-slate-200">{formatPopulation(country.population)}</dd>
+                <dt className="font-semibold text-slate-500 dark:text-slate-400">Capital</dt>
+                <dd className="font-medium text-slate-800 dark:text-slate-200">{country.capital || "N/A"}</dd>
               </div>
-            )}
-            <div className={compareCountryCode ? "col-span-2" : ""}>
-              <dt className="font-semibold text-slate-500 dark:text-slate-400">Language</dt>
-              <dd className="font-medium text-slate-800 dark:text-slate-200">
-                {formatPrimaryLanguage(country.languages)}
-              </dd>
-            </div>
-          </dl>
+              <div>
+                <dt className="font-semibold text-slate-500 dark:text-slate-400">{isState ? "Region" : "Continent"}</dt>
+                <dd className="font-medium text-slate-800 dark:text-slate-200">
+                  <ContinentValue country={country} isState={isState} />
+                </dd>
+              </div>
+              {!compareCountryCode && (
+                <div>
+                  <dt className="font-semibold text-slate-500 dark:text-slate-400">Population</dt>
+                  <dd className="font-medium text-slate-800 dark:text-slate-200">{formatPopulation(country.population)}</dd>
+                </div>
+              )}
+              <div className={compareCountryCode ? "col-span-2" : ""}>
+                <dt className="font-semibold text-slate-500 dark:text-slate-400">Language</dt>
+                <dd className="font-medium text-slate-800 dark:text-slate-200">
+                  {formatPrimaryLanguage(country.languages)}
+                </dd>
+              </div>
+            </dl>
+          </div>
         </div>
 
         <PlaceContextMap
           country={country}
-          variant="compact"
-          countryOnly
+          variant="learn"
+          highlightNeighbors
           className="w-full"
         />
       </div>
@@ -332,12 +332,12 @@ export function LearnCard({
           />
         )}
         <div className="mb-4">
-          <PlaceContextMap country={country} variant="compact" countryOnly />
+          <PlaceContextMap country={country} variant="learn" highlightNeighbors />
         </div>
         <div
           className={
             country.hasFlag
-              ? "grid grid-cols-[5.5rem_minmax(0,1fr)] items-start gap-3 sm:flex sm:items-center sm:gap-4"
+              ? "grid grid-cols-[4.5rem_minmax(0,1fr)] items-start gap-3 sm:flex sm:items-center sm:gap-4"
               : "block"
           }
         >
@@ -345,9 +345,9 @@ export function LearnCard({
             <FlagImage
               code={country.code}
               alt={country.name}
-              width={120}
+              width={96}
               frame="pill"
-              className="w-full rounded-lg sm:w-[7.5rem]"
+              className="w-[4.5rem] rounded-lg sm:w-20"
             />
           )}
           <div className="min-w-0 space-y-1 text-xs leading-relaxed sm:text-sm">

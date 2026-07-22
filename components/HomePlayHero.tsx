@@ -2,12 +2,16 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   getGuestHomeHeroTagline,
+  getGuestHomeHeroTaglineExcluding,
   pickHomeHeroTagline,
+  pickHomeHeroTaglineExcluding,
+  type HomeHeroTaglineContext,
 } from "@/lib/home-hero-tagline";
 import { ActiveGameSummary } from "@/components/ActiveGameSummary";
+import { HomeHeroTaglineContent } from "@/components/HomeHeroTaglineContent";
 import { HomeStreakHighlights } from "@/components/HomeStreakHighlights";
 import { ProfileRequiredDialog } from "@/components/ProfileRequiredDialog";
 import { RecentModeShortcuts } from "@/components/RecentModeShortcuts";
@@ -55,10 +59,10 @@ export function HomePlayHero({
 
   const [heroTagline, setHeroTagline] = useState<string | null>(null);
 
-  useEffect(() => {
-    setHeroTagline(
+  const taglineContext = useMemo<HomeHeroTaglineContext | null>(
+    () =>
       profile
-        ? pickHomeHeroTagline({
+        ? {
             profile,
             scope,
             streak,
@@ -66,10 +70,26 @@ export function HomePlayHero({
             storedTodayBest,
             dailyRun,
             dailyCompletedToday,
-          })
+          }
+        : null,
+    [profile, scope, streak, todayBest, storedTodayBest, dailyRun, dailyCompletedToday],
+  );
+
+  useEffect(() => {
+    setHeroTagline(
+      taglineContext
+        ? pickHomeHeroTagline(taglineContext)
         : getGuestHomeHeroTagline(scope),
     );
-  }, [profile?.id, scope]);
+  }, [taglineContext, scope]);
+
+  const rerollTagline = useCallback(() => {
+    setHeroTagline((current) =>
+      taglineContext
+        ? pickHomeHeroTaglineExcluding(taglineContext, current ?? undefined)
+        : getGuestHomeHeroTaglineExcluding(scope, current ?? undefined),
+    );
+  }, [taglineContext, scope]);
 
   const hideProfileDialog = useCallback(() => setShowProfileDialog(false), []);
 
@@ -141,7 +161,7 @@ export function HomePlayHero({
         <div
           className={cn(
             "relative grid gap-5 sm:gap-6",
-            profile && "lg:grid-cols-[minmax(0,1fr)_14rem] lg:grid-rows-[auto_auto_auto] lg:items-start lg:gap-x-8 lg:gap-y-5",
+            profile && "lg:grid-cols-[minmax(0,1fr)_16rem] lg:grid-rows-[auto_auto_auto] lg:items-start lg:gap-x-8 lg:gap-y-5",
           )}
         >
           <div
@@ -159,9 +179,30 @@ export function HomePlayHero({
                 "Learn world geography"
               )}
             </h1>
-            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-emerald-50 sm:max-w-3xl sm:text-base lg:max-w-none">
-              {heroTagline ?? "\u00a0"}
-            </p>
+            <button
+              type="button"
+              onClick={rerollTagline}
+              aria-label="Show another pro tip"
+              className="group/protip mt-3 flex w-full max-w-2xl cursor-pointer gap-1.5 rounded-xl border border-transparent px-2 py-1.5 text-left text-sm leading-relaxed text-emerald-50 transition-[background-color,border-color,transform] duration-150 hover:border-white/25 hover:bg-white/10 active:scale-[0.99] active:bg-white/15 sm:max-w-3xl sm:text-base lg:max-w-none"
+            >
+              <span className="shrink-0 font-semibold transition-transform duration-150 group-hover/protip:scale-105 group-active/protip:scale-95">
+                Pro tip{" "}
+                <span aria-hidden className="inline-block transition-transform duration-150 group-hover/protip:-rotate-6 group-active/protip:rotate-12">
+                  💡
+                </span>{" "}
+                -
+              </span>
+              <span
+                key={heroTagline ?? "loading"}
+                className="[animation:hero-tip-in_0.2s_ease-out]"
+              >
+                {heroTagline ? (
+                  <HomeHeroTaglineContent text={heroTagline} scope={scope} />
+                ) : (
+                  "\u00a0"
+                )}
+              </span>
+            </button>
           </div>
 
           {profile ? (
@@ -171,7 +212,7 @@ export function HomePlayHero({
               storedTodayBest={storedTodayBest}
               dailyRun={dailyRun}
               dailyCompletedToday={dailyCompletedToday}
-              className="lg:col-start-2 lg:row-start-1 lg:max-w-[14rem] lg:justify-self-end lg:self-start"
+              className="lg:col-start-2 lg:row-start-1 lg:max-w-[16rem] lg:justify-self-end lg:self-start"
             />
           ) : null}
 
@@ -201,13 +242,13 @@ export function HomePlayHero({
                   />
                 </div>
 
-                <div className="grid w-full grid-cols-2 gap-x-3 gap-y-1.5">
+                <div className="flex w-full gap-3">
                   <Link
                     href="/play/setup"
                     className="flex min-h-12 flex-1 min-w-0 items-center justify-center gap-2 rounded-[1.25rem] border-2 border-white/70 bg-white/15 px-3 py-3 text-center font-display text-sm font-extrabold text-white shadow-[0_3px_0_rgb(255_255_255_/_0.2)] backdrop-blur-sm transition-transform hover:scale-[1.01] hover:border-white hover:bg-white/25 active:translate-y-0.5 active:shadow-none sm:min-h-[3.25rem] sm:gap-2.5 sm:px-4 sm:text-base"
                   >
                     <span aria-hidden className="shrink-0 text-lg">
-                      🌍
+                      ⚙️
                     </span>
                     <span className="flex min-w-0 flex-col items-start text-left leading-tight">
                       <span>Choose your Journey</span>
@@ -219,18 +260,17 @@ export function HomePlayHero({
 
                   <Link
                     href={`/play/daily-challenge${scopeQuery(scope)}?autostart=1`}
-                    className="flex min-h-12 flex-1 min-w-0 items-center justify-center gap-1.5 rounded-[1.25rem] border-2 border-white/70 bg-white/15 px-3 py-3 text-center font-display text-sm font-extrabold text-white shadow-[0_3px_0_rgb(255_255_255_/_0.2)] backdrop-blur-sm transition-transform hover:scale-[1.01] hover:border-white hover:bg-white/25 active:translate-y-0.5 active:shadow-none sm:min-h-[3.25rem] sm:gap-2 sm:px-4 sm:text-base"
+                    className="flex min-h-12 flex-1 min-w-0 items-center justify-center gap-2 rounded-[1.25rem] border-2 border-white/70 bg-white/15 px-3 py-3 text-center font-display text-sm font-extrabold text-white shadow-[0_3px_0_rgb(255_255_255_/_0.2)] backdrop-blur-sm transition-transform hover:scale-[1.01] hover:border-white hover:bg-white/25 active:translate-y-0.5 active:shadow-none sm:min-h-[3.25rem] sm:gap-2.5 sm:px-4 sm:text-base"
+                    aria-label={`${dailyPlayedToday ? "Review today" : "Daily challenge"}. Daily challenge streak: ${dailyRun} ${dailyRun === 1 ? "day" : "days"}`}
                   >
-                    <span aria-hidden className="text-lg">📅</span>
-                    {dailyPlayedToday ? "Review today" : "Daily challenge"}
+                    <span aria-hidden className="shrink-0 text-lg">📅</span>
+                    <span className="flex min-w-0 flex-col items-start text-left leading-tight">
+                      <span>{dailyPlayedToday ? "Review today" : "Daily challenge"}</span>
+                      <span className="text-[0.6875rem] font-semibold tabular-nums text-emerald-100/85 sm:text-xs">
+                        <span aria-hidden>🔥</span> {dailyRun}
+                      </span>
+                    </span>
                   </Link>
-
-                  <p
-                    className="col-start-2 text-center text-xs font-bold tabular-nums text-emerald-50/90 sm:text-sm"
-                    aria-label={`Daily challenge streak: ${dailyRun} ${dailyRun === 1 ? "day" : "days"}`}
-                  >
-                    <span aria-hidden>🔥</span> {dailyRun}
-                  </p>
                 </div>
               </>
             ) : (

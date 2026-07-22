@@ -5,8 +5,13 @@ import type {
   GameScope,
   Profile,
   AchievementSessionContext,
+  Question,
   SpeedRoundQuestionType,
 } from "@/lib/types";
+import {
+  recordPlaceMapProgress,
+  resolveMapProgressCategory,
+} from "@/lib/map-progress";
 import {
   AVATAR_COLORS,
   DEFAULT_ROUND_QUESTION_COUNT,
@@ -401,6 +406,7 @@ export function recordAnswer(
   skipped = false,
   scope: GameScope = "world",
   isPracticeMode = mode === "weak-spots",
+  question?: Question,
 ) {
   const state = loadState();
   const profile = state.profiles.find((p) => p.id === profileId);
@@ -455,6 +461,18 @@ export function recordAnswer(
     entry.total += 1;
     if (correct) entry.correct += 1;
     profile.countryProgress[countryCode] = entry;
+
+    if (
+      correct &&
+      !isPracticeMode &&
+      (difficulty === "medium" || difficulty === "hard") &&
+      question
+    ) {
+      const category = resolveMapProgressCategory(question);
+      if (category) {
+        recordPlaceMapProgress(profile, countryCode, difficulty, category);
+      }
+    }
   }
 
   saveState(state);

@@ -10,6 +10,7 @@
     "refresh-data": "tsx scripts/refresh-country-data.ts",
     "enrich-currency-data": "tsx scripts/enrich-currency-data.ts",
     "refresh-state-data": "tsx scripts/refresh-state-data.ts",
+    "refresh-place-facts": "tsx scripts/refresh-place-facts.ts",
     "fetch-state-flags": "bash scripts/fetch-state-flags.sh",
     "generate-state-shapes": "tsx scripts/generate-state-shapes.ts",
     "generate-supplemental-shapes": "tsx scripts/generate-supplemental-shapes.ts",

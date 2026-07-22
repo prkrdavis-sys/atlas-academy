@@ -1,6 +1,6 @@
 import { copyFileSync, existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { getCountryFact } from "./place-facts";
+import { getCountryFact, getCountryFactQuestion } from "./place-facts";
 import {
   attachUsdRate,
   fetchUsdExchangeRates,
@@ -156,6 +156,14 @@ function buildFact(code3: string, name: string): string {
   return fact;
 }
 
+function buildFactQuestion(code3: string, name: string): string {
+  const question = getCountryFactQuestion(code3);
+  if (!question) {
+    throw new Error(`Missing curated fact question for ${name} (${code3})`);
+  }
+  return question;
+}
+
 async function fetchPopulationByCode3(): Promise<Map<string, number>> {
   const population = new Map<string, number>();
   let page = 1;
@@ -293,6 +301,7 @@ async function main() {
       hasCapitalImage,
       isTerritory: raw.independent === false,
       fact: buildFact(code3, raw.name.common),
+      factQuestion: buildFactQuestion(code3, raw.name.common),
     });
   }
 

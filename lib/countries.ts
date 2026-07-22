@@ -92,7 +92,7 @@ export function filterCountries(options: FilterOptions): Country[] {
   }
 
   if (options.mode === "fact-to-country") {
-    pool = pool.filter((c) => c.fact.trim().length > 0);
+    pool = pool.filter((c) => c.factQuestion.trim().length > 0);
   }
 
   if (options.mode === "weak-spots" && options.weakSpotCodes?.length) {

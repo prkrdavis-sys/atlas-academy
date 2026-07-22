@@ -108,8 +108,8 @@ export function LibraryBrowser({ scope = "world" }: LibraryBrowserProps) {
         </h1>
         <p className="mt-2 max-w-xl text-sm leading-relaxed text-slate-600 dark:text-slate-400 sm:text-base">
           {isUsa
-            ? "Browse flags, outlines, capitals, populations, neighbors, and facts for all 50 US states."
-            : "Browse flags, outlines, capitals, populations, neighbors, and facts for every country and territory."}
+            ? "Browse flags, outlines, capitals, populations, neighbors, and geographic profiles for all 50 US states."
+            : "Browse flags, outlines, capitals, populations, neighbors, and geographic profiles for every country and territory."}
         </p>
         <div className="mt-4 inline-flex rounded-2xl bg-slate-100 p-1 dark:bg-slate-800" role="group" aria-label="Library scope">
           {GAME_SCOPES.map((option) => {
