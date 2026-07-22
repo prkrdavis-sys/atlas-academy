@@ -1,7 +1,7 @@
 "use client";
 
 import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
+import { useIsDark } from "@/lib/use-is-dark";
 import { cn } from "@/lib/utils";
 
 type ThemeToggleProps = {
@@ -10,17 +10,15 @@ type ThemeToggleProps = {
 };
 
 export function ThemeToggle({ className, variant = "icon" }: ThemeToggleProps) {
-  const { resolvedTheme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => setMounted(true), []);
+  const { setTheme } = useTheme();
+  const { isDark, ready } = useIsDark();
 
   const buttonClassName = cn(
     "inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm transition-colors hover:bg-slate-50 active:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:active:bg-slate-600",
     className,
   );
 
-  if (!mounted) {
+  if (!ready) {
     if (variant === "menu") {
       return (
         <div className={cn("px-3 py-2", className)} suppressHydrationWarning>
@@ -46,8 +44,6 @@ export function ThemeToggle({ className, variant = "icon" }: ThemeToggleProps) {
       </button>
     );
   }
-
-  const isDark = resolvedTheme === "dark";
 
   if (variant === "menu") {
     return (

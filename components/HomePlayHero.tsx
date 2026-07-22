@@ -162,7 +162,7 @@ export function HomePlayHero({
         <div
           className={cn(
             "relative grid gap-5 sm:gap-6",
-            profile && "lg:grid-cols-[minmax(0,1fr)_16rem] lg:grid-rows-[auto_auto_auto] lg:items-start lg:gap-x-8 lg:gap-y-5",
+            profile && "lg:grid-cols-[minmax(0,1fr)_18rem] lg:grid-rows-[auto_auto_auto] lg:items-start lg:gap-x-8 lg:gap-y-5",
           )}
         >
           <div
@@ -213,7 +213,7 @@ export function HomePlayHero({
               storedTodayBest={storedTodayBest}
               dailyRun={dailyRun}
               dailyCompletedToday={dailyCompletedToday}
-              className="lg:col-start-2 lg:row-start-1 lg:max-w-[16rem] lg:justify-self-end lg:self-start"
+              className="lg:col-start-2 lg:row-start-1 lg:max-w-[18rem] lg:justify-self-end lg:self-start"
             />
           ) : null}
 

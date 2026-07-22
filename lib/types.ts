@@ -41,6 +41,8 @@ export type PlaceMapProgressByDifficulty = Partial<
 
 export type PlaceMasteryLevel = 0 | 1 | 2 | 3 | 4;
 
+export const MAP_PROGRESS_FILL_LEVELS = [1, 2, 3, 4] as const satisfies readonly PlaceMasteryLevel[];
+
 export const DIFFICULTY_LABELS: Record<Difficulty, string> = {
   easy: "Easy",
   medium: "Normal",

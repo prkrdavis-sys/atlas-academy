@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useTheme } from "next-themes";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ContextMapSvg,
@@ -17,7 +16,7 @@ import {
 } from "@/lib/context-maps";
 import { buildLibraryDetailHref } from "@/lib/library";
 import { computeFocusedViewBox, loadMapBoundsManifest, type MapBoundsManifest } from "@/lib/map-bounds";
-import { getMapPalette } from "@/lib/map-colors";
+import { getMapPalette, getProgressPathStyle } from "@/lib/map-colors";
 import {
   buildUsaProgressFillMap,
   buildWorldProgressFillMap,
@@ -29,6 +28,7 @@ import {
 import {
   DIFFICULTY_LABELS,
   MAP_PROGRESS_CATEGORIES,
+  MAP_PROGRESS_FILL_LEVELS,
   type Continent,
   type GameScope,
   type MapProgressCategory,
@@ -36,6 +36,7 @@ import {
   type Profile,
   type Region,
 } from "@/lib/types";
+import { useIsDark } from "@/lib/use-is-dark";
 import { cn } from "@/lib/utils";
 
 type StatsProgressMapProps = {
@@ -45,9 +46,31 @@ type StatsProgressMapProps = {
   templateKey: ContextMapTemplateKey;
   region?: Region;
   compact?: boolean;
+  showFillLegend?: boolean;
   className?: string;
   ariaLabel: string;
 };
+
+function MapProgressFillLegend({ isDark }: { isDark: boolean }) {
+  return (
+    <div className="flex flex-wrap items-center gap-3 text-xs text-slate-600 dark:text-slate-400">
+      <span className="font-semibold text-slate-700 dark:text-slate-300">Fill levels:</span>
+      {MAP_PROGRESS_FILL_LEVELS.map((level) => {
+        const style = getProgressPathStyle(level, isDark);
+        return (
+          <span key={level} className="inline-flex items-center gap-1.5">
+            <span
+              className="inline-block h-3 w-3 rounded-sm border"
+              style={{ backgroundColor: style.fill, borderColor: style.stroke }}
+              aria-hidden
+            />
+            {level}/4
+          </span>
+        );
+      })}
+    </div>
+  );
+}
 
 function formatPlaceProgressLabel(
   code: string,
@@ -141,11 +164,11 @@ export function StatsProgressMap({
   templateKey,
   region,
   compact = false,
+  showFillLegend = false,
   className,
   ariaLabel,
 }: StatsProgressMapProps) {
-  const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
+  const { isDark, ready } = useIsDark();
   const [map, setMap] = useState<ParsedContextMap | null>(null);
   const [boundsManifest, setBoundsManifest] = useState<MapBoundsManifest | null>(null);
   const [loadFailed, setLoadFailed] = useState(false);
@@ -267,54 +290,57 @@ export function StatsProgressMap({
   }, [templateKey]);
 
   return (
-    <div
-      className={cn(
-        "relative overflow-hidden rounded-2xl border border-teal-100 bg-sky-50 dark:border-teal-900/50 dark:bg-slate-950",
-        compact ? "aspect-[5/2] w-full min-h-[5.5rem]" : "aspect-[16/10] w-full",
-        className,
-      )}
-    >
-      {map ? (
-        <>
-          <ContextMapSvg
-            map={{ ...map, paths: visiblePaths }}
-            highlightIds={new Set()}
-            neighborIds={new Set()}
-            ariaLabel={ariaLabel}
-            isDark={isDark}
-            interactive
-            viewBox={focusedViewBox}
-            pathStyleResolver={pathStyleResolver}
-            onPathClick={handlePathClick}
-            onPathHover={setHoveredPathId}
-            onBackgroundClick={handleBackgroundClick}
-          />
-          {hoverLabel ? (
-            <div
-              className="pointer-events-none absolute bottom-2 left-2 rounded-lg bg-slate-900/85 px-2.5 py-1 text-xs font-semibold text-white shadow-sm"
-              role="status"
-              aria-live="polite"
-            >
-              {hoverLabel}
-            </div>
-          ) : null}
-          {selectedCode ? (
-            <StatsMapPlacePanel
-              code={selectedCode}
-              profile={profile}
-              difficulty={difficulty}
-              scope={scope}
+    <>
+      {showFillLegend && !compact && ready ? <MapProgressFillLegend isDark={isDark} /> : null}
+      <div
+        className={cn(
+          "relative overflow-hidden rounded-2xl border border-teal-100 bg-sky-50 dark:border-teal-900/50 dark:bg-slate-950",
+          compact ? "aspect-[5/2] w-full min-h-[5.5rem]" : "aspect-[16/10] w-full",
+          className,
+        )}
+      >
+        {map && ready ? (
+          <>
+            <ContextMapSvg
+              map={{ ...map, paths: visiblePaths }}
+              highlightIds={new Set()}
+              neighborIds={new Set()}
+              ariaLabel={ariaLabel}
+              isDark={isDark}
+              interactive
+              viewBox={focusedViewBox}
+              pathStyleResolver={pathStyleResolver}
+              onPathClick={handlePathClick}
+              onPathHover={setHoveredPathId}
+              onBackgroundClick={handleBackgroundClick}
             />
-          ) : null}
-        </>
-      ) : loadFailed ? (
-        <div className="flex h-full items-center justify-center px-4 text-center text-xs font-semibold text-slate-500 dark:text-slate-400">
-          Map unavailable
-        </div>
-      ) : (
-        <div className="h-full animate-pulse bg-slate-200/60 dark:bg-slate-700/60" aria-hidden />
-      )}
-    </div>
+            {hoverLabel ? (
+              <div
+                className="pointer-events-none absolute bottom-2 left-2 rounded-lg bg-slate-900/85 px-2.5 py-1 text-xs font-semibold text-white shadow-sm"
+                role="status"
+                aria-live="polite"
+              >
+                {hoverLabel}
+              </div>
+            ) : null}
+            {selectedCode ? (
+              <StatsMapPlacePanel
+                code={selectedCode}
+                profile={profile}
+                difficulty={difficulty}
+                scope={scope}
+              />
+            ) : null}
+          </>
+        ) : loadFailed ? (
+          <div className="flex h-full items-center justify-center px-4 text-center text-xs font-semibold text-slate-500 dark:text-slate-400">
+            Map unavailable
+          </div>
+        ) : (
+          <div className="h-full animate-pulse bg-slate-200/60 dark:bg-slate-700/60" aria-hidden />
+        )}
+      </div>
+    </>
   );
 }
 

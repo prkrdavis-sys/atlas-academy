@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useTheme } from "next-themes";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Panzoom from "@panzoom/panzoom";
 import {
@@ -17,6 +16,7 @@ import {
   resolvePlaceCodeFromParam,
 } from "@/lib/context-maps";
 import type { Country } from "@/lib/types";
+import { useIsDark } from "@/lib/use-is-dark";
 import { focusWorldMapOnPaths } from "@/lib/world-map-focus";
 
 type UsaMapExplorerProps = {
@@ -33,8 +33,7 @@ export function UsaMapExplorer({ initialPlaceCode = null }: UsaMapExplorerProps)
   const [loadFailed, setLoadFailed] = useState(false);
   const [selectedState, setSelectedState] = useState<Country | null>(null);
   const [hoveredPathId, setHoveredPathId] = useState<string | null>(null);
-  const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
+  const { isDark, ready } = useIsDark();
 
   const highlightIds = useMemo(() => {
     if (!selectedState) return new Set<string>();
@@ -95,7 +94,7 @@ export function UsaMapExplorer({ initialPlaceCode = null }: UsaMapExplorerProps)
       panzoomRef.current = null;
       setPanzoomReady(false);
     };
-  }, [map]);
+  }, [map, ready]);
 
   useEffect(() => {
     if (!map || !panzoomReady || !panzoomRef.current || !containerRef.current || hasInitialFocusRef.current) {
@@ -193,7 +192,7 @@ export function UsaMapExplorer({ initialPlaceCode = null }: UsaMapExplorerProps)
         ref={containerRef}
         className="aspect-[16/9] w-full touch-none overflow-hidden bg-gradient-to-b from-sky-50 to-white dark:from-slate-900 dark:to-slate-950 sm:aspect-[2/1]"
       >
-        {map ? (
+        {map && ready ? (
           <div ref={mapRef} className="h-full w-full origin-center">
             <ContextMapSvg
               map={map}

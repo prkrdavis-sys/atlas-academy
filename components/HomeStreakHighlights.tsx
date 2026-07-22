@@ -163,15 +163,14 @@ function MiniStatCard({ label, value, icon, progress, caption, tone, highlight }
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-xl border bg-gradient-to-br p-3",
+        "relative rounded-xl border bg-gradient-to-br p-3",
         toneStyles.shell,
-        highlight && "ring-2 ring-inset ring-white/35",
+        highlight && "border-white/50 bg-white/[0.07]",
       )}
     >
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -right-3 -top-3 size-12 rounded-full bg-white/10 blur-xl"
-      />
+      <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit]">
+        <div className="absolute -right-3 -top-3 size-12 rounded-full bg-white/10 blur-xl" />
+      </div>
       <div className="relative flex min-w-0 flex-col gap-2">
         <div className="flex min-w-0 items-start justify-between gap-2">
           <div className="flex min-w-0 items-center gap-1.5">
@@ -188,7 +187,7 @@ function MiniStatCard({ label, value, icon, progress, caption, tone, highlight }
               {label}
             </p>
           </div>
-          <p className="shrink-0 font-display text-lg font-extrabold leading-none tabular-nums text-white sm:text-xl">
+          <p className="shrink-0 font-display text-base font-extrabold leading-none tabular-nums text-white sm:text-lg">
             {value}
           </p>
         </div>
@@ -303,7 +302,7 @@ export function HomeStreakHighlights({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-2 p-2.5 min-[420px]:grid-cols-2 sm:gap-2.5 sm:p-3 lg:grid-cols-1 lg:gap-2 lg:p-2.5">
+          <div className="grid grid-cols-1 gap-2 p-2.5 sm:gap-2.5 sm:p-3 lg:gap-2 lg:p-2.5">
             <MiniStatCard
               label="Best today"
               value={todayBest}

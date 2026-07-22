@@ -9,7 +9,6 @@ import {
   getRegionMapProgress,
   MAP_PROGRESS_CATEGORY_INFO,
 } from "@/lib/map-progress";
-import { getProgressPathStyle } from "@/lib/map-colors";
 import { SCOPE_INFO } from "@/lib/scope";
 import type { MapProgressDifficulty, Profile } from "@/lib/types";
 import {
@@ -177,28 +176,12 @@ export function StatsMapProgressSection({ profile, scope }: StatsMapProgressSect
           })}
         </div>
 
-        <div className="flex flex-wrap items-center gap-3 text-xs text-slate-600 dark:text-slate-400">
-          <span className="font-semibold text-slate-700 dark:text-slate-300">Fill levels:</span>
-          {([1, 2, 3, 4] as const).map((level) => {
-            const style = getProgressPathStyle(level, false);
-            return (
-              <span key={level} className="inline-flex items-center gap-1.5">
-                <span
-                  className="inline-block h-3 w-3 rounded-sm border"
-                  style={{ backgroundColor: style.fill, borderColor: style.stroke }}
-                  aria-hidden
-                />
-                {level}/4
-              </span>
-            );
-          })}
-        </div>
-
         <StatsProgressMap
           profile={profile}
           difficulty={mapDifficulty}
           scope={scope}
           templateKey={getStatsMapTemplateKey(scope)}
+          showFillLegend
           ariaLabel={`${scopeInfo.label} map progress at ${DIFFICULTY_LABELS[mapDifficulty]} difficulty`}
         />
 

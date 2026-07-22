@@ -1,6 +1,5 @@
 "use client";
 
-import { useTheme } from "next-themes";
 import { useEffect, useMemo, useState } from "react";
 import {
   countryHasContextMap,
@@ -25,6 +24,7 @@ import {
 } from "@/lib/map-colors";
 import { isStateCode } from "@/lib/scope";
 import type { Country } from "@/lib/types";
+import { useIsDark } from "@/lib/use-is-dark";
 import { cn } from "@/lib/utils";
 
 export type ParsedContextMap = {
@@ -175,7 +175,7 @@ export function PlaceContextMap({
   className,
   interactive = false,
 }: PlaceContextMapProps) {
-  const { resolvedTheme } = useTheme();
+  const { isDark, ready } = useIsDark();
   const [map, setMap] = useState<ParsedContextMap | null>(() =>
     templateCache.get(getContextMapTemplateKey(country)) ?? null,
   );
@@ -185,7 +185,6 @@ export function PlaceContextMap({
   const [loadFailed, setLoadFailed] = useState(false);
   const isState = isStateCode(country.code);
   const templateKey = getContextMapTemplateKey(country);
-  const isDark = resolvedTheme === "dark";
 
   const highlightIds = useMemo(() => new Set(getContextMapPathIds(country)), [country]);
   const neighborIds = useMemo(() => {
@@ -257,7 +256,7 @@ export function PlaceContextMap({
         className,
       )}
     >
-      {map ? (
+      {map && ready ? (
         <ContextMapSvg
           map={{ ...map, paths: visiblePaths }}
           highlightIds={highlightIds}
