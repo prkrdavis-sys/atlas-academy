@@ -10,7 +10,7 @@ function formatConversionAmount(amount: number): string {
 
 export function formatCurrencyChipLabel(currency: CountryCurrency): string {
   if (currency.usdRate == null && currency.code !== "USD") return "Currency";
-  return "Currency · $1";
+  return "Currency · $1 equivalent";
 }
 
 export function formatCurrencyChipValue(currency: CountryCurrency): string {

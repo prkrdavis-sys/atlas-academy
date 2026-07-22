@@ -88,23 +88,21 @@ export function ProfileSwitcher({ compact = false }: { compact?: boolean }) {
               </div>
             )}
 
-            {!compact && (
-              <Link
-                href="/stats"
-                role="menuitem"
-                aria-current={pathname.startsWith("/stats") ? "page" : undefined}
-                className={cn(
-                  "mb-1 flex min-h-11 items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors hover:bg-slate-50 dark:hover:bg-slate-800",
-                  pathname.startsWith("/stats")
-                    ? "text-teal-700 dark:text-teal-300"
-                    : "text-slate-700 dark:text-slate-200",
-                )}
-                onClick={closeMenu}
-              >
-                <span className="text-lg leading-none" aria-hidden>📊</span>
-                Stats
-              </Link>
-            )}
+            <Link
+              href="/stats"
+              role="menuitem"
+              aria-current={pathname.startsWith("/stats") ? "page" : undefined}
+              className={cn(
+                "mb-1 flex min-h-11 items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors hover:bg-slate-50 dark:hover:bg-slate-800",
+                pathname.startsWith("/stats")
+                  ? "text-teal-700 dark:text-teal-300"
+                  : "text-slate-700 dark:text-slate-200",
+              )}
+              onClick={closeMenu}
+            >
+              <span className="text-lg leading-none" aria-hidden>📊</span>
+              Stats
+            </Link>
 
             {inactiveProfiles.length > 0 && (
               <div>

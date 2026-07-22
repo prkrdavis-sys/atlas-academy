@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { isExploreRoute } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 
 const PLAY_MODE_ITEMS = [
@@ -11,7 +12,7 @@ const PLAY_MODE_ITEMS = [
 
 export function PlayModeSwitcher() {
   const pathname = usePathname();
-  const activeHref = pathname.startsWith("/extras") ? "/extras" : "/";
+  const activeHref = isExploreRoute(pathname) ? "/extras" : "/";
 
   return (
     <div
