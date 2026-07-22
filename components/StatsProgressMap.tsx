@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import Panzoom from "@panzoom/panzoom";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ContextMapSvg,
   loadContextMapTemplate,
@@ -168,6 +169,9 @@ export function StatsProgressMap({
   className,
   ariaLabel,
 }: StatsProgressMapProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<HTMLDivElement>(null);
+  const panzoomRef = useRef<ReturnType<typeof Panzoom> | null>(null);
   const { isDark, ready } = useIsDark();
   const [map, setMap] = useState<ParsedContextMap | null>(null);
   const [boundsManifest, setBoundsManifest] = useState<MapBoundsManifest | null>(null);
@@ -289,31 +293,87 @@ export function StatsProgressMap({
     };
   }, [templateKey]);
 
+  useEffect(() => {
+    const element = mapRef.current;
+    if (!element || !map || !ready) return;
+
+    panzoomRef.current?.destroy();
+    panzoomRef.current = Panzoom(element, {
+      maxScale: 16,
+      minScale: 1,
+      contain: "outside",
+      cursor: "grab",
+    });
+
+    const container = containerRef.current;
+    const onWheel = (event: WheelEvent) => {
+      if (!panzoomRef.current) return;
+      panzoomRef.current.zoomWithWheel(event);
+    };
+    container?.addEventListener("wheel", onWheel, { passive: false });
+
+    return () => {
+      container?.removeEventListener("wheel", onWheel);
+      panzoomRef.current?.destroy();
+      panzoomRef.current = null;
+    };
+  }, [map, ready, templateKey]);
+
   return (
     <>
       {showFillLegend && !compact && ready ? <MapProgressFillLegend isDark={isDark} /> : null}
       <div
+        ref={containerRef}
         className={cn(
-          "relative overflow-hidden rounded-2xl border border-teal-100 bg-sky-50 dark:border-teal-900/50 dark:bg-slate-950",
+          "relative overflow-hidden rounded-2xl border border-teal-100 bg-sky-50 touch-none dark:border-teal-900/50 dark:bg-slate-950",
           compact ? "aspect-[5/2] w-full min-h-[5.5rem]" : "aspect-[16/10] w-full",
           className,
         )}
       >
         {map && ready ? (
           <>
-            <ContextMapSvg
-              map={{ ...map, paths: visiblePaths }}
-              highlightIds={new Set()}
-              neighborIds={new Set()}
-              ariaLabel={ariaLabel}
-              isDark={isDark}
-              interactive
-              viewBox={focusedViewBox}
-              pathStyleResolver={pathStyleResolver}
-              onPathClick={handlePathClick}
-              onPathHover={setHoveredPathId}
-              onBackgroundClick={handleBackgroundClick}
-            />
+            <div ref={mapRef} className="h-full w-full origin-center">
+              <ContextMapSvg
+                map={{ ...map, paths: visiblePaths }}
+                highlightIds={new Set()}
+                neighborIds={new Set()}
+                ariaLabel={ariaLabel}
+                isDark={isDark}
+                interactive
+                viewBox={focusedViewBox}
+                pathStyleResolver={pathStyleResolver}
+                onPathClick={handlePathClick}
+                onPathHover={setHoveredPathId}
+                onBackgroundClick={handleBackgroundClick}
+              />
+            </div>
+            {!compact ? (
+              <div className="absolute right-2 top-2 z-10 flex items-center gap-1.5">
+                <button
+                  type="button"
+                  className="inline-flex min-h-9 min-w-9 items-center justify-center rounded-lg border border-slate-200 bg-white/95 px-2 text-sm font-black text-slate-700 shadow-sm backdrop-blur transition-colors hover:border-teal-400 hover:text-teal-700 dark:border-slate-600 dark:bg-slate-800/95 dark:text-slate-200 dark:hover:border-teal-500 dark:hover:text-teal-300"
+                  aria-label="Zoom out"
+                  onClick={() => panzoomRef.current?.zoomOut()}
+                >
+                  −
+                </button>
+                <button
+                  type="button"
+                  className="inline-flex min-h-9 min-w-9 items-center justify-center rounded-lg border border-slate-200 bg-white/95 px-2 text-sm font-black text-slate-700 shadow-sm backdrop-blur transition-colors hover:border-teal-400 hover:text-teal-700 dark:border-slate-600 dark:bg-slate-800/95 dark:text-slate-200 dark:hover:border-teal-500 dark:hover:text-teal-300"
+                  aria-label="Zoom in"
+                  onClick={() => panzoomRef.current?.zoomIn()}
+                >
+                  +
+                </button>
+                <button
+                  type="button"
+                  className="inline-flex items-center rounded-lg border border-slate-200 bg-white/95 px-3 py-2 text-xs font-bold text-slate-700 shadow-sm backdrop-blur transition-colors hover:border-teal-400 hover:text-teal-700 dark:border-slate-600 dark:bg-slate-800/95 dark:text-slate-200 dark:hover:border-teal-500 dark:hover:text-teal-300"
+                  onClick={() => panzoomRef.current?.reset()}
+                >
+                  Reset
+                </button>
+              </div>
+            ) : null}
             {hoverLabel ? (
               <div
                 className="pointer-events-none absolute bottom-2 left-2 rounded-lg bg-slate-900/85 px-2.5 py-1 text-xs font-semibold text-white shadow-sm"
