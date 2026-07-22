@@ -163,7 +163,7 @@ function MiniStatCard({ label, value, icon, progress, caption, tone, highlight }
   return (
     <div
       className={cn(
-        "relative rounded-xl border bg-gradient-to-br p-2.5 sm:p-3",
+        "relative overflow-hidden rounded-xl border bg-gradient-to-br p-3",
         toneStyles.shell,
         highlight && "ring-2 ring-inset ring-white/35",
       )}
@@ -172,8 +172,8 @@ function MiniStatCard({ label, value, icon, progress, caption, tone, highlight }
         aria-hidden
         className="pointer-events-none absolute -right-3 -top-3 size-12 rounded-full bg-white/10 blur-xl"
       />
-      <div className="relative min-w-0">
-        <div className="flex items-center justify-between gap-2">
+      <div className="relative flex min-w-0 flex-col gap-2">
+        <div className="flex min-w-0 items-start justify-between gap-2">
           <div className="flex min-w-0 items-center gap-1.5">
             <span
               className={cn(
@@ -184,21 +184,21 @@ function MiniStatCard({ label, value, icon, progress, caption, tone, highlight }
             >
               {icon}
             </span>
-            <p className="truncate text-[9px] font-bold uppercase tracking-[0.12em] text-white/75 sm:text-[10px]">
+            <p className="min-w-0 text-[9px] font-bold uppercase leading-tight tracking-[0.1em] text-white/75 sm:text-[10px]">
               {label}
             </p>
           </div>
-          <p className="shrink-0 font-display text-xl font-extrabold leading-none tabular-nums text-white sm:text-2xl">
+          <p className="shrink-0 font-display text-lg font-extrabold leading-none tabular-nums text-white sm:text-xl">
             {value}
           </p>
         </div>
-        <div className="relative mt-2 h-1.5 overflow-hidden rounded-full bg-black/15 sm:h-1.5">
+        <div className="relative h-1.5 overflow-hidden rounded-full bg-black/15">
           <div
             className={cn("h-full rounded-full transition-[width] duration-700 ease-out", toneStyles.bar)}
             style={{ width: `${Math.round(Math.min(Math.max(progress, 0), 1) * 100)}%` }}
           />
         </div>
-        <p className={cn("relative mt-1.5 truncate text-[10px] font-semibold leading-tight sm:text-[11px]", toneStyles.caption)}>
+        <p className={cn("min-w-0 text-[10px] font-semibold leading-snug sm:text-[11px]", toneStyles.caption)}>
           {caption}
         </p>
       </div>
@@ -286,14 +286,14 @@ export function HomeStreakHighlights({
                 emoji={streakTier.emoji}
                 level={streakTier.level}
               />
-              <div className="min-w-0 flex-1">
+              <div className="min-w-0 flex-1 overflow-hidden">
                 <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-white/70 lg:text-[9px]">
                   Live streak
                 </p>
-                <p className="mt-0.5 font-display text-lg font-extrabold leading-tight text-white sm:text-xl lg:text-base">
+                <p className="mt-0.5 truncate font-display text-lg font-extrabold leading-tight text-white sm:text-xl lg:text-base">
                   {streakTier.level > 0 ? streakTier.label : "Ready to roll"}
                 </p>
-                <p className="mt-1 text-[11px] font-semibold text-white/80 sm:text-xs lg:text-[10px]">
+                <p className="mt-1 text-[11px] font-semibold leading-snug text-white/80 sm:text-xs lg:text-[10px]">
                   {streakCaption}
                 </p>
               </div>
@@ -303,7 +303,7 @@ export function HomeStreakHighlights({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 p-2.5 sm:gap-2.5 sm:p-3 lg:grid-cols-1 lg:gap-2 lg:p-2.5">
+          <div className="grid grid-cols-1 gap-2 p-2.5 min-[420px]:grid-cols-2 sm:gap-2.5 sm:p-3 lg:grid-cols-1 lg:gap-2 lg:p-2.5">
             <MiniStatCard
               label="Best today"
               value={todayBest}

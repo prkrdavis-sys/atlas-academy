@@ -16,7 +16,13 @@ import {
 import { getStoredScope, SCOPE_INFO, scopeText, setStoredScope } from "@/lib/scope";
 import { getGlobalStreak, sortGameModesByMostPlayed } from "@/lib/stats-helpers";
 
+type StatsTab = "overview" | "achievements";
 type AchievementSort = "default" | "unlocked";
+
+const STATS_TABS: { id: StatsTab; label: string; icon: string }[] = [
+  { id: "overview", label: "Overview", icon: "📊" },
+  { id: "achievements", label: "Achievements", icon: "🏆" },
+];
 
 const ACHIEVEMENT_SORT_OPTIONS: { value: AchievementSort; label: string }[] = [
   { value: "default", label: "Default" },
@@ -102,6 +108,7 @@ function AchievementSortSelector({
 export default function StatsPage() {
   const { activeProfile, hydrated } = useProfiles();
   const profile = hydrated ? activeProfile : null;
+  const [activeTab, setActiveTab] = useState<StatsTab>("overview");
   const [difficulty, setDifficulty] = useState<Difficulty>("easy");
   const [achievementSort, setAchievementSort] = useState<AchievementSort>("default");
   const [scope, setScope] = useState<GameScope>("world");
@@ -160,9 +167,57 @@ export default function StatsPage() {
         <div>
           <h1 className="font-display text-2xl font-extrabold sm:text-3xl">Stats for {profile.name}</h1>
           <p className="mt-1 text-sm text-slate-600 dark:text-slate-400 sm:text-base">
-            Track your streaks and accuracy across all game modes for {scopeInfo.nounPlural}.
+            {activeTab === "overview"
+              ? `Track your streaks and accuracy across all game modes for ${scopeInfo.nounPlural}.`
+              : "Unlock badges by hitting streaks, trying modes, and exploring the atlas."}
           </p>
         </div>
+      </div>
+
+      <div
+        className="inline-flex rounded-2xl bg-slate-100 p-1 dark:bg-slate-800"
+        role="tablist"
+        aria-label="Stats sections"
+      >
+        {STATS_TABS.map((tab) => {
+          const active = activeTab === tab.id;
+          const tabLabel =
+            tab.id === "achievements"
+              ? `${tab.label} (${profile.achievements.length}/${ACHIEVEMENTS.length})`
+              : tab.label;
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              role="tab"
+              id={`stats-tab-${tab.id}`}
+              aria-selected={active}
+              aria-controls={`stats-panel-${tab.id}`}
+              onClick={() => setActiveTab(tab.id)}
+              className={cn(
+                "min-h-9 rounded-xl px-3 py-1.5 font-display text-sm font-extrabold transition-all sm:px-4",
+                active
+                  ? "bg-white text-teal-800 shadow-sm dark:bg-slate-900 dark:text-teal-300"
+                  : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100",
+              )}
+            >
+              <span className="mr-1.5" aria-hidden>
+                {tab.icon}
+              </span>
+              {tabLabel}
+            </button>
+          );
+        })}
+      </div>
+
+      {activeTab === "overview" ? (
+        <div
+          id="stats-panel-overview"
+          role="tabpanel"
+          aria-labelledby="stats-tab-overview"
+          className="space-y-5 sm:space-y-8"
+        >
+      <div className="flex flex-wrap items-center justify-end gap-4">
         <div
           className="inline-flex rounded-2xl bg-slate-100 p-1 dark:bg-slate-800"
           role="group"
@@ -314,47 +369,61 @@ export default function StatsPage() {
           </table>
         </div>
       </section>
-
-      <section className="rounded-[1.75rem] border-2 border-slate-200 bg-white/90 shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90">
-        <div className="border-b border-slate-200 bg-white px-4 py-4 dark:border-slate-700 dark:bg-slate-900 sm:px-6 sm:py-5">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h2 className="font-display text-base font-extrabold text-slate-800 dark:text-slate-100 sm:font-semibold">Achievements</h2>
-              <p className="mt-0.5 text-xs text-slate-600 dark:text-slate-400 sm:text-sm">
-                {profile.achievements.length} / {ACHIEVEMENTS.length} unlocked
-              </p>
+        </div>
+      ) : (
+        <section
+          id="stats-panel-achievements"
+          role="tabpanel"
+          aria-labelledby="stats-tab-achievements"
+          className="rounded-[1.75rem] border-2 border-slate-200 bg-white/90 shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90"
+        >
+          <div className="border-b border-slate-200 bg-white px-4 py-4 dark:border-slate-700 dark:bg-slate-900 sm:px-6 sm:py-5">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h2 className="font-display text-base font-extrabold text-slate-800 dark:text-slate-100 sm:text-lg">
+                  Achievements
+                </h2>
+                <p className="mt-0.5 text-xs text-slate-600 dark:text-slate-400 sm:text-sm">
+                  {profile.achievements.length} / {ACHIEVEMENTS.length} unlocked
+                </p>
+              </div>
+              <AchievementSortSelector
+                value={achievementSort}
+                onChange={setAchievementSort}
+                className="sm:max-w-xs sm:flex-1"
+              />
             </div>
-            <AchievementSortSelector
-              value={achievementSort}
-              onChange={setAchievementSort}
-              className="sm:max-w-xs sm:flex-1"
-            />
+            <p className="mt-3 text-xs text-slate-500 dark:text-slate-400 sm:mt-4 sm:text-sm">
+              Achievements count progress across all difficulties.
+            </p>
           </div>
-          <p className="mt-3 text-xs text-slate-500 dark:text-slate-400 sm:mt-4 sm:text-sm">
-            Achievements count progress across all difficulties.
-          </p>
-        </div>
-        <div className="px-4 pb-4 pt-4 sm:px-6 sm:pb-6 sm:pt-5">
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3 lg:grid-cols-3">
-            {sortedAchievements.map((achievement) => {
-              const earned = profile.achievements.includes(achievement.id);
-              return (
-                <div
-                  key={achievement.id}
-                  className={`rounded-xl border px-3.5 py-3 sm:px-4 ${earned ? "border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/50" : "border-slate-200 bg-slate-50 opacity-60 dark:border-slate-700 dark:bg-slate-800"}`}
-                >
-                  <p className="text-sm font-medium leading-snug sm:text-base">
-                    {earned ? "🏆" : "🔒"} {achievement.title}
-                  </p>
-                  <p className="mt-0.5 text-xs leading-relaxed text-slate-600 dark:text-slate-400 sm:mt-1 sm:text-sm">
-                    {achievement.description}
-                  </p>
-                </div>
-              );
-            })}
+          <div className="px-4 pb-4 pt-4 sm:px-6 sm:pb-6 sm:pt-5">
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3 lg:grid-cols-3">
+              {sortedAchievements.map((achievement) => {
+                const earned = profile.achievements.includes(achievement.id);
+                return (
+                  <div
+                    key={achievement.id}
+                    className={cn(
+                      "rounded-xl border px-3.5 py-3 sm:px-4",
+                      earned
+                        ? "border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/50"
+                        : "border-slate-200 bg-slate-50 opacity-60 dark:border-slate-700 dark:bg-slate-800",
+                    )}
+                  >
+                    <p className="text-sm font-medium leading-snug sm:text-base">
+                      {earned ? "🏆" : "🔒"} {achievement.title}
+                    </p>
+                    <p className="mt-0.5 text-xs leading-relaxed text-slate-600 dark:text-slate-400 sm:mt-1 sm:text-sm">
+                      {achievement.description}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
     </div>
   );
 }

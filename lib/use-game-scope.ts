@@ -1,7 +1,8 @@
 "use client";
 
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type RefObject } from "react";
-import { getStoredScope, setStoredScope } from "@/lib/scope";
+import { getStoredScope, normalizeScope, setStoredScope } from "@/lib/scope";
 import type { GameScope } from "@/lib/types";
 
 type UseGameScopeOptions = {
@@ -54,4 +55,40 @@ export function useGameScope(options: UseGameScopeOptions = {}) {
   }, [scope, layoutAnchorRef]);
 
   return { scope, setScope, selectScope };
+}
+
+/**
+ * Resolves play scope from ?scope= or localStorage, canonicalizing the URL when
+ * USA is stored but the query param is missing. Returns null until resolved.
+ */
+export function useResolvedGameScope(): GameScope | null {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const [scope, setScope] = useState<GameScope | null>(null);
+
+  useEffect(() => {
+    const scopeParam = searchParams.get("scope");
+    if (scopeParam !== null) {
+      const next = normalizeScope(scopeParam);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setScope(next);
+      setStoredScope(next);
+      return;
+    }
+
+    const stored = getStoredScope();
+    if (stored === "usa") {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("scope", "usa");
+      router.replace(`${pathname}?${params.toString()}`);
+      return;
+    }
+
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setScope("world");
+    setStoredScope("world");
+  }, [searchParams, router, pathname]);
+
+  return scope;
 }

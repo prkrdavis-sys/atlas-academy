@@ -6,6 +6,7 @@ import {
 import type { MapPathStyle } from "@/lib/map-colors";
 import { getProgressPathStyle } from "@/lib/map-colors";
 import type {
+  GameMode,
   GameScope,
   MapProgressCategory,
   MapProgressDifficulty,
@@ -16,21 +17,29 @@ import type {
 } from "@/lib/types";
 import { MAP_PROGRESS_CATEGORIES } from "@/lib/types";
 
+/** Both flag quiz modes share one map-progress category. */
+export const FLAG_MAP_PROGRESS_MODES = ["flag-to-country", "country-to-flag"] as const satisfies readonly GameMode[];
+
 export const MAP_PROGRESS_CATEGORY_INFO: Record<
   MapProgressCategory,
-  { label: string; icon: string }
+  { label: string; icon: string; modes?: readonly GameMode[] }
 > = {
-  flag: { label: "Flag", icon: "🏳️" },
+  flag: {
+    label: "Flag",
+    icon: "🏳️",
+    modes: FLAG_MAP_PROGRESS_MODES,
+  },
   shape: { label: "Shape", icon: "🗺️" },
   capital: { label: "Capital", icon: "📍" },
   trivia: { label: "Trivia", icon: "💡" },
 };
 
-export function resolveMapProgressCategory(question: Question): MapProgressCategory | null {
-  switch (question.mode) {
-    case "flag-to-country":
-    case "country-to-flag":
-      return "flag";
+function resolveMapProgressCategoryFromGameMode(mode: GameMode): MapProgressCategory | null {
+  if ((FLAG_MAP_PROGRESS_MODES as readonly GameMode[]).includes(mode)) {
+    return "flag";
+  }
+
+  switch (mode) {
     case "shape-to-country":
       return "shape";
     case "capital-to-country":
@@ -39,8 +48,16 @@ export function resolveMapProgressCategory(question: Question): MapProgressCateg
     case "fact-to-country":
       return "trivia";
     default:
-      break;
+      return null;
   }
+}
+
+export function resolveMapProgressCategory(
+  question: Question,
+  statsMode?: GameMode,
+): MapProgressCategory | null {
+  const fromQuestion = resolveMapProgressCategoryFromGameMode(question.mode);
+  if (fromQuestion) return fromQuestion;
 
   switch (question.displayType) {
     case "flag":
@@ -51,8 +68,14 @@ export function resolveMapProgressCategory(question: Question): MapProgressCateg
     case "capital":
       return "capital";
     default:
-      return null;
+      break;
   }
+
+  if (statsMode) {
+    return resolveMapProgressCategoryFromGameMode(statsMode);
+  }
+
+  return null;
 }
 
 export function getPlaceMasteryLevel(

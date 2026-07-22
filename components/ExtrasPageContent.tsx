@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useProfiles } from "@/components/ProfileProvider";
 import { getCommonlyMissedCountries } from "@/lib/stats-helpers";
+import { scopeQuery } from "@/lib/scope";
 import { useGameScope } from "@/lib/use-game-scope";
 
 const LIBRARY_FEATURES = [
@@ -47,7 +48,7 @@ export function ExtrasPageContent() {
 
       {weakSpotCount > 0 ? (
         <Link
-          href="/play/setup/weak-spots"
+          href={`/play/setup/weak-spots${scopeQuery(scope)}`}
           className="group flex items-center gap-4 rounded-2xl border-2 border-rose-200 bg-rose-50/80 p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:border-rose-400 hover:shadow-md dark:border-rose-800 dark:bg-rose-950/50 dark:hover:border-rose-600"
         >
           <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-rose-100 text-2xl dark:bg-rose-900/60">

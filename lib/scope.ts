@@ -47,6 +47,14 @@ export function normalizeScope(value: string | null | undefined): GameScope {
   return value === "usa" ? "usa" : "world";
 }
 
+/** Prefer an explicit ?scope= query param; otherwise use persisted play scope. */
+export function resolveGameScope(scopeParam: string | null | undefined): GameScope {
+  if (scopeParam != null) {
+    return normalizeScope(scopeParam);
+  }
+  return getStoredScope();
+}
+
 export function getStoredScope(): GameScope {
   if (typeof window === "undefined") return "world";
   return normalizeScope(localStorage.getItem(SCOPE_STORAGE_KEY));

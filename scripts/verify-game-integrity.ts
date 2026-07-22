@@ -8,6 +8,7 @@
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { GameEngine } from "../lib/game-engine";
+import { resolveMapProgressCategory } from "../lib/map-progress";
 import { normalizeAnswerText } from "../lib/answer-matcher";
 import { countries, getCountryByCode, usStates } from "../lib/countries";
 import { CONTEXT_MAP_TEMPLATES } from "../lib/context-maps";
@@ -192,6 +193,36 @@ for (const c of [...countries, ...usStates].filter((x) => x.hasFlag)) {
     };
     if (!nameEngine.checkAnswer(qc, c.capital)) fail(`type-in capital: "${c.capital}" rejected for ${c.name}`);
   }
+}
+
+// Map progress category resolution
+const flagToCountryQuestion: Question = {
+  id: "flag-to-country",
+  mode: "flag-to-country",
+  countryCode: "FR",
+  prompt: "",
+  correctAnswer: "France",
+  correctCode: "FR",
+  displayType: "flag",
+};
+const countryToFlagQuestion: Question = {
+  id: "country-to-flag",
+  mode: "country-to-flag",
+  countryCode: "FR",
+  prompt: "",
+  correctAnswer: "FR",
+  correctCode: "FR",
+  displayType: "flags-grid",
+};
+
+if (resolveMapProgressCategory(flagToCountryQuestion) !== "flag") {
+  fail("Countries from flags should count toward Flag map progress");
+}
+if (resolveMapProgressCategory(countryToFlagQuestion) !== "flag") {
+  fail("Flags from countries should count toward Flag map progress");
+}
+if (resolveMapProgressCategory(countryToFlagQuestion, "country-to-flag") !== "flag") {
+  fail("Flags from countries stats mode should count toward Flag map progress");
 }
 
 console.log(`Checked ${questionsChecked} generated questions across ${MODES.length} modes.`);

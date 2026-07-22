@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { GameBoard } from "@/components/GameBoard";
 import { QuickStartOverlay } from "@/components/QuickStartOverlay";
 import { useProfiles, useRequiredProfile } from "@/components/ProfileProvider";
@@ -20,9 +20,10 @@ import {
   hasCompletedDailyToday,
   hasPlayedDailyToday,
 } from "@/lib/game-engine";
-import { getScopedModeInfo, normalizeScope, scopedDailyKey, scopeQuery } from "@/lib/scope";
+import { getScopedModeInfo, scopedDailyKey, scopeQuery } from "@/lib/scope";
 import { getCommonlyMissedCountries } from "@/lib/stats-helpers";
 import { recordModeSelection, updateProfileSettings } from "@/lib/storage";
+import { useResolvedGameScope } from "@/lib/use-game-scope";
 import {
   CONTINENTS,
   DAILY_CHALLENGE_QUESTION_COUNT,
@@ -43,7 +44,7 @@ function PlayPageInner() {
   const { refresh } = useProfiles();
   const profile = useRequiredProfile();
   const requestedMode = params.mode as GameMode;
-  const scope = normalizeScope(useSearchParams().get("scope"));
+  const scope = useResolvedGameScope();
   const isUsa = scope === "usa";
 
   const resolved = resolvePlayConfig(
@@ -52,33 +53,38 @@ function PlayPageInner() {
       settings: { ...profile.settings, lastSelectedMode: requestedMode },
     },
     requestedMode,
-    scope,
+    scope ?? "world",
   );
   const mode = resolved.mode;
   const challengeModifier = resolved.challengeModifier;
-  const modeInfo = getScopedModeInfo(mode, scope);
-  const draft = createSetupDraftFromProfile(profile, mode, scope);
+  const modeInfo = scope ? getScopedModeInfo(mode, scope) : undefined;
+  const draft = createSetupDraftFromProfile(profile, mode, scope ?? "world");
   const activeChallengeModifier = isChallengeModifierActive(challengeModifier)
     ? challengeModifier
     : draft.challengeModifier;
 
   const isDailyChallenge = requestedMode === "daily-challenge";
   const dailyDateLabel = isDailyChallenge ? formatDailyDate() : null;
-  const dailyCompletedToday = isDailyChallenge
-    ? hasCompletedDailyToday(profile.dailyChallengeCompletions, scope)
-    : false;
-  const dailyRun = isDailyChallenge
-    ? getDailyChallengeRun(profile.dailyChallengeCompletions, scope)
-    : 0;
+  const dailyCompletedToday =
+    isDailyChallenge && scope
+      ? hasCompletedDailyToday(profile.dailyChallengeCompletions, scope)
+      : false;
+  const dailyRun =
+    isDailyChallenge && scope
+      ? getDailyChallengeRun(profile.dailyChallengeCompletions, scope)
+      : 0;
   const dailyContinents: Region[] = isUsa ? [...US_REGIONS] : [...CONTINENTS];
   const dailyDifficulty: Difficulty = "medium";
 
   const weakSpotCodes =
-    mode === "weak-spots" ? getCommonlyMissedCountries(profile, scope) : undefined;
+    mode === "weak-spots" && scope
+      ? getCommonlyMissedCountries(profile, scope)
+      : undefined;
 
-  const availableCountryCount = modeInfo
-    ? getPlayablePoolForDraft(profile, { ...draft, mode, challengeModifier: activeChallengeModifier }, scope)
-    : 0;
+  const availableCountryCount =
+    modeInfo && scope
+      ? getPlayablePoolForDraft(profile, { ...draft, mode, challengeModifier: activeChallengeModifier }, scope)
+      : 0;
   const effectiveRoundQuestionCount = clampRoundQuestionSetting(
     draft.roundQuestionCount,
     availableCountryCount,
@@ -91,13 +97,15 @@ function PlayPageInner() {
   const autoStartedRef = useRef(false);
 
   useEffect(() => {
+    if (!scope) return;
     if (requestedMode !== mode && requestedMode === "weak-spots") {
       router.replace(`/play/${mode}${scopeQuery(scope)}?autostart=1`);
     }
   }, [requestedMode, mode, router, scope]);
 
-  /* eslint-disable react-hooks/set-state-in-effect -- one-time game bootstrap on mount */
+  /* eslint-disable react-hooks/set-state-in-effect -- game bootstrap after scope resolves */
   useLayoutEffect(() => {
+    if (!scope) return;
     if (autoStartedRef.current || started) return;
     if (!modeInfo) return;
     if (mode === "weak-spots" && !weakSpotCodes?.length) return;
@@ -128,8 +136,7 @@ function PlayPageInner() {
     setSessionKey((key) => key + 1);
     setStarted(true);
     setShowOverlay(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- bootstrap game once on mount
-  }, []);
+  }, [scope]);
   /* eslint-enable react-hooks/set-state-in-effect */
 
   function handlePlayAgain() {
@@ -139,6 +146,14 @@ function PlayPageInner() {
 
   if (!modeInfo && !isDailyChallenge) {
     return <p>Unknown game mode.</p>;
+  }
+
+  if (!started || !scope) {
+    return (
+      <div className="flex h-full min-h-0 items-center justify-center pt-[max(0.75rem,env(safe-area-inset-top,0px))] sm:pt-5">
+        <p className="text-sm text-slate-500 dark:text-slate-400">Starting game…</p>
+      </div>
+    );
   }
 
   const challengeActive = isChallengeModifierActive(activeChallengeModifier);
@@ -162,14 +177,6 @@ function PlayPageInner() {
     countStats: isDailyChallenge ? countStats : true,
     interactionLocked: showOverlay,
   };
-
-  if (!started) {
-    return (
-      <div className="flex h-full min-h-0 items-center justify-center pt-[max(0.75rem,env(safe-area-inset-top,0px))] sm:pt-5">
-        <p className="text-sm text-slate-500 dark:text-slate-400">Starting game…</p>
-      </div>
-    );
-  }
 
   return (
     <div className="relative flex h-full min-h-0 flex-col pt-[max(0.75rem,env(safe-area-inset-top,0px))] sm:pt-5">

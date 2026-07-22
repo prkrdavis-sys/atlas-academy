@@ -468,7 +468,7 @@ export function recordAnswer(
       (difficulty === "medium" || difficulty === "hard") &&
       question
     ) {
-      const category = resolveMapProgressCategory(question);
+      const category = resolveMapProgressCategory(question, mode);
       if (category) {
         recordPlaceMapProgress(profile, countryCode, difficulty, category);
       }

@@ -96,7 +96,7 @@ export function StatsMapProgressSection({ profile, scope }: StatsMapProgressSect
           Answer correctly in <strong className="font-semibold text-slate-800 dark:text-slate-200">Normal</strong> or{" "}
           <strong className="font-semibold text-slate-800 dark:text-slate-200">Hard</strong> mode (not Practice) to fill
           each {scopeInfo.noun.toLowerCase()}. Master all four categories —{" "}
-          <strong className="font-semibold text-slate-800 dark:text-slate-200">Flag</strong>,{" "}
+          <strong className="font-semibold text-slate-800 dark:text-slate-200">Flag</strong> (Countries from flags or Flags from countries),{" "}
           <strong className="font-semibold text-slate-800 dark:text-slate-200">Shape</strong>,{" "}
           <strong className="font-semibold text-slate-800 dark:text-slate-200">Capital</strong>, and{" "}
           <strong className="font-semibold text-slate-800 dark:text-slate-200">Trivia</strong> — to fully complete a{" "}

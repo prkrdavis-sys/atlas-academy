@@ -12,9 +12,10 @@ import {
   createSetupDraftFromProfile,
   getPlayablePoolForDraft,
 } from "@/lib/game-setup";
-import { getScopedModeInfo, normalizeScope, scopeQuery, scopeText, SCOPE_INFO } from "@/lib/scope";
+import { getScopedModeInfo, scopeQuery, scopeText, SCOPE_INFO } from "@/lib/scope";
 import { getCommonlyMissedCountries } from "@/lib/stats-helpers";
 import { recordModeSelection, updateProfileSettings } from "@/lib/storage";
+import { useResolvedGameScope } from "@/lib/use-game-scope";
 import { clampRoundQuestionSetting, type ChallengeModifier, type GameMode } from "@/lib/types";
 import { subtleBackLinkClass } from "@/lib/utils";
 
@@ -27,23 +28,28 @@ export function GameModeSettingsPageContent({ mode }: GameModeSettingsPageConten
   const searchParams = useSearchParams();
   const { refresh } = useProfiles();
   const profile = useRequiredProfile();
-  const scope = normalizeScope(searchParams.get("scope"));
-  const scopeInfo = SCOPE_INFO[scope];
-  const modeInfo = getScopedModeInfo(mode, scope);
+  const scope = useResolvedGameScope();
+  const scopeInfo = scope ? SCOPE_INFO[scope] : null;
+  const modeInfo = scope ? getScopedModeInfo(mode, scope) : undefined;
 
-  const [draft, setDraft] = useState<GameSetupDraft>(() => {
-    const initial = createSetupDraftFromProfile(profile, mode, scope);
-    const modifierParam = searchParams.get("modifier");
-    if (modifierParam === "speed-round" || modifierParam === "marathon") {
-      return { ...initial, challengeModifier: modifierParam };
-    }
-    return initial;
-  });
-  const draftRef = useRef(draft);
+  const [draft, setDraft] = useState<GameSetupDraft | null>(null);
+  const draftRef = useRef<GameSetupDraft | null>(null);
   const [startBarPinned, setStartBarPinned] = useState(false);
   const [startBarHeight, setStartBarHeight] = useState(0);
   const startBarRef = useRef<HTMLDivElement>(null);
   const pageHeaderRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!scope) return;
+    const initial = createSetupDraftFromProfile(profile, mode, scope);
+    const modifierParam = searchParams.get("modifier");
+    const nextDraft: GameSetupDraft =
+      modifierParam === "speed-round" || modifierParam === "marathon"
+        ? { ...initial, challengeModifier: modifierParam }
+        : initial;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setDraft(nextDraft);
+  }, [profile, mode, scope, searchParams]);
 
   useEffect(() => {
     draftRef.current = draft;
@@ -80,6 +86,7 @@ export function GameModeSettingsPageContent({ mode }: GameModeSettingsPageConten
 
   const persistCurrentDraft = () => {
     const current = draftRef.current;
+    if (!current || !scope) return;
     const poolSize = getPlayablePoolForDraft(profile, current, scope);
     const patch = buildSettingsPatch(current, scope, poolSize);
     updateProfileSettings(profile.id, patch);
@@ -88,6 +95,7 @@ export function GameModeSettingsPageContent({ mode }: GameModeSettingsPageConten
   };
 
   useEffect(() => {
+    if (!scope) return;
     return () => {
       persistCurrentDraft();
     };
@@ -95,11 +103,20 @@ export function GameModeSettingsPageContent({ mode }: GameModeSettingsPageConten
   }, [profile.id, scope]);
 
   useEffect(() => {
+    if (!scope) return;
     const handleBeforeUnload = () => persistCurrentDraft();
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- save draft snapshot on tab close
   }, [profile.id, scope]);
+
+  if (!scope || !draft) {
+    return (
+      <div className="space-y-4">
+        <p className="text-sm text-slate-500 dark:text-slate-400">Loading settings…</p>
+      </div>
+    );
+  }
 
   const normalizedDraft = {
     ...draft,
@@ -130,11 +147,11 @@ export function GameModeSettingsPageContent({ mode }: GameModeSettingsPageConten
     router.push(`/play/${mode}${scopeQuery(scope)}?autostart=1`);
   };
 
-  if (!modeInfo) {
+  if (!modeInfo || !scopeInfo) {
     return (
       <div className="space-y-4">
         <p>Unknown game mode.</p>
-        <Link href={setupBackHref} className="text-sm font-semibold text-teal-700 dark:text-teal-400">
+        <Link href={`/play/setup${scopeQuery(scope)}`} className="text-sm font-semibold text-teal-700 dark:text-teal-400">
           ← Back to modes
         </Link>
       </div>
@@ -218,15 +235,19 @@ export function GameModeSettingsPageContent({ mode }: GameModeSettingsPageConten
           availableCountryCount={availableCountryCount}
           weakSpotWarning={normalizedDraft.mode === "weak-spots" && !weakSpotCodes?.length}
           onChallengeModifierChange={(challengeModifier: ChallengeModifier) =>
-            setDraft((current) => ({ ...current, challengeModifier }))
+            setDraft((current) => (current ? { ...current, challengeModifier } : current))
           }
-          onContinentsChange={(continents) => setDraft((current) => ({ ...current, continents }))}
+          onContinentsChange={(continents) =>
+            setDraft((current) => (current ? { ...current, continents } : current))
+          }
           onIncludeTerritoriesChange={(includeTerritories) =>
-            setDraft((current) => ({ ...current, includeTerritories }))
+            setDraft((current) => (current ? { ...current, includeTerritories } : current))
           }
-          onDifficultyChange={(difficulty) => setDraft((current) => ({ ...current, difficulty }))}
+          onDifficultyChange={(difficulty) =>
+            setDraft((current) => (current ? { ...current, difficulty } : current))
+          }
           onRoundQuestionCountChange={(roundQuestionCount) =>
-            setDraft((current) => ({ ...current, roundQuestionCount }))
+            setDraft((current) => (current ? { ...current, roundQuestionCount } : current))
           }
         />
       </section>
