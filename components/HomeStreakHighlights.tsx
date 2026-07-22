@@ -49,33 +49,154 @@ function formatMotivation({
   return "Every correct answer builds your streak.";
 }
 
-type HeroStatCellProps = {
-  label: string;
-  value: number | string;
-  suffix?: string;
-  icon: string;
-  highlight?: boolean;
+function getTierProgress(streak: number): number {
+  if (streak <= 0) return 0;
+  const inTier = streak % 5;
+  return (inTier === 0 ? 5 : inTier) / 5;
+}
+
+function getTierSurfaceClass(level: number): string {
+  if (level >= 8) {
+    return "from-rose-500/30 via-orange-500/25 to-amber-400/20 shadow-[0_0_28px_rgb(244_63_94_/_0.35)]";
+  }
+  if (level >= 5) {
+    return "from-orange-500/30 via-amber-500/25 to-yellow-400/15 shadow-[0_0_24px_rgb(249_115_22_/_0.3)]";
+  }
+  if (level >= 2) {
+    return "from-amber-400/30 via-orange-400/20 to-yellow-300/15 shadow-[0_0_20px_rgb(251_191_36_/_0.28)]";
+  }
+  if (level >= 1) {
+    return "from-amber-300/25 via-orange-300/15 to-white/10 shadow-[0_0_16px_rgb(251_191_36_/_0.22)]";
+  }
+  return "from-white/20 via-white/10 to-white/5 shadow-[0_0_12px_rgb(255_255_255_/_0.12)]";
+}
+
+function getRingColors(level: number): { track: string; fill: string } {
+  if (level >= 8) return { track: "stroke-rose-200/35", fill: "stroke-rose-300" };
+  if (level >= 5) return { track: "stroke-orange-200/35", fill: "stroke-orange-300" };
+  if (level >= 2) return { track: "stroke-amber-200/35", fill: "stroke-amber-300" };
+  if (level >= 1) return { track: "stroke-amber-100/35", fill: "stroke-amber-200" };
+  return { track: "stroke-white/25", fill: "stroke-white/70" };
+}
+
+type StreakRingProps = {
+  value: number;
+  progress: number;
+  emoji: string;
+  level: number;
 };
 
-function HeroStatCell({ label, value, suffix, icon, highlight }: HeroStatCellProps) {
+function StreakRing({ value, progress, emoji, level }: StreakRingProps) {
+  const size = 72;
+  const stroke = 5;
+  const radius = (size - stroke) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference * (1 - progress);
+  const { track, fill } = getRingColors(level);
+
   return (
     <div
       className={cn(
-        "flex flex-col items-center px-2 py-3 text-center sm:px-3 sm:py-3.5 lg:px-1.5 lg:py-2",
-        highlight && "bg-amber-400/20",
+        "relative size-[4.5rem] shrink-0 lg:size-14",
+        level > 0 && "animate-[pulse_3s_ease-in-out_infinite]",
       )}
     >
-      <span className="text-base leading-none sm:text-lg lg:text-sm" aria-hidden>
-        {icon}
-      </span>
-      <p className="mt-1.5 text-[9px] font-bold uppercase tracking-wider text-emerald-50/80 lg:mt-1 lg:text-[8px]">
+      <svg viewBox={`0 0 ${size} ${size}`} className="-rotate-90 size-full" aria-hidden>
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          strokeWidth={stroke}
+          className={track}
+        />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          strokeWidth={stroke}
+          strokeLinecap="round"
+          className={cn(fill, "transition-[stroke-dashoffset] duration-700 ease-out")}
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+        />
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <span className="text-xl leading-none lg:text-base" aria-hidden>
+          {emoji}
+        </span>
+        <span className="mt-1 font-display text-2xl font-extrabold leading-none tabular-nums text-white lg:mt-0.5 lg:text-lg">
+          {value}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+type MiniStatCardProps = {
+  label: string;
+  value: number | string;
+  icon: string;
+  progress: number;
+  caption: string;
+  tone: "amber" | "violet";
+  highlight?: boolean;
+};
+
+function MiniStatCard({ label, value, icon, progress, caption, tone, highlight }: MiniStatCardProps) {
+  const toneStyles =
+    tone === "amber"
+      ? {
+          shell: "from-amber-400/25 via-orange-400/15 to-white/5 border-amber-200/30",
+          badge: "bg-amber-300/25 text-amber-100 ring-amber-200/40",
+          bar: "bg-gradient-to-r from-amber-300 via-yellow-200 to-orange-300",
+          caption: "text-amber-100/80",
+        }
+      : {
+          shell: "from-violet-400/25 via-fuchsia-400/15 to-white/5 border-violet-200/30",
+          badge: "bg-violet-300/25 text-violet-100 ring-violet-200/40",
+          bar: "bg-gradient-to-r from-violet-300 via-fuchsia-200 to-amber-200",
+          caption: "text-violet-100/80",
+        };
+
+  return (
+    <div
+      className={cn(
+        "relative overflow-hidden rounded-xl border bg-gradient-to-br p-2.5 sm:p-3 lg:p-2",
+        toneStyles.shell,
+        highlight && "ring-2 ring-inset ring-white/35",
+      )}
+    >
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -right-3 -top-3 size-12 rounded-full bg-white/10 blur-xl"
+      />
+      <div className="relative flex items-start justify-between gap-1">
+        <span
+          className={cn(
+            "inline-flex size-7 shrink-0 items-center justify-center rounded-full text-sm ring-1 sm:size-8 sm:text-base lg:size-7 lg:text-sm",
+            toneStyles.badge,
+          )}
+          aria-hidden
+        >
+          {icon}
+        </span>
+        <p className="font-display text-2xl font-extrabold leading-none tabular-nums text-white sm:text-3xl lg:text-xl">
+          {value}
+        </p>
+      </div>
+      <p className="relative mt-2 text-[9px] font-bold uppercase tracking-[0.14em] text-white/75 sm:text-[10px] lg:text-[8px]">
         {label}
       </p>
-      <p className="mt-0.5 font-display text-xl font-extrabold leading-none text-white tabular-nums sm:text-2xl lg:text-base">
-        {value}
-        {suffix ? (
-          <span className="ml-0.5 text-[10px] font-bold text-emerald-50/75 lg:text-[9px]">{suffix}</span>
-        ) : null}
+      <div className="relative mt-2 h-1.5 overflow-hidden rounded-full bg-black/15 lg:mt-1.5 lg:h-1">
+        <div
+          className={cn("h-full rounded-full transition-[width] duration-700 ease-out", toneStyles.bar)}
+          style={{ width: `${Math.round(Math.min(Math.max(progress, 0), 1) * 100)}%` }}
+        />
+      </div>
+      <p className={cn("relative mt-1.5 text-[10px] font-semibold leading-tight lg:mt-1 lg:text-[9px]", toneStyles.caption)}>
+        {caption}
       </p>
     </div>
   );
@@ -92,6 +213,7 @@ export function HomeStreakHighlights({
 }: HomeStreakHighlightsProps) {
   const { currentStreak, bestStreak } = streak;
   const streakTier = getStreakTier(currentStreak);
+  const tierProgress = getTierProgress(currentStreak);
   const chasingTodayBest =
     storedTodayBest > 0 && currentStreak > 0 && currentStreak < storedTodayBest;
   const beatTodayBest = storedTodayBest > 0 && currentStreak > storedTodayBest;
@@ -105,53 +227,95 @@ export function HomeStreakHighlights({
     todayBest,
   });
 
+  const answersToNextTier =
+    currentStreak <= 0 ? 5 : currentStreak % 5 === 0 ? 5 : 5 - (currentStreak % 5);
+
+  const streakCaption =
+    currentStreak <= 0
+      ? "Answer 5 in a row to heat up"
+      : streakTier.level >= 10
+        ? "Legendary pace"
+        : `${answersToNextTier} more to level up`;
+
+  const todayProgress =
+    storedTodayBest > 0 ? Math.min(currentStreak / storedTodayBest, 1) : currentStreak > 0 ? 1 : 0;
+
+  const todayCaption = beatTodayBest
+    ? "New best today!"
+    : chasingTodayBest
+      ? `${storedTodayBest - currentStreak} away`
+      : todayBest > 0
+        ? "Today's peak"
+        : "Set the bar";
+
+  const allTimeProgress = bestStreak > 0 ? Math.min(currentStreak / bestStreak, 1) : 0;
+
+  const allTimeCaption =
+    bestStreak <= 0
+      ? "No record yet"
+      : currentStreak >= bestStreak
+        ? "Tied or beating it"
+        : `${bestStreak - currentStreak} from your best`;
+
   return (
     <div className={cn("w-full", className)}>
       <Link
         href={href}
         className="group block w-full transition-transform hover:scale-[1.01] active:scale-[0.99] lg:hover:scale-100 lg:active:scale-100"
-        aria-label={`View stats. Current streak ${currentStreak}, best today ${todayBest}, daily challenge run ${dailyRun} days, all-time best ${bestStreak}`}
+        aria-label={`View stats. Current streak ${currentStreak}, best today ${todayBest}, all-time best ${bestStreak}`}
       >
-        <div className="overflow-hidden rounded-2xl border border-white/30 bg-white/10 shadow-[0_8px_32px_rgb(0_0_0_/_0.18)] backdrop-blur-md lg:rounded-xl lg:shadow-[0_4px_16px_rgb(0_0_0_/_0.14)]">
+        <div className="overflow-hidden rounded-[1.35rem] border border-white/25 bg-black/10 shadow-[0_10px_40px_rgb(0_0_0_/_0.22)] backdrop-blur-xl lg:rounded-2xl">
           <div
             className={cn(
-              "flex items-center gap-3 border-b border-white/20 bg-white px-4 py-3.5 sm:gap-4 sm:px-5 sm:py-4 lg:gap-2.5 lg:px-3 lg:py-2.5",
-              streakTier.level > 0 && "ring-2 ring-inset ring-amber-300/50",
+              "relative overflow-hidden bg-gradient-to-br px-4 py-4 sm:px-5 sm:py-5 lg:px-3 lg:py-3.5",
+              getTierSurfaceClass(streakTier.level),
             )}
           >
-            <span className="text-2xl leading-none sm:text-3xl lg:text-xl" aria-hidden>
-              {streakTier.emoji}
-            </span>
-            <div className="min-w-0 flex-1">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 lg:text-[9px]">
-                {streakTier.level > 0 ? streakTier.label : "Current streak"}
-              </p>
-              <p className="font-display text-3xl font-extrabold leading-none text-slate-900 sm:text-4xl lg:text-2xl">
-                {currentStreak}
-              </p>
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgb(255_255_255_/_0.22),transparent_55%)]"
+            />
+            <div className="relative flex items-center gap-3 sm:gap-4 lg:gap-2.5">
+              <StreakRing
+                value={currentStreak}
+                progress={tierProgress}
+                emoji={streakTier.emoji}
+                level={streakTier.level}
+              />
+              <div className="min-w-0 flex-1">
+                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-white/70 lg:text-[9px]">
+                  Live streak
+                </p>
+                <p className="mt-0.5 font-display text-lg font-extrabold leading-tight text-white sm:text-xl lg:text-base">
+                  {streakTier.level > 0 ? streakTier.label : "Ready to roll"}
+                </p>
+                <p className="mt-1 text-[11px] font-semibold text-white/80 sm:text-xs lg:text-[10px]">
+                  {streakCaption}
+                </p>
+              </div>
+              <span className="hidden shrink-0 rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white/75 transition-colors group-hover:border-white/40 group-hover:bg-white/20 group-hover:text-white sm:inline-flex lg:hidden xl:inline-flex lg:px-2 lg:py-0.5 lg:text-[9px]">
+                Stats
+              </span>
             </div>
-            <span className="hidden shrink-0 text-[10px] font-bold uppercase tracking-wide text-slate-400 transition-colors group-hover:text-teal-600 sm:block lg:text-[9px]">
-              Stats →
-            </span>
           </div>
 
-          <div className="grid grid-cols-3 divide-x divide-white/15">
-            <HeroStatCell
+          <div className="grid grid-cols-2 gap-2 p-2.5 sm:gap-2.5 sm:p-3 lg:gap-1.5 lg:p-2">
+            <MiniStatCard
               label="Best today"
               value={todayBest}
               icon="⚡"
+              progress={todayProgress}
+              caption={todayCaption}
+              tone="amber"
               highlight={chasingTodayBest || beatTodayBest}
             />
-            <HeroStatCell
-              label="Daily run"
-              value={dailyRun > 0 ? dailyRun : "—"}
-              suffix={dailyRun > 0 ? (dailyRun === 1 ? "day" : "days") : undefined}
-              icon="📅"
-            />
-            <HeroStatCell
+            <MiniStatCard
               label="All-time"
               value={bestStreak > 0 ? bestStreak : "—"}
               icon="🏆"
+              progress={allTimeProgress}
+              caption={allTimeCaption}
+              tone="violet"
             />
           </div>
         </div>

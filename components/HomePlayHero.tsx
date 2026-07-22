@@ -201,7 +201,7 @@ export function HomePlayHero({
                   />
                 </div>
 
-                <div className="flex w-full gap-3">
+                <div className="grid w-full grid-cols-2 gap-x-3 gap-y-1.5">
                   <Link
                     href="/play/setup"
                     className="flex min-h-12 flex-1 min-w-0 items-center justify-center gap-2 rounded-[1.25rem] border-2 border-white/70 bg-white/15 px-3 py-3 text-center font-display text-sm font-extrabold text-white shadow-[0_3px_0_rgb(255_255_255_/_0.2)] backdrop-blur-sm transition-transform hover:scale-[1.01] hover:border-white hover:bg-white/25 active:translate-y-0.5 active:shadow-none sm:min-h-[3.25rem] sm:gap-2.5 sm:px-4 sm:text-base"
@@ -224,6 +224,13 @@ export function HomePlayHero({
                     <span aria-hidden className="text-lg">📅</span>
                     {dailyPlayedToday ? "Review today" : "Daily challenge"}
                   </Link>
+
+                  <p
+                    className="col-start-2 text-center text-xs font-bold tabular-nums text-emerald-50/90 sm:text-sm"
+                    aria-label={`Daily challenge streak: ${dailyRun} ${dailyRun === 1 ? "day" : "days"}`}
+                  >
+                    <span aria-hidden>🔥</span> {dailyRun}
+                  </p>
                 </div>
               </>
             ) : (
