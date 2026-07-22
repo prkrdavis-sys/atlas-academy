@@ -99,6 +99,7 @@ type ContextMapSvgProps = {
   pathStyleResolver?: (pathId: string) => MapPathStyle | null;
   onPathClick?: (pathId: string) => void;
   onPathHover?: (pathId: string | null) => void;
+  onBackgroundClick?: () => void;
 };
 
 export function ContextMapSvg({
@@ -113,6 +114,7 @@ export function ContextMapSvg({
   pathStyleResolver,
   onPathClick,
   onPathHover,
+  onBackgroundClick,
 }: ContextMapSvgProps) {
   const palette = getMapPalette(isDark);
   const activeViewBox = viewBox ?? map.viewBox;
@@ -136,6 +138,7 @@ export function ContextMapSvg({
         width={viewBoxWidth}
         height={viewBoxHeight}
         fill={palette.ocean}
+        onClick={interactive && onBackgroundClick ? () => onBackgroundClick() : undefined}
       />
       {orderedPaths.map((path) => {
         const resolvedStyle = pathStyleResolver?.(path.id);

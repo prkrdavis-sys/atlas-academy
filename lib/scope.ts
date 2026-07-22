@@ -44,7 +44,10 @@ export const SCOPE_INFO: Record<
 };
 
 export function normalizeScope(value: string | null | undefined): GameScope {
-  return value === "usa" ? "usa" : "world";
+  if (!value) return "world";
+  // Guard against malformed URLs like ?scope=usa?autostart=1.
+  const normalized = value.split(/[?&#]/)[0]?.toLowerCase();
+  return normalized === "usa" ? "usa" : "world";
 }
 
 /** Prefer an explicit ?scope= query param; otherwise use persisted play scope. */
@@ -76,6 +79,18 @@ export function setStoredLibraryScope(scope: GameScope): void {
 /** Query string to append to play links so the quiz scope carries through. */
 export function scopeQuery(scope: GameScope): string {
   return scope === "usa" ? "?scope=usa" : "";
+}
+
+/** Builds a path with scope and optional query params without duplicating `?`. */
+export function scopedHref(
+  path: string,
+  scope: GameScope,
+  params?: Record<string, string>,
+): string {
+  const search = new URLSearchParams(params);
+  if (scope === "usa") search.set("scope", "usa");
+  const query = search.toString();
+  return query ? `${path}?${query}` : path;
 }
 
 /**

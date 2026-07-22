@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useTheme } from "next-themes";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ContextMapSvg,
   loadContextMapTemplate,
@@ -14,13 +15,27 @@ import {
   getStateCodeByUsaMapPathId,
   type ContextMapTemplateKey,
 } from "@/lib/context-maps";
+import { buildLibraryDetailHref } from "@/lib/library";
+import { computeFocusedViewBox, loadMapBoundsManifest, type MapBoundsManifest } from "@/lib/map-bounds";
+import { getMapPalette } from "@/lib/map-colors";
 import {
   buildUsaProgressFillMap,
   buildWorldProgressFillMap,
   createProgressPathStyleResolver,
+  getPlaceCategoryCompletion,
   getPlaceMasteryLevel,
+  MAP_PROGRESS_CATEGORY_INFO,
 } from "@/lib/map-progress";
-import type { Continent, GameScope, MapProgressDifficulty, Profile, Region } from "@/lib/types";
+import {
+  DIFFICULTY_LABELS,
+  MAP_PROGRESS_CATEGORIES,
+  type Continent,
+  type GameScope,
+  type MapProgressCategory,
+  type MapProgressDifficulty,
+  type Profile,
+  type Region,
+} from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 type StatsProgressMapProps = {
@@ -33,6 +48,91 @@ type StatsProgressMapProps = {
   className?: string;
   ariaLabel: string;
 };
+
+function formatPlaceProgressLabel(
+  code: string,
+  profile: Profile,
+  difficulty: MapProgressDifficulty,
+): string {
+  const level = getPlaceMasteryLevel(code, profile, difficulty);
+  return `${getCountryName(code)} · ${level}/4 categories`;
+}
+
+function isPlayableMapPath(
+  pathId: string,
+  resolveCode: (pathId: string) => string | undefined,
+  regionCodes?: Set<string>,
+): boolean {
+  const code = resolveCode(pathId);
+  if (!code) return false;
+  if (regionCodes && !regionCodes.has(code)) return false;
+  return true;
+}
+
+function StatsMapPlacePanel({
+  code,
+  profile,
+  difficulty,
+  scope,
+}: {
+  code: string;
+  profile: Profile;
+  difficulty: MapProgressDifficulty;
+  scope: GameScope;
+}) {
+  const completion = getPlaceCategoryCompletion(code, profile, difficulty);
+  const level = getPlaceMasteryLevel(code, profile, difficulty);
+  const libraryHref = buildLibraryDetailHref(code, scope, "All");
+
+  return (
+    <div
+        className="absolute bottom-2 left-2 z-10 max-w-[calc(100%-1rem)] rounded-xl border border-slate-200/80 bg-white/95 p-2.5 shadow-lg backdrop-blur sm:max-w-xs dark:border-slate-600 dark:bg-slate-900/95"
+    >
+      <p className="font-display text-sm font-extrabold text-slate-900 dark:text-slate-100">
+        {getCountryName(code)}
+      </p>
+      <p className="mt-0.5 text-xs font-semibold text-slate-600 dark:text-slate-400">
+        {level}/4 categories · {DIFFICULTY_LABELS[difficulty]}
+      </p>
+      <ul className="mt-2 grid grid-cols-2 gap-1.5" aria-label="Completed categories">
+        {MAP_PROGRESS_CATEGORIES.map((category) => (
+          <StatsMapCategoryStatus key={category} category={category} completed={completion[category]} />
+        ))}
+      </ul>
+      <Link
+        href={libraryHref}
+        className="mt-2 inline-flex w-full items-center justify-center rounded-lg border border-teal-200 bg-teal-50 px-3 py-1.5 text-xs font-bold text-teal-800 transition-colors hover:border-teal-400 hover:bg-teal-100 dark:border-teal-800 dark:bg-teal-950/50 dark:text-teal-200 dark:hover:border-teal-500 dark:hover:bg-teal-950"
+      >
+        Open in Library →
+      </Link>
+    </div>
+  );
+}
+
+function StatsMapCategoryStatus({
+  category,
+  completed,
+}: {
+  category: MapProgressCategory;
+  completed: boolean;
+}) {
+  const info = MAP_PROGRESS_CATEGORY_INFO[category];
+
+  return (
+    <li
+      className={cn(
+        "inline-flex items-center gap-1 rounded-lg border px-2 py-1 text-[11px] font-semibold leading-tight",
+        completed
+          ? "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300"
+          : "border-slate-200 bg-slate-50 text-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400",
+      )}
+    >
+      <span aria-hidden>{completed ? "✓" : "○"}</span>
+      <span aria-hidden>{info.icon}</span>
+      {info.label}
+    </li>
+  );
+}
 
 export function StatsProgressMap({
   profile,
@@ -47,8 +147,10 @@ export function StatsProgressMap({
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
   const [map, setMap] = useState<ParsedContextMap | null>(null);
+  const [boundsManifest, setBoundsManifest] = useState<MapBoundsManifest | null>(null);
   const [loadFailed, setLoadFailed] = useState(false);
   const [hoveredPathId, setHoveredPathId] = useState<string | null>(null);
+  const [selectedPathId, setSelectedPathId] = useState<string | null>(null);
 
   const resolveCode = scope === "usa" ? getStateCodeByUsaMapPathId : getCountryCodeByMapPathId;
 
@@ -59,35 +161,101 @@ export function StatsProgressMap({
     );
   }, [region, scope]);
 
+  const visiblePaths = useMemo(() => {
+    if (!map) return [];
+    if (!regionCodes) return map.paths;
+    return map.paths.filter((path) => isPlayableMapPath(path.id, resolveCode, regionCodes));
+  }, [map, regionCodes, resolveCode]);
+
   const fillMap = useMemo(() => {
-    if (!map) return new Map<string, 0 | 1 | 2 | 3 | 4>();
-    const pathIds = map.paths.map((path) => path.id);
+    if (visiblePaths.length === 0) return new Map<string, 0 | 1 | 2 | 3 | 4>();
+    const pathIds = visiblePaths.map((path) => path.id);
     return scope === "usa"
       ? buildUsaProgressFillMap(profile, difficulty, pathIds)
       : buildWorldProgressFillMap(profile, difficulty, pathIds);
-  }, [map, profile, difficulty, scope]);
+  }, [visiblePaths, profile, difficulty, scope]);
 
-  const pathStyleResolver = useMemo(
-    () => createProgressPathStyleResolver(fillMap, isDark, regionCodes, resolveCode),
-    [fillMap, isDark, regionCodes, resolveCode],
-  );
+  const activePathId = selectedPathId ?? hoveredPathId;
+  const selectedCode = useMemo(() => {
+    if (!selectedPathId) return null;
+    const code = resolveCode(selectedPathId);
+    if (!code) return null;
+    if (regionCodes && !regionCodes.has(code)) return null;
+    return code;
+  }, [selectedPathId, resolveCode, regionCodes]);
 
-  const hoveredLabel = useMemo(() => {
-    if (!hoveredPathId) return null;
+  const pathStyleResolver = useMemo(() => {
+    const baseResolver = createProgressPathStyleResolver(fillMap, isDark);
+    const palette = getMapPalette(isDark);
+    return (pathId: string) => {
+      const base = baseResolver(pathId);
+      if (!base) {
+        return activePathId === pathId ? palette.neighbor : null;
+      }
+      if (activePathId === pathId) {
+        return {
+          ...base,
+          stroke: palette.highlight.stroke,
+          strokeWidth: Math.max(base.strokeWidth, palette.highlight.strokeWidth),
+        };
+      }
+      return base;
+    };
+  }, [fillMap, isDark, activePathId]);
+
+  const focusedViewBox = useMemo(() => {
+    if (!boundsManifest || visiblePaths.length === 0) return undefined;
+
+    const shouldFocus = templateKey === "usa" || Boolean(compact && region);
+    if (!shouldFocus) return undefined;
+
+    const template = boundsManifest[templateKey];
+    if (!template) return undefined;
+
+    return computeFocusedViewBox(
+      template,
+      visiblePaths.map((path) => path.id),
+      [],
+      {
+        aspectRatio: compact ? 2.5 : 1.6,
+        paddingRatio: region ? 0.1 : 0.08,
+        minSizeRatio: 0.03,
+      },
+    );
+  }, [templateKey, boundsManifest, visiblePaths, compact, region]);
+
+  const hoverLabel = useMemo(() => {
+    if (selectedPathId || !hoveredPathId) return null;
     const code = resolveCode(hoveredPathId);
     if (!code) return null;
     if (regionCodes && !regionCodes.has(code)) return null;
-    const level = getPlaceMasteryLevel(code, profile, difficulty);
-    return `${getCountryName(code)} · ${level}/4 categories`;
-  }, [hoveredPathId, resolveCode, regionCodes, profile, difficulty]);
+    return formatPlaceProgressLabel(code, profile, difficulty);
+  }, [selectedPathId, hoveredPathId, resolveCode, regionCodes, profile, difficulty]);
+
+  const handlePathClick = useCallback(
+    (pathId: string) => {
+      if (!isPlayableMapPath(pathId, resolveCode, regionCodes)) return;
+      setSelectedPathId((current) => (current === pathId ? null : pathId));
+    },
+    [resolveCode, regionCodes],
+  );
+
+  const handleBackgroundClick = useCallback(() => {
+    setSelectedPathId(null);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
     setLoadFailed(false);
+    setHoveredPathId(null);
+    setSelectedPathId(null);
 
-    loadContextMapTemplate(templateKey)
-      .then((loaded) => {
-        if (!cancelled) setMap(loaded);
+    Promise.all([loadContextMapTemplate(templateKey), loadMapBoundsManifest()])
+      .then(([loaded, bounds]) => {
+        if (!cancelled) {
+          setMap(loaded);
+          setBoundsManifest(bounds);
+        }
       })
       .catch(() => {
         if (!cancelled) setLoadFailed(true);
@@ -109,19 +277,34 @@ export function StatsProgressMap({
       {map ? (
         <>
           <ContextMapSvg
-            map={map}
+            map={{ ...map, paths: visiblePaths }}
             highlightIds={new Set()}
             neighborIds={new Set()}
             ariaLabel={ariaLabel}
             isDark={isDark}
             interactive
+            viewBox={focusedViewBox}
             pathStyleResolver={pathStyleResolver}
+            onPathClick={handlePathClick}
             onPathHover={setHoveredPathId}
+            onBackgroundClick={handleBackgroundClick}
           />
-          {hoveredLabel ? (
-            <div className="pointer-events-none absolute bottom-2 left-2 rounded-lg bg-slate-900/85 px-2.5 py-1 text-xs font-semibold text-white shadow-sm">
-              {hoveredLabel}
+          {hoverLabel ? (
+            <div
+              className="pointer-events-none absolute bottom-2 left-2 rounded-lg bg-slate-900/85 px-2.5 py-1 text-xs font-semibold text-white shadow-sm"
+              role="status"
+              aria-live="polite"
+            >
+              {hoverLabel}
             </div>
+          ) : null}
+          {selectedCode ? (
+            <StatsMapPlacePanel
+              code={selectedCode}
+              profile={profile}
+              difficulty={difficulty}
+              scope={scope}
+            />
           ) : null}
         </>
       ) : loadFailed ? (

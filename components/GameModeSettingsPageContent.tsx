@@ -12,7 +12,7 @@ import {
   createSetupDraftFromProfile,
   getPlayablePoolForDraft,
 } from "@/lib/game-setup";
-import { getScopedModeInfo, scopeQuery, scopeText, SCOPE_INFO } from "@/lib/scope";
+import { getScopedModeInfo, scopedHref, scopeQuery, scopeText, SCOPE_INFO } from "@/lib/scope";
 import { getCommonlyMissedCountries } from "@/lib/stats-helpers";
 import { recordModeSelection, updateProfileSettings } from "@/lib/storage";
 import { useResolvedGameScope } from "@/lib/use-game-scope";
@@ -144,7 +144,7 @@ export function GameModeSettingsPageContent({ mode }: GameModeSettingsPageConten
   const handlePlay = () => {
     if (startDisabled) return;
     persistCurrentDraft();
-    router.push(`/play/${mode}${scopeQuery(scope)}?autostart=1`);
+    router.push(scopedHref(`/play/${mode}`, scope, { autostart: "1" }));
   };
 
   if (!modeInfo || !scopeInfo) {

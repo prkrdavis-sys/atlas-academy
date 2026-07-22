@@ -174,40 +174,70 @@ export default function StatsPage() {
         </div>
       </div>
 
-      <div
-        className="inline-flex rounded-2xl bg-slate-100 p-1 dark:bg-slate-800"
-        role="tablist"
-        aria-label="Stats sections"
-      >
-        {STATS_TABS.map((tab) => {
-          const active = activeTab === tab.id;
-          const tabLabel =
-            tab.id === "achievements"
-              ? `${tab.label} (${profile.achievements.length}/${ACHIEVEMENTS.length})`
-              : tab.label;
-          return (
-            <button
-              key={tab.id}
-              type="button"
-              role="tab"
-              id={`stats-tab-${tab.id}`}
-              aria-selected={active}
-              aria-controls={`stats-panel-${tab.id}`}
-              onClick={() => setActiveTab(tab.id)}
-              className={cn(
-                "min-h-9 rounded-xl px-3 py-1.5 font-display text-sm font-extrabold transition-all sm:px-4",
-                active
-                  ? "bg-white text-teal-800 shadow-sm dark:bg-slate-900 dark:text-teal-300"
-                  : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100",
-              )}
-            >
-              <span className="mr-1.5" aria-hidden>
-                {tab.icon}
-              </span>
-              {tabLabel}
-            </button>
-          );
-        })}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div
+          className="inline-flex rounded-2xl bg-slate-100 p-1 dark:bg-slate-800"
+          role="tablist"
+          aria-label="Stats sections"
+        >
+          {STATS_TABS.map((tab) => {
+            const active = activeTab === tab.id;
+            const tabLabel =
+              tab.id === "achievements"
+                ? `${tab.label} (${profile.achievements.length}/${ACHIEVEMENTS.length})`
+                : tab.label;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                role="tab"
+                id={`stats-tab-${tab.id}`}
+                aria-selected={active}
+                aria-controls={`stats-panel-${tab.id}`}
+                onClick={() => setActiveTab(tab.id)}
+                className={cn(
+                  "min-h-9 rounded-xl px-3 py-1.5 font-display text-sm font-extrabold transition-all sm:px-4",
+                  active
+                    ? "bg-white text-teal-800 shadow-sm dark:bg-slate-900 dark:text-teal-300"
+                    : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100",
+                )}
+              >
+                <span className="mr-1.5" aria-hidden>
+                  {tab.icon}
+                </span>
+                {tabLabel}
+              </button>
+            );
+          })}
+        </div>
+
+        {activeTab === "overview" ? (
+          <div
+            className="inline-flex rounded-2xl bg-slate-100 p-1 dark:bg-slate-800"
+            role="group"
+            aria-label="Choose where to view stats"
+          >
+            {GAME_SCOPES.map((option) => {
+              const active = scope === option;
+              return (
+                <button
+                  key={option}
+                  type="button"
+                  aria-pressed={active}
+                  onClick={() => selectScope(option)}
+                  className={cn(
+                    "min-h-9 rounded-xl px-3 py-1.5 font-display text-sm font-extrabold transition-all",
+                    active
+                      ? "bg-white text-teal-800 shadow-sm dark:bg-slate-900 dark:text-teal-300"
+                      : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100",
+                  )}
+                >
+                  {SCOPE_INFO[option].icon} {SCOPE_INFO[option].shortLabel}
+                </button>
+              );
+            })}
+          </div>
+        ) : null}
       </div>
 
       {activeTab === "overview" ? (
@@ -217,34 +247,6 @@ export default function StatsPage() {
           aria-labelledby="stats-tab-overview"
           className="space-y-5 sm:space-y-8"
         >
-      <div className="flex flex-wrap items-center justify-end gap-4">
-        <div
-          className="inline-flex rounded-2xl bg-slate-100 p-1 dark:bg-slate-800"
-          role="group"
-          aria-label="Choose where to view stats"
-        >
-          {GAME_SCOPES.map((option) => {
-            const active = scope === option;
-            return (
-              <button
-                key={option}
-                type="button"
-                aria-pressed={active}
-                onClick={() => selectScope(option)}
-                className={cn(
-                  "min-h-9 rounded-xl px-3 py-1.5 font-display text-sm font-extrabold transition-all",
-                  active
-                    ? "bg-white text-teal-800 shadow-sm dark:bg-slate-900 dark:text-teal-300"
-                    : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100",
-                )}
-              >
-                {SCOPE_INFO[option].icon} {SCOPE_INFO[option].shortLabel}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
       <StatsMapProgressSection profile={profile} scope={scope} />
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">

@@ -17,7 +17,7 @@ import { ProfileRequiredDialog } from "@/components/ProfileRequiredDialog";
 import { RecentModeShortcuts } from "@/components/RecentModeShortcuts";
 import { resolvePlayMode } from "@/lib/game-setup";
 import { hasPlayedDailyToday } from "@/lib/game-engine";
-import { scopeQuery, getStoredScope } from "@/lib/scope";
+import { getStoredScope, scopedHref, scopeQuery } from "@/lib/scope";
 import { recordModeSelection, updateProfileSettings } from "@/lib/storage";
 import type { GameMode, GameScope, Profile } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -114,7 +114,7 @@ export function HomePlayHero({
       onRefresh();
 
       const activeScope = getStoredScope();
-      router.push(`/play/${resolved.mode}${scopeQuery(activeScope)}?autostart=1`);
+      router.push(scopedHref(`/play/${resolved.mode}`, activeScope, { autostart: "1" }));
     },
     [profile, onRefresh, router],
   );
@@ -260,7 +260,7 @@ export function HomePlayHero({
                   </Link>
 
                   <Link
-                    href={`/play/daily-challenge${scopeQuery(scope)}?autostart=1`}
+                    href={scopedHref("/play/daily-challenge", scope, { autostart: "1" })}
                     className="flex min-h-12 flex-1 min-w-0 items-center justify-center gap-2 rounded-[1.25rem] border-2 border-white/70 bg-white/15 px-3 py-3 text-center font-display text-sm font-extrabold text-white shadow-[0_3px_0_rgb(255_255_255_/_0.2)] backdrop-blur-sm transition-transform hover:scale-[1.01] hover:border-white hover:bg-white/25 active:translate-y-0.5 active:shadow-none sm:min-h-[3.25rem] sm:gap-2.5 sm:px-4 sm:text-base"
                     aria-label={`${dailyPlayedToday ? "Review today" : "Daily challenge"}. Daily challenge streak: ${dailyRun} ${dailyRun === 1 ? "day" : "days"}`}
                   >

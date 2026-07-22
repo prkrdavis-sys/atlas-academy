@@ -20,7 +20,7 @@ import {
   hasCompletedDailyToday,
   hasPlayedDailyToday,
 } from "@/lib/game-engine";
-import { getScopedModeInfo, scopedDailyKey, scopeQuery } from "@/lib/scope";
+import { getScopedModeInfo, scopedDailyKey, scopedHref } from "@/lib/scope";
 import { getCommonlyMissedCountries } from "@/lib/stats-helpers";
 import { recordModeSelection, updateProfileSettings } from "@/lib/storage";
 import { useResolvedGameScope } from "@/lib/use-game-scope";
@@ -99,7 +99,7 @@ function PlayPageInner() {
   useEffect(() => {
     if (!scope) return;
     if (requestedMode !== mode && requestedMode === "weak-spots") {
-      router.replace(`/play/${mode}${scopeQuery(scope)}?autostart=1`);
+      router.replace(scopedHref(`/play/${mode}`, scope, { autostart: "1" }));
     }
   }, [requestedMode, mode, router, scope]);
 

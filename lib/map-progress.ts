@@ -94,6 +94,20 @@ export function getPlaceMasteryLevel(
   return Math.min(count, 4) as PlaceMasteryLevel;
 }
 
+export function getPlaceCategoryCompletion(
+  code: string,
+  profile: Profile,
+  difficulty: MapProgressDifficulty,
+): Record<MapProgressCategory, boolean> {
+  const progress = profile.placeMapProgress?.[code]?.[difficulty];
+  return {
+    flag: Boolean(progress?.flag),
+    shape: Boolean(progress?.shape),
+    capital: Boolean(progress?.capital),
+    trivia: Boolean(progress?.trivia),
+  };
+}
+
 export function isPlaceFullyMastered(
   code: string,
   profile: Profile,
@@ -138,6 +152,41 @@ export function getOverallMapProgress(
     }
   }
   return { mastered, total: places.length };
+}
+
+export type MapProgressSummary = {
+  completedCategories: number;
+  totalCategories: number;
+  masteredPlaces: number;
+  totalPlaces: number;
+  percentComplete: number;
+};
+
+export function getMapProgressSummary(
+  scope: GameScope,
+  profile: Profile,
+  difficulty: MapProgressDifficulty,
+): MapProgressSummary {
+  const places = getPlayablePlacesForScope(scope);
+  const totalPlaces = places.length;
+  const totalCategories = totalPlaces * MAP_PROGRESS_CATEGORIES.length;
+  let completedCategories = 0;
+  let masteredPlaces = 0;
+
+  for (const place of places) {
+    const level = getPlaceMasteryLevel(place.code, profile, difficulty);
+    completedCategories += level;
+    if (level === 4) masteredPlaces += 1;
+  }
+
+  return {
+    completedCategories,
+    totalCategories,
+    masteredPlaces,
+    totalPlaces,
+    percentComplete:
+      totalCategories > 0 ? Math.round((completedCategories / totalCategories) * 100) : 0,
+  };
 }
 
 export function buildProgressFillMap(
