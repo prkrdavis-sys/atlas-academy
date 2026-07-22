@@ -36,15 +36,23 @@ export function ProfileSwitcher({ compact = false }: { compact?: boolean }) {
         aria-haspopup="menu"
         aria-label={displayProfile ? `Open menu. Current profile: ${displayProfile.name}` : "Open menu"}
         className={cn(
-          "flex min-h-11 items-center gap-2 rounded-full border border-slate-200 bg-white text-sm font-medium shadow-sm transition-colors hover:bg-slate-50 active:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:active:bg-slate-600",
-          compact ? "px-2" : "px-3",
+          "flex min-h-11 max-w-full items-center gap-2 rounded-full border border-slate-200 bg-white text-sm shadow-sm transition-colors hover:bg-slate-50 active:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:active:bg-slate-600",
+          compact ? "px-2.5 py-1.5" : "px-3 py-1.5",
         )}
       >
         <span
-          className="h-7 w-7 shrink-0 rounded-full"
+          className={cn(
+            "min-w-0 truncate font-display font-extrabold text-slate-800 dark:text-slate-100",
+            compact ? "max-w-[5.5rem] text-xs" : "max-w-[9rem] text-sm",
+          )}
+        >
+          {displayProfile?.name ?? "Menu"}
+        </span>
+        <span
+          className="h-7 w-7 shrink-0 rounded-full ring-2 ring-white dark:ring-slate-800"
           style={{ backgroundColor: displayProfile?.avatarColor ?? "#94a3b8" }}
+          aria-hidden
         />
-        <span className={cn(compact && "sr-only")}>{displayProfile?.name ?? "Menu"}</span>
         <svg
           aria-hidden
           className={cn("h-4 w-4 shrink-0 text-slate-400 transition-transform", open && "rotate-180")}

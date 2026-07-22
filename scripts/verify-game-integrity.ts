@@ -58,6 +58,7 @@ const MODES: GameMode[] = [
   "country-to-flag",
   "neighbor-quiz",
   "population-showdown",
+  "fact-to-country",
 ];
 
 const RUNS = 200;

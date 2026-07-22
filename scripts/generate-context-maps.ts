@@ -1,18 +1,21 @@
 /**
  * Generates continent and USA context-map SVG templates at public/maps/.
- * Paths use @svg-maps ids so runtime components can highlight places by id.
+ * Country paths come from Natural Earth 10m data for high-detail coastlines at zoom.
  */
-import { mkdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 // @ts-expect-error svg-path-bounds ships no type declarations
 import getPathBounds from "svg-path-bounds";
 import countriesData from "../data/countries.json";
-import { SUPPLEMENTAL_MAP_IDS } from "../lib/context-maps";
+import { getContextMapPathIds } from "../lib/context-maps";
 import type { MapBoundsManifest, MapTemplateBounds, PathBounds } from "../lib/map-bounds";
 import { formatViewBox } from "../lib/map-bounds";
 import { CONTINENTS, type Continent, type Country } from "../lib/types";
-
-type SvgMapLocation = { id: string; path: string };
+import {
+  buildNaturalEarthLocations,
+  loadNaturalEarthFeatures,
+  type SvgMapLocation,
+} from "./natural-earth-map-data";
 
 const OUT_DIR = join(process.cwd(), "public", "maps");
 const countries = countriesData as Country[];
@@ -56,55 +59,39 @@ function buildTemplate(
   return { svg, bounds };
 }
 
-function resolveMapIds(country: Country): string[] {
-  const supplemental = SUPPLEMENTAL_MAP_IDS[country.code];
-  if (supplemental) {
-    return Array.isArray(supplemental) ? supplemental : [supplemental];
+function filterLocationsForCountries(
+  allLocations: SvgMapLocation[],
+  countryList: Country[],
+): SvgMapLocation[] {
+  const ids = new Set<string>();
+  for (const country of countryList) {
+    for (const id of getContextMapPathIds(country)) {
+      ids.add(id);
+    }
   }
-  return [country.code.toLowerCase()];
-}
 
-function readAntarcticaPath(): string | null {
-  const shapePath = join(process.cwd(), "public", "shapes", "ata.svg");
-  if (!existsSync(shapePath)) return null;
-  const svg = readFileSync(shapePath, "utf8");
-  const match = svg.match(/<path[^>]*d="([^"]+)"/);
-  return match?.[1] ?? null;
+  return allLocations.filter((location) => ids.has(location.id));
 }
 
 async function main() {
   mkdirSync(OUT_DIR, { recursive: true });
 
-  const world = (await import("@svg-maps/world")).default as { locations: SvgMapLocation[] };
-  const usa = (await import("@svg-maps/usa")).default as { locations: SvgMapLocation[] };
-  const worldById = new Map(world.locations.map((location) => [location.id, location.path]));
+  console.log("Loading Natural Earth 10m features...");
+  const features = await loadNaturalEarthFeatures();
+  const { locations: worldLocations, missing } = buildNaturalEarthLocations(features);
 
-  const antarcticaPath = readAntarcticaPath();
-  if (antarcticaPath) {
-    worldById.set("aq", antarcticaPath);
-  } else {
-    console.warn("Warning: Antarctica shape missing; antarctica.svg will omit AQ.");
+  if (missing.length > 0) {
+    const names = [...new Set(missing.map((country) => `${country.code} (${country.name})`))];
+    throw new Error(`Missing Natural Earth geometry for: ${names.join(", ")}`);
   }
+
+  console.log(`Built ${worldLocations.length} high-detail country paths`);
 
   const manifest: MapBoundsManifest = {} as MapBoundsManifest;
 
   for (const continent of CONTINENTS) {
     const continentCountries = countries.filter((country) => country.continent === continent);
-    const locations: SvgMapLocation[] = [];
-    const seenIds = new Set<string>();
-
-    for (const country of continentCountries) {
-      for (const id of resolveMapIds(country)) {
-        if (seenIds.has(id)) continue;
-        const path = worldById.get(id);
-        if (!path) {
-          console.warn(`Warning: missing world path for ${country.code} (${id})`);
-          continue;
-        }
-        seenIds.add(id);
-        locations.push({ id, path });
-      }
-    }
+    const locations = filterLocationsForCountries(worldLocations, continentCountries);
 
     const templateKey = continentToFileKey(continent);
     const { svg, bounds } = buildTemplate(locations);
@@ -113,19 +100,19 @@ async function main() {
     console.log(`Wrote ${templateKey}.svg (${locations.length} paths)`);
   }
 
+  const usa = (await import("@svg-maps/usa")).default as { locations: SvgMapLocation[] };
   const usaLocations = usa.locations.filter((location) => location.id !== "dc");
   const usaTemplate = buildTemplate(usaLocations);
   writeFileSync(join(OUT_DIR, "usa.svg"), usaTemplate.svg);
   manifest.usa = usaTemplate.bounds;
   console.log(`Wrote usa.svg (${usaLocations.length} paths)`);
 
-  const worldLocations = world.locations.map((location) =>
-    location.id === "aq" && antarcticaPath ? { ...location, path: antarcticaPath } : location,
-  );
   const worldTemplate = buildTemplate(worldLocations);
   writeFileSync(join(OUT_DIR, "world.svg"), worldTemplate.svg);
   manifest.world = worldTemplate.bounds;
-  console.log(`Wrote world.svg (${worldLocations.length} paths)`);
+  console.log(
+    `Wrote world.svg (${worldLocations.length} paths, ${(worldTemplate.svg.length / 1024 / 1024).toFixed(2)} MB)`,
+  );
 
   writeFileSync(join(OUT_DIR, "bounds.json"), `${JSON.stringify(manifest)}\n`);
   console.log("Wrote bounds.json");

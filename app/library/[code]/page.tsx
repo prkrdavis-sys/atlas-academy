@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
+import { ExpandableFlagImage } from "@/components/ExpandableFlagImage";
 import { FlagImage } from "@/components/FlagDisplay";
 import { LibraryDetailNav } from "@/components/LibraryDetailNav";
 import { LibraryPlaceMapSection } from "@/components/LibraryPlaceMapSection";
@@ -125,16 +126,18 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
               </div>
               {country.hasFlag && country.hasShape ? (
                 <>
-                  <FlagImage
+                  <ExpandableFlagImage
                     code={country.code}
+                    countryName={country.name}
                     alt={`Flag of ${country.name}`}
                     width={140}
                     frame="md"
                     className="w-[5.75rem] shrink-0 sm:hidden"
                     priority
                   />
-                  <FlagImage
+                  <ExpandableFlagImage
                     code={country.code}
+                    countryName={country.name}
                     alt={`Flag of ${country.name}`}
                     width={176}
                     frame="lg"
@@ -154,6 +157,7 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
               country={country}
               variant="hero"
               visual={country.hasShape ? "shape" : "auto"}
+              expandableFlag
             />
           </div>
         </div>

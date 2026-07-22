@@ -13,7 +13,7 @@ export const SUPPLEMENTAL_MAP_IDS: Record<string, string | string[]> = {
   MP: "mp",
   PS: "ps",
   TV: "tv",
-  UM: ["um-dq", "um-fq", "um-hq", "um-jq", "um-mq", "um-wq"],
+  UM: "um",
   XK: "xk",
 };
 

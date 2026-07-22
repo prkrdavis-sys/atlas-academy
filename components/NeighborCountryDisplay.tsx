@@ -26,15 +26,17 @@ export function NeighborCountryDisplay({ code }: { code: string }) {
         )}
       </div>
 
-      <div className="flex flex-col gap-4 sm:gap-5">
-        <FlagImage
-          code={country.code}
-          alt={`Flag of ${country.name}`}
-          width={144}
-          frame="md"
-          className="w-28 sm:w-36"
-          priority
-        />
+      <div className="flex min-w-0 flex-col gap-4 sm:gap-5">
+        <div className="w-full min-w-0 shrink-0 overflow-hidden rounded-xl border-2 border-slate-200 bg-white shadow-md dark:border-slate-700 dark:bg-slate-800">
+          <FlagImage
+            code={country.code}
+            alt={`Flag of ${country.name}`}
+            width={160}
+            frame="none"
+            fit="cover"
+            priority
+          />
+        </div>
 
         <dl className="grid gap-3">
           <div>

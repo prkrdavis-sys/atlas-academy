@@ -83,6 +83,10 @@ export function filterCountries(options: FilterOptions): Country[] {
     pool = pool.filter((c) => c.population > 0 && c.hasFlag);
   }
 
+  if (options.mode === "fact-to-country") {
+    pool = pool.filter((c) => c.fact.trim().length > 0);
+  }
+
   if (options.mode === "weak-spots" && options.weakSpotCodes?.length) {
     const weakSet = new Set(options.weakSpotCodes);
     pool = pool.filter((c) => weakSet.has(c.code));

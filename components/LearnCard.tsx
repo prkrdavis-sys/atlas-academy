@@ -5,8 +5,6 @@ import { FlagImage } from "@/components/FlagDisplay";
 import { PlaceContextMap } from "@/components/PlaceContextMap";
 import {
   getCountryByCode,
-  getShapePath,
-  formatBorderFact,
   formatPopulation,
 } from "@/lib/countries";
 import { isStateCode } from "@/lib/scope";
@@ -18,10 +16,14 @@ type LearnCardProps = {
   wasCorrect: boolean;
   compareCountryCode?: string;
   heading?: ReactNode;
-  highlightNeighbors?: boolean;
   /** Embedded in the game panel between the header and answer choices. */
   variant?: "default" | "inline";
 };
+
+function formatPrimaryLanguage(languages?: string): string {
+  if (!languages?.trim()) return "Not listed";
+  return languages.split(" · ")[0]?.trim() || "Not listed";
+}
 
 function ContinentValue({ country, isState }: { country: Country; isState: boolean }) {
   if (isState) {
@@ -130,7 +132,6 @@ function InlineLearnCard({
   heading,
   compareCountryCode,
   countryCode,
-  highlightNeighbors = false,
 }: {
   country: NonNullable<ReturnType<typeof getCountryByCode>>;
   isState: boolean;
@@ -138,7 +139,6 @@ function InlineLearnCard({
   heading?: ReactNode;
   compareCountryCode?: string;
   countryCode: string;
-  highlightNeighbors?: boolean;
 }) {
   return (
     <div
@@ -162,16 +162,11 @@ function InlineLearnCard({
 
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4 py-3 sm:hidden">
         {country.hasFlag && (
-          <div
-            className={cn(
-              "mb-3 w-full shrink-0 overflow-hidden rounded-xl",
-              country.hasShape && "mx-auto max-w-[11.5rem]",
-            )}
-          >
+          <div className="mb-3 w-full shrink-0 overflow-hidden rounded-xl">
             <FlagImage
               code={country.code}
               alt={country.name}
-              width={country.hasShape ? 220 : 360}
+              width={360}
               frame="md"
               className="mx-auto block w-full max-w-full"
             />
@@ -204,39 +199,24 @@ function InlineLearnCard({
             </div>
           )}
           <div className={compareCountryCode ? "col-span-2" : ""}>
-            <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Borders</dt>
-            <dd className="mt-1 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-              {formatBorderFact(country.borders.length, isState ? "usa" : "world")}
+            <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Language</dt>
+            <dd className="mt-1 text-base font-semibold text-slate-800 dark:text-slate-200">
+              {formatPrimaryLanguage(country.languages)}
             </dd>
           </div>
         </dl>
 
-        <div className="mt-3 w-full shrink-0 space-y-3 pb-1">
-          <PlaceContextMap
-            country={country}
-            variant="compact"
-            highlightNeighbors={highlightNeighbors}
-          />
-          {country.hasShape ? (
-            <div className="flex min-h-[4.5rem] w-full items-center justify-center rounded-2xl border border-slate-200 bg-gradient-to-b from-sky-50 to-white px-3 py-3 dark:border-slate-700 dark:from-slate-800 dark:to-slate-900">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={getShapePath(country.code3)}
-                alt={`Outline of ${country.name}`}
-                className="h-auto max-h-24 w-full max-w-full object-contain object-center [filter:brightness(0)] dark:[filter:brightness(0)_invert(1)]"
-              />
-            </div>
-          ) : null}
+        <div className="mt-3 w-full shrink-0 pb-1">
+          <PlaceContextMap country={country} variant="compact" countryOnly />
         </div>
       </div>
 
       <div
         className={cn(
           "hidden items-center gap-5 p-4 sm:grid lg:px-6 lg:py-4",
-          country.hasFlag && country.hasShape && "grid-cols-[6.5rem_1fr_6.5rem] lg:grid-cols-[7.5rem_1fr_7.5rem]",
-          country.hasFlag && !country.hasShape && "grid-cols-[6.5rem_1fr]",
-          !country.hasFlag && country.hasShape && "grid-cols-[1fr_6.5rem]",
-          !country.hasFlag && !country.hasShape && "grid-cols-1",
+          country.hasFlag
+            ? "grid-cols-[6.5rem_1fr_6.5rem] lg:grid-cols-[7.5rem_1fr_7.5rem]"
+            : "grid-cols-[1fr_6.5rem] lg:grid-cols-[1fr_7.5rem]",
         )}
       >
         {country.hasFlag && (
@@ -282,39 +262,20 @@ function InlineLearnCard({
               </div>
             )}
             <div className={compareCountryCode ? "col-span-2" : ""}>
-              <dt className="font-semibold text-slate-500 dark:text-slate-400">Borders</dt>
-              <dd className="text-slate-600 dark:text-slate-400">
-                {formatBorderFact(country.borders.length, isState ? "usa" : "world")}
+              <dt className="font-semibold text-slate-500 dark:text-slate-400">Language</dt>
+              <dd className="font-medium text-slate-800 dark:text-slate-200">
+                {formatPrimaryLanguage(country.languages)}
               </dd>
             </div>
           </dl>
         </div>
 
-        {country.hasShape ? (
-          <div className="flex flex-col items-center justify-center gap-2">
-            <PlaceContextMap
-              country={country}
-              variant="compact"
-              highlightNeighbors={highlightNeighbors}
-              className="w-full"
-            />
-            <div className="flex h-24 w-28 items-center justify-center rounded-xl border border-slate-200 bg-gradient-to-b from-sky-50 to-white p-2 dark:border-slate-700 dark:from-slate-800 dark:to-slate-900 lg:h-28 lg:w-32">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={getShapePath(country.code3)}
-                alt={`Outline of ${country.name}`}
-                className="max-h-full max-w-full object-contain [filter:brightness(0)] dark:[filter:brightness(0)_invert(1)]"
-              />
-            </div>
-          </div>
-        ) : (
-          <PlaceContextMap
-            country={country}
-            variant="compact"
-            highlightNeighbors={highlightNeighbors}
-            className="w-full"
-          />
-        )}
+        <PlaceContextMap
+          country={country}
+          variant="compact"
+          countryOnly
+          className="w-full"
+        />
       </div>
 
       <p className="mt-auto shrink-0 border-t border-slate-100 px-4 py-2.5 text-center text-xs font-medium text-slate-400 dark:border-slate-800 dark:text-slate-500 sm:mt-0 sm:px-6 sm:py-2">
@@ -329,7 +290,6 @@ export function LearnCard({
   wasCorrect,
   compareCountryCode,
   heading,
-  highlightNeighbors = false,
   variant = "default",
 }: LearnCardProps) {
   const country = getCountryByCode(countryCode);
@@ -345,7 +305,6 @@ export function LearnCard({
         heading={heading}
         compareCountryCode={compareCountryCode}
         countryCode={countryCode}
-        highlightNeighbors={highlightNeighbors}
       />
     );
   }
@@ -372,24 +331,8 @@ export function LearnCard({
             compareCountryCode={compareCountryCode}
           />
         )}
-        <div className="mb-4 space-y-3">
-          <PlaceContextMap
-            country={country}
-            variant="compact"
-            highlightNeighbors={highlightNeighbors}
-          />
-          {country.hasShape ? (
-            <div className="flex justify-center">
-              <div className="flex h-28 w-full max-w-xs items-center justify-center rounded-2xl border border-slate-200 bg-gradient-to-b from-sky-50 to-white p-4 dark:border-slate-700 dark:from-slate-800 dark:to-slate-900 sm:h-32">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={getShapePath(country.code3)}
-                  alt={`Outline of ${country.name}`}
-                  className="max-h-full max-w-full object-contain [filter:brightness(0)] dark:[filter:brightness(0)_invert(1)]"
-                />
-              </div>
-            </div>
-          ) : null}
+        <div className="mb-4">
+          <PlaceContextMap country={country} variant="compact" countryOnly />
         </div>
         <div
           className={
@@ -416,8 +359,8 @@ export function LearnCard({
             {!compareCountryCode && (
               <p><span className="font-semibold">Population:</span> {formatPopulation(country.population)}</p>
             )}
-            <p className="text-slate-600 dark:text-slate-400">
-              {formatBorderFact(country.borders.length, isState ? "usa" : "world")}
+            <p>
+              <span className="font-semibold">Language:</span> {formatPrimaryLanguage(country.languages)}
             </p>
           </div>
         </div>

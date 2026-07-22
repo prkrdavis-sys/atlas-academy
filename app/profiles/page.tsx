@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { ProfileProgressInfoDialog } from "@/components/ProfileProgressInfoDialog";
 import { useProfiles } from "@/components/ProfileProvider";
 import { exportProfile, importProfile } from "@/lib/storage";
-import { AVATAR_COLORS } from "@/lib/types";
+import { AVATAR_COLORS, PROFILE_EMOJI } from "@/lib/types";
 import type { Profile } from "@/lib/types";
 
 export default function ProfilesPage() {
@@ -21,6 +21,7 @@ export default function ProfilesPage() {
   const [profileToDelete, setProfileToDelete] = useState<Profile | null>(null);
   const [showProgressInfo, setShowProgressInfo] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const isNewUser = hydrated && profiles.length === 0;
 
   function handleCreate(e: React.FormEvent) {
     e.preventDefault();
@@ -85,94 +86,185 @@ export default function ProfilesPage() {
       <ProfileProgressInfoDialog open={showProgressInfo} onClose={dismissProgressInfo} />
       <div>
         <h1 className="font-display text-2xl font-extrabold sm:text-3xl">Profiles</h1>
-        <p className="mt-1 text-sm text-slate-600 dark:text-slate-400 sm:text-base">Create and switch between local player profiles. No password needed.</p>
+        <p className="mt-1 text-sm text-slate-600 dark:text-slate-400 sm:text-base">
+          {isNewUser
+            ? "Create a local player profile to save streaks, stats, and daily progress on this device."
+            : "Create and switch between local player profiles. No password needed."}
+        </p>
       </div>
 
-      <div className="rounded-[1.75rem] border-2 border-slate-200 bg-white/90 p-4 shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90 sm:p-6">
-        <h2 className="mb-4 font-semibold">Your profiles</h2>
-        {!hydrated ? (
+      {!hydrated ? (
+        <div className="rounded-[1.75rem] border-2 border-slate-200 bg-white/90 p-4 shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90 sm:p-6">
           <p className="text-sm text-slate-600 dark:text-slate-400">Loading profiles…</p>
-        ) : profiles.length === 0 ? (
-          <p className="text-sm text-slate-600 dark:text-slate-400">No profiles yet. Create one below.</p>
-        ) : (
-          <div className="space-y-3">
-            {profiles.map((profile) => (
-              <div
-                key={profile.id}
-                className="rounded-2xl border border-slate-200 bg-slate-50/70 p-3 dark:border-slate-700 dark:bg-slate-800/70 sm:flex sm:flex-wrap sm:items-center sm:justify-between sm:gap-3 sm:bg-transparent sm:px-4 sm:py-3"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="h-10 w-10 rounded-full" style={{ backgroundColor: profile.avatarColor }} />
-                  <div>
-                    <p className="font-medium">{profile.name}</p>
-                    {activeProfile?.id === profile.id && (
-                      <p className="text-xs text-emerald-600 dark:text-emerald-400">Active</p>
-                    )}
-                  </div>
-                </div>
-                <div className="mt-3 flex gap-2 sm:mt-0">
-                  {activeProfile?.id !== profile.id && (
-                    <Button size="sm" onClick={() => switchProfile(profile.id)}>
-                      Switch
-                    </Button>
-                  )}
-                  <Button variant="secondary" size="sm" onClick={() => openModify(profile)}>
-                    Modify
-                  </Button>
-                  <Button
-                    variant="danger"
-                    size="sm"
-                    className="px-3"
-                    aria-label={`Delete ${profile.name}`}
-                    title="Delete profile"
-                    onClick={() => setProfileToDelete(profile)}
-                  >
-                    <svg
-                      aria-hidden="true"
-                      className="h-5 w-5"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                    >
-                      <path d="M8.25 4.5A2.25 2.25 0 0 1 10.5 2.25h3A2.25 2.25 0 0 1 15.75 4.5v.75h3a.75.75 0 0 1 0 1.5H5.25a.75.75 0 0 1 0-1.5h3V4.5Zm1.5.75h4.5V4.5a.75.75 0 0 0-.75-.75h-3a.75.75 0 0 0-.75.75v.75ZM6.75 8.25h10.5l-.64 11.02A2.625 2.625 0 0 1 13.99 21.75H10a2.625 2.625 0 0 1-2.62-2.48L6.75 8.25Zm3.75 2.25a.75.75 0 0 0-.75.75v6a.75.75 0 0 0 1.5 0v-6a.75.75 0 0 0-.75-.75Zm3.75.75a.75.75 0 0 0-1.5 0v6a.75.75 0 0 0 1.5 0v-6Z" />
-                    </svg>
-                  </Button>
+        </div>
+      ) : isNewUser ? (
+        <form
+          onSubmit={handleCreate}
+          className="overflow-hidden rounded-[1.75rem] border-2 border-emerald-300 shadow-[0_16px_40px_rgb(15_118_110_/_0.18)] dark:border-emerald-700"
+        >
+          <div className="relative overflow-hidden bg-gradient-to-br from-emerald-500 via-teal-600 to-sky-700 px-4 py-5 sm:px-6 sm:py-6">
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -right-4 -top-4 select-none text-[5.5rem] opacity-20 sm:-right-6 sm:-top-6 sm:text-[7rem]"
+            >
+              {PROFILE_EMOJI}
+            </div>
+            <p className="relative text-xs font-black uppercase tracking-[0.16em] text-emerald-100">
+              Get started
+            </p>
+            <h2 className="relative mt-1 font-display text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
+              Create a profile
+            </h2>
+            <p className="relative mt-2 max-w-md text-sm leading-relaxed text-emerald-50">
+              Pick a name and avatar color — it only takes a few seconds.
+            </p>
+          </div>
+          <div className="space-y-4 bg-white/95 p-4 dark:bg-slate-900/95 sm:p-6">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
+              <div className="flex-1">
+                <label htmlFor="create-profile-name" className="mb-1 block text-sm font-medium">
+                  Name
+                </label>
+                <input
+                  id="create-profile-name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-emerald-500 dark:focus:ring-emerald-900"
+                  placeholder="Your name"
+                  autoFocus
+                />
+              </div>
+              <div>
+                <p className="mb-1 text-sm font-medium">Color</p>
+                <div className="flex flex-wrap gap-2">
+                  {AVATAR_COLORS.map((c) => (
+                    <button
+                      key={c}
+                      type="button"
+                      onClick={() => setColor(c)}
+                      aria-label={`Use profile color ${c}`}
+                      className={`h-11 w-11 rounded-full border-2 ${color === c ? "border-slate-800 ring-2 ring-slate-300 ring-offset-2 dark:border-slate-200 dark:ring-slate-600 dark:ring-offset-slate-900" : "border-transparent"}`}
+                      style={{ backgroundColor: c }}
+                    />
+                  ))}
                 </div>
               </div>
-            ))}
+              <Button type="submit" size="lg" className="w-full sm:w-auto">
+                Create profile
+              </Button>
+            </div>
           </div>
-        )}
-      </div>
-
-      <form onSubmit={handleCreate} className="rounded-[1.75rem] border-2 border-slate-200 bg-white/90 p-4 shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90 sm:p-6">
-        <h2 className="mb-4 font-semibold">Create a profile</h2>
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
-          <div className="flex-1">
-            <label className="mb-1 block text-sm font-medium">Name</label>
-            <input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
-              placeholder="Your name"
-            />
-          </div>
-          <div>
-            <label className="mb-1 block text-sm font-medium">Color</label>
-            <div className="flex flex-wrap gap-2">
-              {AVATAR_COLORS.map((c) => (
-                <button
-                  key={c}
-                  type="button"
-                  onClick={() => setColor(c)}
-                  aria-label={`Use profile color ${c}`}
-                  className={`h-11 w-11 rounded-full border-2 ${color === c ? "border-slate-800 ring-2 ring-slate-300 ring-offset-2 dark:border-slate-200 dark:ring-slate-600 dark:ring-offset-slate-900" : "border-transparent"}`}
-                  style={{ backgroundColor: c }}
-                />
+        </form>
+      ) : (
+        <>
+          <div className="rounded-[1.75rem] border-2 border-slate-200 bg-white/90 p-4 shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90 sm:p-6">
+            <h2 className="mb-4 font-semibold">Your profiles</h2>
+            <div className="space-y-3">
+              {profiles.map((profile) => (
+                <div
+                  key={profile.id}
+                  className="rounded-2xl border border-slate-200 bg-slate-50/70 p-3 dark:border-slate-700 dark:bg-slate-800/70 sm:flex sm:flex-wrap sm:items-center sm:justify-between sm:gap-3 sm:bg-transparent sm:px-4 sm:py-3"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="h-10 w-10 rounded-full" style={{ backgroundColor: profile.avatarColor }} />
+                    <div>
+                      <p className="font-medium">{profile.name}</p>
+                      {activeProfile?.id === profile.id && (
+                        <p className="text-xs text-emerald-600 dark:text-emerald-400">Active</p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="mt-3 flex gap-2 sm:mt-0">
+                    {activeProfile?.id !== profile.id && (
+                      <Button size="sm" onClick={() => switchProfile(profile.id)}>
+                        Switch
+                      </Button>
+                    )}
+                    <Button variant="secondary" size="sm" onClick={() => openModify(profile)}>
+                      Modify
+                    </Button>
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      className="px-3"
+                      aria-label={`Delete ${profile.name}`}
+                      title="Delete profile"
+                      onClick={() => setProfileToDelete(profile)}
+                    >
+                      <svg
+                        aria-hidden="true"
+                        className="h-5 w-5"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
+                        <path d="M8.25 4.5A2.25 2.25 0 0 1 10.5 2.25h3A2.25 2.25 0 0 1 15.75 4.5v.75h3a.75.75 0 0 1 0 1.5H5.25a.75.75 0 0 1 0-1.5h3V4.5Zm1.5.75h4.5V4.5a.75.75 0 0 0-.75-.75h-3a.75.75 0 0 0-.75.75v.75ZM6.75 8.25h10.5l-.64 11.02A2.625 2.625 0 0 1 13.99 21.75H10a2.625 2.625 0 0 1-2.62-2.48L6.75 8.25Zm3.75 2.25a.75.75 0 0 0-.75.75v6a.75.75 0 0 0 1.5 0v-6a.75.75 0 0 0-.75-.75Zm3.75.75a.75.75 0 0 0-1.5 0v6a.75.75 0 0 0 1.5 0v-6Z" />
+                      </svg>
+                    </Button>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
-          <Button type="submit" className="w-full sm:w-auto">Create profile</Button>
-        </div>
-      </form>
+
+          <form
+            onSubmit={handleCreate}
+            className="overflow-hidden rounded-[1.75rem] border-2 border-emerald-200 bg-white/90 shadow-md backdrop-blur dark:border-emerald-800 dark:bg-slate-900/90"
+          >
+            <div className="border-b border-emerald-100 bg-gradient-to-r from-emerald-50 to-teal-50 px-4 py-4 dark:border-emerald-900/50 dark:from-emerald-950/60 dark:to-teal-950/40 sm:px-6">
+              <div className="flex items-start gap-3">
+                <span
+                  aria-hidden
+                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-500 text-xl shadow-sm"
+                >
+                  {PROFILE_EMOJI}
+                </span>
+                <div>
+                  <h2 className="font-display text-lg font-extrabold text-slate-900 dark:text-slate-100 sm:text-xl">
+                    Create a profile
+                  </h2>
+                  <p className="mt-0.5 text-sm text-slate-600 dark:text-slate-400">
+                    Add another player on this device.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="space-y-4 p-4 sm:p-6">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
+                <div className="flex-1">
+                  <label htmlFor="create-profile-name-existing" className="mb-1 block text-sm font-medium">
+                    Name
+                  </label>
+                  <input
+                    id="create-profile-name-existing"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-emerald-500 dark:focus:ring-emerald-900"
+                    placeholder="Your name"
+                  />
+                </div>
+                <div>
+                  <p className="mb-1 text-sm font-medium">Color</p>
+                  <div className="flex flex-wrap gap-2">
+                    {AVATAR_COLORS.map((c) => (
+                      <button
+                        key={c}
+                        type="button"
+                        onClick={() => setColor(c)}
+                        aria-label={`Use profile color ${c}`}
+                        className={`h-11 w-11 rounded-full border-2 ${color === c ? "border-slate-800 ring-2 ring-slate-300 ring-offset-2 dark:border-slate-200 dark:ring-slate-600 dark:ring-offset-slate-900" : "border-transparent"}`}
+                        style={{ backgroundColor: c }}
+                      />
+                    ))}
+                  </div>
+                </div>
+                <Button type="submit" className="w-full sm:w-auto">
+                  Create profile
+                </Button>
+              </div>
+            </div>
+          </form>
+        </>
+      )}
 
       <details className="group rounded-2xl border border-dashed border-slate-200/90 bg-slate-50/50 px-4 py-3 dark:border-slate-700/80 dark:bg-slate-900/40 sm:px-5 sm:py-4">
         <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm [&::-webkit-details-marker]:hidden">

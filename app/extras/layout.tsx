@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Extras | Atlas Academy",
+  title: "Explore | Atlas Academy",
   description:
-    "Bonus quiz modes — practice weak spots, pick flags, border neighbors, and population showdowns.",
+    "Reference tools — browse the Library, explore the World Map, and customize your game setup.",
 };
 
 export default function ExtrasLayout({ children }: { children: React.ReactNode }) {

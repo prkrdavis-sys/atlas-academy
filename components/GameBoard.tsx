@@ -28,6 +28,7 @@ import {
 import { getGlobalStreakOrZero } from "@/lib/stats-helpers";
 import { getQuestionTaskLabel, getTypeInPlacePlaceholder, scopeText, SCOPE_INFO } from "@/lib/scope";
 import type { Difficulty, GameMode, GameScope, Question, Region, RoundQuestionSetting, SpeedRoundQuestionType } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 type GameBoardProps = {
   mode: GameMode;
@@ -43,6 +44,7 @@ type GameBoardProps = {
   questionType?: SpeedRoundQuestionType;
   countStats?: boolean;
   onPlayAgain?: () => void;
+  interactionLocked?: boolean;
 };
 
 export function GameBoard({
@@ -59,6 +61,7 @@ export function GameBoard({
   questionType,
   countStats = true,
   onPlayAgain,
+  interactionLocked = false,
 }: GameBoardProps) {
   const router = useRouter();
   const { refresh } = useProfiles();
@@ -464,7 +467,8 @@ export function GameBoard({
   const dailyDateLabel = mode === "daily-challenge" ? formatDailyDate() : null;
   const isTextOnlyPrompt =
     (question.mode === "country-to-capital" && question.displayType === "text") ||
-    (question.mode === "capital-to-country" && question.displayType === "text");
+    (question.mode === "capital-to-country" && question.displayType === "text") ||
+    question.mode === "fact-to-country";
   const isMultipleChoiceRound =
     question.displayType === "flags-grid" ||
     Boolean(question.options && difficulty !== "hard");
@@ -478,7 +482,7 @@ export function GameBoard({
       <>
         <span className="font-black">{getCountryName(question.countryCode)}</span>
         <span className="font-bold opacity-95">
-          {answerPlace?.isTerritory ? "&apos;s neighboring territory is " : "&apos;s neighbor is "}
+          {answerPlace?.isTerritory ? "'s neighboring territory is " : "'s neighbor is "}
         </span>
         <span className="font-black">{question.correctAnswer}</span>
       </>
@@ -489,7 +493,6 @@ export function GameBoard({
     wasCorrect: lastCorrect,
     compareCountryCode:
       question.mode === "population-showdown" ? question.secondaryCountryCode : undefined,
-    highlightNeighbors: question.mode === "neighbor-quiz",
   };
   const inlineLearnCard = (
     <LearnCard {...learnCardProps} variant="inline" />
@@ -514,7 +517,13 @@ export function GameBoard({
   );
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden sm:gap-3">
+    <div
+      className={cn(
+        "flex min-h-0 flex-1 flex-col gap-2 overflow-hidden sm:gap-3",
+        interactionLocked && "pointer-events-none",
+      )}
+      aria-hidden={interactionLocked}
+    >
       {!showLearnCard && (
         <AchievementToast
           achievementIds={newAchievements}

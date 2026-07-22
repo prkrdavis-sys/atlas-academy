@@ -1,46 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
-import { PlayModeLink } from "@/components/PlayModeLink";
-import { ProfileRequiredDialog } from "@/components/ProfileRequiredDialog";
-import { ScopeSelector } from "@/components/ScopeSelector";
-import { EXTRA_QUIZ_MODES, GAME_MODES } from "@/lib/types";
-import { getStoredScope, normalizeScope, SCOPE_INFO, scopeText, setStoredScope } from "@/lib/scope";
+import { useProfiles } from "@/components/ProfileProvider";
+import { getCommonlyMissedCountries } from "@/lib/stats-helpers";
 import { useGameScope } from "@/lib/use-game-scope";
-import { cn } from "@/lib/utils";
-
-const TILE_STYLES: Record<
-  string,
-  { tile: string; iconBg: string; hover: string }
-> = {
-  "weak-spots": {
-    tile: "border-rose-200 bg-rose-50/80 dark:border-rose-800 dark:bg-rose-950/50",
-    iconBg: "bg-rose-100 dark:bg-rose-900/60",
-    hover: "hover:border-rose-400 dark:hover:border-rose-600",
-  },
-  "country-to-flag": {
-    tile: "border-sky-200 bg-sky-50/80 dark:border-sky-800 dark:bg-sky-950/50",
-    iconBg: "bg-sky-100 dark:bg-sky-900/60",
-    hover: "hover:border-sky-400 dark:hover:border-sky-600",
-  },
-  "neighbor-quiz": {
-    tile: "border-emerald-200 bg-emerald-50/80 dark:border-emerald-800 dark:bg-emerald-950/50",
-    iconBg: "bg-emerald-100 dark:bg-emerald-900/60",
-    hover: "hover:border-emerald-400 dark:hover:border-emerald-600",
-  },
-  "population-showdown": {
-    tile: "border-amber-200 bg-amber-50/80 dark:border-amber-800 dark:bg-amber-950/50",
-    iconBg: "bg-amber-100 dark:bg-amber-900/60",
-    hover: "hover:border-amber-400 dark:hover:border-amber-600",
-  },
-};
-
-const TILE_CLASS =
-  "group flex min-h-[5.25rem] items-center gap-3 rounded-2xl border-2 p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md sm:gap-4 sm:p-5";
-const ICON_CLASS =
-  "flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-2xl transition-transform group-hover:scale-110 sm:h-14 sm:w-14 sm:text-3xl";
 
 const LIBRARY_FEATURES = [
   { icon: "🏳️", label: "Flags" },
@@ -59,68 +22,63 @@ const MAP_FEATURES = [
 ] as const;
 
 export function ExtrasPageContent() {
-  const searchParams = useSearchParams();
-  const [showProfileDialog, setShowProfileDialog] = useState(false);
-  const showRequiredProfileDialog = useCallback(() => setShowProfileDialog(true), []);
-  const hideRequiredProfileDialog = useCallback(() => setShowProfileDialog(false), []);
-
-  const { scope, setScope, selectScope } = useGameScope();
-  useEffect(() => {
-    const fromUrl = searchParams.get("scope");
-    const next = fromUrl !== null ? normalizeScope(fromUrl) : getStoredScope();
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setScope(next);
-    setStoredScope(next);
-  }, [searchParams, setScope]);
-  const scopeInfo = SCOPE_INFO[scope];
+  const { activeProfile, hydrated } = useProfiles();
+  const profile = hydrated ? activeProfile : null;
+  const { scope } = useGameScope();
+  const weakSpotCount = profile ? getCommonlyMissedCountries(profile, scope).length : 0;
 
   return (
     <div className="space-y-5 sm:space-y-6">
-      <ProfileRequiredDialog open={showProfileDialog} onClose={hideRequiredProfileDialog} />
-
-      <header className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="font-display text-2xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 sm:text-3xl">
-            ✨ Extras
-          </h1>
-          <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-            Bonus quiz modes, the Library, and the World Map
-          </p>
-        </div>
-        <ScopeSelector scope={scope} onSelect={selectScope} />
+      <header>
+        <h1 className="font-display text-2xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 sm:text-3xl">
+          🧭 Explore
+        </h1>
+        <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+          Reference tools, the Library, and the World Map
+        </p>
       </header>
 
-      <section>
-        <h2 className="mb-3 font-display text-xl font-extrabold text-slate-800 dark:text-slate-100 sm:mb-4">
-          More ways to play
-        </h2>
-        <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
-          {EXTRA_QUIZ_MODES.map((id) => {
-            const mode = GAME_MODES.find((m) => m.id === id);
-            if (!mode) return null;
-            const style = TILE_STYLES[mode.id];
-            return (
-              <PlayModeLink
-                key={mode.id}
-                mode={mode.id}
-                scope={scope}
-                onProfileRequired={showRequiredProfileDialog}
-                className={cn(TILE_CLASS, style?.tile, style?.hover)}
-              >
-                <span className={cn(ICON_CLASS, style?.iconBg)}>{mode.icon}</span>
-                <div className="min-w-0 flex-1">
-                  <h3 className="font-display font-extrabold text-slate-900 dark:text-slate-100">
-                    {scopeText(mode.title, scope)}
-                  </h3>
-                  <p className="mt-0.5 line-clamp-2 text-xs leading-snug text-slate-600 dark:text-slate-400 sm:truncate sm:text-sm">
-                    {scopeText(mode.description, scope)}
-                  </p>
-                </div>
-              </PlayModeLink>
-            );
-          })}
+      {weakSpotCount > 0 ? (
+        <Link
+          href="/play/setup/weak-spots"
+          className="group flex items-center gap-4 rounded-2xl border-2 border-rose-200 bg-rose-50/80 p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:border-rose-400 hover:shadow-md dark:border-rose-800 dark:bg-rose-950/50 dark:hover:border-rose-600"
+        >
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-rose-100 text-2xl dark:bg-rose-900/60">
+            🎯
+          </span>
+          <div className="min-w-0 flex-1">
+            <h2 className="font-display font-extrabold text-slate-900 dark:text-slate-100">
+              Practice {weakSpotCount} commonly missed {weakSpotCount === 1 ? "place" : "places"}
+            </h2>
+            <p className="mt-0.5 text-sm text-slate-600 dark:text-slate-400">
+              Open game setup with Weak Spots selected
+            </p>
+          </div>
+          <span className="shrink-0 font-display text-sm font-extrabold text-rose-700 dark:text-rose-300">
+            Setup →
+          </span>
+        </Link>
+      ) : null}
+
+      <Link
+        href="/play/setup"
+        className="group flex items-center gap-4 rounded-2xl border-2 border-emerald-200 bg-emerald-50/80 p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:border-emerald-400 hover:shadow-md dark:border-emerald-800 dark:bg-emerald-950/50 dark:hover:border-emerald-600"
+      >
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-100 text-2xl dark:bg-emerald-900/60">
+          ⚙️
+        </span>
+        <div className="min-w-0 flex-1">
+          <h2 className="font-display font-extrabold text-slate-900 dark:text-slate-100">
+            Customize your game
+          </h2>
+          <p className="mt-0.5 text-sm text-slate-600 dark:text-slate-400">
+            Change mode, difficulty, regions, and more
+          </p>
         </div>
-      </section>
+        <span className="shrink-0 font-display text-sm font-extrabold text-emerald-700 dark:text-emerald-300">
+          Setup →
+        </span>
+      </Link>
 
       <section>
         <h2 className="mb-3 font-display text-xl font-extrabold text-slate-800 dark:text-slate-100 sm:mb-4">

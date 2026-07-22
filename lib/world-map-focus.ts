@@ -34,7 +34,7 @@ export function focusWorldMapOnPaths(
   pathIds: string[],
   options: FocusWorldMapOptions = {},
 ): boolean {
-  const { maxScale = 6, padding = 1.35 } = options;
+  const { maxScale = 16, padding = 1.35 } = options;
   const paths = pathIds
     .map((pathId) => svg.querySelector<SVGGraphicsElement>(`#${CSS.escape(pathId)}`))
     .filter((path): path is SVGGraphicsElement => Boolean(path));

@@ -117,6 +117,7 @@ export type GameMode =
   | "country-to-flag"
   | "neighbor-quiz"
   | "population-showdown"
+  | "fact-to-country"
   | "daily-challenge"
   | "marathon"
   | "speed-round"
@@ -128,12 +129,19 @@ export const PLAY_MODES: GameMode[] = [
   "mixed",
 ];
 
+export const CHALLENGE_MODES: GameMode[] = ["daily-challenge", "speed-round", "marathon"];
+
+export const MAX_RECENT_MODES = 4;
+
+export const DEFAULT_SELECTED_MODE: GameMode = "mixed";
+
 const TYPE_IN_HARD_MODES: GameMode[] = [
   "flag-to-country",
   "shape-to-country",
   "capital-to-country",
   "country-to-capital",
   "neighbor-quiz",
+  "fact-to-country",
   "weak-spots",
   "mixed",
 ];
@@ -211,6 +219,8 @@ export type Profile = {
     speedRoundQuestionType: SpeedRoundQuestionType;
     marathonQuestionType: SpeedRoundQuestionType;
     roundQuestionCount: RoundQuestionSetting;
+    lastSelectedMode: GameMode;
+    recentModes?: GameMode[];
   };
   achievements: string[];
   countryProgress?: Record<string, { correct: number; total: number }>;
@@ -257,12 +267,15 @@ export type AnswerResult = {
   skipped?: boolean;
 };
 
-/** Phase-2 quiz modes shown on the Extras page (not core Play or Challenges). */
+/** Personalized review mode on the game setup page. */
+export const PRACTICE_MODES: GameMode[] = ["weak-spots"];
+
+/** Phase-2 quiz modes shown on the game setup page (not core Play, Challenges, or Practice). */
 export const EXTRA_QUIZ_MODES: GameMode[] = [
-  "weak-spots",
   "country-to-flag",
   "neighbor-quiz",
   "population-showdown",
+  "fact-to-country",
 ];
 
 export const GAME_MODES: {
@@ -319,6 +332,13 @@ export const GAME_MODES: {
     title: "Population Showdown",
     description: "Which country has more people?",
     icon: "👥",
+    phase: 2,
+  },
+  {
+    id: "fact-to-country",
+    title: "Countries from facts",
+    description: "Read a library fact — which country is it about?",
+    icon: "💡",
     phase: 2,
   },
   {
@@ -406,6 +426,7 @@ export const ACHIEVEMENTS = [
   { id: "mixed-veteran", title: "Mixed Veteran", description: "Answer 75 mixed mode questions correctly" },
   { id: "border-boss", title: "Border Boss", description: "Answer 50 neighbor quiz questions correctly" },
   { id: "population-prophet", title: "Population Prophet", description: "Answer 50 population showdown questions correctly" },
+  { id: "fact-finder", title: "Fact Finder", description: "Answer 50 fact quiz questions correctly" },
   { id: "marathon-25", title: "Endurance", description: "Reach a best marathon run of 25" },
   { id: "marathon-45", title: "Long Distance", description: "Reach a best marathon run of 45" },
   { id: "marathon-65", title: "Ultra Mapper", description: "Reach a best marathon run of 65" },

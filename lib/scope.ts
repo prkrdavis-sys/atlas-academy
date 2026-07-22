@@ -194,6 +194,8 @@ export function getQuestionTaskLabel(
       return isTerritory ? "Find the neighboring territory" : "Find the neighbor";
     case "population-showdown":
       return isTerritory ? "Pick the larger territory" : "Pick the larger population";
+    case "fact-to-country":
+      return placeText("Which country does this fact describe?", scope, place ?? undefined);
     case "country-to-capital":
       return "Name the capital";
     case "marathon":

@@ -75,7 +75,7 @@ export function WorldMapExplorer({ initialPlaceCode = null }: WorldMapExplorerPr
 
     panzoomRef.current?.destroy();
     panzoomRef.current = Panzoom(element, {
-      maxScale: 6,
+      maxScale: 16,
       minScale: 1,
       contain: "outside",
       cursor: "grab",
@@ -158,14 +158,14 @@ export function WorldMapExplorer({ initialPlaceCode = null }: WorldMapExplorerPr
           {selectedCountry ? (
             <Link
               href={`/library/${selectedCountry.code.toLowerCase()}`}
-              className="min-h-9 rounded-lg border border-teal-200 bg-teal-50 px-3 text-xs font-bold text-teal-800 transition-colors hover:border-teal-400 hover:bg-teal-100 dark:border-teal-800 dark:bg-teal-950/50 dark:text-teal-200 dark:hover:border-teal-500 dark:hover:bg-teal-950"
+              className="inline-flex items-center rounded-lg border border-teal-200 bg-teal-50 px-3 py-2 text-xs font-bold text-teal-800 transition-colors hover:border-teal-400 hover:bg-teal-100 dark:border-teal-800 dark:bg-teal-950/50 dark:text-teal-200 dark:hover:border-teal-500 dark:hover:bg-teal-950"
             >
               Open in Library →
             </Link>
           ) : null}
           <button
             type="button"
-            className="min-h-9 min-w-9 rounded-lg border border-slate-200 bg-white px-2 text-sm font-black text-slate-700 transition-colors hover:border-teal-400 hover:text-teal-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-teal-500 dark:hover:text-teal-300"
+            className="inline-flex min-h-9 min-w-9 items-center justify-center rounded-lg border border-slate-200 bg-white px-2 text-sm font-black text-slate-700 transition-colors hover:border-teal-400 hover:text-teal-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-teal-500 dark:hover:text-teal-300"
             aria-label="Zoom out"
             onClick={() => panzoomRef.current?.zoomOut()}
           >
@@ -173,7 +173,7 @@ export function WorldMapExplorer({ initialPlaceCode = null }: WorldMapExplorerPr
           </button>
           <button
             type="button"
-            className="min-h-9 min-w-9 rounded-lg border border-slate-200 bg-white px-2 text-sm font-black text-slate-700 transition-colors hover:border-teal-400 hover:text-teal-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-teal-500 dark:hover:text-teal-300"
+            className="inline-flex min-h-9 min-w-9 items-center justify-center rounded-lg border border-slate-200 bg-white px-2 text-sm font-black text-slate-700 transition-colors hover:border-teal-400 hover:text-teal-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-teal-500 dark:hover:text-teal-300"
             aria-label="Zoom in"
             onClick={() => panzoomRef.current?.zoomIn()}
           >
@@ -181,7 +181,7 @@ export function WorldMapExplorer({ initialPlaceCode = null }: WorldMapExplorerPr
           </button>
           <button
             type="button"
-            className="min-h-9 rounded-lg border border-slate-200 bg-white px-3 text-xs font-bold text-slate-700 transition-colors hover:border-teal-400 hover:text-teal-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-teal-500 dark:hover:text-teal-300"
+            className="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 transition-colors hover:border-teal-400 hover:text-teal-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-teal-500 dark:hover:text-teal-300"
             onClick={() => panzoomRef.current?.reset()}
           >
             Reset

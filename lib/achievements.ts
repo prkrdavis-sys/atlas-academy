@@ -149,6 +149,7 @@ export function buildAchievementChecks(
     "mixed-veteran": modeCorrectCount(profile, "mixed") >= 75,
     "border-boss": modeCorrectCount(profile, "neighbor-quiz") >= 50,
     "population-prophet": modeCorrectCount(profile, "population-showdown") >= 50,
+    "fact-finder": modeCorrectCount(profile, "fact-to-country") >= 50,
     "marathon-25": marathonBest >= 25,
     "marathon-45": marathonBest >= 45,
     "marathon-65": marathonBest >= 65,

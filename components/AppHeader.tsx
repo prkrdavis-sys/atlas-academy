@@ -9,15 +9,16 @@ import { cn } from "@/lib/utils";
 
 const MOBILE_NAV_ITEMS = [
   { href: "/", label: "Play", icon: "🌎" },
-  { href: "/extras", label: "Extras", icon: "✨" },
+  { href: "/extras", label: "Explore", icon: "🧭" },
   { href: "/stats", label: "Stats", icon: "📊" },
   { href: "/profiles", label: "Profiles", icon: PROFILE_EMOJI },
 ] as const;
 
 export function AppHeader() {
   const pathname = usePathname();
+  const hideHeader = pathname.startsWith("/play/") && !pathname.startsWith("/play/setup");
 
-  if (pathname.startsWith("/play/")) return null;
+  if (hideHeader) return null;
 
   return (
     <>

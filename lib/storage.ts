@@ -1,13 +1,10 @@
 import type {
   Continent,
-  SpeedRoundQuestionType,
   Difficulty,
   GameMode,
   GameScope,
   Profile,
   AchievementSessionContext,
-  RoundQuestionSetting,
-  UsRegion,
 } from "@/lib/types";
 import {
   AVATAR_COLORS,
@@ -71,6 +68,8 @@ function getDefaultProfileSettings(): Profile["settings"] {
     speedRoundQuestionType: "flag-to-country",
     marathonQuestionType: "flag-to-country",
     roundQuestionCount: DEFAULT_ROUND_QUESTION_COUNT,
+    lastSelectedMode: "mixed",
+    recentModes: ["mixed"],
   };
 }
 
@@ -210,6 +209,12 @@ export function normalizeProfile(profile: Profile): Profile {
   }
   normalized.achievements = reconcileAchievements(normalized as Profile);
   migrateCommonlyMissedCountries(normalized as Profile);
+  if (!normalized.settings.lastSelectedMode) {
+    normalized.settings.lastSelectedMode = "mixed";
+  }
+  if (!normalized.settings.recentModes?.length) {
+    normalized.settings.recentModes = [normalized.settings.lastSelectedMode];
+  }
   return normalized as Profile;
 }
 
@@ -312,20 +317,29 @@ export function deleteProfile(profileId: string) {
 
 export function updateProfileSettings(
   profileId: string,
-  settings: Partial<{
-    difficulty: Difficulty;
-    lastContinentFilter: Continent[];
-    lastRegionFilter: UsRegion[];
-    includeTerritories: boolean;
-    speedRoundQuestionType: SpeedRoundQuestionType;
-    marathonQuestionType: SpeedRoundQuestionType;
-    roundQuestionCount: RoundQuestionSetting;
-  }>,
+  settings: Partial<Profile["settings"]>,
 ) {
   const state = loadState();
   const profile = state.profiles.find((p) => p.id === profileId);
   if (!profile) return state;
   profile.settings = { ...profile.settings, ...settings };
+  saveState(state);
+  return state;
+}
+
+export function recordModeSelection(profileId: string, mode: GameMode) {
+  const state = loadState();
+  const profile = state.profiles.find((p) => p.id === profileId);
+  if (!profile) return state;
+
+  const recent = profile.settings.recentModes ?? [];
+  const deduped = [mode, ...recent.filter((entry) => entry !== mode)].slice(0, 4);
+
+  profile.settings = {
+    ...profile.settings,
+    lastSelectedMode: mode,
+    recentModes: deduped,
+  };
   saveState(state);
   return state;
 }

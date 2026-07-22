@@ -463,6 +463,22 @@ export class GameEngine {
           optionCodes: [country.code, other.code],
         };
       }
+      case "fact-to-country": {
+        const mc =
+          this.difficulty !== "hard"
+            ? buildNameMcOptions(country, this.pool, this.difficulty, undefined, 4, this.random)
+            : undefined;
+        return {
+          id,
+          mode,
+          countryCode: country.code,
+          prompt: country.fact,
+          correctAnswer: country.name,
+          correctCode: country.code,
+          displayType: "text",
+          ...mc,
+        };
+      }
       case "daily-challenge":
         throw new Error("Daily challenge questions must use a concrete question type");
       default:

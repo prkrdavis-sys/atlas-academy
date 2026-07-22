@@ -1,3 +1,4 @@
+import { ExpandableFlagImage } from "@/components/ExpandableFlagImage";
 import { FlagImage } from "@/components/FlagDisplay";
 import { getCapitalPath, getShapePath } from "@/lib/countries";
 import { formatDisplayCode } from "@/lib/scope";
@@ -7,6 +8,7 @@ type LibraryPlaceVisualProps = {
   country: Pick<Country, "code" | "code3" | "name" | "capital" | "hasShape" | "hasFlag" | "hasCapitalImage">;
   variant?: "card" | "hero";
   visual?: "auto" | "shape" | "flag" | "capital";
+  expandableFlag?: boolean;
 };
 
 const shapeFilterCard =
@@ -19,6 +21,7 @@ export function LibraryPlaceVisual({
   country,
   variant = "card",
   visual = "auto",
+  expandableFlag = false,
 }: LibraryPlaceVisualProps) {
   const showCapital = visual === "capital" && country.hasCapitalImage;
   const showShape = !showCapital && (visual === "shape" || (visual === "auto" && country.hasShape));
@@ -65,6 +68,11 @@ export function LibraryPlaceVisual({
 
   if (showFlag) {
     const width = variant === "hero" ? 280 : 176;
+    const flagAlt = variant === "hero" ? `Flag of ${country.name}` : "";
+    const flagClassName =
+      variant === "hero" ? "w-[min(100%,21rem)]" : "w-[min(100%,11rem)] transition-transform group-hover:scale-105";
+    const flagFrame = variant === "hero" ? "lg" : "md";
+
     return (
       <div
         className={
@@ -73,14 +81,26 @@ export function LibraryPlaceVisual({
             : "flex h-full w-full items-center justify-center"
         }
       >
-        <FlagImage
-          code={country.code}
-          alt={variant === "hero" ? `Flag of ${country.name}` : ""}
-          width={width}
-          frame={variant === "hero" ? "lg" : "md"}
-          className={variant === "hero" ? "w-[min(100%,21rem)]" : "w-[min(100%,11rem)] transition-transform group-hover:scale-105"}
-          priority={variant === "hero"}
-        />
+        {expandableFlag ? (
+          <ExpandableFlagImage
+            code={country.code}
+            countryName={country.name}
+            alt={flagAlt}
+            width={width}
+            frame={flagFrame}
+            className={flagClassName}
+            priority={variant === "hero"}
+          />
+        ) : (
+          <FlagImage
+            code={country.code}
+            alt={flagAlt}
+            width={width}
+            frame={flagFrame}
+            className={flagClassName}
+            priority={variant === "hero"}
+          />
+        )}
       </div>
     );
   }

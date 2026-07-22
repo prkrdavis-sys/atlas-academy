@@ -75,6 +75,8 @@ type PlaceContextMapProps = {
   country: Country;
   variant?: "compact" | "hero";
   highlightNeighbors?: boolean;
+  /** Crop and render only the featured country (no neighbors or other land). */
+  countryOnly?: boolean;
   className?: string;
   interactive?: boolean;
 };
@@ -118,6 +120,7 @@ export function ContextMapSvg({
       className={cn("h-full w-full", className)}
       role="img"
       aria-label={ariaLabel}
+      shapeRendering="geometricPrecision"
     >
       <rect
         x={viewBoxX}
@@ -156,6 +159,7 @@ export function PlaceContextMap({
   country,
   variant = "hero",
   highlightNeighbors = false,
+  countryOnly = false,
   className,
   interactive = false,
 }: PlaceContextMapProps) {
@@ -179,9 +183,15 @@ export function PlaceContextMap({
   }, [country, highlightIds, highlightNeighbors]);
 
   const contextPathIds = useMemo(
-    () => getNeighborContextMapPathIds(country),
-    [country],
+    () => (countryOnly ? [] : getNeighborContextMapPathIds(country)),
+    [country, countryOnly],
   );
+
+  const visiblePaths = useMemo(() => {
+    if (!map) return [];
+    if (!countryOnly) return map.paths;
+    return map.paths.filter((path) => highlightIds.has(path.id));
+  }, [map, countryOnly, highlightIds]);
 
   const focusedViewBox = useMemo(() => {
     if (!boundsManifest) return undefined;
@@ -233,7 +243,7 @@ export function PlaceContextMap({
     >
       {map ? (
         <ContextMapSvg
-          map={map}
+          map={{ ...map, paths: visiblePaths }}
           highlightIds={highlightIds}
           neighborIds={neighborIds}
           ariaLabel={ariaLabel}

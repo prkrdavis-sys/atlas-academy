@@ -56,6 +56,16 @@ function templateViewBoxSize(viewBox: PathBounds): { width: number; height: numb
   return { width: viewBox[2], height: viewBox[3] };
 }
 
+/** Skip dominant neighbors that would pull tiny islands off-center (e.g. CX + Australia). */
+const MIN_FOCUS_TO_SHORE_AREA_RATIO = 0.01;
+
+function shouldIncludeShoreContext(focusBounds: PathBounds, shoreBounds: PathBounds): boolean {
+  const focusArea = pathBoundsArea(focusBounds);
+  const shoreArea = pathBoundsArea(shoreBounds);
+  if (shoreArea === 0) return false;
+  return focusArea / shoreArea >= MIN_FOCUS_TO_SHORE_AREA_RATIO;
+}
+
 /** Adds nearby land paths when an island has no bordering neighbors to crop around. */
 export function findNearestShorePathIds(
   template: MapTemplateBounds,
@@ -171,19 +181,24 @@ export function computeFocusedViewBox(
     minSizeRatio?: number;
   },
 ): string {
-  const autoShoreIds =
-    contextPathIds.length === 0 ? findNearestShorePathIds(template, focusPathIds) : [];
-  const contextIds = contextPathIds.length > 0 ? contextPathIds : autoShoreIds;
-  const pathIds = [...new Set([...focusPathIds, ...contextIds])];
-  const boundsList = pathIds
-    .map((pathId) => template.paths[pathId])
-    .filter((bounds): bounds is PathBounds => Boolean(bounds));
-
   const focusBounds = unionBounds(
     focusPathIds
       .map((pathId) => template.paths[pathId])
       .filter((bounds): bounds is PathBounds => Boolean(bounds)),
   );
+
+  const autoShoreIds =
+    contextPathIds.length === 0 && focusBounds
+      ? findNearestShorePathIds(template, focusPathIds).filter((shoreId) => {
+          const shoreBounds = template.paths[shoreId];
+          return shoreBounds ? shouldIncludeShoreContext(focusBounds, shoreBounds) : false;
+        })
+      : [];
+  const contextIds = contextPathIds.length > 0 ? contextPathIds : autoShoreIds;
+  const pathIds = [...new Set([...focusPathIds, ...contextIds])];
+  const boundsList = pathIds
+    .map((pathId) => template.paths[pathId])
+    .filter((bounds): bounds is PathBounds => Boolean(bounds));
 
   const combinedBounds = unionBounds(boundsList) ?? focusBounds;
   if (!combinedBounds) {
