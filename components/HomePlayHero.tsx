@@ -2,7 +2,11 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import {
+  getGuestHomeHeroTagline,
+  pickHomeHeroTagline,
+} from "@/lib/home-hero-tagline";
 import { ActiveGameSummary } from "@/components/ActiveGameSummary";
 import { HomeStreakHighlights } from "@/components/HomeStreakHighlights";
 import { ProfileRequiredDialog } from "@/components/ProfileRequiredDialog";
@@ -48,6 +52,24 @@ export function HomePlayHero({
   const dailyPlayedToday = profile
     ? hasPlayedDailyToday(profile.dailyChallengePlayedDates, scope)
     : false;
+
+  const [heroTagline, setHeroTagline] = useState<string | null>(null);
+
+  useEffect(() => {
+    setHeroTagline(
+      profile
+        ? pickHomeHeroTagline({
+            profile,
+            scope,
+            streak,
+            todayBest,
+            storedTodayBest,
+            dailyRun,
+            dailyCompletedToday,
+          })
+        : getGuestHomeHeroTagline(scope),
+    );
+  }, [profile?.id, scope]);
 
   const hideProfileDialog = useCallback(() => setShowProfileDialog(false), []);
 
@@ -122,12 +144,23 @@ export function HomePlayHero({
             profile && "lg:grid-cols-[minmax(0,1fr)_14rem] lg:grid-rows-[auto_auto_auto] lg:items-start lg:gap-x-8 lg:gap-y-5",
           )}
         >
-          <div className={cn("max-w-xl", profile && "lg:col-start-1 lg:row-start-1")}>
+          <div
+            className={cn(
+              profile ? "min-w-0 lg:col-start-1 lg:row-start-1" : "max-w-xl",
+            )}
+          >
             <h1 className="font-display text-3xl font-extrabold tracking-tight sm:text-5xl">
-              Learn world geography
+              {profile ? (
+                <>
+                  Welcome back,{" "}
+                  <span className="whitespace-nowrap">Atlas Explorer</span>!
+                </>
+              ) : (
+                "Learn world geography"
+              )}
             </h1>
-            <p className="mt-3 max-w-[18rem] text-sm leading-relaxed text-emerald-50 sm:max-w-md sm:text-base">
-              Flags, capitals, shapes, and more. Build a streak and beat your best.
+            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-emerald-50 sm:max-w-3xl sm:text-base lg:max-w-none">
+              {heroTagline ?? "\u00a0"}
             </p>
           </div>
 
@@ -150,22 +183,38 @@ export function HomePlayHero({
           >
             {profile ? (
               <>
-                <button
-                  type="button"
-                  onClick={() => startPlay()}
-                  className="flex min-h-14 w-full items-center justify-center gap-2 rounded-[1.25rem] bg-white px-8 py-4 font-display text-lg font-extrabold text-teal-800 shadow-[0_4px_0_rgb(255_255_255_/_0.45)] transition-transform hover:scale-[1.01] active:translate-y-1 active:shadow-none sm:min-h-16 sm:text-xl"
-                >
-                  <span aria-hidden>▶</span>
-                  Play
-                </button>
+                <div className="flex w-full flex-col gap-2">
+                  <button
+                    type="button"
+                    onClick={() => startPlay()}
+                    className="flex min-h-14 w-full items-center justify-center gap-2 rounded-[1.25rem] bg-white px-8 py-4 font-display text-lg font-extrabold text-teal-800 shadow-[0_4px_0_rgb(255_255_255_/_0.45)] transition-transform hover:scale-[1.01] active:translate-y-1 active:shadow-none sm:min-h-16 sm:text-xl"
+                  >
+                    <span aria-hidden>▶</span>
+                    Play
+                  </button>
+
+                  <ActiveGameSummary
+                    profile={profile}
+                    mode={activeMode}
+                    scope={scope}
+                    onClick={() => router.push("/play/setup")}
+                  />
+                </div>
 
                 <div className="flex w-full gap-3">
                   <Link
                     href="/play/setup"
-                    className="flex min-h-12 flex-1 min-w-0 items-center justify-center gap-1.5 rounded-[1.25rem] border-2 border-white/70 bg-white/15 px-3 py-3 text-center font-display text-sm font-extrabold text-white shadow-[0_3px_0_rgb(255_255_255_/_0.2)] backdrop-blur-sm transition-transform hover:scale-[1.01] hover:border-white hover:bg-white/25 active:translate-y-0.5 active:shadow-none sm:min-h-[3.25rem] sm:gap-2 sm:px-4 sm:text-base"
+                    className="flex min-h-12 flex-1 min-w-0 items-center justify-center gap-2 rounded-[1.25rem] border-2 border-white/70 bg-white/15 px-3 py-3 text-center font-display text-sm font-extrabold text-white shadow-[0_3px_0_rgb(255_255_255_/_0.2)] backdrop-blur-sm transition-transform hover:scale-[1.01] hover:border-white hover:bg-white/25 active:translate-y-0.5 active:shadow-none sm:min-h-[3.25rem] sm:gap-2.5 sm:px-4 sm:text-base"
                   >
-                    <span aria-hidden className="text-lg">🌍</span>
-                    Pick your challenge
+                    <span aria-hidden className="shrink-0 text-lg">
+                      🌍
+                    </span>
+                    <span className="flex min-w-0 flex-col items-start text-left leading-tight">
+                      <span>Choose your Journey</span>
+                      <span className="text-[0.6875rem] font-semibold text-emerald-100/85 sm:text-xs">
+                        Game mode selection
+                      </span>
+                    </span>
                   </Link>
 
                   <Link
@@ -176,13 +225,6 @@ export function HomePlayHero({
                     {dailyPlayedToday ? "Review today" : "Daily challenge"}
                   </Link>
                 </div>
-
-                <ActiveGameSummary
-                  profile={profile}
-                  mode={activeMode}
-                  scope={scope}
-                  onClick={() => router.push("/play/setup")}
-                />
               </>
             ) : (
               <Link

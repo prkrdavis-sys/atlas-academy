@@ -144,7 +144,7 @@ export const CHALLENGE_MODIFIER_OPTIONS: readonly {
     id: "none",
     title: "Standard",
     description: "Play a fixed round length",
-    icon: "🎯",
+    icon: "🎮",
   },
   {
     id: "speed-round",

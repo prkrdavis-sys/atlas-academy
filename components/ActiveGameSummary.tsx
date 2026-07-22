@@ -17,24 +17,25 @@ export function ActiveGameSummary({ profile, mode, scope, className, onClick }: 
   const parts = getActiveGameSummaryParts(profile, mode, scope);
   const scopeInfo = SCOPE_INFO[scope];
 
+  const chipClass =
+    "inline-flex items-center rounded-full border border-white/25 bg-white/15 px-2.5 py-1 text-xs font-semibold text-emerald-50";
+
   return (
     <button
       type="button"
       onClick={onClick}
+      aria-label="Current game settings. Tap to change."
       className={cn(
-        "flex w-full flex-wrap items-center justify-center gap-2 rounded-2xl border border-white/20 bg-white/10 px-3 py-2.5 text-left transition-colors hover:bg-white/15 active:bg-white/20",
+        "flex w-full flex-wrap items-center justify-center gap-2 text-left transition-opacity hover:opacity-90 active:opacity-80",
         className,
       )}
     >
       {parts.map((part) => (
-        <span
-          key={part}
-          className="inline-flex items-center rounded-full bg-white/15 px-2.5 py-1 text-xs font-semibold text-emerald-50"
-        >
+        <span key={part} className={chipClass}>
           {part}
         </span>
       ))}
-      <span className="inline-flex items-center rounded-full bg-white/15 px-2.5 py-1 text-xs font-semibold text-emerald-50">
+      <span className={chipClass}>
         {scopeInfo.icon} {scopeInfo.shortLabel}
       </span>
     </button>
