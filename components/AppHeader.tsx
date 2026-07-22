@@ -49,9 +49,7 @@ export function AppHeader() {
             const active =
               item.href === "/"
                 ? pathname === "/" || pathname.startsWith("/play/")
-                : item.href === "/extras"
-                  ? isExploreRoute(pathname)
-                  : pathname.startsWith(item.href);
+                : isExploreRoute(pathname);
             return (
               <Link
                 key={item.href}
