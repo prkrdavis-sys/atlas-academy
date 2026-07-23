@@ -22,7 +22,7 @@ export function ProgressMapOverlays({
     <>
       {hoverLabel ? (
         <div
-          className="pointer-events-none absolute bottom-2 right-2 rounded-lg bg-slate-900/85 px-2.5 py-1 text-xs font-semibold text-white shadow-sm"
+          className="pointer-events-none absolute right-2 top-12 z-10 max-w-[calc(100%-5rem)] rounded-lg bg-slate-900/85 px-2.5 py-1 text-xs font-semibold text-white shadow-sm"
           role="status"
           aria-live="polite"
         >

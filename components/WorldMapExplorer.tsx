@@ -20,7 +20,7 @@ import {
   getWorldMapPathIds,
   resolvePlaceCodeFromParam,
 } from "@/lib/context-maps";
-import { createInteractiveProgressPathStyleResolver } from "@/lib/map-interaction";
+import { createInteractiveProgressPathStyleResolver, EMPTY_MAP_PATH_ID_SET } from "@/lib/map-interaction";
 import { buildWorldProgressFillMap } from "@/lib/map-progress";
 import type { Country, MapProgressDifficulty, Profile } from "@/lib/types";
 import { useIsDark } from "@/lib/use-is-dark";
@@ -161,13 +161,13 @@ export function WorldMapExplorer({
     };
   }, [initialPlaceCode, map, panzoomReady]);
 
-  const handlePathClick = (pathId: string) => {
+  const handlePathClick = useCallback((pathId: string) => {
     const code = getCountryCodeByMapPathId(pathId);
     if (!code) return;
     const country = getCountryByCode(code);
     if (!country) return;
     setSelectedCountry((current) => (current?.code === country.code ? null : country));
-  };
+  }, []);
 
   const handleBackgroundClick = useCallback(() => {
     setSelectedCountry(null);
@@ -205,8 +205,8 @@ export function WorldMapExplorer({
             <div ref={mapRef} className="h-full w-full origin-center">
               <ContextMapSvg
                 map={map}
-                highlightIds={new Set()}
-                neighborIds={new Set()}
+                highlightIds={EMPTY_MAP_PATH_ID_SET}
+                neighborIds={EMPTY_MAP_PATH_ID_SET}
                 ariaLabel="Interactive world map showing every country"
                 isDark={isDark}
                 interactive

@@ -19,7 +19,7 @@ import {
   getUsaMapPathIds,
   resolvePlaceCodeFromParam,
 } from "@/lib/context-maps";
-import { createInteractiveProgressPathStyleResolver } from "@/lib/map-interaction";
+import { createInteractiveProgressPathStyleResolver, EMPTY_MAP_PATH_ID_SET } from "@/lib/map-interaction";
 import { buildUsaProgressFillMap } from "@/lib/map-progress";
 import type { Country, MapProgressDifficulty, Profile } from "@/lib/types";
 import { useIsDark } from "@/lib/use-is-dark";
@@ -160,13 +160,13 @@ export function UsaMapExplorer({
     };
   }, [initialPlaceCode, map, panzoomReady]);
 
-  const handlePathClick = (pathId: string) => {
+  const handlePathClick = useCallback((pathId: string) => {
     const code = getStateCodeByUsaMapPathId(pathId);
     if (!code) return;
     const state = getCountryByCode(code);
     if (!state) return;
     setSelectedState((current) => (current?.code === state.code ? null : state));
-  };
+  }, []);
 
   const handleBackgroundClick = useCallback(() => {
     setSelectedState(null);
@@ -204,8 +204,8 @@ export function UsaMapExplorer({
             <div ref={mapRef} className="h-full w-full origin-center">
               <ContextMapSvg
                 map={map}
-                highlightIds={new Set()}
-                neighborIds={new Set()}
+                highlightIds={EMPTY_MAP_PATH_ID_SET}
+                neighborIds={EMPTY_MAP_PATH_ID_SET}
                 ariaLabel="Interactive map showing all 50 U.S. states"
                 isDark={isDark}
                 interactive

@@ -6,6 +6,8 @@ import type { PlaceMasteryLevel } from "@/lib/types";
 
 const MAP_TAP_MOVE_THRESHOLD_PX = 8;
 
+export const EMPTY_MAP_PATH_ID_SET = new Set<string>();
+
 type MapPlaceTapHandlers = {
   onPathClick: (pathId: string) => void;
   onBackgroundClick?: () => void;
@@ -51,12 +53,10 @@ export function attachMapPlaceTapHandlers(
     const activeTap = activeTaps.get(event.pointerId);
     if (activeTap) {
       activeTaps.delete(event.pointerId);
-
-      const target = event.target;
-      if (!(target instanceof SVGPathElement) || target.id !== activeTap.pathId) return;
       if (!isTap(activeTap.x, activeTap.y, event.clientX, event.clientY)) return;
 
       event.stopPropagation();
+      event.preventDefault();
       onPathClick(activeTap.pathId);
       return;
     }
@@ -80,12 +80,13 @@ export function attachMapPlaceTapHandlers(
     backgroundTap = null;
   };
 
-  svg.addEventListener("pointerdown", onPointerDown);
+  // Capture phase blocks Panzoom from seeing path pointerdown before it bubbles to mapRef.
+  svg.addEventListener("pointerdown", onPointerDown, true);
   svg.addEventListener("pointerup", onPointerUp);
   svg.addEventListener("pointercancel", onPointerCancel);
 
   return () => {
-    svg.removeEventListener("pointerdown", onPointerDown);
+    svg.removeEventListener("pointerdown", onPointerDown, true);
     svg.removeEventListener("pointerup", onPointerUp);
     svg.removeEventListener("pointercancel", onPointerCancel);
   };

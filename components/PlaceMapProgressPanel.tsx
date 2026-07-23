@@ -146,7 +146,7 @@ export function PlaceMapProgressPanel({
   const libraryHref = buildLibraryDetailHref(code, scope, "All");
 
   return (
-    <div className="absolute bottom-2 left-2 z-10 max-w-[calc(100%-1rem)] rounded-xl border border-slate-200/80 bg-white/95 p-2.5 shadow-lg backdrop-blur sm:max-w-xs dark:border-slate-600 dark:bg-slate-900/95">
+    <div className="absolute left-2 top-2 z-10 max-w-[calc(100%-1rem)] rounded-xl border border-slate-200/80 bg-white/95 p-2.5 shadow-lg backdrop-blur sm:max-w-xs dark:border-slate-600 dark:bg-slate-900/95">
       <p className="font-display text-sm font-extrabold text-slate-900 dark:text-slate-100">
         {getCountryName(code)}
       </p>

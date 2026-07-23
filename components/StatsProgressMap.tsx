@@ -21,7 +21,7 @@ import {
   type ContextMapTemplateKey,
 } from "@/lib/context-maps";
 import { computeFocusedViewBox, loadMapBoundsManifest, type MapBoundsManifest } from "@/lib/map-bounds";
-import { createInteractiveProgressPathStyleResolver } from "@/lib/map-interaction";
+import { createInteractiveProgressPathStyleResolver, EMPTY_MAP_PATH_ID_SET } from "@/lib/map-interaction";
 import { MAP_PANZOOM_OPTIONS } from "@/lib/map-panzoom";
 import {
   buildUsaProgressFillMap,
@@ -223,8 +223,8 @@ export function StatsProgressMap({
             <div ref={mapRef} className="h-full w-full origin-center">
               <ContextMapSvg
                 map={{ ...map, paths: visiblePaths }}
-                highlightIds={new Set()}
-                neighborIds={new Set()}
+                highlightIds={EMPTY_MAP_PATH_ID_SET}
+                neighborIds={EMPTY_MAP_PATH_ID_SET}
                 ariaLabel={ariaLabel}
                 isDark={isDark}
                 interactive
