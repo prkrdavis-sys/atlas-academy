@@ -8,7 +8,7 @@
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { GameEngine } from "../lib/game-engine";
-import { resolveMapProgressCategory } from "../lib/map-progress";
+import { resolveMapProgressCategory, wouldCountTowardMapProgress } from "../lib/map-progress";
 import { normalizeAnswerText } from "../lib/answer-matcher";
 import { countries, getCountryByCode, usStates } from "../lib/countries";
 import { CONTEXT_MAP_TEMPLATES } from "../lib/context-maps";
@@ -223,6 +223,38 @@ if (resolveMapProgressCategory(countryToFlagQuestion) !== "flag") {
 }
 if (resolveMapProgressCategory(countryToFlagQuestion, "country-to-flag") !== "flag") {
   fail("Flags from countries stats mode should count toward Flag map progress");
+}
+
+if (
+  !wouldCountTowardMapProgress({
+    question: flagToCountryQuestion,
+    statsMode: "flag-to-country",
+    difficulty: "medium",
+    correct: true,
+  })
+) {
+  fail("Correct Normal answers with a map category should count toward map progress");
+}
+if (
+  wouldCountTowardMapProgress({
+    question: flagToCountryQuestion,
+    statsMode: "flag-to-country",
+    difficulty: "easy",
+    correct: true,
+  })
+) {
+  fail("Easy difficulty should not count toward map progress");
+}
+if (
+  wouldCountTowardMapProgress({
+    question: flagToCountryQuestion,
+    statsMode: "flag-to-country",
+    difficulty: "medium",
+    correct: true,
+    isPracticeMode: true,
+  })
+) {
+  fail("Practice mode should not count toward map progress");
 }
 
 console.log(`Checked ${questionsChecked} generated questions across ${MODES.length} modes.`);

@@ -63,14 +63,15 @@ export function ProgressMapContainer({
         ) : null}
       </div>
       {selectedCode ? (
-        <PlaceMapProgressPanel
-          code={selectedCode}
-          profile={profile}
-          difficulty={difficulty}
-          scope={scope}
-          variant="inline"
-          className={cn("mt-2 sm:hidden", inlinePanelClassName)}
-        />
+        <div className={cn("mt-2 sm:hidden", inlinePanelClassName)}>
+          <PlaceMapProgressPanel
+            code={selectedCode}
+            profile={profile}
+            difficulty={difficulty}
+            scope={scope}
+            variant="inline"
+          />
+        </div>
       ) : null}
     </div>
   );

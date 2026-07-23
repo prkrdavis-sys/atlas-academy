@@ -11,6 +11,8 @@ import type {
 import {
   recordPlaceMapProgress,
   resolveMapProgressCategory,
+  toMapProgressDifficulty,
+  wouldCountTowardMapProgress,
 } from "@/lib/map-progress";
 import {
   AVATAR_COLORS,
@@ -463,15 +465,23 @@ export function recordAnswer(
     profile.countryProgress[countryCode] = entry;
 
     if (
-      correct &&
-      !isPracticeMode &&
-      (difficulty === "medium" || difficulty === "hard") &&
-      question
+      question &&
+      wouldCountTowardMapProgress({
+        question,
+        statsMode: mode,
+        difficulty,
+        correct,
+        skipped,
+        isPracticeMode,
+      })
     ) {
-      const category = resolveMapProgressCategory(question, mode);
-      if (category) {
-        recordPlaceMapProgress(profile, countryCode, difficulty, category);
-      }
+      const category = resolveMapProgressCategory(question, mode)!;
+      recordPlaceMapProgress(
+        profile,
+        countryCode,
+        toMapProgressDifficulty(difficulty)!,
+        category,
+      );
     }
   }
 

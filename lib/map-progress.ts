@@ -6,6 +6,7 @@ import {
 import type { MapPathStyle } from "@/lib/map-colors";
 import { getProgressPathStyle } from "@/lib/map-colors";
 import type {
+  Difficulty,
   GameMode,
   GameScope,
   MapProgressCategory,
@@ -50,6 +51,32 @@ function resolveMapProgressCategoryFromGameMode(mode: GameMode): MapProgressCate
     default:
       return null;
   }
+}
+
+export function toMapProgressDifficulty(
+  difficulty: Difficulty,
+): MapProgressDifficulty | null {
+  return difficulty === "medium" || difficulty === "hard" ? difficulty : null;
+}
+
+export function wouldCountTowardMapProgress({
+  question,
+  statsMode,
+  difficulty,
+  correct,
+  skipped = false,
+  isPracticeMode = false,
+}: {
+  question: Question;
+  statsMode: GameMode;
+  difficulty: Difficulty;
+  correct: boolean;
+  skipped?: boolean;
+  isPracticeMode?: boolean;
+}): boolean {
+  if (!correct || skipped || isPracticeMode) return false;
+  if (!toMapProgressDifficulty(difficulty)) return false;
+  return resolveMapProgressCategory(question, statsMode) !== null;
 }
 
 export function resolveMapProgressCategory(
@@ -161,6 +188,23 @@ export type MapProgressSummary = {
   totalPlaces: number;
   percentComplete: number;
 };
+
+export type MapProgressDelta = {
+  completedCategories: number;
+  masteredPlaces: number;
+  percentComplete: number;
+};
+
+export function getMapProgressDelta(
+  before: MapProgressSummary,
+  after: MapProgressSummary,
+): MapProgressDelta {
+  return {
+    completedCategories: after.completedCategories - before.completedCategories,
+    masteredPlaces: after.masteredPlaces - before.masteredPlaces,
+    percentComplete: after.percentComplete - before.percentComplete,
+  };
+}
 
 export function getMapProgressSummary(
   scope: GameScope,

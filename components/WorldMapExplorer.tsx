@@ -204,7 +204,7 @@ export function WorldMapExplorer({
         profile={profile}
         difficulty={difficulty}
         scope="world"
-        inlinePanelClassName="mx-4"
+        inlinePanelClassName="px-4"
       >
         {map && ready ? (
           <div ref={mapRef} className="h-full w-full origin-center">

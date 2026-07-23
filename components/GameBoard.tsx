@@ -8,6 +8,7 @@ import { AnswerTypeIn } from "@/components/AnswerTypeIn";
 import { AchievementToast } from "@/components/AchievementToast";
 import { CapitalDisplay } from "@/components/CapitalDisplay";
 import { FlagDisplay, FlagGrid } from "@/components/FlagDisplay";
+import { GameMapProgressSummary } from "@/components/GameMapProgressSummary";
 import { LearnCard } from "@/components/LearnCard";
 import { NeighborCountryDisplay } from "@/components/NeighborCountryDisplay";
 import { PopulationMatchupDisplay } from "@/components/PopulationMatchupDisplay";
@@ -26,6 +27,11 @@ import {
   recordDailyChallengeCompletion,
 } from "@/lib/storage";
 import { getGlobalStreakOrZero } from "@/lib/stats-helpers";
+import {
+  getMapProgressSummary,
+  toMapProgressDifficulty,
+  wouldCountTowardMapProgress,
+} from "@/lib/map-progress";
 import { getQuestionTaskLabel, getTypeInPlacePlaceholder, scopeText, SCOPE_INFO } from "@/lib/scope";
 import { getStatsMode } from "@/lib/game-setup";
 import type { ChallengeModifier, Difficulty, GameMode, GameScope, Question, Region, RoundQuestionSetting } from "@/lib/types";
@@ -68,6 +74,8 @@ export function GameBoard({
   const { refresh } = useProfiles();
   const activeProfile = useRequiredProfile();
   const statsMode = getStatsMode(mode, challengeModifier);
+  const mapProgressDifficulty = toMapProgressDifficulty(difficulty);
+  const tracksMapProgress = countStats && mapProgressDifficulty !== null && mode !== "weak-spots";
   const [{ engine, firstQuestion, sessionQuestionLimit }] = useState(() => {
     const gameEngine = new GameEngine(
       mode,
@@ -108,6 +116,12 @@ export function GameBoard({
   const [sessionComplete, setSessionComplete] = useState(false);
   const [exitedEarly, setExitedEarly] = useState(false);
   const [newAchievements, setNewAchievements] = useState<string[]>([]);
+  const [mapProgressQuestionsCounted, setMapProgressQuestionsCounted] = useState(0);
+  const [initialMapProgress] = useState(() =>
+    mapProgressDifficulty
+      ? getMapProgressSummary(scope, activeProfile, mapProgressDifficulty)
+      : null,
+  );
   const speedSessionCheckedRef = useRef(false);
   const dailyCompletionRecordedRef = useRef(false);
   const summaryAchievementsCheckedRef = useRef(false);
@@ -269,6 +283,17 @@ export function GameBoard({
         mode === "weak-spots",
         question,
       );
+      if (
+        wouldCountTowardMapProgress({
+          question,
+          statsMode,
+          difficulty,
+          correct,
+          isPracticeMode: mode === "weak-spots",
+        })
+      ) {
+        setMapProgressQuestionsCounted((count) => count + 1);
+      }
       if (mode === "daily-challenge") {
         markDailyChallengePlayed(activeProfile.id, scope);
       }
@@ -389,6 +414,10 @@ export function GameBoard({
     const accuracy = questionCount > 0
       ? Math.round((correctAnswers / questionCount) * 100)
       : 0;
+    const currentMapProgress =
+      tracksMapProgress && mapProgressDifficulty
+        ? getMapProgressSummary(scope, activeProfile, mapProgressDifficulty)
+        : null;
     const challengeComplete =
       !exitedEarly &&
       !gameOver &&
@@ -441,6 +470,15 @@ export function GameBoard({
               </div>
             )}
           </div>
+          {tracksMapProgress && initialMapProgress && currentMapProgress && (
+            <GameMapProgressSummary
+              scope={scope}
+              difficulty={mapProgressDifficulty!}
+              initialSummary={initialMapProgress}
+              currentSummary={currentMapProgress}
+              questionsCounted={mapProgressQuestionsCounted}
+            />
+          )}
           <div className="mt-6 flex flex-col gap-3">
             {onPlayAgain && (
               <GameActionButton icon={SCOPE_INFO[scope].icon} onClick={onPlayAgain}>

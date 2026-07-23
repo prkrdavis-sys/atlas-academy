@@ -110,7 +110,7 @@ function PlaceMapCategoryStatus({
   return (
     <li
       className={cn(
-        "inline-flex items-center gap-1 rounded-lg border px-2 py-1 text-[11px] font-semibold leading-tight",
+        "inline-flex items-center gap-1 rounded-lg border px-2 py-1 text-[11px] font-semibold leading-tight max-sm:flex max-sm:w-full max-sm:justify-center",
         completed
           ? "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300"
           : "border-slate-200 bg-slate-50 text-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400",
@@ -155,7 +155,7 @@ export function PlaceMapProgressPanel({
         "rounded-xl border border-slate-200/80 bg-white/95 p-2.5 shadow-lg backdrop-blur dark:border-slate-600 dark:bg-slate-900/95",
         variant === "overlay" &&
           "absolute left-2 top-2 z-10 max-w-[calc(100%-1rem)] sm:max-w-xs",
-        variant === "inline" && "w-full shadow-md max-sm:p-2",
+        variant === "inline" && "w-full min-w-0 shadow-md max-sm:p-3",
         className,
       )}
     >

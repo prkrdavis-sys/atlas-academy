@@ -203,7 +203,7 @@ export function UsaMapExplorer({
         profile={profile}
         difficulty={difficulty}
         scope="usa"
-        inlinePanelClassName="mx-4"
+        inlinePanelClassName="px-4"
       >
         {map && ready ? (
           <div ref={mapRef} className="h-full w-full origin-center">
