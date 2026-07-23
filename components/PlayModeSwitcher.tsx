@@ -2,17 +2,18 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { isExploreRoute } from "@/lib/navigation";
+import { getPrimaryNavHref } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 
 const PLAY_MODE_ITEMS = [
   { href: "/", label: "Play", icon: "🌎" },
   { href: "/extras", label: "Explore", icon: "🧭" },
+  { href: "/map", label: "Map", icon: "🗺️" },
 ] as const;
 
 export function PlayModeSwitcher() {
   const pathname = usePathname();
-  const activeHref = isExploreRoute(pathname) ? "/extras" : "/";
+  const activeHref = getPrimaryNavHref(pathname);
 
   return (
     <div

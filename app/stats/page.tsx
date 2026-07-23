@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { StatsMapProgressSection } from "@/components/StatsMapProgressSection";
+import { StatsMapProgressSummary } from "@/components/StatsMapProgressSummary";
 import { useProfiles } from "@/components/ProfileProvider";
 import { cn } from "@/lib/utils";
 import {
@@ -247,7 +247,7 @@ export default function StatsPage() {
           aria-labelledby="stats-tab-overview"
           className="space-y-5 sm:space-y-8"
         >
-      <StatsMapProgressSection profile={profile} scope={scope} />
+      <StatsMapProgressSummary profile={profile} scope={scope} />
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>

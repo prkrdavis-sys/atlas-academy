@@ -138,7 +138,7 @@ export function ExtrasPageContent() {
                 </span>
                 <div className="min-w-0 flex-1 pt-0.5">
                   <h3 className="font-display text-xl font-extrabold text-slate-900 dark:text-slate-100 sm:text-2xl">
-                    Interactive Maps
+                    Map
                   </h3>
                   <p className="mt-1 max-w-md text-sm leading-relaxed text-slate-600 dark:text-slate-400">
                     Explore every country and all 50 U.S. states — pan, zoom, and click to jump into the Library.

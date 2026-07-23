@@ -15,29 +15,59 @@ import {
 } from "@/components/PlaceContextMap";
 import { getCountryByCode } from "@/lib/countries";
 import {
-  getContextMapPathIds,
   getCountryCodeByMapPathId,
+  getStateCodeByUsaMapPathId,
+  getUsaMapPathIds,
   getWorldMapPathIds,
   resolvePlaceCodeFromParam,
 } from "@/lib/context-maps";
 import { createInteractiveProgressPathStyleResolver, EMPTY_MAP_PATH_ID_SET } from "@/lib/map-interaction";
-import { buildWorldProgressFillMap } from "@/lib/map-progress";
-import type { Country, MapProgressDifficulty, Profile } from "@/lib/types";
-import { useIsDark } from "@/lib/use-is-dark";
+import { buildUsaProgressFillMap, buildWorldProgressFillMap } from "@/lib/map-progress";
 import { MAP_PANZOOM_OPTIONS } from "@/lib/map-panzoom";
+import type { Country, GameScope, MapProgressDifficulty, Profile } from "@/lib/types";
+import { useIsDark } from "@/lib/use-is-dark";
 import { focusWorldMapOnPaths } from "@/lib/world-map-focus";
 
-type WorldMapExplorerProps = {
+type InteractiveProgressMapProps = {
+  scope: GameScope;
   initialPlaceCode?: string | null;
   profile: Profile | null;
   difficulty: MapProgressDifficulty;
 };
 
-export function WorldMapExplorer({
+const SCOPE_COPY: Record<
+  GameScope,
+  {
+    templateKey: "world" | "usa";
+    ariaLabel: string;
+    emptyPrompt: string;
+    footerHint: string;
+    loadFailedMessage: string;
+  }
+> = {
+  world: {
+    templateKey: "world",
+    ariaLabel: "Interactive world map showing every country",
+    emptyPrompt: "Click a country to explore",
+    footerHint: "Drag to pan · scroll or pinch to zoom · click a country for progress",
+    loadFailedMessage: "World map unavailable",
+  },
+  usa: {
+    templateKey: "usa",
+    ariaLabel: "Interactive map showing all 50 U.S. states",
+    emptyPrompt: "Click a state to explore",
+    footerHint: "Drag to pan · scroll or pinch to zoom · click a state for progress",
+    loadFailedMessage: "USA map unavailable",
+  },
+};
+
+export function InteractiveProgressMap({
+  scope,
   initialPlaceCode = null,
   profile,
   difficulty,
-}: WorldMapExplorerProps) {
+}: InteractiveProgressMapProps) {
+  const copy = SCOPE_COPY[scope];
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<HTMLDivElement>(null);
   const panzoomRef = useRef<ReturnType<typeof Panzoom> | null>(null);
@@ -45,51 +75,57 @@ export function WorldMapExplorer({
   const [map, setMap] = useState<ParsedContextMap | null>(null);
   const [panzoomReady, setPanzoomReady] = useState(false);
   const [loadFailed, setLoadFailed] = useState(false);
-  const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
+  const [selectedPlace, setSelectedPlace] = useState<Country | null>(null);
   const [hoveredPathId, setHoveredPathId] = useState<string | null>(null);
   const { isDark, ready } = useIsDark();
+
+  const resolveCodeFromPath = useCallback(
+    (pathId: string) =>
+      scope === "usa" ? getStateCodeByUsaMapPathId(pathId) : getCountryCodeByMapPathId(pathId),
+    [scope],
+  );
 
   const fillMap = useMemo(() => {
     if (!map) return new Map<string, 0 | 1 | 2 | 3 | 4>();
     if (!profile) {
       return new Map(map.paths.map((path) => [path.id, 0 as const]));
     }
-    return buildWorldProgressFillMap(
-      profile,
-      difficulty,
-      map.paths.map((path) => path.id),
-    );
-  }, [map, profile, difficulty]);
+    const buildFillMap = scope === "usa" ? buildUsaProgressFillMap : buildWorldProgressFillMap;
+    return buildFillMap(profile, difficulty, map.paths.map((path) => path.id));
+  }, [map, profile, difficulty, scope]);
 
   const pathStyleResolver = useMemo(
     () =>
       createInteractiveProgressPathStyleResolver(
         fillMap,
         isDark,
-        selectedCountry?.code,
+        selectedPlace?.code,
         hoveredPathId,
       ),
-    [fillMap, isDark, selectedCountry, hoveredPathId],
+    [fillMap, isDark, selectedPlace, hoveredPathId],
   );
 
-  const hoveredCountry = useMemo(() => {
+  const hoveredPlace = useMemo(() => {
     if (!hoveredPathId) return null;
-    const code = getCountryCodeByMapPathId(hoveredPathId);
+    const code = resolveCodeFromPath(hoveredPathId);
     return code ? getCountryByCode(code) ?? null : null;
-  }, [hoveredPathId]);
+  }, [hoveredPathId, resolveCodeFromPath]);
 
   const hoverLabel = useMemo(() => {
-    if (selectedCountry || !hoveredPathId) return null;
-    const code = getCountryCodeByMapPathId(hoveredPathId);
+    if (selectedPlace || !hoveredPathId) return null;
+    const code = resolveCodeFromPath(hoveredPathId);
     if (!code) return null;
     return formatPlaceProgressLabel(code, profile, difficulty);
-  }, [selectedCountry, hoveredPathId, profile, difficulty]);
+  }, [selectedPlace, hoveredPathId, resolveCodeFromPath, profile, difficulty]);
 
   useEffect(() => {
     let cancelled = false;
     setLoadFailed(false);
+    setSelectedPlace(null);
+    setHoveredPathId(null);
+    hasInitialFocusRef.current = false;
 
-    loadContextMapTemplate("world")
+    loadContextMapTemplate(copy.templateKey)
       .then((loaded) => {
         if (!cancelled) setMap(loaded);
       })
@@ -100,7 +136,7 @@ export function WorldMapExplorer({
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [copy.templateKey]);
 
   useEffect(() => {
     const element = mapRef.current;
@@ -133,14 +169,14 @@ export function WorldMapExplorer({
     const resolvedCode = resolvePlaceCodeFromParam(initialPlaceCode);
     if (!resolvedCode) return;
 
-    const country = getCountryByCode(resolvedCode);
-    if (!country) return;
+    const place = getCountryByCode(resolvedCode);
+    if (!place) return;
 
-    const pathIds = getWorldMapPathIds(country);
+    const pathIds = scope === "usa" ? getUsaMapPathIds(place) : getWorldMapPathIds(place);
     const svg = mapRef.current?.querySelector("svg");
     if (!svg || pathIds.length === 0) return;
 
-    setSelectedCountry(country);
+    setSelectedPlace(place);
 
     const panzoom = panzoomRef.current;
     const container = containerRef.current;
@@ -159,28 +195,31 @@ export function WorldMapExplorer({
     return () => {
       cancelAnimationFrame(frame);
     };
-  }, [initialPlaceCode, map, panzoomReady]);
+  }, [initialPlaceCode, map, panzoomReady, scope]);
 
-  const handlePathClick = useCallback((pathId: string) => {
-    const code = getCountryCodeByMapPathId(pathId);
-    if (!code) return;
-    const country = getCountryByCode(code);
-    if (!country) return;
-    setSelectedCountry((current) => (current?.code === country.code ? null : country));
-  }, []);
+  const handlePathClick = useCallback(
+    (pathId: string) => {
+      const code = resolveCodeFromPath(pathId);
+      if (!code) return;
+      const place = getCountryByCode(code);
+      if (!place) return;
+      setSelectedPlace((current) => (current?.code === place.code ? null : place));
+    },
+    [resolveCodeFromPath],
+  );
 
   const handleBackgroundClick = useCallback(() => {
-    setSelectedCountry(null);
+    setSelectedPlace(null);
   }, []);
 
-  const activeCountry = selectedCountry ?? hoveredCountry;
+  const activePlace = selectedPlace ?? hoveredPlace;
 
   return (
     <div className="overflow-hidden rounded-[1.75rem] border-2 border-slate-200 bg-white/85 shadow-sm dark:border-slate-700 dark:bg-slate-900/85">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-4 py-3 dark:border-slate-700 sm:px-5">
         <div className="min-w-0 flex-1">
           <p className="truncate font-display text-base font-extrabold text-slate-900 dark:text-slate-100 sm:text-lg">
-            {activeCountry ? activeCountry.name : "Click a country to explore"}
+            {activePlace ? activePlace.name : copy.emptyPrompt}
           </p>
         </div>
         <MapZoomControls
@@ -200,10 +239,10 @@ export function WorldMapExplorer({
         containerRef={containerRef}
         className="relative aspect-[16/9] w-full touch-none overflow-hidden bg-gradient-to-b from-sky-50 to-white dark:from-slate-900 dark:to-slate-950 sm:aspect-[2/1]"
         hoverLabel={hoverLabel}
-        selectedCode={selectedCountry?.code ?? null}
+        selectedCode={selectedPlace?.code ?? null}
         profile={profile}
         difficulty={difficulty}
-        scope="world"
+        scope={scope}
         inlinePanelClassName="px-4"
       >
         {map && ready ? (
@@ -212,7 +251,7 @@ export function WorldMapExplorer({
               map={map}
               highlightIds={EMPTY_MAP_PATH_ID_SET}
               neighborIds={EMPTY_MAP_PATH_ID_SET}
-              ariaLabel="Interactive world map showing every country"
+              ariaLabel={copy.ariaLabel}
               isDark={isDark}
               interactive
               pathStyleResolver={pathStyleResolver}
@@ -223,7 +262,7 @@ export function WorldMapExplorer({
           </div>
         ) : loadFailed ? (
           <div className="flex h-full items-center justify-center px-4 text-center text-sm font-semibold text-slate-500 dark:text-slate-400">
-            World map unavailable
+            {copy.loadFailedMessage}
           </div>
         ) : (
           <div className="h-full animate-pulse bg-slate-200/60 dark:bg-slate-700/60" aria-hidden />
@@ -231,7 +270,7 @@ export function WorldMapExplorer({
       </ProgressMapContainer>
 
       <p className="border-t border-slate-200 px-4 py-2.5 text-center text-xs font-medium text-slate-500 dark:border-slate-700 dark:text-slate-400">
-        Drag to pan · scroll or pinch to zoom · click a country for progress
+        {copy.footerHint}
       </p>
     </div>
   );

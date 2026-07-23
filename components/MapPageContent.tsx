@@ -7,10 +7,10 @@ import { useProfiles } from "@/components/ProfileProvider";
 import { MapProgressDifficultySelector } from "@/components/PlaceMapProgressPanel";
 import { resolvePlaceCodeFromParam } from "@/lib/context-maps";
 import { isStateCode } from "@/lib/scope";
-import type { MapProgressDifficulty } from "@/lib/types";
+import type { GameScope, MapProgressDifficulty } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
-type MapView = "world" | "usa";
+type MapView = GameScope;
 
 const MAP_VIEWS: MapView[] = ["world", "usa"];
 
@@ -19,18 +19,8 @@ const MAP_VIEW_INFO: Record<MapView, { icon: string; label: string }> = {
   usa: { icon: "🇺🇸", label: "USA" },
 };
 
-const WorldMapExplorer = dynamic(
-  () => import("@/components/WorldMapExplorer").then((module) => module.WorldMapExplorer),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="aspect-[16/9] animate-pulse rounded-[1.75rem] border-2 border-slate-200 bg-slate-200/60 dark:border-slate-700 dark:bg-slate-700/60 sm:aspect-[2/1]" />
-    ),
-  },
-);
-
-const UsaMapExplorer = dynamic(
-  () => import("@/components/UsaMapExplorer").then((module) => module.UsaMapExplorer),
+const InteractiveProgressMap = dynamic(
+  () => import("@/components/InteractiveProgressMap").then((module) => module.InteractiveProgressMap),
   {
     ssr: false,
     loading: () => (
@@ -119,7 +109,7 @@ export function MapPageContent() {
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
           <h1 className="font-display text-2xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 sm:text-3xl">
-            🗺️ Interactive Map
+            🗺️ Map
           </h1>
           <p className="mt-1 max-w-2xl text-sm text-slate-600 dark:text-slate-400">
             Explore every country and all 50 U.S. states. Pan and zoom to find a place, then click to
@@ -138,19 +128,13 @@ export function MapPageContent() {
         </p>
       ) : null}
 
-      {view === "usa" ? (
-        <UsaMapExplorer
-          initialPlaceCode={initialPlaceCode}
-          profile={profile}
-          difficulty={mapDifficulty}
-        />
-      ) : (
-        <WorldMapExplorer
-          initialPlaceCode={initialPlaceCode}
-          profile={profile}
-          difficulty={mapDifficulty}
-        />
-      )}
+      <InteractiveProgressMap
+        key={view}
+        scope={view}
+        initialPlaceCode={initialPlaceCode}
+        profile={profile}
+        difficulty={mapDifficulty}
+      />
     </div>
   );
 }

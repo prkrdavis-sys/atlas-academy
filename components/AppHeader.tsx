@@ -4,13 +4,18 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { PlayModeSwitcher } from "@/components/PlayModeSwitcher";
 import { ProfileSwitcher } from "@/components/ProfileSwitcher";
-import { isExploreRoute } from "@/lib/navigation";
+import { getPrimaryNavHref } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 
 const MOBILE_NAV_ITEMS = [
   { href: "/", label: "Play", icon: "🌎" },
   { href: "/extras", label: "Explore", icon: "🧭" },
+  { href: "/map", label: "Map", icon: "🗺️" },
 ] as const;
+
+function isMobileNavItemActive(pathname: string, href: (typeof MOBILE_NAV_ITEMS)[number]["href"]): boolean {
+  return getPrimaryNavHref(pathname) === href;
+}
 
 export function AppHeader() {
   const pathname = usePathname();
@@ -44,12 +49,9 @@ export function AppHeader() {
         aria-label="Primary navigation"
         className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200/90 bg-white/92 pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_30px_rgb(15_23_42_/_0.08)] backdrop-blur-xl dark:border-slate-700/90 dark:bg-slate-900/92 dark:shadow-[0_-8px_30px_rgb(0_0_0_/_0.3)] sm:hidden"
       >
-        <div className="mx-auto grid h-16 max-w-md grid-cols-2 px-3">
+        <div className="mx-auto grid h-16 max-w-md grid-cols-3 px-2">
           {MOBILE_NAV_ITEMS.map((item) => {
-            const active =
-              item.href === "/"
-                ? pathname === "/" || pathname.startsWith("/play/")
-                : isExploreRoute(pathname);
+            const active = isMobileNavItemActive(pathname, item.href);
             return (
               <Link
                 key={item.href}
