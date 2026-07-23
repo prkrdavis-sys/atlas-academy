@@ -26,10 +26,31 @@ export const metadata: Metadata = {
   title: "Atlas Academy",
   description: "Learn world geography with flags, capitals, shapes, and more at Atlas Academy.",
   manifest: "/manifest.json",
+  icons: {
+    icon: [
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/favicon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16.png", sizes: "16x16", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
+    shortcut: "/icon-512.png",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
     title: "Atlas Academy",
+  },
+  openGraph: {
+    title: "Atlas Academy",
+    description: "Learn world geography with flags, capitals, shapes, and more at Atlas Academy.",
+    images: [{ url: "/icon-512.png", width: 512, height: 512, alt: "Atlas Academy" }],
+  },
+  twitter: {
+    card: "summary",
+    title: "Atlas Academy",
+    description: "Learn world geography with flags, capitals, shapes, and more at Atlas Academy.",
+    images: ["/icon-512.png"],
   },
   formatDetection: {
     telephone: false,
