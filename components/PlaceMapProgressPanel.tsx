@@ -154,7 +154,7 @@ export function PlaceMapProgressPanel({
       className={cn(
         "rounded-xl border border-slate-200/80 bg-white/95 p-2.5 shadow-lg backdrop-blur dark:border-slate-600 dark:bg-slate-900/95",
         variant === "overlay" &&
-          "absolute left-2 top-2 z-10 max-w-[calc(100%-1rem)] sm:max-w-xs",
+          "pointer-events-none absolute left-2 top-2 z-10 max-w-[calc(100%-1rem)] sm:max-w-xs",
         variant === "inline" && "w-full min-w-0 shadow-md max-sm:p-3",
         className,
       )}
@@ -172,7 +172,7 @@ export function PlaceMapProgressPanel({
       </ul>
       <Link
         href={libraryHref}
-        className="mt-2 inline-flex w-full items-center justify-center rounded-lg border border-teal-200 bg-teal-50 px-3 py-1.5 text-xs font-bold text-teal-800 transition-colors hover:border-teal-400 hover:bg-teal-100 dark:border-teal-800 dark:bg-teal-950/50 dark:text-teal-200 dark:hover:border-teal-500 dark:hover:bg-teal-950"
+        className="pointer-events-auto mt-2 inline-flex w-full items-center justify-center rounded-lg border border-teal-200 bg-teal-50 px-3 py-1.5 text-xs font-bold text-teal-800 transition-colors hover:border-teal-400 hover:bg-teal-100 dark:border-teal-800 dark:bg-teal-950/50 dark:text-teal-200 dark:hover:border-teal-500 dark:hover:bg-teal-950"
       >
         Open in Library →
       </Link>

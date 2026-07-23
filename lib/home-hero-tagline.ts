@@ -176,7 +176,7 @@ export function buildHomeHeroTaglineCandidates({
     `${modeRef("neighbor-quiz")} is perfect for learning which countries share borders.`,
     `${modeRef("population-showdown")} asks a simple question: which place has more people?`,
     `${modeRef("fact-to-country")} draws on curated geographic details from the Library.`,
-    `${modeRef("shape-to-country")} is a signature mode — identify places from silhouettes alone.`,
+    `${modeRef("shape-to-country")} is a signature challenge — identify places from silhouettes alone.`,
     `Browse the ${scopeInfo.libraryTitle} for flags, capitals, shapes, neighbors, and geographic profiles.`,
     "Pan and zoom the World Map, then click any country to open its Library page.",
     "The USA Map covers all 50 states with the same click-to-explore flow.",

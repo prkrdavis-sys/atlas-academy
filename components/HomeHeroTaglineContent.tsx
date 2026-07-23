@@ -34,7 +34,7 @@ function parseModeRefs(text: string, scope: GameScope): ReactNode[] {
           key={`mode-${index}-${mode}`}
           className="font-semibold underline decoration-emerald-200/90 underline-offset-[0.2em]"
         >
-          <span aria-hidden>{modeInfo.icon}</span> {modeInfo.title}
+          <span aria-hidden>{modeInfo.icon}</span> {modeInfo.title} Mode
         </span>,
       );
     } else {

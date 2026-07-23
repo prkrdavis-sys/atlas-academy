@@ -220,11 +220,7 @@ export function GameModeSettingsPageContent({ mode }: GameModeSettingsPageConten
 
       {startGameButton}
 
-      <section>
-        <h2 className="mb-3 font-display text-xl font-extrabold text-slate-800 dark:text-slate-100 sm:mb-4">
-          Settings
-        </h2>
-        <GameSetupPanel
+      <GameSetupPanel
           mode={normalizedDraft.mode}
           scope={scope}
           challengeModifier={normalizedDraft.challengeModifier}
@@ -250,7 +246,6 @@ export function GameModeSettingsPageContent({ mode }: GameModeSettingsPageConten
             setDraft((current) => (current ? { ...current, roundQuestionCount } : current))
           }
         />
-      </section>
 
       <div className="fixed inset-x-0 bottom-[calc(4.25rem+env(safe-area-inset-bottom))] z-30 px-4 sm:static sm:px-0 sm:pb-0">
         <button

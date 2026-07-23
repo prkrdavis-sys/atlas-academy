@@ -9,8 +9,8 @@ import { cn } from "@/lib/utils";
 
 const MOBILE_NAV_ITEMS = [
   { href: "/", label: "Play", icon: "🌎" },
-  { href: "/extras", label: "Explore", icon: "🧭" },
   { href: "/map", label: "Map", icon: "🗺️" },
+  { href: "/extras", label: "Explore", icon: "🧭" },
 ] as const;
 
 function isMobileNavItemActive(pathname: string, href: (typeof MOBILE_NAV_ITEMS)[number]["href"]): boolean {

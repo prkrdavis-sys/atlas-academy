@@ -98,6 +98,9 @@ export function scopedHref(
  * "Which country borders X?" -> "Which state borders X?".
  */
 export function scopeText(text: string, scope: GameScope): string {
+  if (scope === "usa" && text === "Worldwide Trivia") {
+    return "Nationwide Trivia";
+  }
   if (scope !== "usa") return text;
   return text
     .replace(/countries/g, "states")

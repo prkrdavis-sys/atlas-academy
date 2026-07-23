@@ -406,7 +406,7 @@ export const GAME_MODES: {
   },
   {
     id: "fact-to-country",
-    title: "Country Profiles",
+    title: "Worldwide Trivia",
     description: "Read a geographic profile — which country does it describe?",
     icon: "💡",
     phase: 2,

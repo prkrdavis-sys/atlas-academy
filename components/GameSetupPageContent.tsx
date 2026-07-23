@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { subtleBackLinkClass } from "@/lib/utils";
+import { GameModeGroup, type GameModeGroupHeaderStyle } from "@/components/GameModeGroup";
 import { GameModeTile } from "@/components/GameModeTile";
 import { ScopeSelector } from "@/components/ScopeSelector";
 import { useGameScope } from "@/lib/use-game-scope";
@@ -66,11 +67,38 @@ const BONUS_MODE_STYLES: Record<string, { tile: string; iconBg: string; hover: s
   },
 };
 
+const CORE_GROUP_STYLE: GameModeGroupHeaderStyle = {
+  container: "border-teal-200 bg-teal-50/60 dark:border-teal-800 dark:bg-teal-950/40",
+  summary: "hover:bg-teal-100/80 dark:hover:bg-teal-900/50",
+  title: "text-teal-950 dark:text-teal-50",
+  subtitle: "text-teal-700/90 dark:text-teal-300/90",
+  badge: "bg-teal-200/80 text-teal-900 dark:bg-teal-800/80 dark:text-teal-100",
+  chevron: "bg-teal-200/70 text-teal-800 dark:bg-teal-800/70 dark:text-teal-100",
+};
+
+const PRACTICE_GROUP_STYLE: GameModeGroupHeaderStyle = {
+  container: "border-rose-200 bg-rose-50/60 dark:border-rose-800 dark:bg-rose-950/40",
+  summary: "hover:bg-rose-100/80 dark:hover:bg-rose-900/50",
+  title: "text-rose-950 dark:text-rose-50",
+  subtitle: "text-rose-700/90 dark:text-rose-300/90",
+  badge: "bg-rose-200/80 text-rose-900 dark:bg-rose-800/80 dark:text-rose-100",
+  chevron: "bg-rose-200/70 text-rose-800 dark:bg-rose-800/70 dark:text-rose-100",
+};
+
+const BONUS_GROUP_STYLE: GameModeGroupHeaderStyle = {
+  container: "border-violet-200 bg-violet-50/60 dark:border-violet-800 dark:bg-violet-950/40",
+  summary: "hover:bg-violet-100/80 dark:hover:bg-violet-900/50",
+  title: "text-violet-950 dark:text-violet-50",
+  subtitle: "text-violet-700/90 dark:text-violet-300/90",
+  badge: "bg-violet-200/80 text-violet-900 dark:bg-violet-800/80 dark:text-violet-100",
+  chevron: "bg-violet-200/70 text-violet-800 dark:bg-violet-800/70 dark:text-violet-100",
+};
+
 export function GameSetupPageContent() {
   const { scope, selectScope } = useGameScope();
 
   return (
-    <div className="space-y-6 sm:space-y-8">
+    <div className="space-y-4 sm:space-y-5">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <Link
@@ -89,44 +117,52 @@ export function GameSetupPageContent() {
         <ScopeSelector scope={scope} onSelect={selectScope} />
       </header>
 
-      <section>
-        <h2 className="mb-3 font-display text-xl font-extrabold text-slate-800 dark:text-slate-100 sm:mb-4">
-          Core Play
-        </h2>
-        <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
+      <GameModeGroup
+        title="Core Play"
+        subtitle="Flags, shapes, capitals, and mixed rounds"
+        defaultOpen
+        badge={PLAY_MODES.length === 1 ? "1 mode" : `${PLAY_MODES.length} modes`}
+        headerStyle={CORE_GROUP_STYLE}
+      >
+        <div className="grid gap-2 pt-1 sm:grid-cols-2 sm:gap-3">
           {PLAY_MODES.map((id) => (
             <GameModeTile
               key={id}
               mode={id}
               scope={scope}
+              compact
               style={CORE_MODE_STYLES[id]}
               className={id === "mixed" ? "sm:col-span-2" : undefined}
             />
           ))}
         </div>
-      </section>
+      </GameModeGroup>
 
-      <section>
-        <h2 className="mb-3 font-display text-xl font-extrabold text-slate-800 dark:text-slate-100 sm:mb-4">
-          Practice
-        </h2>
-        <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
+      <GameModeGroup
+        title="Practice"
+        subtitle="Target what you miss most"
+        badge={PRACTICE_MODES.length === 1 ? "1 mode" : `${PRACTICE_MODES.length} modes`}
+        headerStyle={PRACTICE_GROUP_STYLE}
+      >
+        <div className="grid gap-2 pt-1 sm:grid-cols-2 sm:gap-3">
           {PRACTICE_MODES.map((id) => (
-            <GameModeTile key={id} mode={id} scope={scope} style={PRACTICE_MODE_STYLES[id]} />
+            <GameModeTile key={id} mode={id} scope={scope} compact style={PRACTICE_MODE_STYLES[id]} />
           ))}
         </div>
-      </section>
+      </GameModeGroup>
 
-      <section>
-        <h2 className="mb-3 font-display text-xl font-extrabold text-slate-800 dark:text-slate-100 sm:mb-4">
-          Bonus Modes
-        </h2>
-        <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
+      <GameModeGroup
+        title="Bonus Modes"
+        subtitle="Extra quizzes and fun challenges"
+        badge={EXTRA_QUIZ_MODES.length === 1 ? "1 mode" : `${EXTRA_QUIZ_MODES.length} modes`}
+        headerStyle={BONUS_GROUP_STYLE}
+      >
+        <div className="grid gap-2 pt-1 sm:grid-cols-2 sm:gap-3">
           {EXTRA_QUIZ_MODES.map((id) => (
-            <GameModeTile key={id} mode={id} scope={scope} style={BONUS_MODE_STYLES[id]} />
+            <GameModeTile key={id} mode={id} scope={scope} compact style={BONUS_MODE_STYLES[id]} />
           ))}
         </div>
-      </section>
+      </GameModeGroup>
     </div>
   );
 }

@@ -16,17 +16,17 @@ const LIGHT_MAP_PALETTE: MapPalette = {
   default: {
     fill: "#cbd5e1",
     stroke: "#94a3b8",
-    strokeWidth: 0.6,
+    strokeWidth: 0.35,
   },
   neighbor: {
     fill: "#99f6e4",
     stroke: "#14b8a6",
-    strokeWidth: 0.9,
+    strokeWidth: 0.5,
   },
   highlight: {
     fill: "#14b8a6",
     stroke: "#0f766e",
-    strokeWidth: 1.5,
+    strokeWidth: 0.65,
   },
 };
 
@@ -35,17 +35,17 @@ const DARK_MAP_PALETTE: MapPalette = {
   default: {
     fill: "#475569",
     stroke: "#64748b",
-    strokeWidth: 0.6,
+    strokeWidth: 0.35,
   },
   neighbor: {
     fill: "#115e59",
     stroke: "#14b8a6",
-    strokeWidth: 0.9,
+    strokeWidth: 0.5,
   },
   highlight: {
     fill: "#2dd4bf",
     stroke: "#99f6e4",
-    strokeWidth: 1.5,
+    strokeWidth: 0.65,
   },
 };
 
@@ -158,7 +158,7 @@ export function getProgressPathHoverStyle(style: MapPathStyle, isDark: boolean):
   return {
     fill: style.fill,
     stroke: border.stroke,
-    strokeWidth: Math.min(border.strokeWidth + 0.4, 1.2),
+    strokeWidth: Math.min(border.strokeWidth + 0.2, 0.75),
   };
 }
 

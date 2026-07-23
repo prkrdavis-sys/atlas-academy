@@ -81,7 +81,7 @@ export function attachMapPlaceTapHandlers(
       activeTaps.delete(event.pointerId);
       if (!isTap(activeTap.x, activeTap.y, event.clientX, event.clientY)) return;
 
-      event.stopPropagation();
+      // Let pointerup bubble to Panzoom's document listener so it clears pan state.
       event.preventDefault();
       onPathClick(activeTap.pathId);
       return;
@@ -97,7 +97,6 @@ export function attachMapPlaceTapHandlers(
     backgroundTap = null;
     if (!isTap(tap.x, tap.y, event.clientX, event.clientY)) return;
 
-    event.stopPropagation();
     onBackgroundClick();
   };
 
