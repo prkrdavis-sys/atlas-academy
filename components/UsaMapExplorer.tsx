@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Panzoom from "@panzoom/panzoom";
 import { MapZoomControls } from "@/components/MapZoomControls";
-import { ProgressMapOverlays } from "@/components/ProgressMapOverlays";
+import { ProgressMapContainer } from "@/components/ProgressMapOverlays";
 import {
   formatPlaceProgressLabel,
   MapProgressFillLegend,
@@ -195,34 +195,31 @@ export function UsaMapExplorer({
         </div>
       ) : null}
 
-      <div
-        ref={containerRef}
+      <ProgressMapContainer
+        containerRef={containerRef}
         className="relative aspect-[16/9] w-full touch-none overflow-hidden bg-gradient-to-b from-sky-50 to-white dark:from-slate-900 dark:to-slate-950 sm:aspect-[2/1]"
+        hoverLabel={hoverLabel}
+        selectedCode={selectedState?.code ?? null}
+        profile={profile}
+        difficulty={difficulty}
+        scope="usa"
+        inlinePanelClassName="mx-4"
       >
         {map && ready ? (
-          <>
-            <div ref={mapRef} className="h-full w-full origin-center">
-              <ContextMapSvg
-                map={map}
-                highlightIds={EMPTY_MAP_PATH_ID_SET}
-                neighborIds={EMPTY_MAP_PATH_ID_SET}
-                ariaLabel="Interactive map showing all 50 U.S. states"
-                isDark={isDark}
-                interactive
-                pathStyleResolver={pathStyleResolver}
-                onPathClick={handlePathClick}
-                onPathHover={setHoveredPathId}
-                onBackgroundClick={handleBackgroundClick}
-              />
-            </div>
-            <ProgressMapOverlays
-              hoverLabel={hoverLabel}
-              selectedCode={selectedState?.code ?? null}
-              profile={profile}
-              difficulty={difficulty}
-              scope="usa"
+          <div ref={mapRef} className="h-full w-full origin-center">
+            <ContextMapSvg
+              map={map}
+              highlightIds={EMPTY_MAP_PATH_ID_SET}
+              neighborIds={EMPTY_MAP_PATH_ID_SET}
+              ariaLabel="Interactive map showing all 50 U.S. states"
+              isDark={isDark}
+              interactive
+              pathStyleResolver={pathStyleResolver}
+              onPathClick={handlePathClick}
+              onPathHover={setHoveredPathId}
+              onBackgroundClick={handleBackgroundClick}
             />
-          </>
+          </div>
         ) : loadFailed ? (
           <div className="flex h-full items-center justify-center px-4 text-center text-sm font-semibold text-slate-500 dark:text-slate-400">
             USA map unavailable
@@ -230,7 +227,7 @@ export function UsaMapExplorer({
         ) : (
           <div className="h-full animate-pulse bg-slate-200/60 dark:bg-slate-700/60" aria-hidden />
         )}
-      </div>
+      </ProgressMapContainer>
 
       <p className="border-t border-slate-200 px-4 py-2.5 text-center text-xs font-medium text-slate-500 dark:border-slate-700 dark:text-slate-400">
         Drag to pan · scroll or pinch to zoom · click a state for progress

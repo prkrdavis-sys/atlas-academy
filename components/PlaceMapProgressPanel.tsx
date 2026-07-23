@@ -128,11 +128,15 @@ export function PlaceMapProgressPanel({
   profile,
   difficulty,
   scope,
+  variant = "overlay",
+  className,
 }: {
   code: string;
   profile: Profile | null;
   difficulty: MapProgressDifficulty;
   scope: GameScope;
+  variant?: "overlay" | "inline";
+  className?: string;
 }) {
   const completion = profile
     ? getPlaceCategoryCompletion(code, profile, difficulty)
@@ -146,7 +150,15 @@ export function PlaceMapProgressPanel({
   const libraryHref = buildLibraryDetailHref(code, scope, "All");
 
   return (
-    <div className="absolute left-2 top-2 z-10 max-w-[calc(100%-1rem)] rounded-xl border border-slate-200/80 bg-white/95 p-2.5 shadow-lg backdrop-blur sm:max-w-xs dark:border-slate-600 dark:bg-slate-900/95">
+    <div
+      className={cn(
+        "rounded-xl border border-slate-200/80 bg-white/95 p-2.5 shadow-lg backdrop-blur dark:border-slate-600 dark:bg-slate-900/95",
+        variant === "overlay" &&
+          "absolute left-2 top-2 z-10 max-w-[calc(100%-1rem)] sm:max-w-xs",
+        variant === "inline" && "w-full shadow-md max-sm:p-2",
+        className,
+      )}
+    >
       <p className="font-display text-sm font-extrabold text-slate-900 dark:text-slate-100">
         {getCountryName(code)}
       </p>

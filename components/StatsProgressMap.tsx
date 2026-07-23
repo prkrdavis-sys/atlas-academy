@@ -8,7 +8,7 @@ import {
   type ParsedContextMap,
 } from "@/components/PlaceContextMap";
 import { MapZoomControls } from "@/components/MapZoomControls";
-import { ProgressMapOverlays } from "@/components/ProgressMapOverlays";
+import { ProgressMapContainer } from "@/components/ProgressMapOverlays";
 import {
   formatPlaceProgressLabel,
   MapProgressFillLegend,
@@ -210,13 +210,18 @@ export function StatsProgressMap({
   return (
     <>
       {showFillLegend && !compact && ready ? <MapProgressFillLegend isDark={isDark} /> : null}
-      <div
-        ref={containerRef}
+      <ProgressMapContainer
+        containerRef={containerRef}
         className={cn(
           "relative overflow-hidden rounded-2xl border border-teal-100 bg-sky-50 touch-none dark:border-teal-900/50 dark:bg-slate-950",
           compact ? "aspect-[5/2] w-full min-h-[5.5rem]" : "aspect-[16/10] w-full",
           className,
         )}
+        hoverLabel={hoverLabel}
+        selectedCode={selectedCode}
+        profile={profile}
+        difficulty={difficulty}
+        scope={scope}
       >
         {map && ready ? (
           <>
@@ -244,13 +249,6 @@ export function StatsProgressMap({
                 onReset={() => panzoomRef.current?.reset()}
               />
             ) : null}
-            <ProgressMapOverlays
-              hoverLabel={hoverLabel}
-              selectedCode={selectedCode}
-              profile={profile}
-              difficulty={difficulty}
-              scope={scope}
-            />
           </>
         ) : loadFailed ? (
           <div className="flex h-full items-center justify-center px-4 text-center text-xs font-semibold text-slate-500 dark:text-slate-400">
@@ -259,7 +257,7 @@ export function StatsProgressMap({
         ) : (
           <div className="h-full animate-pulse bg-slate-200/60 dark:bg-slate-700/60" aria-hidden />
         )}
-      </div>
+      </ProgressMapContainer>
     </>
   );
 }
