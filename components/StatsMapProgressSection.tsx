@@ -38,10 +38,9 @@ function MapProgressSummaryCard({
   const summary = getMapProgressSummary(cardScope, profile, difficulty);
 
   return (
-    <div className="relative rounded-2xl border-2 border-teal-400 bg-gradient-to-br from-teal-50 to-emerald-50 p-4 pr-12 shadow-sm dark:border-teal-600 dark:from-teal-950/40 dark:to-emerald-950/40">
-      <MapProgressInfoButton onClick={onInfoClick} />
+    <div className="rounded-2xl border-2 border-teal-400 bg-gradient-to-br from-teal-50 to-emerald-50 p-4 shadow-sm dark:border-teal-600 dark:from-teal-950/40 dark:to-emerald-950/40">
       <div className="flex items-start justify-between gap-3">
-        <div>
+        <div className="min-w-0 flex-1">
           <p className="font-display text-sm font-extrabold text-slate-900 dark:text-slate-100">
             <span aria-hidden>{info.icon}</span> {info.shortLabel}
           </p>
@@ -49,9 +48,12 @@ function MapProgressSummaryCard({
             {info.nounPlural} · {DIFFICULTY_LABELS[difficulty]}
           </p>
         </div>
-        <p className="font-display text-2xl font-extrabold tabular-nums text-emerald-700 dark:text-emerald-400 sm:text-3xl">
-          {summary.percentComplete}%
-        </p>
+        <div className="flex shrink-0 items-center gap-2">
+          <MapProgressInfoButton onClick={onInfoClick} />
+          <p className="font-display text-2xl font-extrabold tabular-nums text-emerald-700 dark:text-emerald-400 sm:text-3xl">
+            {summary.percentComplete}%
+          </p>
+        </div>
       </div>
 
       <p className="mt-3 font-mono text-lg font-bold tabular-nums text-slate-900 dark:text-slate-100 sm:text-xl">
@@ -143,14 +145,19 @@ export function StatsMapProgressSection({ profile, scope }: StatsMapProgressSect
           })}
         </div>
 
-        <StatsProgressMap
-          profile={profile}
-          difficulty={mapDifficulty}
-          scope={scope}
-          templateKey={getStatsMapTemplateKey(scope)}
-          showFillLegend
-          ariaLabel={`${scopeInfo.label} map progress at ${DIFFICULTY_LABELS[mapDifficulty]} difficulty`}
-        />
+        <div>
+          <StatsProgressMap
+            profile={profile}
+            difficulty={mapDifficulty}
+            scope={scope}
+            templateKey={getStatsMapTemplateKey(scope)}
+            showFillLegend
+            ariaLabel={`${scopeInfo.label} map progress at ${DIFFICULTY_LABELS[mapDifficulty]} difficulty`}
+          />
+          <p className="mt-2 text-center text-xs font-medium text-slate-500 dark:text-slate-400">
+            Drag to pan · scroll or pinch to zoom · click a {scopeInfo.noun} for progress
+          </p>
+        </div>
 
         <div className="space-y-4">
           {regionRows.map(({ region, progress }) => (

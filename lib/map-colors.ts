@@ -1,3 +1,6 @@
+/** Panzoom skips pointer handling on elements with this class (and their descendants). */
+export const PANZOOM_EXCLUDE_CLASS = "panzoom-exclude";
+
 export type MapPathRole = "default" | "neighbor" | "highlight";
 
 export type MapPathStyle = {
@@ -86,20 +89,56 @@ export function sortMapPathsForRender<T extends { id: string }>(
   });
 }
 
+/** Shared land borders for all progress map fills (same as default context-map borders). */
+const LIGHT_PROGRESS_BORDER = {
+  stroke: LIGHT_MAP_PALETTE.default.stroke,
+  strokeWidth: LIGHT_MAP_PALETTE.default.strokeWidth,
+} as const;
+
+const DARK_PROGRESS_BORDER = {
+  stroke: DARK_MAP_PALETTE.default.stroke,
+  strokeWidth: DARK_MAP_PALETTE.default.strokeWidth,
+} as const;
+
+export function getProgressBorder(isDark: boolean): Pick<MapPathStyle, "stroke" | "strokeWidth"> {
+  return isDark ? DARK_PROGRESS_BORDER : LIGHT_PROGRESS_BORDER;
+}
+
+function progressPathStyle(fill: string, isDark: boolean): MapPathStyle {
+  const border = getProgressBorder(isDark);
+  return { fill, ...border };
+}
+
+const LIGHT_PROGRESS_FILL_COLORS: Record<0 | 1 | 2 | 3 | 4, string> = {
+  0: LIGHT_MAP_PALETTE.default.fill,
+  1: "#134e4a",
+  2: "#0f766e",
+  3: "#14b8a6",
+  4: "#2dd4bf",
+};
+
+const DARK_PROGRESS_FILL_COLORS: Record<0 | 1 | 2 | 3 | 4, string> = {
+  0: DARK_MAP_PALETTE.default.fill,
+  1: "#042f2e",
+  2: "#0f5e56",
+  3: "#119e90",
+  4: "#2dd4bf",
+};
+
 const LIGHT_PROGRESS_FILLS: Record<0 | 1 | 2 | 3 | 4, MapPathStyle> = {
-  0: LIGHT_MAP_PALETTE.default,
-  1: { fill: "#ecfdf5", stroke: "#99f6e4", strokeWidth: 0.6 },
-  2: { fill: "#99f6e4", stroke: "#2dd4bf", strokeWidth: 0.7 },
-  3: { fill: "#2dd4bf", stroke: "#14b8a6", strokeWidth: 0.8 },
-  4: { fill: "#0d9488", stroke: "#115e59", strokeWidth: 1 },
+  0: progressPathStyle(LIGHT_PROGRESS_FILL_COLORS[0], false),
+  1: progressPathStyle(LIGHT_PROGRESS_FILL_COLORS[1], false),
+  2: progressPathStyle(LIGHT_PROGRESS_FILL_COLORS[2], false),
+  3: progressPathStyle(LIGHT_PROGRESS_FILL_COLORS[3], false),
+  4: progressPathStyle(LIGHT_PROGRESS_FILL_COLORS[4], false),
 };
 
 const DARK_PROGRESS_FILLS: Record<0 | 1 | 2 | 3 | 4, MapPathStyle> = {
-  0: DARK_MAP_PALETTE.default,
-  1: { fill: "#134e4a", stroke: "#115e59", strokeWidth: 0.6 },
-  2: { fill: "#115e59", stroke: "#14b8a6", strokeWidth: 0.7 },
-  3: { fill: "#0f766e", stroke: "#2dd4bf", strokeWidth: 0.8 },
-  4: { fill: "#2dd4bf", stroke: "#99f6e4", strokeWidth: 1 },
+  0: progressPathStyle(DARK_PROGRESS_FILL_COLORS[0], true),
+  1: progressPathStyle(DARK_PROGRESS_FILL_COLORS[1], true),
+  2: progressPathStyle(DARK_PROGRESS_FILL_COLORS[2], true),
+  3: progressPathStyle(DARK_PROGRESS_FILL_COLORS[3], true),
+  4: progressPathStyle(DARK_PROGRESS_FILL_COLORS[4], true),
 };
 
 export function getProgressPathStyle(
@@ -107,4 +146,53 @@ export function getProgressPathStyle(
   isDark: boolean,
 ): MapPathStyle {
   return isDark ? DARK_PROGRESS_FILLS[level] : LIGHT_PROGRESS_FILLS[level];
+}
+
+export function getProgressFillColor(level: 0 | 1 | 2 | 3 | 4, isDark: boolean): string {
+  return isDark ? DARK_PROGRESS_FILL_COLORS[level] : LIGHT_PROGRESS_FILL_COLORS[level];
+}
+
+/** Hover/selection emphasis with the same standardized border color. */
+export function getProgressPathHoverStyle(style: MapPathStyle, isDark: boolean): MapPathStyle {
+  const border = getProgressBorder(isDark);
+  return {
+    fill: style.fill,
+    stroke: border.stroke,
+    strokeWidth: Math.min(border.strokeWidth + 0.4, 1.2),
+  };
+}
+
+/** Resolve path styling for interactive progress maps with click selection. */
+export function resolveProgressMapPathStyle(
+  pathId: string,
+  {
+    isDark,
+    baseResolver,
+    selectedPathIds,
+    hoveredPathId,
+    allowHover = true,
+  }: {
+    isDark: boolean;
+    baseResolver: (pathId: string) => MapPathStyle | null;
+    selectedPathIds: Set<string>;
+    hoveredPathId: string | null;
+    allowHover?: boolean;
+  },
+): MapPathStyle | null {
+  const palette = getMapPalette(isDark);
+
+  if (selectedPathIds.has(pathId)) {
+    return palette.highlight;
+  }
+
+  const base = baseResolver(pathId);
+  if (!base) {
+    return allowHover && hoveredPathId === pathId ? palette.neighbor : null;
+  }
+
+  if (allowHover && hoveredPathId === pathId) {
+    return getProgressPathHoverStyle(base, isDark);
+  }
+
+  return base;
 }

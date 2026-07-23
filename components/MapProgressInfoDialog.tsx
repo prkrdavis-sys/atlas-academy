@@ -116,7 +116,7 @@ export function MapProgressInfoButton({ onClick }: { onClick: () => void }) {
       type="button"
       onClick={onClick}
       aria-label="How map progress works"
-      className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full border border-teal-300/80 bg-white/80 text-teal-700 shadow-sm transition-colors hover:bg-white hover:text-teal-900 dark:border-teal-700 dark:bg-slate-900/80 dark:text-teal-300 dark:hover:bg-slate-900 dark:hover:text-teal-100"
+      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-teal-300/80 bg-white/80 text-teal-700 shadow-sm transition-colors hover:bg-white hover:text-teal-900 dark:border-teal-700 dark:bg-slate-900/80 dark:text-teal-300 dark:hover:bg-slate-900 dark:hover:text-teal-100"
     >
       <InfoIcon className="h-4 w-4" />
     </button>

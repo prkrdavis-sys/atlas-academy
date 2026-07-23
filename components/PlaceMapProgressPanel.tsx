@@ -8,7 +8,7 @@ import {
   getPlaceMasteryLevel,
   MAP_PROGRESS_CATEGORY_INFO,
 } from "@/lib/map-progress";
-import { getProgressPathStyle } from "@/lib/map-colors";
+import { getProgressBorder, getProgressFillColor } from "@/lib/map-colors";
 import {
   DIFFICULTY_LABELS,
   MAP_PROGRESS_CATEGORIES,
@@ -32,7 +32,10 @@ export function MapProgressDifficultySelector({
 }) {
   return (
     <div
-      className={cn("grid grid-cols-2 gap-2", className)}
+      className={cn(
+        "inline-flex shrink-0 rounded-2xl bg-slate-100 p-1 dark:bg-slate-800",
+        className,
+      )}
       role="group"
       aria-label="Map progress difficulty"
     >
@@ -43,12 +46,15 @@ export function MapProgressDifficultySelector({
             key={level}
             type="button"
             aria-pressed={selected}
+            onMouseDown={(event) => {
+              event.preventDefault();
+            }}
             onClick={() => onChange(level)}
             className={cn(
-              "min-h-10 rounded-xl border-2 px-3 py-2 text-sm font-semibold transition-all duration-100",
+              "min-h-9 rounded-xl px-3 py-1.5 font-display text-sm font-extrabold transition-all",
               selected
-                ? "border-emerald-600 bg-emerald-500 text-white shadow-[0_3px_0_var(--color-emerald-700)]"
-                : "border-slate-200 bg-white text-slate-700 shadow-[0_3px_0_var(--color-slate-200)] hover:border-sky-300 active:translate-y-[3px] active:shadow-none dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:shadow-[0_3px_0_var(--color-slate-700)] dark:hover:border-sky-500",
+                ? "bg-white text-teal-800 shadow-sm dark:bg-slate-900 dark:text-teal-300"
+                : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100",
             )}
           >
             {DIFFICULTY_LABELS[level]}
@@ -60,17 +66,29 @@ export function MapProgressDifficultySelector({
 }
 
 export function MapProgressFillLegend({ isDark }: { isDark: boolean }) {
+  const border = getProgressBorder(isDark);
+
   return (
     <div className="flex flex-wrap items-center gap-3 text-xs text-slate-600 dark:text-slate-400">
       <span className="font-semibold text-slate-700 dark:text-slate-300">Fill levels:</span>
       {MAP_PROGRESS_FILL_LEVELS.map((level) => {
-        const style = getProgressPathStyle(level, isDark);
+        const fill = getProgressFillColor(level, isDark);
+
         return (
           <span key={level} className="inline-flex items-center gap-1.5">
             <span
-              className="inline-block h-3 w-3 rounded-sm border"
-              style={{ backgroundColor: style.fill, borderColor: style.stroke }}
               aria-hidden
+              className="shrink-0 rounded-[3px]"
+              style={{
+                display: "inline-block",
+                width: 16,
+                height: 16,
+                minWidth: 16,
+                minHeight: 16,
+                backgroundColor: fill,
+                border: `1px solid ${border.stroke}`,
+                boxShadow: isDark ? "inset 0 0 0 1px rgb(255 255 255 / 0.08)" : undefined,
+              }}
             />
             {level}/4
           </span>

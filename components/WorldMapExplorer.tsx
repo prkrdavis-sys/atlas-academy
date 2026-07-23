@@ -2,10 +2,11 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Panzoom from "@panzoom/panzoom";
+import { MapZoomControls } from "@/components/MapZoomControls";
+import { ProgressMapOverlays } from "@/components/ProgressMapOverlays";
 import {
   formatPlaceProgressLabel,
   MapProgressFillLegend,
-  PlaceMapProgressPanel,
 } from "@/components/PlaceMapProgressPanel";
 import {
   ContextMapSvg,
@@ -19,10 +20,11 @@ import {
   getWorldMapPathIds,
   resolvePlaceCodeFromParam,
 } from "@/lib/context-maps";
-import { getMapPalette } from "@/lib/map-colors";
-import { buildWorldProgressFillMap, createProgressPathStyleResolver } from "@/lib/map-progress";
+import { createInteractiveProgressPathStyleResolver } from "@/lib/map-interaction";
+import { buildWorldProgressFillMap } from "@/lib/map-progress";
 import type { Country, MapProgressDifficulty, Profile } from "@/lib/types";
 import { useIsDark } from "@/lib/use-is-dark";
+import { MAP_PANZOOM_OPTIONS } from "@/lib/map-panzoom";
 import { focusWorldMapOnPaths } from "@/lib/world-map-focus";
 
 type WorldMapExplorerProps = {
@@ -47,11 +49,6 @@ export function WorldMapExplorer({
   const [hoveredPathId, setHoveredPathId] = useState<string | null>(null);
   const { isDark, ready } = useIsDark();
 
-  const selectedPathIds = useMemo(() => {
-    if (!selectedCountry) return new Set<string>();
-    return new Set(getContextMapPathIds(selectedCountry));
-  }, [selectedCountry]);
-
   const fillMap = useMemo(() => {
     if (!map) return new Map<string, 0 | 1 | 2 | 3 | 4>();
     if (!profile) {
@@ -64,27 +61,16 @@ export function WorldMapExplorer({
     );
   }, [map, profile, difficulty]);
 
-  const pathStyleResolver = useMemo(() => {
-    const baseResolver = createProgressPathStyleResolver(fillMap, isDark);
-    const palette = getMapPalette(isDark);
-    return (pathId: string) => {
-      const base = baseResolver(pathId);
-      if (!base) {
-        if (selectedPathIds.has(pathId) || hoveredPathId === pathId) {
-          return palette.neighbor;
-        }
-        return null;
-      }
-      if (selectedPathIds.has(pathId) || (!selectedCountry && hoveredPathId === pathId)) {
-        return {
-          ...base,
-          stroke: palette.highlight.stroke,
-          strokeWidth: Math.max(base.strokeWidth, palette.highlight.strokeWidth),
-        };
-      }
-      return base;
-    };
-  }, [fillMap, isDark, selectedPathIds, selectedCountry, hoveredPathId]);
+  const pathStyleResolver = useMemo(
+    () =>
+      createInteractiveProgressPathStyleResolver(
+        fillMap,
+        isDark,
+        selectedCountry?.code,
+        hoveredPathId,
+      ),
+    [fillMap, isDark, selectedCountry, hoveredPathId],
+  );
 
   const hoveredCountry = useMemo(() => {
     if (!hoveredPathId) return null;
@@ -121,12 +107,7 @@ export function WorldMapExplorer({
     if (!element || !map) return;
 
     panzoomRef.current?.destroy();
-    panzoomRef.current = Panzoom(element, {
-      maxScale: 16,
-      minScale: 1,
-      contain: "outside",
-      cursor: "grab",
-    });
+    panzoomRef.current = Panzoom(element, MAP_PANZOOM_OPTIONS);
     setPanzoomReady(true);
 
     const container = containerRef.current;
@@ -202,31 +183,11 @@ export function WorldMapExplorer({
             {activeCountry ? activeCountry.name : "Click a country to explore"}
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            className="inline-flex min-h-9 min-w-9 items-center justify-center rounded-lg border border-slate-200 bg-white px-2 text-sm font-black text-slate-700 transition-colors hover:border-teal-400 hover:text-teal-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-teal-500 dark:hover:text-teal-300"
-            aria-label="Zoom out"
-            onClick={() => panzoomRef.current?.zoomOut()}
-          >
-            −
-          </button>
-          <button
-            type="button"
-            className="inline-flex min-h-9 min-w-9 items-center justify-center rounded-lg border border-slate-200 bg-white px-2 text-sm font-black text-slate-700 transition-colors hover:border-teal-400 hover:text-teal-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-teal-500 dark:hover:text-teal-300"
-            aria-label="Zoom in"
-            onClick={() => panzoomRef.current?.zoomIn()}
-          >
-            +
-          </button>
-          <button
-            type="button"
-            className="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 transition-colors hover:border-teal-400 hover:text-teal-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-teal-500 dark:hover:text-teal-300"
-            onClick={() => panzoomRef.current?.reset()}
-          >
-            Reset
-          </button>
-        </div>
+        <MapZoomControls
+          onZoomOut={() => panzoomRef.current?.zoomOut()}
+          onZoomIn={() => panzoomRef.current?.zoomIn()}
+          onReset={() => panzoomRef.current?.reset()}
+        />
       </div>
 
       {ready ? (
@@ -255,23 +216,13 @@ export function WorldMapExplorer({
                 onBackgroundClick={handleBackgroundClick}
               />
             </div>
-            {hoverLabel ? (
-              <div
-                className="pointer-events-none absolute bottom-2 right-2 rounded-lg bg-slate-900/85 px-2.5 py-1 text-xs font-semibold text-white shadow-sm"
-                role="status"
-                aria-live="polite"
-              >
-                {hoverLabel}
-              </div>
-            ) : null}
-            {selectedCountry ? (
-              <PlaceMapProgressPanel
-                code={selectedCountry.code}
-                profile={profile}
-                difficulty={difficulty}
-                scope="world"
-              />
-            ) : null}
+            <ProgressMapOverlays
+              hoverLabel={hoverLabel}
+              selectedCode={selectedCountry?.code ?? null}
+              profile={profile}
+              difficulty={difficulty}
+              scope="world"
+            />
           </>
         ) : loadFailed ? (
           <div className="flex h-full items-center justify-center px-4 text-center text-sm font-semibold text-slate-500 dark:text-slate-400">

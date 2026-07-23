@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   countryHasContextMap,
   getContextMapAriaLabel,
@@ -18,10 +18,12 @@ import {
 import {
   getMapPalette,
   getMapPathRole,
+  PANZOOM_EXCLUDE_CLASS,
   parseMapViewBox,
   sortMapPathsForRender,
   type MapPathStyle,
 } from "@/lib/map-colors";
+import { attachMapPlaceTapHandlers } from "@/lib/map-interaction";
 import { isStateCode } from "@/lib/scope";
 import type { Country } from "@/lib/types";
 import { useIsDark } from "@/lib/use-is-dark";
@@ -116,6 +118,11 @@ export function ContextMapSvg({
   onPathHover,
   onBackgroundClick,
 }: ContextMapSvgProps) {
+  const svgRef = useRef<SVGSVGElement>(null);
+  const onPathClickRef = useRef(onPathClick);
+  const onBackgroundClickRef = useRef(onBackgroundClick);
+  onPathClickRef.current = onPathClick;
+  onBackgroundClickRef.current = onBackgroundClick;
   const palette = getMapPalette(isDark);
   const activeViewBox = viewBox ?? map.viewBox;
   const [viewBoxX, viewBoxY, viewBoxWidth, viewBoxHeight] = parseMapViewBox(activeViewBox);
@@ -124,8 +131,20 @@ export function ContextMapSvg({
     [map.paths, highlightIds, neighborIds],
   );
 
+  useEffect(() => {
+    if (!interactive || !onPathClickRef.current || !svgRef.current) return;
+
+    return attachMapPlaceTapHandlers(svgRef.current, {
+      onPathClick: (pathId) => onPathClickRef.current?.(pathId),
+      onBackgroundClick: onBackgroundClickRef.current
+        ? () => onBackgroundClickRef.current?.()
+        : undefined,
+    });
+  }, [interactive, orderedPaths]);
+
   return (
     <svg
+      ref={svgRef}
       viewBox={activeViewBox}
       className={cn("h-full w-full", className)}
       role="img"
@@ -138,7 +157,6 @@ export function ContextMapSvg({
         width={viewBoxWidth}
         height={viewBoxHeight}
         fill={palette.ocean}
-        onClick={interactive && onBackgroundClick ? () => onBackgroundClick() : undefined}
       />
       {orderedPaths.map((path) => {
         const resolvedStyle = pathStyleResolver?.(path.id);
@@ -150,14 +168,21 @@ export function ContextMapSvg({
             key={path.id}
             id={path.id}
             d={path.d}
+            data-map-place={interactive ? path.id : undefined}
             fill={style.fill}
             stroke={style.stroke}
             strokeWidth={style.strokeWidth}
             vectorEffect="non-scaling-stroke"
             strokeLinejoin="round"
             strokeLinecap="round"
-            className={interactive ? "cursor-pointer transition-[fill,stroke] duration-150" : undefined}
-            onClick={interactive && onPathClick ? () => onPathClick(path.id) : undefined}
+            className={
+              interactive
+                ? cn(
+                    PANZOOM_EXCLUDE_CLASS,
+                    "cursor-pointer transition-[fill,stroke] duration-150",
+                  )
+                : undefined
+            }
             onMouseEnter={interactive && onPathHover ? () => onPathHover(path.id) : undefined}
             onMouseLeave={interactive && onPathHover ? () => onPathHover(null) : undefined}
           />

@@ -128,11 +128,7 @@ export function MapPageContent() {
         </div>
         <div className="flex flex-col items-stretch gap-3 sm:items-end">
           <MapViewToggle view={view} onSelect={setView} />
-          <MapProgressDifficultySelector
-            value={mapDifficulty}
-            onChange={setMapDifficulty}
-            className="w-full min-w-[11rem] sm:w-auto"
-          />
+          <MapProgressDifficultySelector value={mapDifficulty} onChange={setMapDifficulty} />
         </div>
       </header>
 

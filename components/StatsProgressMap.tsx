@@ -7,10 +7,11 @@ import {
   loadContextMapTemplate,
   type ParsedContextMap,
 } from "@/components/PlaceContextMap";
+import { MapZoomControls } from "@/components/MapZoomControls";
+import { ProgressMapOverlays } from "@/components/ProgressMapOverlays";
 import {
   formatPlaceProgressLabel,
   MapProgressFillLegend,
-  PlaceMapProgressPanel,
 } from "@/components/PlaceMapProgressPanel";
 import { filterCountries } from "@/lib/countries";
 import {
@@ -20,11 +21,11 @@ import {
   type ContextMapTemplateKey,
 } from "@/lib/context-maps";
 import { computeFocusedViewBox, loadMapBoundsManifest, type MapBoundsManifest } from "@/lib/map-bounds";
-import { getMapPalette } from "@/lib/map-colors";
+import { createInteractiveProgressPathStyleResolver } from "@/lib/map-interaction";
+import { MAP_PANZOOM_OPTIONS } from "@/lib/map-panzoom";
 import {
   buildUsaProgressFillMap,
   buildWorldProgressFillMap,
-  createProgressPathStyleResolver,
 } from "@/lib/map-progress";
 import {
   type Continent,
@@ -78,7 +79,7 @@ export function StatsProgressMap({
   const [boundsManifest, setBoundsManifest] = useState<MapBoundsManifest | null>(null);
   const [loadFailed, setLoadFailed] = useState(false);
   const [hoveredPathId, setHoveredPathId] = useState<string | null>(null);
-  const [selectedPathId, setSelectedPathId] = useState<string | null>(null);
+  const [selectedCode, setSelectedCode] = useState<string | null>(null);
 
   const resolveCode = scope === "usa" ? getStateCodeByUsaMapPathId : getCountryCodeByMapPathId;
 
@@ -103,33 +104,16 @@ export function StatsProgressMap({
       : buildWorldProgressFillMap(profile, difficulty, pathIds);
   }, [visiblePaths, profile, difficulty, scope]);
 
-  const activePathId = selectedPathId ?? hoveredPathId;
-  const selectedCode = useMemo(() => {
-    if (!selectedPathId) return null;
-    const code = resolveCode(selectedPathId);
-    if (!code) return null;
-    if (regionCodes && !regionCodes.has(code)) return null;
-    return code;
-  }, [selectedPathId, resolveCode, regionCodes]);
-
-  const pathStyleResolver = useMemo(() => {
-    const baseResolver = createProgressPathStyleResolver(fillMap, isDark);
-    const palette = getMapPalette(isDark);
-    return (pathId: string) => {
-      const base = baseResolver(pathId);
-      if (!base) {
-        return activePathId === pathId ? palette.neighbor : null;
-      }
-      if (activePathId === pathId) {
-        return {
-          ...base,
-          stroke: palette.highlight.stroke,
-          strokeWidth: Math.max(base.strokeWidth, palette.highlight.strokeWidth),
-        };
-      }
-      return base;
-    };
-  }, [fillMap, isDark, activePathId]);
+  const pathStyleResolver = useMemo(
+    () =>
+      createInteractiveProgressPathStyleResolver(
+        fillMap,
+        isDark,
+        selectedCode,
+        hoveredPathId,
+      ),
+    [fillMap, isDark, selectedCode, hoveredPathId],
+  );
 
   const focusedViewBox = useMemo(() => {
     if (!boundsManifest || visiblePaths.length === 0) return undefined;
@@ -153,30 +137,32 @@ export function StatsProgressMap({
   }, [templateKey, boundsManifest, visiblePaths, compact, region]);
 
   const hoverLabel = useMemo(() => {
-    if (selectedPathId || !hoveredPathId) return null;
+    if (selectedCode || !hoveredPathId) return null;
     const code = resolveCode(hoveredPathId);
     if (!code) return null;
     if (regionCodes && !regionCodes.has(code)) return null;
     return formatPlaceProgressLabel(code, profile, difficulty);
-  }, [selectedPathId, hoveredPathId, resolveCode, regionCodes, profile, difficulty]);
+  }, [selectedCode, hoveredPathId, resolveCode, regionCodes, profile, difficulty]);
 
   const handlePathClick = useCallback(
     (pathId: string) => {
       if (!isPlayableMapPath(pathId, resolveCode, regionCodes)) return;
-      setSelectedPathId((current) => (current === pathId ? null : pathId));
+      const code = resolveCode(pathId);
+      if (!code) return;
+      setSelectedCode((current) => (current === code ? null : code));
     },
     [resolveCode, regionCodes],
   );
 
   const handleBackgroundClick = useCallback(() => {
-    setSelectedPathId(null);
+    setSelectedCode(null);
   }, []);
 
   useEffect(() => {
     let cancelled = false;
     setLoadFailed(false);
     setHoveredPathId(null);
-    setSelectedPathId(null);
+    setSelectedCode(null);
 
     Promise.all([loadContextMapTemplate(templateKey), loadMapBoundsManifest()])
       .then(([loaded, bounds]) => {
@@ -198,13 +184,14 @@ export function StatsProgressMap({
     const element = mapRef.current;
     if (!element || !map || !ready) return;
 
+    if (compact) {
+      panzoomRef.current?.destroy();
+      panzoomRef.current = null;
+      return;
+    }
+
     panzoomRef.current?.destroy();
-    panzoomRef.current = Panzoom(element, {
-      maxScale: 16,
-      minScale: 1,
-      contain: "outside",
-      cursor: "grab",
-    });
+    panzoomRef.current = Panzoom(element, MAP_PANZOOM_OPTIONS);
 
     const container = containerRef.current;
     const onWheel = (event: WheelEvent) => {
@@ -218,7 +205,7 @@ export function StatsProgressMap({
       panzoomRef.current?.destroy();
       panzoomRef.current = null;
     };
-  }, [map, ready, templateKey]);
+  }, [map, ready, templateKey, compact]);
 
   return (
     <>
@@ -249,49 +236,21 @@ export function StatsProgressMap({
               />
             </div>
             {!compact ? (
-              <div className="absolute right-2 top-2 z-10 flex items-center gap-1.5">
-                <button
-                  type="button"
-                  className="inline-flex min-h-9 min-w-9 items-center justify-center rounded-lg border border-slate-200 bg-white/95 px-2 text-sm font-black text-slate-700 shadow-sm backdrop-blur transition-colors hover:border-teal-400 hover:text-teal-700 dark:border-slate-600 dark:bg-slate-800/95 dark:text-slate-200 dark:hover:border-teal-500 dark:hover:text-teal-300"
-                  aria-label="Zoom out"
-                  onClick={() => panzoomRef.current?.zoomOut()}
-                >
-                  −
-                </button>
-                <button
-                  type="button"
-                  className="inline-flex min-h-9 min-w-9 items-center justify-center rounded-lg border border-slate-200 bg-white/95 px-2 text-sm font-black text-slate-700 shadow-sm backdrop-blur transition-colors hover:border-teal-400 hover:text-teal-700 dark:border-slate-600 dark:bg-slate-800/95 dark:text-slate-200 dark:hover:border-teal-500 dark:hover:text-teal-300"
-                  aria-label="Zoom in"
-                  onClick={() => panzoomRef.current?.zoomIn()}
-                >
-                  +
-                </button>
-                <button
-                  type="button"
-                  className="inline-flex items-center rounded-lg border border-slate-200 bg-white/95 px-3 py-2 text-xs font-bold text-slate-700 shadow-sm backdrop-blur transition-colors hover:border-teal-400 hover:text-teal-700 dark:border-slate-600 dark:bg-slate-800/95 dark:text-slate-200 dark:hover:border-teal-500 dark:hover:text-teal-300"
-                  onClick={() => panzoomRef.current?.reset()}
-                >
-                  Reset
-                </button>
-              </div>
-            ) : null}
-            {hoverLabel ? (
-              <div
-                className="pointer-events-none absolute bottom-2 left-2 rounded-lg bg-slate-900/85 px-2.5 py-1 text-xs font-semibold text-white shadow-sm"
-                role="status"
-                aria-live="polite"
-              >
-                {hoverLabel}
-              </div>
-            ) : null}
-            {selectedCode ? (
-              <PlaceMapProgressPanel
-                code={selectedCode}
-                profile={profile}
-                difficulty={difficulty}
-                scope={scope}
+              <MapZoomControls
+                variant="overlay"
+                className="absolute right-2 top-2 z-10 gap-1.5"
+                onZoomOut={() => panzoomRef.current?.zoomOut()}
+                onZoomIn={() => panzoomRef.current?.zoomIn()}
+                onReset={() => panzoomRef.current?.reset()}
               />
             ) : null}
+            <ProgressMapOverlays
+              hoverLabel={hoverLabel}
+              selectedCode={selectedCode}
+              profile={profile}
+              difficulty={difficulty}
+              scope={scope}
+            />
           </>
         ) : loadFailed ? (
           <div className="flex h-full items-center justify-center px-4 text-center text-xs font-semibold text-slate-500 dark:text-slate-400">
