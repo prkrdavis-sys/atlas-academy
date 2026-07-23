@@ -6,6 +6,19 @@ import type { PlaceMasteryLevel } from "@/lib/types";
 
 const MAP_TAP_MOVE_THRESHOLD_PX = 8;
 
+function isPrimaryPointerButton(event: PointerEvent, phase: "down" | "up"): boolean {
+  if (event.pointerType === "mouse") {
+    return event.button === 0;
+  }
+
+  // Touch and pen releases often report button -1 on pointerup.
+  if (phase === "up") {
+    return event.button === 0 || event.button === -1;
+  }
+
+  return event.isPrimary;
+}
+
 export const EMPTY_MAP_PATH_ID_SET = new Set<string>();
 
 type MapPlaceTapHandlers = {
@@ -28,12 +41,11 @@ export function attachMapPlaceTapHandlers(
   };
 
   const onPointerDown = (event: PointerEvent) => {
-    if (event.button !== 0) return;
+    if (!isPrimaryPointerButton(event, "down")) return;
 
     const target = event.target;
     if (target instanceof SVGPathElement && target.id) {
       backgroundTap = null;
-      event.stopPropagation();
       activeTaps.set(event.pointerId, {
         pathId: target.id,
         x: event.clientX,
@@ -47,8 +59,22 @@ export function attachMapPlaceTapHandlers(
     }
   };
 
+  const onPointerMove = (event: PointerEvent) => {
+    const activeTap = activeTaps.get(event.pointerId);
+    if (activeTap) {
+      if (!isTap(activeTap.x, activeTap.y, event.clientX, event.clientY)) {
+        activeTaps.delete(event.pointerId);
+      }
+      return;
+    }
+
+    if (backgroundTap && !isTap(backgroundTap.x, backgroundTap.y, event.clientX, event.clientY)) {
+      backgroundTap = null;
+    }
+  };
+
   const onPointerUp = (event: PointerEvent) => {
-    if (event.button !== 0) return;
+    if (!isPrimaryPointerButton(event, "up")) return;
 
     const activeTap = activeTaps.get(event.pointerId);
     if (activeTap) {
@@ -80,13 +106,15 @@ export function attachMapPlaceTapHandlers(
     backgroundTap = null;
   };
 
-  // Capture phase blocks Panzoom from seeing path pointerdown before it bubbles to mapRef.
+  // Capture phase lets us track tap intent before Panzoom handles pan/pinch.
   svg.addEventListener("pointerdown", onPointerDown, true);
+  svg.addEventListener("pointermove", onPointerMove);
   svg.addEventListener("pointerup", onPointerUp);
   svg.addEventListener("pointercancel", onPointerCancel);
 
   return () => {
     svg.removeEventListener("pointerdown", onPointerDown, true);
+    svg.removeEventListener("pointermove", onPointerMove);
     svg.removeEventListener("pointerup", onPointerUp);
     svg.removeEventListener("pointercancel", onPointerCancel);
   };

@@ -18,11 +18,11 @@ import {
 import {
   getMapPalette,
   getMapPathRole,
-  PANZOOM_EXCLUDE_CLASS,
   parseMapViewBox,
   sortMapPathsForRender,
   type MapPathStyle,
 } from "@/lib/map-colors";
+import { attachMapPlaceTapHandlers } from "@/lib/map-interaction";
 import { isStateCode } from "@/lib/scope";
 import type { Country } from "@/lib/types";
 import { useIsDark } from "@/lib/use-is-dark";
@@ -117,6 +117,7 @@ export function ContextMapSvg({
   onPathHover,
   onBackgroundClick,
 }: ContextMapSvgProps) {
+  const svgRef = useRef<SVGSVGElement>(null);
   const onPathClickRef = useRef(onPathClick);
   const onBackgroundClickRef = useRef(onBackgroundClick);
   onPathClickRef.current = onPathClick;
@@ -129,8 +130,22 @@ export function ContextMapSvg({
     [map.paths, highlightIds, neighborIds],
   );
 
+  useEffect(() => {
+    if (!interactive || !onPathClick) return;
+    const svg = svgRef.current;
+    if (!svg) return;
+
+    return attachMapPlaceTapHandlers(svg, {
+      onPathClick: (pathId) => onPathClickRef.current?.(pathId),
+      onBackgroundClick: onBackgroundClickRef.current
+        ? () => onBackgroundClickRef.current?.()
+        : undefined,
+    });
+  }, [interactive, onPathClick, onBackgroundClick]);
+
   return (
     <svg
+      ref={svgRef}
       viewBox={activeViewBox}
       className={cn("h-full w-full", className)}
       role="img"
@@ -143,16 +158,6 @@ export function ContextMapSvg({
         width={viewBoxWidth}
         height={viewBoxHeight}
         fill={palette.ocean}
-        className={interactive ? PANZOOM_EXCLUDE_CLASS : undefined}
-        onPointerUp={
-          interactive && onBackgroundClick
-            ? (event) => {
-                if (event.button !== 0) return;
-                event.stopPropagation();
-                onBackgroundClickRef.current?.();
-              }
-            : undefined
-        }
       />
       {orderedPaths.map((path) => {
         const resolvedStyle = pathStyleResolver?.(path.id);
@@ -173,23 +178,11 @@ export function ContextMapSvg({
             strokeLinecap="round"
             className={
               interactive
-                ? cn(
-                    PANZOOM_EXCLUDE_CLASS,
-                    "cursor-pointer transition-[fill,stroke] duration-150",
-                  )
+                ? "cursor-pointer transition-[fill,stroke] duration-150"
                 : undefined
             }
             onMouseEnter={interactive && onPathHover ? () => onPathHover(path.id) : undefined}
             onMouseLeave={interactive && onPathHover ? () => onPathHover(null) : undefined}
-            onPointerUp={
-              interactive && onPathClick
-                ? (event) => {
-                    if (event.button !== 0) return;
-                    event.stopPropagation();
-                    onPathClickRef.current?.(path.id);
-                  }
-                : undefined
-            }
           />
         );
       })}
