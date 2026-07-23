@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { WorldMapPageContent } from "@/components/WorldMapPageContent";
+import { MapPageContent } from "@/components/MapPageContent";
 
 function MapPageFallback() {
   return (
@@ -13,7 +13,7 @@ function MapPageFallback() {
 export default function MapPage() {
   return (
     <Suspense fallback={<MapPageFallback />}>
-      <WorldMapPageContent />
+      <MapPageContent />
     </Suspense>
   );
 }

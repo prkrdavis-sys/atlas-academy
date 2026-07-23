@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { MapProgressInfoButton, MapProgressInfoDialog } from "@/components/MapProgressInfoDialog";
+import { MapProgressDifficultySelector } from "@/components/PlaceMapProgressPanel";
 import { StatsProgressMap, getStatsMapTemplateKey } from "@/components/StatsProgressMap";
 import { getRegionsForScope } from "@/lib/countries";
 import {
@@ -14,47 +15,13 @@ import type { MapProgressDifficulty, Profile } from "@/lib/types";
 import {
   DIFFICULTY_LABELS,
   MAP_PROGRESS_CATEGORIES,
-  MAP_PROGRESS_DIFFICULTIES,
   type GameScope,
 } from "@/lib/types";
-import { cn } from "@/lib/utils";
 
 type StatsMapProgressSectionProps = {
   profile: Profile;
   scope: GameScope;
 };
-
-function MapDifficultySelector({
-  value,
-  onChange,
-}: {
-  value: MapProgressDifficulty;
-  onChange: (difficulty: MapProgressDifficulty) => void;
-}) {
-  return (
-    <div className="grid grid-cols-2 gap-2" role="group" aria-label="Map progress difficulty">
-      {MAP_PROGRESS_DIFFICULTIES.map((level) => {
-        const selected = value === level;
-        return (
-          <button
-            key={level}
-            type="button"
-            aria-pressed={selected}
-            onClick={() => onChange(level)}
-            className={cn(
-              "min-h-10 rounded-xl border-2 px-3 py-2 text-sm font-semibold transition-all duration-100",
-              selected
-                ? "border-emerald-600 bg-emerald-500 text-white shadow-[0_3px_0_var(--color-emerald-700)]"
-                : "border-slate-200 bg-white text-slate-700 shadow-[0_3px_0_var(--color-slate-200)] hover:border-sky-300 active:translate-y-[3px] active:shadow-none dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:shadow-[0_3px_0_var(--color-slate-700)] dark:hover:border-sky-500",
-            )}
-          >
-            {DIFFICULTY_LABELS[level]}
-          </button>
-        );
-      })}
-    </div>
-  );
-}
 
 function MapProgressSummaryCard({
   scope: cardScope,
@@ -149,7 +116,7 @@ export function StatsMapProgressSection({ profile, scope }: StatsMapProgressSect
               {DIFFICULTY_LABELS[mapDifficulty]} difficulty · {scopeInfo.label}
             </p>
           </div>
-          <MapDifficultySelector value={mapDifficulty} onChange={setMapDifficulty} />
+          <MapProgressDifficultySelector value={mapDifficulty} onChange={setMapDifficulty} />
         </div>
       </div>
 

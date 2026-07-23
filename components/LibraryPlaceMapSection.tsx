@@ -37,7 +37,7 @@ export function LibraryPlaceMapSection({ country }: LibraryPlaceMapSectionProps)
           href={buildPlaceMapHref(country.code)}
           className="inline-flex shrink-0 min-h-11 items-center rounded-full border-2 border-teal-200 bg-teal-50 px-4 py-2 text-sm font-bold text-teal-800 transition-colors hover:border-teal-400 hover:bg-teal-100 dark:border-teal-800 dark:bg-teal-950/50 dark:text-teal-200 dark:hover:border-teal-500 dark:hover:bg-teal-950"
         >
-          {isState ? "Open USA Map" : "Open World Map"}
+          Open on Map
         </Link>
       </div>
       <PlaceContextMap country={country} variant="hero" />
