@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { AtlasAcademyLogo } from "@/components/AtlasAcademyLogo";
 import { PlayModeSwitcher } from "@/components/PlayModeSwitcher";
 import { ProfileSwitcher } from "@/components/ProfileSwitcher";
 import { getPrimaryNavHref } from "@/lib/navigation";
@@ -29,9 +30,19 @@ export function AppHeader() {
         <div className="mx-auto flex h-14 max-w-5xl items-center gap-4 px-4 sm:h-16">
           <Link
             href="/"
-            className="font-display text-lg font-extrabold tracking-tight text-teal-800 transition-opacity active:opacity-60 dark:text-teal-300 sm:text-xl"
+            aria-label="Atlas Academy home"
+            className="shrink-0 transition-opacity active:opacity-60"
           >
-            <span aria-hidden>🌍</span> Atlas Academy
+            <AtlasAcademyLogo
+              variant="mark"
+              priority
+              className="h-9 w-9 sm:hidden"
+            />
+            <AtlasAcademyLogo
+              variant="full"
+              priority
+              className="hidden h-11 w-auto max-w-[11.5rem] sm:block md:max-w-[13rem]"
+            />
           </Link>
           <div className="hidden flex-1 justify-center sm:flex">
             <PlayModeSwitcher />

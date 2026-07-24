@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/Button";
+import { AtlasAcademyLogo } from "@/components/AtlasAcademyLogo";
 import { hasSeenWelcome, markWelcomeSeen } from "@/lib/welcome";
 
 const WELCOME_HIGHLIGHTS = [
@@ -88,13 +89,10 @@ export function WelcomeDialog() {
         aria-describedby="welcome-description"
         className="relative w-full max-w-lg overflow-hidden rounded-[1.75rem] border-2 border-teal-200 bg-white p-6 shadow-[0_24px_60px_rgb(15_23_42_/_0.35)] dark:border-teal-800 dark:bg-slate-900 sm:p-8"
       >
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -right-6 -top-6 text-[6rem] opacity-15"
-        >
-          🌍
+        <div className="mx-auto w-full max-w-[15rem]">
+          <AtlasAcademyLogo variant="full" className="mx-auto h-auto w-full" />
         </div>
-        <p className="text-xs font-black uppercase tracking-[0.16em] text-teal-700 dark:text-teal-300">
+        <p className="mt-4 text-xs font-black uppercase tracking-[0.16em] text-teal-700 dark:text-teal-300">
           Welcome aboard!
         </p>
         <h2
