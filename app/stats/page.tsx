@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { ExplorerRankBadge } from "@/components/ExplorerRankBadge";
 import { StatsMapProgressSummary } from "@/components/StatsMapProgressSummary";
 import { useProfiles } from "@/components/ProfileProvider";
 import { cn } from "@/lib/utils";
@@ -165,7 +166,10 @@ export default function StatsPage() {
     <div className="space-y-5 sm:space-y-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-2xl font-extrabold sm:text-3xl">Stats for {profile.name}</h1>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+            <h1 className="font-display text-2xl font-extrabold sm:text-3xl">Stats for {profile.name}</h1>
+            <ExplorerRankBadge profile={profile} scope={scope} />
+          </div>
           <p className="mt-1 text-sm text-slate-600 dark:text-slate-400 sm:text-base">
             {activeTab === "overview"
               ? `Track your streaks and accuracy across all game modes for ${scopeInfo.nounPlural}.`

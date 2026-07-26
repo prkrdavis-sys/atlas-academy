@@ -37,25 +37,24 @@ const templateCache = new Map<string, ParsedContextMap>();
 const boundsCache: { data: MapBoundsManifest | null } = { data: null };
 
 /**
- * Photo-crop framing for context maps.
- * Learn cards use a generous regional crop so the featured place is legible
- * and nearby countries remain visible in the frame.
+ * Close-up framing: full country/state bounds + padding, then expand to aspect.
+ * Never zooms in past the full shape, so nothing is cut off at the edges.
  */
 const CROP_OPTIONS = {
   compact: {
     aspectRatio: 2.2,
-    paddingRatio: 0.5,
-    minSizeRatio: 0.05,
+    paddingRatio: 0.18,
+    minSizeRatio: 0.04,
   },
   learn: {
     aspectRatio: 2.2,
-    paddingRatio: 0.75,
-    minSizeRatio: 0.07,
+    paddingRatio: 0.2,
+    minSizeRatio: 0.05,
   },
   hero: {
     aspectRatio: 1.6,
-    paddingRatio: 0.55,
-    minSizeRatio: 0.06,
+    paddingRatio: 0.22,
+    minSizeRatio: 0.05,
   },
 } as const;
 
@@ -118,8 +117,8 @@ function strokeWidthForViewBox(
 ): number {
   if (!scaleWithMap) return baseWidth;
   const diagonal = Math.hypot(viewBoxWidth, viewBoxHeight);
-  // Keep borders readable at any zoom without hairline screen-pixel strokes.
-  return Math.max(diagonal * 0.0011 * (baseWidth / 0.35), diagonal * 0.0007);
+  // Thin map-space strokes so Natural Earth coastlines stay sharp when zoomed.
+  return Math.max(diagonal * 0.00045 * (baseWidth / 0.35), diagonal * 0.00028);
 }
 
 export function ContextMapSvg({

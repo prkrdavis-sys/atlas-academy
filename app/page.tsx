@@ -5,7 +5,6 @@ import { useRef } from "react";
 import { HomePlayHero } from "@/components/HomePlayHero";
 import type { GlobeHandle } from "@/components/home/GlobeBackground";
 import { useProfiles } from "@/components/ProfileProvider";
-import { getMasteredProgress } from "@/lib/explorer-rank";
 import { getDailyChallengeRun, hasCompletedDailyToday } from "@/lib/game-engine";
 import { useGameScope } from "@/lib/use-game-scope";
 import { getGlobalStreakOrZero, getTodayBestStreakDisplay, getTodayBestStreakOrZero } from "@/lib/stats-helpers";
@@ -31,7 +30,6 @@ export default function HomePage() {
   const dailyCompletedToday = profile
     ? hasCompletedDailyToday(profile.dailyChallengeCompletions, scope)
     : false;
-  const mapProgress = profile ? getMasteredProgress(scope, profile) : null;
 
   return (
     <>
@@ -45,7 +43,6 @@ export default function HomePage() {
         storedTodayBest={storedTodayBest}
         dailyRun={dailyRun}
         dailyCompletedToday={dailyCompletedToday}
-        mapProgress={mapProgress}
         globeHandleRef={globeHandleRef}
         heroRef={heroRef}
       />

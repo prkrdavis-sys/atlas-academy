@@ -26,6 +26,15 @@ export type ExplorerRank = {
   nextAt: number | null;
 };
 
+export type ExplorerRankNext = {
+  title: string;
+  icon: string;
+  /** Absolute mastered-place count required to earn this rank. */
+  at: number;
+  /** How many more places must be mastered from the current count. */
+  remaining: number;
+};
+
 /** Thresholds are fractions of the scope's total so World and USA both level fairly. */
 const RANK_TIERS = [
   { fraction: 0, title: "Cadet", icon: "🎒" },
@@ -37,8 +46,14 @@ const RANK_TIERS = [
   { fraction: 0.75, title: "Atlas Master", icon: "🌍" },
 ] as const;
 
+function rankThresholds(total: number): number[] {
+  return RANK_TIERS.map((tier) =>
+    Math.max(tier.fraction === 0 ? 0 : 1, Math.round(tier.fraction * total)),
+  );
+}
+
 export function getExplorerRank(progress: MasteredProgress): ExplorerRank {
-  const thresholds = RANK_TIERS.map((tier) => Math.max(tier.fraction === 0 ? 0 : 1, Math.round(tier.fraction * progress.total)));
+  const thresholds = rankThresholds(progress.total);
 
   let index = 0;
   for (let i = 0; i < thresholds.length; i += 1) {
@@ -48,4 +63,26 @@ export function getExplorerRank(progress: MasteredProgress): ExplorerRank {
   const tier = RANK_TIERS[index];
   const next = index + 1 < thresholds.length ? thresholds[index + 1] : null;
   return { title: tier.title, icon: tier.icon, level: index + 1, nextAt: next };
+}
+
+/** Details for the rank above the player's current one, or null at max rank. */
+export function getNextExplorerRank(progress: MasteredProgress): ExplorerRankNext | null {
+  const thresholds = rankThresholds(progress.total);
+
+  let index = 0;
+  for (let i = 0; i < thresholds.length; i += 1) {
+    if (progress.mastered >= thresholds[i]) index = i;
+  }
+
+  const nextIndex = index + 1;
+  if (nextIndex >= RANK_TIERS.length) return null;
+
+  const at = thresholds[nextIndex];
+  const next = RANK_TIERS[nextIndex];
+  return {
+    title: next.title,
+    icon: next.icon,
+    at,
+    remaining: Math.max(0, at - progress.mastered),
+  };
 }

@@ -14,7 +14,6 @@ import { DailyCalendarIcon } from "@/components/DailyCalendarIcon";
 import { HomeHeroTaglineContent } from "@/components/HomeHeroTaglineContent";
 import { ProfileRequiredDialog } from "@/components/ProfileRequiredDialog";
 import type { GlobeHandle } from "@/components/home/GlobeBackground";
-import { getExplorerRank, type MasteredProgress } from "@/lib/explorer-rank";
 import { getActiveGameSummaryParts, getMainPlayMode, resolvePlayMode } from "@/lib/game-setup";
 import { hasPlayedDailyToday } from "@/lib/game-engine";
 import { getStoredScope, scopedHref, scopeQuery, SCOPE_INFO } from "@/lib/scope";
@@ -32,7 +31,6 @@ type HomePlayHeroProps = {
   storedTodayBest: number;
   dailyRun: number;
   dailyCompletedToday: boolean;
-  mapProgress: MasteredProgress | null;
   globeHandleRef?: React.RefObject<GlobeHandle | null>;
   heroRef: React.RefObject<HTMLElement | null>;
   className?: string;
@@ -47,7 +45,6 @@ export function HomePlayHero({
   storedTodayBest,
   dailyRun,
   dailyCompletedToday,
-  mapProgress,
   globeHandleRef,
   heroRef,
   className,
@@ -122,7 +119,6 @@ export function HomePlayHero({
     router.push(scopedHref(`/play/${resolved.mode}`, activeScope, { autostart: "1" }));
   }, [profile, scope, onRefresh, router]);
 
-  const rank = mapProgress ? getExplorerRank(mapProgress) : null;
   const mapHref = scope === "usa" ? "/map?view=usa" : "/map";
 
   return (
@@ -147,27 +143,9 @@ export function HomePlayHero({
               </h1>
             </header>
 
-            <GlobeDragZone
-              href={mapHref}
-              globeHandleRef={globeHandleRef}
-              className="h-[30vh] min-h-[8rem] sm:h-[36vh]"
-            />
+            <GlobeDragZone href={mapHref} globeHandleRef={globeHandleRef} />
 
             <div className="mx-auto flex w-full max-w-xl flex-col gap-4">
-              {rank || mapProgress ? (
-                <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
-                  {rank ? (
-                    <p className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3.5 py-1.5 font-display text-sm font-extrabold text-teal-200 backdrop-blur-md">
-                      <span aria-hidden>{rank.icon}</span>
-                      {rank.title}
-                    </p>
-                  ) : null}
-                  {mapProgress ? (
-                    <MapProgressRing progress={mapProgress} scope={scope} href={mapHref} />
-                  ) : null}
-                </div>
-              ) : null}
-
               <button
                 type="button"
                 onClick={startPlay}
@@ -248,7 +226,6 @@ const GLOBE_TAP_TRAVEL_THRESHOLD = 8;
 type GlobeDragZoneProps = {
   href: string;
   globeHandleRef?: React.RefObject<GlobeHandle | null>;
-  className?: string;
 };
 
 /**
@@ -256,7 +233,7 @@ type GlobeDragZoneProps = {
  * imperative handle, since this overlay sits above the canvas), while a plain
  * tap, click, or keyboard activation opens the progress map.
  */
-function GlobeDragZone({ href, globeHandleRef, className }: GlobeDragZoneProps) {
+function GlobeDragZone({ href, globeHandleRef }: GlobeDragZoneProps) {
   const dragRef = useRef<{ pointerId: number; lastX: number } | null>(null);
   const traveledRef = useRef(0);
 
@@ -276,10 +253,7 @@ function GlobeDragZone({ href, globeHandleRef, className }: GlobeDragZoneProps) 
       href={href}
       aria-label="Open your progress map"
       draggable={false}
-      className={cn(
-        "block h-[24vh] min-h-[6.5rem] w-full cursor-grab touch-pan-y select-none active:cursor-grabbing sm:h-[30vh]",
-        className,
-      )}
+      className="block h-[24vh] min-h-[6.5rem] w-full cursor-grab touch-pan-y select-none active:cursor-grabbing sm:h-[30vh]"
       onPointerDown={(event) => {
         dragRef.current = { pointerId: event.pointerId, lastX: event.clientX };
         traveledRef.current = 0;
@@ -305,54 +279,6 @@ function GlobeDragZone({ href, globeHandleRef, className }: GlobeDragZoneProps) 
         if (traveledRef.current >= GLOBE_TAP_TRAVEL_THRESHOLD) event.preventDefault();
       }}
     />
-  );
-}
-
-type MapProgressRingProps = {
-  progress: MasteredProgress;
-  scope: GameScope;
-  href: string;
-};
-
-/**
- * Ties the spinning globe to a concrete goal: a progress ring plus a
- * mastered-places counter, linking to the full progress map.
- */
-function MapProgressRing({ progress, scope, href }: MapProgressRingProps) {
-  const fraction = progress.total > 0 ? progress.mastered / progress.total : 0;
-  const circumference = 2 * Math.PI * 15.5;
-  const placeNoun = scope === "usa" ? "states" : "countries";
-
-  return (
-    <Link
-      href={href}
-      aria-label={`${progress.mastered} of ${progress.total} ${placeNoun} mastered. Open your progress map.`}
-      className="group flex items-center gap-2.5 rounded-full border border-white/15 bg-white/10 py-1.5 pl-2 pr-3.5 backdrop-blur-md transition-colors hover:border-teal-300/50 hover:bg-white/15 sm:gap-3 sm:pr-4"
-    >
-      <svg viewBox="0 0 36 36" className="h-10 w-10 -rotate-90" aria-hidden>
-        <circle cx="18" cy="18" r="15.5" fill="none" stroke="rgb(255 255 255 / 0.15)" strokeWidth="3.5" />
-        <circle
-          cx="18"
-          cy="18"
-          r="15.5"
-          fill="none"
-          stroke="#2dd4bf"
-          strokeWidth="3.5"
-          strokeLinecap="round"
-          strokeDasharray={`${Math.max(fraction * circumference, progress.mastered > 0 ? 2 : 0)} ${circumference}`}
-        />
-      </svg>
-      <span className="text-sm font-semibold text-slate-200">
-        <span className="font-display text-base font-extrabold tabular-nums text-white">
-          {progress.mastered}
-          <span className="text-slate-400"> / {progress.total}</span>
-        </span>{" "}
-        {placeNoun} mastered
-      </span>
-      <span aria-hidden className="text-sm font-extrabold text-teal-300 transition-transform group-hover:translate-x-0.5">
-        ›
-      </span>
-    </Link>
   );
 }
 

@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { ExplorerRankBadge } from "@/components/ExplorerRankBadge";
 import { MapPageProgressPanel } from "@/components/MapPageProgressPanel";
 import { MapProgressDifficultySelector } from "@/components/PlaceMapProgressPanel";
 import { useProfiles } from "@/components/ProfileProvider";
@@ -109,9 +110,12 @@ export function MapPageContent() {
     <div className="space-y-5 sm:space-y-6">
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
-          <h1 className="font-display text-2xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 sm:text-3xl">
-            🗺️ Map
-          </h1>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+            <h1 className="font-display text-2xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 sm:text-3xl">
+              🗺️ Map
+            </h1>
+            {profile ? <ExplorerRankBadge profile={profile} scope={view} /> : null}
+          </div>
           <p className="mt-1 max-w-2xl text-sm text-slate-600 dark:text-slate-400">
             Explore every country and all 50 U.S. states. Pan and zoom to find a place, then click to
             see your map progress and jump to its Library entry.

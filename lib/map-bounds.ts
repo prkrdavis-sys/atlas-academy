@@ -5,7 +5,7 @@ export type PathBounds = [left: number, top: number, right: number, bottom: numb
 export type MapTemplateBounds = {
   viewBox: PathBounds;
   paths: Record<string, PathBounds>;
-  /** Mainland / nearby-island bounds used for framing (excludes remote territories). */
+  /** Optional mainland-only bounds; not used for framing (full paths must stay unclipped). */
   focusPaths?: Record<string, PathBounds>;
 };
 
@@ -44,18 +44,15 @@ function unionBounds(boundsList: PathBounds[]): PathBounds | null {
 }
 
 /**
- * Builds a photo-crop viewBox around the subject: pad for regional context,
- * match the display aspect ratio, and keep the subject comfortably large —
- * without ever clipping it.
+ * Scaled close-up around a place: pad the full geometry, then expand to the
+ * display aspect ratio. Never shrinks below the padded subject, so nothing is cut off.
  */
-function fitRegionalViewBox(
+function fitCloseUpViewBox(
   subject: PathBounds,
   options: {
     aspectRatio?: number;
     paddingRatio: number;
     minSizeRatio: number;
-    /** Target minimum share of the frame for the subject on its dominant axis. */
-    minSubjectFill?: number;
   },
   templateBounds: PathBounds,
 ): PathBounds {
@@ -63,80 +60,64 @@ function fitRegionalViewBox(
   const [subjectLeft, subjectTop, subjectRight, subjectBottom] = subject;
   const subjectWidth = Math.max(subjectRight - subjectLeft, 1e-6);
   const subjectHeight = Math.max(subjectBottom - subjectTop, 1e-6);
-  const subjectCenterX = (subjectLeft + subjectRight) / 2;
-  const subjectCenterY = (subjectTop + subjectBottom) / 2;
-  const aspectRatio = options.aspectRatio;
-  const minSubjectFill = options.minSubjectFill ?? 0.26;
+  const centerX = (subjectLeft + subjectRight) / 2;
+  const centerY = (subjectTop + subjectBottom) / 2;
 
-  // Padded window that fully contains the subject.
   const pad = Math.max(subjectWidth, subjectHeight) * options.paddingRatio;
-  let width = subjectWidth + pad * 2;
-  let height = subjectHeight + pad * 2;
+  let width = Math.max(subjectWidth + pad * 2, subjectWidth * 1.12);
+  let height = Math.max(subjectHeight + pad * 2, subjectHeight * 1.12);
 
-  const minWidth = templateWidth * options.minSizeRatio;
-  const minHeight = templateHeight * options.minSizeRatio;
-  width = Math.max(width, minWidth, subjectWidth * 1.08);
-  height = Math.max(height, minHeight, subjectHeight * 1.08);
+  // Tiny places still get a readable regional window.
+  width = Math.max(width, templateWidth * options.minSizeRatio);
+  height = Math.max(height, templateHeight * options.minSizeRatio);
 
-  if (aspectRatio !== undefined) {
+  // Final safety: the subject must always fit with a little margin.
+  width = Math.max(width, subjectWidth * 1.12);
+  height = Math.max(height, subjectHeight * 1.12);
+
+  if (options.aspectRatio !== undefined) {
+    const aspectRatio = options.aspectRatio;
     if (width / height < aspectRatio) {
       width = height * aspectRatio;
     } else {
       height = width / aspectRatio;
     }
 
-    // If aspect expansion made the subject too small, zoom in — but never clip it.
-    const fillX = subjectWidth / width;
-    const fillY = subjectHeight / height;
-    if (Math.min(fillX, fillY) < minSubjectFill) {
-      const widthFromSubject = subjectWidth / minSubjectFill;
-      const heightFromSubject = subjectHeight / minSubjectFill;
-      // Pick the zoom that restores fill on the weaker axis, then re-apply aspect
-      // while still containing the subject with a little margin.
-      if (fillX < fillY) {
-        width = Math.max(widthFromSubject, subjectWidth * 1.08);
-        height = width / aspectRatio;
-        if (height < subjectHeight * 1.08) {
-          height = subjectHeight * 1.08;
-          width = height * aspectRatio;
-        }
-      } else {
-        height = Math.max(heightFromSubject, subjectHeight * 1.08);
-        width = height * aspectRatio;
-        if (width < subjectWidth * 1.08) {
-          width = subjectWidth * 1.08;
-          height = width / aspectRatio;
-        }
-      }
+    // Aspect fit only expands. If a wide/tall frame would still be tighter than
+    // the subject on an axis, grow that axis (and re-match aspect).
+    if (width < subjectWidth * 1.12) {
+      width = subjectWidth * 1.12;
+      height = width / aspectRatio;
+    }
+    if (height < subjectHeight * 1.12) {
+      height = subjectHeight * 1.12;
+      width = height * aspectRatio;
     }
   }
 
-  return [
-    subjectCenterX - width / 2,
-    subjectCenterY - height / 2,
-    width,
-    height,
-  ];
+  return [centerX - width / 2, centerY - height / 2, width, height];
 }
 
 /**
- * Crop a context-map template around the featured place like a photo crop of a
- * regional map. The place is the subject; surrounding land stays in frame.
+ * Close-up crop of a place on its context map. Uses the full path bounds so the
+ * entire country/state stays inside the frame.
  */
 export function computeFocusedViewBox(
   template: MapTemplateBounds,
   focusPathIds: string[],
   options: {
     aspectRatio?: number;
-    /** Extra space around the subject relative to its size (0.7 ≈ subject ~40% of frame). */
+    /** Padding around the subject relative to its larger side. */
     paddingRatio: number;
-    /** Floor for how small the crop can be, as a fraction of the template. */
+    /** Minimum crop size as a fraction of the template (helps microstates). */
     minSizeRatio?: number;
   },
 ): string {
+  // Always frame the full rendered geometry — never focusPaths — so islands,
+  // exclaves, and elongated countries are not clipped at the edges.
   const subjectBounds = unionBounds(
     focusPathIds
-      .map((pathId) => template.focusPaths?.[pathId] ?? template.paths[pathId])
+      .map((pathId) => template.paths[pathId])
       .filter((bounds): bounds is PathBounds => Boolean(bounds)),
   );
 
@@ -145,50 +126,13 @@ export function computeFocusedViewBox(
     return formatViewBox([x, y, width, height]);
   }
 
-  const [, , templateWidth, templateHeight] = template.viewBox;
-  const [subjectLeft, subjectTop, subjectRight, subjectBottom] = subjectBounds;
-  const subjectWidth = Math.max(subjectRight - subjectLeft, 1e-6);
-  const subjectHeight = Math.max(subjectBottom - subjectTop, 1e-6);
-  const subjectDiagonal = Math.hypot(subjectWidth, subjectHeight);
-  const templateDiagonal = Math.hypot(templateWidth, templateHeight);
-  // Diagonal ratio is stable across templates that contain huge neighbors (e.g. Russia in Europe).
-  const diagonalRatio = subjectDiagonal / templateDiagonal;
-
-  let frameSubject = subjectBounds;
-  let paddingRatio = options.paddingRatio;
-  let minSizeRatio = options.minSizeRatio ?? 0.08;
-
-  if (diagonalRatio < 0.015) {
-    // Microstates / tiny islands: size the crop so the subject stays legible
-    // (~25–30% of the frame) with a bit of neighboring coastline. Do not union
-    // with a giant neighbor — that hides places like Monaco inside France.
-    const targetFill = 0.3;
-    const targetWidth = Math.max(subjectWidth / targetFill, subjectWidth * 3.2);
-    const targetHeight = Math.max(subjectHeight / targetFill, subjectHeight * 3.2);
-    const centerX = (subjectLeft + subjectRight) / 2;
-    const centerY = (subjectTop + subjectBottom) / 2;
-    frameSubject = [
-      centerX - targetWidth / 2,
-      centerY - targetHeight / 2,
-      centerX + targetWidth / 2,
-      centerY + targetHeight / 2,
-    ];
-    paddingRatio = 0.15;
-    minSizeRatio = 0;
-  } else if (diagonalRatio < 0.06) {
-    // Smaller countries/islands: a bit more regional context than the default pad.
-    paddingRatio = Math.max(paddingRatio, 0.85);
-    minSizeRatio = Math.min(minSizeRatio, 0.045);
-  }
-
   return formatViewBox(
-    fitRegionalViewBox(
-      frameSubject,
+    fitCloseUpViewBox(
+      subjectBounds,
       {
         aspectRatio: options.aspectRatio,
-        paddingRatio,
-        minSizeRatio,
-        minSubjectFill: 0.26,
+        paddingRatio: options.paddingRatio,
+        minSizeRatio: options.minSizeRatio ?? 0.05,
       },
       template.viewBox,
     ),
