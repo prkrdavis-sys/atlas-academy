@@ -137,7 +137,8 @@ export function EarthSunLight() {
     light.position.set(sun.x, sun.y, sun.z).multiplyScalar(5);
   });
 
-  return <directionalLight ref={lightRef} intensity={1.85} color="#fff4e0" />;
+  // Keep the sun gentle — ambient does most of the lighting so night stays readable.
+  return <directionalLight ref={lightRef} intensity={0.65} color="#fff4e0" />;
 }
 
 /** Pointer capture can throw for already-released or synthetic pointers. */

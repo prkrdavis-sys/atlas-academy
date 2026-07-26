@@ -167,8 +167,8 @@ export default function GlobeBackground({
           gl={{ antialias: true, alpha: true }}
           style={{ touchAction: "pan-y" }}
         >
-          {/* Soft fill so the night side stays readable; sunlight is real-time. */}
-          <ambientLight intensity={isDark ? 0.28 : 0.36} />
+          {/* High fill keeps mastery colors legible; sun only adds a soft terminator. */}
+          <ambientLight intensity={isDark ? 0.95 : 1.05} />
           {isDark ? (
             <Stars
               radius={60}
