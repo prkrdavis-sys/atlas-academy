@@ -1,6 +1,7 @@
 /**
  * Generates continent and USA context-map SVG templates at public/maps/.
- * Country paths come from Natural Earth 10m data for high-detail coastlines at zoom.
+ * Country paths come from Natural Earth 10m, with geoBoundaries ADM0 upgrades for
+ * microstates and other low-vertex places so close-up crops stay accurate.
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -116,14 +117,18 @@ async function main() {
 
   console.log("Loading Natural Earth 10m features...");
   const features = await loadNaturalEarthFeatures();
-  const { locations: worldLocations, missing } = buildNaturalEarthLocations(features);
+  console.log("Building paths (upgrading low-detail microstates via geoBoundaries)...");
+  const { locations: worldLocations, missing, upgraded } =
+    await buildNaturalEarthLocations(features);
 
   if (missing.length > 0) {
     const names = [...new Set(missing.map((country) => `${country.code} (${country.name})`))];
     throw new Error(`Missing Natural Earth geometry for: ${names.join(", ")}`);
   }
 
-  console.log(`Built ${worldLocations.length} high-detail country paths`);
+  console.log(
+    `Built ${worldLocations.length} country paths (${upgraded.length} upgraded for detail: ${upgraded.join(", ")})`,
+  )
 
   const manifest: MapBoundsManifest = {} as MapBoundsManifest;
 

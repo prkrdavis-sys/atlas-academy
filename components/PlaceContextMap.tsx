@@ -43,18 +43,15 @@ const boundsCache: { data: MapBoundsManifest | null } = { data: null };
 const CROP_OPTIONS = {
   compact: {
     aspectRatio: 2.2,
-    paddingRatio: 0.18,
-    minSizeRatio: 0.04,
+    paddingRatio: 0.35,
   },
   learn: {
     aspectRatio: 2.2,
-    paddingRatio: 0.2,
-    minSizeRatio: 0.05,
+    paddingRatio: 0.45,
   },
   hero: {
     aspectRatio: 1.6,
-    paddingRatio: 0.22,
-    minSizeRatio: 0.05,
+    paddingRatio: 0.4,
   },
 } as const;
 

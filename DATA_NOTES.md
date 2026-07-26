@@ -12,6 +12,7 @@ US states (the "Across America" scope) use **ISO 3166-2:US** codes (`US-AL` … 
 | Population | World Bank (2023) + manual overrides for territories | Fetched during refresh |
 | Flag SVGs | [flag-icons](https://github.com/lipis/flag-icons) | Copied during refresh |
 | Shape SVGs | [mapsicon](https://github.com/djaiss/mapsicon) country silhouettes | Downloaded during refresh |
+| Context map SVGs | Natural Earth 10m + [geoBoundaries](https://www.geoboundaries.org/) ADM0 upgrades for microstates | `npm run generate-context-maps` |
 | US state metadata | Hand-curated (2023 Census population estimates, Census regions/divisions) | `npm run refresh-state-data` |
 | US state flag SVGs | Wikimedia Commons (`public/flags/us-XX.svg`) | `npm run fetch-state-flags` |
 | US state shape SVGs | [@svg-maps/usa](https://www.npmjs.com/package/@svg-maps/usa) paths (`public/shapes/us-XX.svg`) | `npm run generate-state-shapes` |

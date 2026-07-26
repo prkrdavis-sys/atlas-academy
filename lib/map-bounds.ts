@@ -46,30 +46,27 @@ function unionBounds(boundsList: PathBounds[]): PathBounds | null {
 /**
  * Scaled close-up around a place: pad the full geometry, then expand to the
  * display aspect ratio. Never shrinks below the padded subject, so nothing is cut off.
+ *
+ * Framing is relative to the subject only (not the continent template), so
+ * microstates stay large enough to show their detailed outline.
  */
 function fitCloseUpViewBox(
   subject: PathBounds,
   options: {
     aspectRatio?: number;
     paddingRatio: number;
-    minSizeRatio: number;
   },
-  templateBounds: PathBounds,
 ): PathBounds {
-  const [, , templateWidth, templateHeight] = templateBounds;
   const [subjectLeft, subjectTop, subjectRight, subjectBottom] = subject;
   const subjectWidth = Math.max(subjectRight - subjectLeft, 1e-6);
   const subjectHeight = Math.max(subjectBottom - subjectTop, 1e-6);
   const centerX = (subjectLeft + subjectRight) / 2;
   const centerY = (subjectTop + subjectBottom) / 2;
+  const subjectSpan = Math.max(subjectWidth, subjectHeight);
 
-  const pad = Math.max(subjectWidth, subjectHeight) * options.paddingRatio;
+  const pad = subjectSpan * options.paddingRatio;
   let width = Math.max(subjectWidth + pad * 2, subjectWidth * 1.12);
   let height = Math.max(subjectHeight + pad * 2, subjectHeight * 1.12);
-
-  // Tiny places still get a readable regional window.
-  width = Math.max(width, templateWidth * options.minSizeRatio);
-  height = Math.max(height, templateHeight * options.minSizeRatio);
 
   // Final safety: the subject must always fit with a little margin.
   width = Math.max(width, subjectWidth * 1.12);
@@ -109,8 +106,6 @@ export function computeFocusedViewBox(
     aspectRatio?: number;
     /** Padding around the subject relative to its larger side. */
     paddingRatio: number;
-    /** Minimum crop size as a fraction of the template (helps microstates). */
-    minSizeRatio?: number;
   },
 ): string {
   // Always frame the full rendered geometry — never focusPaths — so islands,
@@ -127,15 +122,10 @@ export function computeFocusedViewBox(
   }
 
   return formatViewBox(
-    fitCloseUpViewBox(
-      subjectBounds,
-      {
-        aspectRatio: options.aspectRatio,
-        paddingRatio: options.paddingRatio,
-        minSizeRatio: options.minSizeRatio ?? 0.05,
-      },
-      template.viewBox,
-    ),
+    fitCloseUpViewBox(subjectBounds, {
+      aspectRatio: options.aspectRatio,
+      paddingRatio: options.paddingRatio,
+    }),
   );
 }
 
