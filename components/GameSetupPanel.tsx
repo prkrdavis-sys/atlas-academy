@@ -1,16 +1,15 @@
 "use client";
 
 import { ContinentFilter } from "@/components/ContinentFilter";
-import { GameModeGroup, type GameModeGroupHeaderStyle } from "@/components/GameModeGroup";
 import { Select } from "@/components/ui/Select";
-import { getChallengeModifierLabel, getRoundCountLabel } from "@/lib/game-setup";
-import { getRegionFilterSummary } from "@/lib/region-filter-summary";
+import { getChallengeModifierLabel } from "@/lib/game-setup";
 import { scopeText, SCOPE_INFO } from "@/lib/scope";
 import {
   CHALLENGE_MODIFIER_OPTIONS,
   DIFFICULTY_LABELS,
   ROUND_ALL_QUESTIONS,
   clampRoundQuestionSetting,
+  getDifficultyHint,
   getRoundQuestionOptions,
   isChallengeModifierActive,
   normalizeRoundQuestionSetting,
@@ -41,47 +40,8 @@ type GameSetupPanelProps = {
   className?: string;
 };
 
-const PLAY_STYLE_GROUP_STYLE: GameModeGroupHeaderStyle = {
-  container: "border-emerald-200 bg-emerald-50/60 dark:border-emerald-800 dark:bg-emerald-950/40",
-  summary: "hover:bg-emerald-100/80 dark:hover:bg-emerald-900/50",
-  title: "text-emerald-950 dark:text-emerald-50",
-  subtitle: "text-emerald-700/90 dark:text-emerald-300/90",
-  badge: "bg-emerald-200/80 text-emerald-900 dark:bg-emerald-800/80 dark:text-emerald-100",
-  chevron: "bg-emerald-200/70 text-emerald-800 dark:bg-emerald-800/70 dark:text-emerald-100",
-};
-
-const ROUND_LENGTH_GROUP_STYLE: GameModeGroupHeaderStyle = {
-  container: "border-teal-200 bg-teal-50/60 dark:border-teal-800 dark:bg-teal-950/40",
-  summary: "hover:bg-teal-100/80 dark:hover:bg-teal-900/50",
-  title: "text-teal-950 dark:text-teal-50",
-  subtitle: "text-teal-700/90 dark:text-teal-300/90",
-  badge: "bg-teal-200/80 text-teal-900 dark:bg-teal-800/80 dark:text-teal-100",
-  chevron: "bg-teal-200/70 text-teal-800 dark:bg-teal-800/70 dark:text-teal-100",
-};
-
-const REGION_GROUP_STYLE: GameModeGroupHeaderStyle = {
-  container: "border-amber-200 bg-amber-50/60 dark:border-amber-800 dark:bg-amber-950/40",
-  summary: "hover:bg-amber-100/80 dark:hover:bg-amber-900/50",
-  title: "text-amber-950 dark:text-amber-50",
-  subtitle: "text-amber-700/90 dark:text-amber-300/90",
-  badge: "bg-amber-200/80 text-amber-900 dark:bg-amber-800/80 dark:text-amber-100",
-  chevron: "bg-amber-200/70 text-amber-800 dark:bg-amber-800/70 dark:text-amber-100",
-};
-
-const optionButtonClass = (active: boolean, compact = false) =>
-  cn(
-    "rounded-2xl border-2 font-semibold transition-all duration-100",
-    compact
-      ? "min-h-10 px-3 py-2 text-sm sm:text-center"
-      : "min-h-12 px-4 py-2 text-left text-sm sm:text-center",
-    active
-      ? "border-emerald-600 bg-emerald-500 text-white shadow-[0_3px_0_var(--color-emerald-700)]"
-      : "border-slate-200 bg-white text-slate-700 shadow-[0_3px_0_var(--color-slate-200)] hover:border-sky-300 active:translate-y-[3px] active:shadow-none dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:shadow-[0_3px_0_var(--color-slate-700)] dark:hover:border-sky-500",
-  );
-
-function getPlayStyleBadge(challengeModifier: ChallengeModifier, difficulty: Difficulty): string {
-  const modifierLabel = getChallengeModifierLabel(challengeModifier) ?? "Standard";
-  return `${modifierLabel} · ${DIFFICULTY_LABELS[difficulty]}`;
+function fieldLabelClass() {
+  return "text-sm font-bold text-slate-800 dark:text-slate-200";
 }
 
 export function GameSetupPanel({
@@ -108,9 +68,11 @@ export function GameSetupPanel({
     availableCountryCount,
   );
   const challengeActive = isChallengeModifierActive(challengeModifier);
-  const playStyleBadge = getPlayStyleBadge(challengeModifier, difficulty);
-  const roundLengthBadge = getRoundCountLabel(mode, effectiveRoundQuestionCount, challengeModifier);
-  const regionBadge = getRegionFilterSummary(continents, includeTerritories, scope);
+  const difficultyHint = getDifficultyHint(mode, difficulty).replace(/^ - /, "");
+  const activeModifierLabel = getChallengeModifierLabel(challengeModifier);
+  const activeModifierOption = CHALLENGE_MODIFIER_OPTIONS.find(
+    (option) => option.id === challengeModifier,
+  );
 
   return (
     <div className={cn("space-y-4", className)}>
@@ -123,101 +85,157 @@ export function GameSetupPanel({
         </p>
       ) : null}
 
-      <GameModeGroup
-        title="Play Style"
-        subtitle="Challenge modifier and difficulty"
-        badge={playStyleBadge}
-        headerStyle={PLAY_STYLE_GROUP_STYLE}
-      >
-        <div className="space-y-4 pt-1">
-          <div>
-            <h3 className="mb-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
-              Challenge modifier
-            </h3>
-            <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-              {CHALLENGE_MODIFIER_OPTIONS.map((option) => (
-                <button
-                  key={option.id}
-                  type="button"
-                  onClick={() => onChallengeModifierChange(option.id)}
-                  className={optionButtonClass(challengeModifier === option.id, true)}
-                >
-                  <span className="mr-1.5">{option.icon}</span>
-                  {option.title}
-                </button>
-              ))}
-            </div>
+      <div className="space-y-5 rounded-2xl border-2 border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-900 sm:p-5">
+        <div>
+          <div className="flex items-baseline justify-between gap-3">
+            <h2 className={fieldLabelClass()}>Difficulty</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400">{difficultyHint}</p>
           </div>
-
-          <div>
-            <h3 className="mb-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
-              Difficulty
-            </h3>
-            <div className="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap">
-              {(["easy", "medium", "hard"] as Difficulty[]).map((level) => (
+          <div
+            role="radiogroup"
+            aria-label="Difficulty"
+            className="mt-2 grid grid-cols-3 gap-1 rounded-2xl bg-slate-100 p-1 dark:bg-slate-800"
+          >
+            {(["easy", "medium", "hard"] as Difficulty[]).map((level) => {
+              const active = difficulty === level;
+              return (
                 <button
                   key={level}
                   type="button"
+                  role="radio"
+                  aria-checked={active}
                   onClick={() => onDifficultyChange(level)}
-                  className={optionButtonClass(difficulty === level, true)}
+                  className={cn(
+                    "min-h-10 rounded-xl px-2 text-sm font-semibold transition-all",
+                    active
+                      ? "bg-white font-bold text-slate-900 shadow-sm dark:bg-slate-600 dark:text-white"
+                      : "text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200",
+                  )}
                 >
                   {DIFFICULTY_LABELS[level]}
                 </button>
-              ))}
+              );
+            })}
+          </div>
+        </div>
+
+        <div>
+          <h2 className={fieldLabelClass()}>Questions per round</h2>
+          {challengeActive && activeModifierOption ? (
+            <p className="mt-2 rounded-xl bg-slate-50 px-4 py-3 text-sm text-slate-600 dark:bg-slate-800/80 dark:text-slate-300">
+              <span aria-hidden>{activeModifierOption.icon}</span>{" "}
+              <span className="font-semibold">{activeModifierOption.title}</span>:{" "}
+              {activeModifierOption.description} Change this under Advanced options.
+            </p>
+          ) : (
+            <div className="mt-2">
+              <Select
+                value={effectiveRoundQuestionCount}
+                onChange={(event) => {
+                  const { value } = event.target;
+                  onRoundQuestionCountChange(
+                    value === ROUND_ALL_QUESTIONS
+                      ? ROUND_ALL_QUESTIONS
+                      : normalizeRoundQuestionSetting(Number(value)),
+                  );
+                }}
+              >
+                {roundQuestionOptions.map((count) => (
+                  <option key={count} value={count}>
+                    {count} questions
+                  </option>
+                ))}
+                <option value={ROUND_ALL_QUESTIONS}>
+                  All ({availableCountryCount}{" "}
+                  {availableCountryCount === 1 ? scopeInfo.noun : scopeInfo.nounPlural})
+                </option>
+              </Select>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <details className="group rounded-2xl border border-dashed border-slate-300 bg-slate-50/60 px-4 py-3 dark:border-slate-600 dark:bg-slate-900/40 sm:px-5">
+        <summary className="flex min-h-9 cursor-pointer list-none items-center justify-between gap-3 [&::-webkit-details-marker]:hidden">
+          <span className="text-sm font-bold text-slate-700 dark:text-slate-300">
+            Advanced options
+          </span>
+          <span className="flex items-center gap-2">
+            {activeModifierLabel ? (
+              <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-200">
+                {activeModifierLabel}
+              </span>
+            ) : null}
+            <span
+              aria-hidden
+              className="text-xs text-slate-400 transition-transform duration-200 group-open:rotate-180 dark:text-slate-500"
+            >
+              ▾
+            </span>
+          </span>
+        </summary>
+
+        <div className="mt-4 space-y-6 border-t border-slate-200 pt-4 dark:border-slate-700">
+          <div>
+            <h3 className={fieldLabelClass()}>Challenge modifier</h3>
+            <div role="radiogroup" aria-label="Challenge modifier" className="mt-2 space-y-2">
+              {CHALLENGE_MODIFIER_OPTIONS.map((option) => {
+                const active = challengeModifier === option.id;
+                return (
+                  <button
+                    key={option.id}
+                    type="button"
+                    role="radio"
+                    aria-checked={active}
+                    onClick={() => onChallengeModifierChange(option.id)}
+                    className={cn(
+                      "flex w-full items-center gap-3 rounded-xl border-2 px-3 py-2.5 text-left transition-colors",
+                      active
+                        ? "border-emerald-400 bg-emerald-50 dark:border-emerald-600 dark:bg-emerald-950/50"
+                        : "border-slate-200 bg-white hover:border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:hover:border-slate-500",
+                    )}
+                  >
+                    <span
+                      aria-hidden
+                      className={cn(
+                        "flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2",
+                        active
+                          ? "border-emerald-600 dark:border-emerald-400"
+                          : "border-slate-300 dark:border-slate-500",
+                      )}
+                    >
+                      {active ? (
+                        <span className="h-2 w-2 rounded-full bg-emerald-600 dark:bg-emerald-400" />
+                      ) : null}
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block text-sm font-semibold text-slate-800 dark:text-slate-200">
+                        <span aria-hidden>{option.icon}</span> {option.title}
+                      </span>
+                      <span className="block text-xs text-slate-500 dark:text-slate-400">
+                        {option.description}
+                      </span>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div>
+            <h3 className={fieldLabelClass()}>{scopeInfo.regionLabel}</h3>
+            <div className="mt-2">
+              <ContinentFilter
+                selected={continents}
+                includeTerritories={includeTerritories}
+                onContinentsChange={onContinentsChange}
+                onIncludeTerritoriesChange={onIncludeTerritoriesChange}
+                scope={scope}
+              />
             </div>
           </div>
         </div>
-      </GameModeGroup>
-
-      {!challengeActive ? (
-        <GameModeGroup
-          title="Round Length"
-          subtitle="How many questions per round"
-          badge={roundLengthBadge}
-          headerStyle={ROUND_LENGTH_GROUP_STYLE}
-        >
-          <div className="pt-1">
-            <Select
-              value={effectiveRoundQuestionCount}
-              onChange={(event) => {
-                const { value } = event.target;
-                onRoundQuestionCountChange(
-                  value === ROUND_ALL_QUESTIONS
-                    ? ROUND_ALL_QUESTIONS
-                    : normalizeRoundQuestionSetting(Number(value)),
-                );
-              }}
-            >
-              {roundQuestionOptions.map((count) => (
-                <option key={count} value={count}>
-                  {count} questions
-                </option>
-              ))}
-              <option value={ROUND_ALL_QUESTIONS}>
-                All ({availableCountryCount}{" "}
-                {availableCountryCount === 1 ? scopeInfo.noun : scopeInfo.nounPlural})
-              </option>
-            </Select>
-          </div>
-        </GameModeGroup>
-      ) : null}
-
-      <GameModeGroup
-        title={scopeInfo.regionLabel}
-        subtitle={scope === "usa" ? "Which states to include" : "Continents and territories"}
-        badge={regionBadge}
-        headerStyle={REGION_GROUP_STYLE}
-      >
-        <div className="pt-1">
-          <ContinentFilter
-            selected={continents}
-            includeTerritories={includeTerritories}
-            onContinentsChange={onContinentsChange}
-            onIncludeTerritoriesChange={onIncludeTerritoriesChange}
-            scope={scope}
-          />
-        </div>
-      </GameModeGroup>
+      </details>
     </div>
   );
 }
