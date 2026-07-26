@@ -230,6 +230,8 @@ export type Country = {
   languages?: string;
   /** Primary official currency, with optional USD conversion rate. */
   currency?: CountryCurrency;
+  /** Primary IANA timezone (capital's zone when a place spans multiple). */
+  timezone?: string;
   capital: string;
   continent: Region;
   subregion: string;

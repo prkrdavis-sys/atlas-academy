@@ -242,6 +242,11 @@ input:focus-visible {
   pointer-events: none;
 }
 
+/* Light-mode "daytime space": faint darker streaks instead of bright white. */
+:root:not(.dark) .shooting-star {
+  background: linear-gradient(270deg, rgb(71 85 105 / 0.4), transparent);
+}
+
 @keyframes shooting-star {
   0% {
     transform: rotate(-32deg) translateX(0);

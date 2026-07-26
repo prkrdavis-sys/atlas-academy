@@ -7,6 +7,7 @@ import { FlagImage } from "@/components/FlagDisplay";
 import { LibraryDetailNav } from "@/components/LibraryDetailNav";
 import { LibraryPlaceMapSection } from "@/components/LibraryPlaceMapSection";
 import { LibraryPlaceVisual } from "@/components/LibraryPlaceVisual";
+import { LocalTimeChip } from "@/components/LocalTimeChip";
 import {
   countries,
   formatNoNeighborsMessage,
@@ -175,14 +176,23 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
           {isState ? "State details" : "Country details"}
         </h2>
         <dl className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
-          {details.map((detail) => (
-            <div key={detail.label} className="rounded-2xl border-2 border-slate-200 bg-white/80 p-4 dark:border-slate-700 dark:bg-slate-900/80">
-              <dt className="text-xs font-bold text-slate-500 dark:text-slate-400">{detail.label}</dt>
-              <dd className="mt-1 font-display text-base font-extrabold leading-snug text-slate-900 dark:text-slate-100 sm:text-lg">
-                {detail.value}
-              </dd>
-            </div>
-          ))}
+          {details.flatMap((detail, index) => {
+            const chip = (
+              <div
+                key={detail.label}
+                className="rounded-2xl border-2 border-slate-200 bg-white/80 p-4 dark:border-slate-700 dark:bg-slate-900/80"
+              >
+                <dt className="text-xs font-bold text-slate-500 dark:text-slate-400">{detail.label}</dt>
+                <dd className="mt-1 font-display text-base font-extrabold leading-snug text-slate-900 dark:text-slate-100 sm:text-lg">
+                  {detail.value}
+                </dd>
+              </div>
+            );
+            if (index === 0 && country.timezone) {
+              return [chip, <LocalTimeChip key="local-time" timeZone={country.timezone} />];
+            }
+            return [chip];
+          })}
         </dl>
       </section>
 

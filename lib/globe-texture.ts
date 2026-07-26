@@ -1,110 +1,201 @@
 import globeData from "@/data/globe-countries.json";
+import { getProgressFillColor } from "@/lib/map-colors";
 import { getPlaceMasteryLevel } from "@/lib/map-progress";
-import type { PlaceMasteryLevel, Profile } from "@/lib/types";
+import type { MapProgressDifficulty, PlaceMasteryLevel, Profile } from "@/lib/types";
 
-type GlobeCountryShape = { code: string; rings: number[][] };
+export type GlobeCountryShape = { code: string; rings: number[][] };
 
-type GlobeTextureData = {
-  width: number;
-  height: number;
+export type GlobeTextureData = {
   countries: GlobeCountryShape[];
+  usStates: GlobeCountryShape[];
   extras: number[][];
 };
 
-const data = globeData as GlobeTextureData;
+/** How the USA renders on the globe: one country shape or 50 individual states. */
+export type GlobeUsMode = "country" | "states";
 
-/** Deep-space ocean and progress colors tuned to read against black space. */
-const OCEAN_COLOR = "#0a1224";
-const BORDER_COLOR = "rgba(2, 6, 23, 0.55)";
+export const GLOBE_TEXTURE_DATA = globeData as GlobeTextureData;
 
-export const GLOBE_MASTERY_COLORS: Record<PlaceMasteryLevel, string> = {
-  0: "#38455c",
-  1: "#136059",
-  2: "#0f9488",
-  3: "#2dd4bf",
-  4: "#6ef2dd",
-};
+/** Base texture width (equirectangular, so height = width / 2). */
+export const GLOBE_BASE_TEXTURE_SIZE = 2048;
+/** Hard upper bound; an 8192x4096 RGBA texture is already ~128 MB of GPU memory. */
+export const GLOBE_MAX_TEXTURE_SIZE = 8192;
 
 /**
- * Normal-mode mastery only — the home globe mirrors Normal map progress for now.
+ * Picks the largest globe texture width the device can comfortably handle:
+ * capped by the GPU's max texture size, and stepped down on low-memory or
+ * small-screen devices where a giant canvas raster would hurt more than help.
+ */
+export function resolveGlobeTextureSize(maxGpuTextureSize: number): number {
+  let size = Math.min(GLOBE_MAX_TEXTURE_SIZE, maxGpuTextureSize);
+
+  if (typeof navigator !== "undefined") {
+    const deviceMemory = (navigator as { deviceMemory?: number }).deviceMemory;
+    if (deviceMemory !== undefined && deviceMemory < 8) {
+      size = Math.min(size, 4096);
+    }
+  }
+  if (typeof window !== "undefined") {
+    const smallestSide = Math.min(window.screen.width, window.screen.height);
+    if (smallestSide < 768) {
+      size = Math.min(size, 4096);
+    }
+  }
+
+  return Math.max(GLOBE_BASE_TEXTURE_SIZE, size);
+}
+
+type GlobePalette = {
+  ocean: string;
+  border: string;
+  stateBorder: string;
+};
+
+/** Deep-space ocean tuned to read against black space. */
+const DARK_GLOBE_PALETTE: GlobePalette = {
+  ocean: "#0a1224",
+  border: "rgba(2, 6, 23, 0.55)",
+  stateBorder: "rgba(2, 6, 23, 0.45)",
+};
+
+/** Daytime-sky ocean tuned to read against the pale light-mode space backdrop. */
+const LIGHT_GLOBE_PALETTE: GlobePalette = {
+  ocean: "#b7dcf2",
+  border: "rgba(51, 65, 85, 0.5)",
+  stateBorder: "rgba(51, 65, 85, 0.4)",
+};
+
+export function getGlobePalette(isDark: boolean): GlobePalette {
+  return isDark ? DARK_GLOBE_PALETTE : LIGHT_GLOBE_PALETTE;
+}
+
+/**
+ * Normal-mode mastery — used by explorer rank so rank tiers stay aligned with
+ * the default globe coloring.
  */
 export function getGlobeMasteryLevel(code: string, profile: Profile): PlaceMasteryLevel {
   return getPlaceMasteryLevel(code, profile, "medium");
 }
 
-function addRingToPath(path: Path2D, ring: number[], offsetX: number) {
-  path.moveTo(ring[0] + offsetX, ring[1]);
-  for (let i = 2; i < ring.length; i += 2) {
-    path.lineTo(ring[i] + offsetX, ring[i + 1]);
-  }
-  path.closePath();
-}
-
 /**
- * Builds a country path, duplicating rings that spill past the texture edges
- * so shapes crossing the antimeridian render on both sides of the seam.
+ * Builds a shape path from normalized rings, duplicating rings that spill past
+ * the texture edges so shapes crossing the antimeridian render on both sides
+ * of the seam.
  */
-function buildPath(rings: number[][]): Path2D {
+function buildPath(rings: number[][], width: number, height: number): Path2D {
   const path = new Path2D();
   for (const ring of rings) {
-    addRingToPath(path, ring, 0);
+    addRing(path, ring, width, height, 0);
     let minX = Infinity;
     let maxX = -Infinity;
     for (let i = 0; i < ring.length; i += 2) {
       if (ring[i] < minX) minX = ring[i];
       if (ring[i] > maxX) maxX = ring[i];
     }
-    if (minX < 0) addRingToPath(path, ring, data.width);
-    if (maxX > data.width) addRingToPath(path, ring, -data.width);
+    if (minX < 0) addRing(path, ring, width, height, width);
+    if (maxX > 1) addRing(path, ring, width, height, -width);
   }
   return path;
 }
 
+function addRing(path: Path2D, ring: number[], width: number, height: number, offsetX: number) {
+  path.moveTo(ring[0] * width + offsetX, ring[1] * height);
+  for (let i = 2; i < ring.length; i += 2) {
+    path.lineTo(ring[i] * width + offsetX, ring[i + 1] * height);
+  }
+  path.closePath();
+}
+
+export type GlobeTextureOptions = {
+  difficulty?: MapProgressDifficulty;
+  usMode?: GlobeUsMode;
+  isDark?: boolean;
+  /** Texture width in pixels; height is width / 2. */
+  size?: number;
+};
+
 /**
- * Paints the equirectangular globe texture: dark ocean, dim base land, and
- * the player's Normal-mode mastery in brightening teal — the same progress
- * shown on the 2D map for Normal, wrapped around the planet.
+ * Paints the equirectangular globe texture: ocean, dim base land, and the
+ * player's mastery in the same fill scale as the 2D progress map (teal for
+ * Normal, red for Hard), wrapped around the planet. In "states" mode the USA
+ * is painted as 50 individually colored states instead of one country.
  */
-export function buildGlobeTextureCanvas(profile: Profile | null): HTMLCanvasElement {
+export function buildGlobeTextureCanvas(
+  profile: Profile | null,
+  {
+    difficulty = "medium",
+    usMode = "states",
+    isDark = true,
+    size = GLOBE_BASE_TEXTURE_SIZE,
+  }: GlobeTextureOptions = {},
+): HTMLCanvasElement {
+  const width = size;
+  const height = size / 2;
+  const palette = getGlobePalette(isDark);
+  const pixelScale = width / GLOBE_BASE_TEXTURE_SIZE;
+
   const canvas = document.createElement("canvas");
-  canvas.width = data.width;
-  canvas.height = data.height;
+  canvas.width = width;
+  canvas.height = height;
   const ctx = canvas.getContext("2d")!;
 
-  ctx.fillStyle = OCEAN_COLOR;
-  ctx.fillRect(0, 0, data.width, data.height);
+  ctx.fillStyle = palette.ocean;
+  ctx.fillRect(0, 0, width, height);
 
-  ctx.lineWidth = 1;
-  ctx.strokeStyle = BORDER_COLOR;
+  const levelColor = (level: PlaceMasteryLevel) =>
+    getProgressFillColor(level, isDark, difficulty);
 
-  const drawShape = (rings: number[][], level: PlaceMasteryLevel) => {
-    const path = buildPath(rings);
+  const drawShape = (
+    rings: number[][],
+    level: PlaceMasteryLevel,
+    { isState = false }: { isState?: boolean } = {},
+  ) => {
+    const path = buildPath(rings, width, height);
     if (level >= 3) {
       ctx.save();
-      ctx.shadowColor = GLOBE_MASTERY_COLORS[4];
-      ctx.shadowBlur = 8;
-      ctx.fillStyle = GLOBE_MASTERY_COLORS[level];
+      ctx.shadowColor = levelColor(4);
+      ctx.shadowBlur = 8 * pixelScale;
+      ctx.fillStyle = levelColor(level);
       ctx.fill(path, "evenodd");
       ctx.restore();
     } else {
-      ctx.fillStyle = GLOBE_MASTERY_COLORS[level];
+      ctx.fillStyle = levelColor(level);
       ctx.fill(path, "evenodd");
     }
+    ctx.lineWidth = (isState ? 0.7 : 1) * pixelScale;
+    ctx.strokeStyle = isState ? palette.stateBorder : palette.border;
     ctx.stroke(path);
   };
 
-  drawShape(data.extras, 0);
+  drawShape(GLOBE_TEXTURE_DATA.extras, 0);
 
-  // Ascending mastery so glows from bright countries sit on top.
-  const shapes = data.countries
+  const masteryOf = (code: string): PlaceMasteryLevel =>
+    profile ? getPlaceMasteryLevel(code, profile, difficulty) : 0;
+
+  const showStates = usMode === "states";
+
+  // Ascending mastery so glows from bright places sit on top.
+  const shapes = GLOBE_TEXTURE_DATA.countries
     .map((country) => ({
       rings: country.rings,
-      level: profile ? getGlobeMasteryLevel(country.code, profile) : (0 as PlaceMasteryLevel),
+      // In states mode the US country shape is just neutral base land under
+      // the states; US-country mastery is intentionally ignored there.
+      level: showStates && country.code === "US" ? (0 as PlaceMasteryLevel) : masteryOf(country.code),
+      isState: false,
     }))
-    .sort((a, b) => a.level - b.level);
+    .concat(
+      showStates
+        ? GLOBE_TEXTURE_DATA.usStates.map((state) => ({
+            rings: state.rings,
+            level: masteryOf(state.code),
+            isState: true,
+          }))
+        : [],
+    )
+    .sort((a, b) => Number(a.isState) - Number(b.isState) || a.level - b.level);
 
   for (const shape of shapes) {
-    drawShape(shape.rings, shape.level);
+    drawShape(shape.rings, shape.level, { isState: shape.isState });
   }
 
   return canvas;

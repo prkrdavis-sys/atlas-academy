@@ -102,20 +102,41 @@ export function FlagGrid({
   selectedCode?: string | null;
   correctCode?: string;
 }) {
-  const flagWidth = compact ? 160 : 200;
+  const flagWidth = revealed ? 120 : compact ? 160 : 200;
   const gridCols = codes.length >= 6 ? "grid-cols-3" : "grid-cols-2";
   const gridMaxWidth =
     codes.length >= 6
       ? "max-w-[min(100cqw,22rem)] md:max-w-[min(100cqw,40rem)] lg:max-w-[min(100cqw,44rem)]"
       : "max-w-[min(100cqw,22rem)] md:max-w-[min(100cqw,34rem)] lg:max-w-[min(100cqw,38rem)]";
+  // Revealed: size from leftover height under the learn card so the full grid
+  // stays visible (no top overlap, no bottom clip). 3:2 tiles → width ≈ height×1.5
+  // for 2×2, ≈ height×2.25 for 3×2; multipliers leave room for gaps/borders.
+  const revealedGridWidth =
+    codes.length >= 6
+      ? "w-[min(100cqw,28rem,calc(100cqh*2.05))]"
+      : "w-[min(100cqw,22rem,calc(100cqh*1.35))]";
+  const tileRadius = revealed ? "rounded-lg" : "rounded-xl";
   return (
-    <div className="flex h-full w-full min-h-0 items-center justify-center md:py-4">
+    <div
+      className={cn(
+        "flex h-full w-full min-h-0 items-center justify-center",
+        // Size container so 100cqh is the leftover height under the learn card.
+        revealed
+          ? "[container-type:size]"
+          : "md:py-4",
+      )}
+    >
       <div
         className={cn(
-          "grid w-full",
-          gridMaxWidth,
+          "grid",
           gridCols,
-          compact ? "gap-2 md:gap-4" : "gap-3 md:gap-5",
+          revealed
+            ? cn("max-h-full gap-1.5 md:gap-2", revealedGridWidth)
+            : cn(
+                "w-full",
+                gridMaxWidth,
+                compact ? "gap-2 md:gap-4" : "gap-3 md:gap-5",
+              ),
         )}
       >
         {codes.map((code) => {
@@ -127,11 +148,12 @@ export function FlagGrid({
               <div
                 key={code}
                 className={cn(
-                  "block w-full overflow-hidden rounded-xl border-2 bg-white p-0 leading-none shadow-[0_3px_0_var(--color-slate-200)] dark:bg-slate-800 dark:shadow-[0_3px_0_var(--color-slate-700)]",
+                  "block w-full overflow-hidden border-2 bg-white p-0 leading-none shadow-[0_2px_0_var(--color-slate-200)] dark:bg-slate-800 dark:shadow-[0_2px_0_var(--color-slate-700)]",
+                  tileRadius,
                   isCorrect
-                    ? "border-emerald-400 bg-emerald-50 shadow-[0_3px_0_var(--color-emerald-300)] ring-2 ring-inset ring-emerald-300 dark:border-emerald-500 dark:bg-emerald-950/50 dark:shadow-[0_3px_0_var(--color-emerald-800)] dark:ring-emerald-700"
+                    ? "border-emerald-400 bg-emerald-50 shadow-[0_2px_0_var(--color-emerald-300)] ring-2 ring-inset ring-emerald-300 dark:border-emerald-500 dark:bg-emerald-950/50 dark:shadow-[0_2px_0_var(--color-emerald-800)] dark:ring-emerald-700"
                     : isIncorrect
-                      ? "border-rose-400 bg-rose-50 shadow-[0_3px_0_var(--color-rose-300)] ring-2 ring-inset ring-rose-300 dark:border-rose-500 dark:bg-rose-950/50 dark:shadow-[0_3px_0_var(--color-rose-800)] dark:ring-rose-700"
+                      ? "border-rose-400 bg-rose-50 shadow-[0_2px_0_var(--color-rose-300)] ring-2 ring-inset ring-rose-300 dark:border-rose-500 dark:bg-rose-950/50 dark:shadow-[0_2px_0_var(--color-rose-800)] dark:ring-rose-700"
                       : "border-slate-200 dark:border-slate-600",
                 )}
                 aria-hidden
@@ -148,7 +170,10 @@ export function FlagGrid({
                 key={code}
                 type="button"
                 onClick={() => onSelect(code)}
-                className="block w-full overflow-hidden rounded-xl border-2 border-slate-200 bg-white p-0 leading-none shadow-[0_3px_0_var(--color-slate-200)] transition-all duration-100 hover:border-sky-300 active:translate-y-[3px] active:shadow-none dark:border-slate-600 dark:bg-slate-800 dark:shadow-[0_3px_0_var(--color-slate-700)] dark:hover:border-sky-500"
+                className={cn(
+                  "block w-full overflow-hidden border-2 border-slate-200 bg-white p-0 leading-none shadow-[0_3px_0_var(--color-slate-200)] transition-all duration-100 hover:border-sky-300 active:translate-y-[3px] active:shadow-none dark:border-slate-600 dark:bg-slate-800 dark:shadow-[0_3px_0_var(--color-slate-700)] dark:hover:border-sky-500",
+                  tileRadius,
+                )}
               >
                 <FlagImage
                   code={code}

@@ -7,6 +7,7 @@ import {
   pickPrimaryCurrency,
 } from "./currency-data";
 import { isSupplementalShapeCode, isCustomShapeCode, writeCustomShape, writeSupplementalShape } from "./supplemental-shapes";
+import { fetchSourceCountries, pickPrimaryTimezone } from "./timezone-data";
 
 type RawCountry = {
   cca2: string;
@@ -242,6 +243,12 @@ async function main() {
   const rawCountries = (await response.json()) as RawCountry[];
   const populationByCode3 = await fetchPopulationByCode3();
   const usdRates = await fetchUsdExchangeRates();
+  const timezoneByCode = new Map(
+    (await fetchSourceCountries()).flatMap((source) => {
+      const timezone = pickPrimaryTimezone(source);
+      return timezone ? [[source.iso2.toUpperCase(), timezone] as const] : [];
+    }),
+  );
 
   const countries = [];
   let flagCount = 0;
@@ -279,6 +286,7 @@ async function main() {
 
     const nativeName = extractNativeName(raw.name.common, raw.name.native);
     const currency = pickPrimaryCurrency(code, raw.currencies);
+    const timezone = timezoneByCode.get(code);
 
     countries.push({
       code,
@@ -288,6 +296,7 @@ async function main() {
       ...(nativeName ? { nativeName } : {}),
       languages: extractLanguages(raw.languages),
       ...(currency ? { currency: attachUsdRate(currency, usdRates) } : {}),
+      ...(timezone ? { timezone } : {}),
       capital,
       continent,
       subregion: raw.subregion ?? "",

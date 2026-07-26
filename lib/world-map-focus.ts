@@ -47,11 +47,12 @@ export function focusWorldMapOnPaths(
   const containerRect = container.getBoundingClientRect();
   if (!focusRect || focusRect.width <= 0 || focusRect.height <= 0) return false;
 
+  const minScale = panzoom.getOptions().minScale ?? 1;
   const scaleX = containerRect.width / focusRect.width / padding;
   const scaleY = containerRect.height / focusRect.height / padding;
-  const targetScale = Math.min(maxScale, Math.max(1, Math.min(scaleX, scaleY)));
+  const targetScale = Math.min(maxScale, Math.max(minScale, Math.min(scaleX, scaleY)));
 
-  if (targetScale <= 1.01) return true;
+  if (targetScale <= minScale + 0.01) return true;
 
   panzoom.zoomToPoint(
     targetScale,

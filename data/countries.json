@@ -35,7 +35,8 @@
       "symbol": "؋",
       "usdRate": 66.297576
     },
-    "factQuestion": "Which country was home to the Buddhas of Bamiyan, two giant cliff carvings destroyed in 2001?"
+    "factQuestion": "Which country was home to the Buddhas of Bamiyan, two giant cliff carvings destroyed in 2001?",
+    "timezone": "Asia/Kabul"
   },
   {
     "code": "AX",
@@ -65,7 +66,8 @@
       "symbol": "€",
       "usdRate": 0.876691
     },
-    "factQuestion": "Which autonomous Swedish-speaking archipelago belongs to Finland but has its own parliament and flag?"
+    "factQuestion": "Which autonomous Swedish-speaking archipelago belongs to Finland but has its own parliament and flag?",
+    "timezone": "Europe/Mariehamn"
   },
   {
     "code": "AL",
@@ -101,7 +103,8 @@
       "symbol": "L",
       "usdRate": 82.088135
     },
-    "factQuestion": "Which country built more concrete bunkers per person during the Cold War than anywhere else on Earth?"
+    "factQuestion": "Which country built more concrete bunkers per person during the Cold War than anywhere else on Earth?",
+    "timezone": "Europe/Tirane"
   },
   {
     "code": "DZ",
@@ -140,7 +143,8 @@
       "symbol": "د.ج",
       "usdRate": 133.229912
     },
-    "factQuestion": "Which country is about 90% Sahara desert, with most of its population living along the Mediterranean coast?"
+    "factQuestion": "Which country is about 90% Sahara desert, with most of its population living along the Mediterranean coast?",
+    "timezone": "Africa/Algiers"
   },
   {
     "code": "AS",
@@ -170,7 +174,8 @@
       "symbol": "$",
       "usdRate": 1
     },
-    "factQuestion": "Which country is the only U.S. territory south of the equator, known for NFL players and tuna?"
+    "factQuestion": "Which country is the only U.S. territory south of the equator, known for NFL players and tuna?",
+    "timezone": "Pacific/Pago_Pago"
   },
   {
     "code": "AD",
@@ -203,7 +208,8 @@
       "symbol": "€",
       "usdRate": 0.876691
     },
-    "factQuestion": "Which country has no airport or railway, with visitors arriving only by road through mountain passes?"
+    "factQuestion": "Which country has no airport or railway, with visitors arriving only by road through mountain passes?",
+    "timezone": "Europe/Andorra"
   },
   {
     "code": "AO",
@@ -238,7 +244,8 @@
       "symbol": "Kz",
       "usdRate": 929.484375
     },
-    "factQuestion": "Which country is home to Kalandula Falls, among the largest and most powerful waterfalls in Africa?"
+    "factQuestion": "Which country is home to Kalandula Falls, among the largest and most powerful waterfalls in Africa?",
+    "timezone": "Africa/Luanda"
   },
   {
     "code": "AI",
@@ -267,7 +274,8 @@
       "symbol": "$",
       "usdRate": 2.7
     },
-    "factQuestion": "Which country has repeatedly voted against full independence to preserve ties with Britain because of its prized beaches?"
+    "factQuestion": "Which country has repeatedly voted against full independence to preserve ties with Britain because of its prized beaches?",
+    "timezone": "America/Anguilla"
   },
   {
     "code": "AQ",
@@ -290,7 +298,8 @@
     "isTerritory": true,
     "fact": "Holds about 90% of the world's ice and roughly 70% of its fresh water.",
     "languages": "",
-    "factQuestion": "Which country holds about 90% of the world's ice and roughly 70% of its fresh water?"
+    "factQuestion": "Which country holds about 90% of the world's ice and roughly 70% of its fresh water?",
+    "timezone": "Antarctica/McMurdo"
   },
   {
     "code": "AG",
@@ -319,7 +328,8 @@
       "symbol": "$",
       "usdRate": 2.7
     },
-    "factQuestion": "Which country claims 365 beaches—one for every day of the year?"
+    "factQuestion": "Which country claims 365 beaches—one for every day of the year?",
+    "timezone": "America/Antigua"
   },
   {
     "code": "AR",
@@ -355,7 +365,8 @@
       "symbol": "$",
       "usdRate": 1477.7
     },
-    "factQuestion": "Which country is home to the Perito Moreno Glacier, one of the few major glaciers in the world that is still advancing?"
+    "factQuestion": "Which country is home to the Perito Moreno Glacier, one of the few major glaciers in the world that is still advancing?",
+    "timezone": "America/Argentina/Buenos_Aires"
   },
   {
     "code": "AM",
@@ -391,7 +402,8 @@
       "symbol": "֏",
       "usdRate": 366.257897
     },
-    "factQuestion": "Which country counts Mount Ararat—a peak visible across the border in Türkiye—as a national symbol?"
+    "factQuestion": "Which country counts Mount Ararat—a peak visible across the border in Türkiye—as a national symbol?",
+    "timezone": "Asia/Yerevan"
   },
   {
     "code": "AW",
@@ -420,7 +432,8 @@
       "symbol": "ƒ",
       "usdRate": 1.79
     },
-    "factQuestion": "Which country sits outside the Caribbean hurricane belt with reliably sunny weather year-round?"
+    "factQuestion": "Which country sits outside the Caribbean hurricane belt with reliably sunny weather year-round?",
+    "timezone": "America/Aruba"
   },
   {
     "code": "AU",
@@ -450,7 +463,8 @@
       "symbol": "$",
       "usdRate": 1.428082
     },
-    "factQuestion": "Which country has more venomous snakes than anywhere else, with wildlife found nowhere else on Earth?"
+    "factQuestion": "Which country has more venomous snakes than anywhere else, with wildlife found nowhere else on Earth?",
+    "timezone": "Australia/Sydney"
   },
   {
     "code": "AT",
@@ -490,7 +504,8 @@
       "symbol": "€",
       "usdRate": 0.876691
     },
-    "factQuestion": "Which country is home to Vienna, where Mozart, Beethoven, and Strauss all made their mark?"
+    "factQuestion": "Which country is home to Vienna, where Mozart, Beethoven, and Strauss all made their mark?",
+    "timezone": "Europe/Vienna"
   },
   {
     "code": "AZ",
@@ -527,7 +542,8 @@
       "symbol": "₼",
       "usdRate": 1.700145
     },
-    "factQuestion": "Which country has nearly half its land below sea level due to the Caspian shoreline and the Kura plain?"
+    "factQuestion": "Which country has nearly half its land below sea level due to the Caspian shoreline and the Kura plain?",
+    "timezone": "Asia/Baku"
   },
   {
     "code": "BS",
@@ -557,7 +573,8 @@
       "symbol": "$",
       "usdRate": 1
     },
-    "factQuestion": "Which country has more than 700 islands and cays spread across clear turquoise shallows?"
+    "factQuestion": "Which country has more than 700 islands and cays spread across clear turquoise shallows?",
+    "timezone": "America/Nassau"
   },
   {
     "code": "BH",
@@ -588,7 +605,8 @@
       "symbol": ".د.ب",
       "usdRate": 0.376
     },
-    "factQuestion": "Which country is home to the Tree of Life, a lone mesquite tree thriving in the desert with no obvious water source?"
+    "factQuestion": "Which country is home to the Tree of Life, a lone mesquite tree thriving in the desert with no obvious water source?",
+    "timezone": "Asia/Bahrain"
   },
   {
     "code": "BD",
@@ -622,7 +640,8 @@
       "symbol": "৳",
       "usdRate": 123.355712
     },
-    "factQuestion": "Which country crams more than 170 million people into a delta the size of Iowa?"
+    "factQuestion": "Which country crams more than 170 million people into a delta the size of Iowa?",
+    "timezone": "Asia/Dhaka"
   },
   {
     "code": "BB",
@@ -651,7 +670,8 @@
       "symbol": "$",
       "usdRate": 2
     },
-    "factQuestion": "Which country is the easternmost island of the Caribbean and was once a major center of British sugar production?"
+    "factQuestion": "Which country is the easternmost island of the Caribbean and was once a major center of British sugar production?",
+    "timezone": "America/Barbados"
   },
   {
     "code": "BY",
@@ -688,7 +708,8 @@
       "symbol": "Br",
       "usdRate": 2.889388
     },
-    "factQuestion": "Which country is about 40% forested and nicknamed 'the lungs of Europe'?"
+    "factQuestion": "Which country is about 40% forested and nicknamed 'the lungs of Europe'?",
+    "timezone": "Europe/Minsk"
   },
   {
     "code": "BE",
@@ -724,7 +745,8 @@
       "symbol": "€",
       "usdRate": 0.876691
     },
-    "factQuestion": "Which country produces more than 1,500 varieties of beer with centuries of brewing tradition?"
+    "factQuestion": "Which country produces more than 1,500 varieties of beer with centuries of brewing tradition?",
+    "timezone": "Europe/Brussels"
   },
   {
     "code": "BZ",
@@ -757,7 +779,8 @@
       "symbol": "$",
       "usdRate": 2
     },
-    "factQuestion": "Which country is home to the Great Blue Hole, a circular sinkhole visible from space?"
+    "factQuestion": "Which country is home to the Great Blue Hole, a circular sinkhole visible from space?",
+    "timezone": "America/Belize"
   },
   {
     "code": "BJ",
@@ -793,7 +816,8 @@
       "symbol": "Fr",
       "usdRate": 575.082836
     },
-    "factQuestion": "Which country was once the Kingdom of Dahomey, whose all-female warriors inspired the Dora Milaje?"
+    "factQuestion": "Which country was once the Kingdom of Dahomey, whose all-female warriors inspired the Dora Milaje?",
+    "timezone": "Africa/Porto-Novo"
   },
   {
     "code": "BM",
@@ -822,7 +846,8 @@
       "symbol": "$",
       "usdRate": 1
     },
-    "factQuestion": "Which country has pink-sand beaches colored by crushed coral and shell fragments?"
+    "factQuestion": "Which country has pink-sand beaches colored by crushed coral and shell fragments?",
+    "timezone": "Atlantic/Bermuda"
   },
   {
     "code": "BT",
@@ -856,7 +881,8 @@
       "symbol": "Nu.",
       "usdRate": 96.337696
     },
-    "factQuestion": "Which country measures progress with Gross National Happiness instead of focusing only on economic output?"
+    "factQuestion": "Which country measures progress with Gross National Happiness instead of focusing only on economic output?",
+    "timezone": "Asia/Thimphu"
   },
   {
     "code": "BO",
@@ -893,7 +919,8 @@
       "symbol": "Bs.",
       "usdRate": 10.775878
     },
-    "factQuestion": "Which country has two capitals—La Paz as the administrative seat and Sucre as the constitutional capital?"
+    "factQuestion": "Which country has two capitals—La Paz as the administrative seat and Sucre as the constitutional capital?",
+    "timezone": "America/La_Paz"
   },
   {
     "code": "BA",
@@ -927,7 +954,8 @@
       "symbol": "KM",
       "usdRate": 1.714692
     },
-    "factQuestion": "Which country is home to Mostar's Stari Most bridge, destroyed in 1993 and rebuilt stone by stone?"
+    "factQuestion": "Which country is home to Mostar's Stari Most bridge, destroyed in 1993 and rebuilt stone by stone?",
+    "timezone": "Europe/Sarajevo"
   },
   {
     "code": "BW",
@@ -962,7 +990,8 @@
       "symbol": "P",
       "usdRate": 14.390566
     },
-    "factQuestion": "Which country contains the Okavango Delta, one of the world's largest inland deltas?"
+    "factQuestion": "Which country contains the Okavango Delta, one of the world's largest inland deltas?",
+    "timezone": "Africa/Gaborone"
   },
   {
     "code": "BV",
@@ -986,7 +1015,8 @@
     "isTerritory": true,
     "fact": "One of the most remote uninhabited islands on Earth, more than 1,000 miles from Antarctica.",
     "languages": "Norwegian",
-    "factQuestion": "Which country includes one of the most remote uninhabited islands on Earth, over 1,000 miles from Antarctica?"
+    "factQuestion": "Which country includes one of the most remote uninhabited islands on Earth, over 1,000 miles from Antarctica?",
+    "timezone": "Europe/Oslo"
   },
   {
     "code": "BR",
@@ -1028,7 +1058,8 @@
       "symbol": "R$",
       "usdRate": 5.077823
     },
-    "factQuestion": "Which country contains about 60% of the Amazon rainforest, the largest tropical forest on the planet?"
+    "factQuestion": "Which country contains about 60% of the Amazon rainforest, the largest tropical forest on the planet?",
+    "timezone": "America/Sao_Paulo"
   },
   {
     "code": "IO",
@@ -1057,7 +1088,8 @@
       "symbol": "$",
       "usdRate": 1
     },
-    "factQuestion": "Which country includes Diego Garcia, a strategically vital U.S.–U.K. military base in the Indian Ocean?"
+    "factQuestion": "Which country includes Diego Garcia, a strategically vital U.S.–U.K. military base in the Indian Ocean?",
+    "timezone": "Indian/Chagos"
   },
   {
     "code": "VG",
@@ -1087,7 +1119,8 @@
       "symbol": "$",
       "usdRate": 1
     },
-    "factQuestion": "Which country is a sailing paradise with dozens of sheltered bays and reef-protected waters?"
+    "factQuestion": "Which country is a sailing paradise with dozens of sheltered bays and reef-protected waters?",
+    "timezone": "America/Tortola"
   },
   {
     "code": "BN",
@@ -1120,7 +1153,8 @@
       "symbol": "$",
       "usdRate": 1.291586
     },
-    "factQuestion": "Which country is one of the world's richest nations per capita, built largely on offshore oil and gas?"
+    "factQuestion": "Which country is one of the world's richest nations per capita, built largely on offshore oil and gas?",
+    "timezone": "Asia/Brunei"
   },
   {
     "code": "BG",
@@ -1157,7 +1191,8 @@
       "symbol": "€",
       "usdRate": 0.876691
     },
-    "factQuestion": "Which country is one of the world's oldest nations and still uses the Cyrillic alphabet invented by local saints?"
+    "factQuestion": "Which country is one of the world's oldest nations and still uses the Cyrillic alphabet invented by local saints?",
+    "timezone": "Europe/Sofia"
   },
   {
     "code": "BF",
@@ -1193,7 +1228,8 @@
       "symbol": "Fr",
       "usdRate": 575.082836
     },
-    "factQuestion": "Which country's name means 'land of upright people' in Mossi and Dioula?"
+    "factQuestion": "Which country's name means 'land of upright people' in Mossi and Dioula?",
+    "timezone": "Africa/Ouagadougou"
   },
   {
     "code": "BI",
@@ -1228,7 +1264,8 @@
       "symbol": "Fr",
       "usdRate": 2992.937831
     },
-    "factQuestion": "Which country was once a single kingdom with Rwanda before European colonization split them?"
+    "factQuestion": "Which country was once a single kingdom with Rwanda before European colonization split them?",
+    "timezone": "Africa/Bujumbura"
   },
   {
     "code": "KH",
@@ -1263,7 +1300,8 @@
       "symbol": "៛",
       "usdRate": 4048.568017
     },
-    "factQuestion": "Which country is home to Angkor Wat, the largest religious monument in the world by land area?"
+    "factQuestion": "Which country is home to Angkor Wat, the largest religious monument in the world by land area?",
+    "timezone": "Asia/Phnom_Penh"
   },
   {
     "code": "CM",
@@ -1301,7 +1339,8 @@
       "symbol": "Fr",
       "usdRate": 575.082836
     },
-    "factQuestion": "Which country is nicknamed 'Africa in miniature' for its coast, rainforest, savanna, and volcanic highlands?"
+    "factQuestion": "Which country is nicknamed 'Africa in miniature' for its coast, rainforest, savanna, and volcanic highlands?",
+    "timezone": "Africa/Douala"
   },
   {
     "code": "CA",
@@ -1332,7 +1371,8 @@
       "symbol": "$",
       "usdRate": 1.409459
     },
-    "factQuestion": "Which country has more lakes than the rest of the world's countries combined?"
+    "factQuestion": "Which country has more lakes than the rest of the world's countries combined?",
+    "timezone": "America/Toronto"
   },
   {
     "code": "CV",
@@ -1364,7 +1404,8 @@
       "symbol": "Esc",
       "usdRate": 96.670222
     },
-    "factQuestion": "Which country's morna music has influenced styles across the Atlantic world?"
+    "factQuestion": "Which country's morna music has influenced styles across the Atlantic world?",
+    "timezone": "Atlantic/Cape_Verde"
   },
   {
     "code": "BQ",
@@ -1395,7 +1436,8 @@
       "symbol": "$",
       "usdRate": 1
     },
-    "factQuestion": "Which country includes Bonaire, Sint Eustatius, and Saba—Caribbean municipalities known for diving and reefs?"
+    "factQuestion": "Which country includes Bonaire, Sint Eustatius, and Saba—Caribbean municipalities known for diving and reefs?",
+    "timezone": "America/Kralendijk"
   },
   {
     "code": "KY",
@@ -1424,7 +1466,8 @@
       "symbol": "$",
       "usdRate": 0.833333
     },
-    "factQuestion": "Which country is a global financial hub with more registered companies than residents?"
+    "factQuestion": "Which country is a global financial hub with more registered companies than residents?",
+    "timezone": "America/Cayman"
   },
   {
     "code": "CF",
@@ -1461,7 +1504,8 @@
       "symbol": "Fr",
       "usdRate": 575.082836
     },
-    "factQuestion": "Which country sits near Africa's geographic center, largely covered in rainforest?"
+    "factQuestion": "Which country sits near Africa's geographic center, largely covered in rainforest?",
+    "timezone": "Africa/Bangui"
   },
   {
     "code": "TD",
@@ -1499,7 +1543,8 @@
       "symbol": "Fr",
       "usdRate": 575.082836
     },
-    "factQuestion": "Which country lies in a region where a major lake has shrunk dramatically since the 1960s?"
+    "factQuestion": "Which country lies in a region where a major lake has shrunk dramatically since the 1960s?",
+    "timezone": "Africa/Ndjamena"
   },
   {
     "code": "CL",
@@ -1533,7 +1578,8 @@
       "symbol": "$",
       "usdRate": 934.68866
     },
-    "factQuestion": "Which country is more than 4,000 km long but averages only about 177 km wide?"
+    "factQuestion": "Which country is more than 4,000 km long but averages only about 177 km wide?",
+    "timezone": "America/Santiago"
   },
   {
     "code": "CN",
@@ -1581,7 +1627,8 @@
       "symbol": "¥",
       "usdRate": 6.776686
     },
-    "factQuestion": "Which country built the Great Wall—a network of fortifications constructed over many centuries?"
+    "factQuestion": "Which country built the Great Wall—a network of fortifications constructed over many centuries?",
+    "timezone": "Asia/Shanghai"
   },
   {
     "code": "CX",
@@ -1611,7 +1658,8 @@
       "symbol": "$",
       "usdRate": 1.428082
     },
-    "factQuestion": "Which country is famous for an annual red crab migration when millions of crabs cross roads and beaches?"
+    "factQuestion": "Which country is famous for an annual red crab migration when millions of crabs cross roads and beaches?",
+    "timezone": "Indian/Christmas"
   },
   {
     "code": "CC",
@@ -1641,7 +1689,8 @@
       "symbol": "$",
       "usdRate": 1.428082
     },
-    "factQuestion": "Which country is a remote coral atoll group in the Indian Ocean with a population under 600?"
+    "factQuestion": "Which country is a remote coral atoll group in the Indian Ocean with a population under 600?",
+    "timezone": "Indian/Cocos"
   },
   {
     "code": "CO",
@@ -1677,7 +1726,8 @@
       "symbol": "$",
       "usdRate": 3250.798233
     },
-    "factQuestion": "Which country produces more emeralds than anywhere else and ranks among the world's top coffee exporters?"
+    "factQuestion": "Which country produces more emeralds than anywhere else and ranks among the world's top coffee exporters?",
+    "timezone": "America/Bogota"
   },
   {
     "code": "KM",
@@ -1708,7 +1758,8 @@
       "symbol": "Fr",
       "usdRate": 431.312127
     },
-    "factQuestion": "Which country is one of the world's largest producers of ylang-ylang, essential to many perfumes?"
+    "factQuestion": "Which country is one of the world's largest producers of ylang-ylang, essential to many perfumes?",
+    "timezone": "Indian/Comoro"
   },
   {
     "code": "CG",
@@ -1747,7 +1798,8 @@
       "symbol": "Fr",
       "usdRate": 575.082836
     },
-    "factQuestion": "Which country contains the Congo Basin rainforest, the world's second-largest tropical forest after the Amazon?"
+    "factQuestion": "Which country contains the Congo Basin rainforest, the world's second-largest tropical forest after the Amazon?",
+    "timezone": "Africa/Brazzaville"
   },
   {
     "code": "CK",
@@ -1776,7 +1828,8 @@
       "name": "Cook Islands dollar",
       "symbol": "$"
     },
-    "factQuestion": "Which country's residents carry New Zealand passports but govern themselves in free association with Wellington?"
+    "factQuestion": "Which country's residents carry New Zealand passports but govern themselves in free association with Wellington?",
+    "timezone": "Pacific/Rarotonga"
   },
   {
     "code": "CR",
@@ -1809,7 +1862,8 @@
       "symbol": "₡",
       "usdRate": 454.027923
     },
-    "factQuestion": "Which country abolished its army in 1948 and redirected military spending to education and health care?"
+    "factQuestion": "Which country abolished its army in 1948 and redirected military spending to education and health care?",
+    "timezone": "America/Costa_Rica"
   },
   {
     "code": "HR",
@@ -1846,7 +1900,8 @@
       "symbol": "€",
       "usdRate": 0.876691
     },
-    "factQuestion": "Which country is home to Dubrovnik's medieval walls, a filming location for King's Landing in Game of Thrones?"
+    "factQuestion": "Which country is home to Dubrovnik's medieval walls, a filming location for King's Landing in Game of Thrones?",
+    "timezone": "Europe/Zagreb"
   },
   {
     "code": "CU",
@@ -1876,7 +1931,8 @@
       "symbol": "$",
       "usdRate": 24
     },
-    "factQuestion": "Which country still has classic 1950s American cars on the road thanks to decades of ingenious local repair?"
+    "factQuestion": "Which country still has classic 1950s American cars on the road thanks to decades of ingenious local repair?",
+    "timezone": "America/Havana"
   },
   {
     "code": "CW",
@@ -1907,7 +1963,8 @@
       "symbol": "ƒ",
       "usdRate": 1.79
     },
-    "factQuestion": "Which country has a Handelskade waterfront lined with pastel Dutch colonial buildings?"
+    "factQuestion": "Which country has a Handelskade waterfront lined with pastel Dutch colonial buildings?",
+    "timezone": "America/Curacao"
   },
   {
     "code": "CY",
@@ -1938,7 +1995,8 @@
       "symbol": "€",
       "usdRate": 0.876691
     },
-    "factQuestion": "Which country is legendary birthplace of Aphrodite, the Greek goddess of love?"
+    "factQuestion": "Which country is legendary birthplace of Aphrodite, the Greek goddess of love?",
+    "timezone": "Asia/Nicosia"
   },
   {
     "code": "CZ",
@@ -1974,7 +2032,8 @@
       "symbol": "Kč",
       "usdRate": 21.205386
     },
-    "factQuestion": "Which country is home to Prague's Astronomical Clock, keeping time since 1410?"
+    "factQuestion": "Which country is home to Prague's Astronomical Clock, keeping time since 1410?",
+    "timezone": "Europe/Prague"
   },
   {
     "code": "DK",
@@ -2007,7 +2066,8 @@
       "symbol": "kr",
       "usdRate": 6.542063
     },
-    "factQuestion": "Which country invented LEGO bricks in Billund, home to the original LEGOLAND theme park?"
+    "factQuestion": "Which country invented LEGO bricks in Billund, home to the original LEGOLAND theme park?",
+    "timezone": "Europe/Copenhagen"
   },
   {
     "code": "DJ",
@@ -2042,7 +2102,8 @@
       "symbol": "Fr",
       "usdRate": 177.721
     },
-    "factQuestion": "Which country sits on the Afar Triple Junction where three tectonic plates pull apart?"
+    "factQuestion": "Which country sits on the Afar Triple Junction where three tectonic plates pull apart?",
+    "timezone": "Africa/Djibouti"
   },
   {
     "code": "DM",
@@ -2072,7 +2133,8 @@
       "symbol": "$",
       "usdRate": 2.7
     },
-    "factQuestion": "Which country is home to Boiling Lake, the world's second-largest hot spring?"
+    "factQuestion": "Which country is home to Boiling Lake, the world's second-largest hot spring?",
+    "timezone": "America/Dominica"
   },
   {
     "code": "DO",
@@ -2104,7 +2166,8 @@
       "symbol": "$",
       "usdRate": 58.487939
     },
-    "factQuestion": "Which country shares Hispaniola with Haiti—the only Caribbean island split between two nations?"
+    "factQuestion": "Which country shares Hispaniola with Haiti—the only Caribbean island split between two nations?",
+    "timezone": "America/Santo_Domingo"
   },
   {
     "code": "CD",
@@ -2147,7 +2210,8 @@
       "symbol": "FC",
       "usdRate": 2277.763814
     },
-    "factQuestion": "Which country is home to the Congo River, the world's deepest and second-largest by discharge?"
+    "factQuestion": "Which country is home to the Congo River, the world's deepest and second-largest by discharge?",
+    "timezone": "Africa/Kinshasa"
   },
   {
     "code": "EC",
@@ -2180,7 +2244,8 @@
       "symbol": "$",
       "usdRate": 1
     },
-    "factQuestion": "Which country is named for the equator and includes the Galápagos Islands?"
+    "factQuestion": "Which country is named for the equator and includes the Galápagos Islands?",
+    "timezone": "America/Guayaquil"
   },
   {
     "code": "EG",
@@ -2216,7 +2281,8 @@
       "symbol": "£",
       "usdRate": 51.008475
     },
-    "factQuestion": "Which country is home to the Great Pyramid of Giza, the tallest human-made structure for nearly 4,000 years?"
+    "factQuestion": "Which country is home to the Great Pyramid of Giza, the tallest human-made structure for nearly 4,000 years?",
+    "timezone": "Africa/Cairo"
   },
   {
     "code": "SV",
@@ -2249,7 +2315,8 @@
       "symbol": "$",
       "usdRate": 1
     },
-    "factQuestion": "Which country is the smallest and most densely populated in Central America?"
+    "factQuestion": "Which country is the smallest and most densely populated in Central America?",
+    "timezone": "America/El_Salvador"
   },
   {
     "code": "GQ",
@@ -2283,7 +2350,8 @@
       "symbol": "Fr",
       "usdRate": 575.082836
     },
-    "factQuestion": "Which country is the only African nation with Spanish as an official language?"
+    "factQuestion": "Which country is the only African nation with Spanish as an official language?",
+    "timezone": "Africa/Malabo"
   },
   {
     "code": "ER",
@@ -2318,7 +2386,8 @@
       "symbol": "Nfk",
       "usdRate": 15
     },
-    "factQuestion": "Which country's capital Asmara has one of the world's finest collections of Art Deco architecture?"
+    "factQuestion": "Which country's capital Asmara has one of the world's finest collections of Art Deco architecture?",
+    "timezone": "Africa/Asmara"
   },
   {
     "code": "EE",
@@ -2352,7 +2421,8 @@
       "symbol": "€",
       "usdRate": 0.876691
     },
-    "factQuestion": "Which country is one of the world's most digital societies, where citizens vote and file taxes online?"
+    "factQuestion": "Which country is one of the world's most digital societies, where citizens vote and file taxes online?",
+    "timezone": "Europe/Tallinn"
   },
   {
     "code": "SZ",
@@ -2386,7 +2456,8 @@
       "symbol": "L",
       "usdRate": 16.461323
     },
-    "factQuestion": "Which country is one of the world's last absolute monarchies in Africa?"
+    "factQuestion": "Which country is one of the world's last absolute monarchies in Africa?",
+    "timezone": "Africa/Mbabane"
   },
   {
     "code": "ET",
@@ -2424,7 +2495,8 @@
       "symbol": "Br",
       "usdRate": 160.33367
     },
-    "factQuestion": "Which country follows its own calendar, about seven to eight years behind the Gregorian calendar?"
+    "factQuestion": "Which country follows its own calendar, about seven to eight years behind the Gregorian calendar?",
+    "timezone": "Africa/Addis_Ababa"
   },
   {
     "code": "FK",
@@ -2454,7 +2526,8 @@
       "symbol": "£",
       "usdRate": 0.747079
     },
-    "factQuestion": "Which country was the setting of a brief but intense war between Britain and Argentina in 1982?"
+    "factQuestion": "Which country was the setting of a brief but intense war between Britain and Argentina in 1982?",
+    "timezone": "Atlantic/Stanley"
   },
   {
     "code": "FO",
@@ -2484,7 +2557,8 @@
       "symbol": "kr",
       "usdRate": 6.542063
     },
-    "factQuestion": "Which country has tunnels connecting its islands and generates much of its power from wind and hydro?"
+    "factQuestion": "Which country has tunnels connecting its islands and generates much of its power from wind and hydro?",
+    "timezone": "Atlantic/Faroe"
   },
   {
     "code": "FJ",
@@ -2515,7 +2589,8 @@
       "symbol": "$",
       "usdRate": 2.22223
     },
-    "factQuestion": "Which country straddles the International Date Line and is among the first to greet each new day?"
+    "factQuestion": "Which country straddles the International Date Line and is among the first to greet each new day?",
+    "timezone": "Pacific/Fiji"
   },
   {
     "code": "FI",
@@ -2550,7 +2625,8 @@
       "symbol": "€",
       "usdRate": 0.876691
     },
-    "factQuestion": "Which country has more saunas than cars—roughly one sauna for every two people?"
+    "factQuestion": "Which country has more saunas than cars—roughly one sauna for every two people?",
+    "timezone": "Europe/Helsinki"
   },
   {
     "code": "FR",
@@ -2589,7 +2665,8 @@
       "symbol": "€",
       "usdRate": 0.876691
     },
-    "factQuestion": "Which country is the most visited on Earth, drawing more international tourists than any other?"
+    "factQuestion": "Which country is the most visited on Earth, drawing more international tourists than any other?",
+    "timezone": "Europe/Paris"
   },
   {
     "code": "GF",
@@ -2623,7 +2700,8 @@
       "symbol": "€",
       "usdRate": 0.876691
     },
-    "factQuestion": "Which country hosts Europe's main spaceport at Kourou, launching rockets from South America?"
+    "factQuestion": "Which country hosts Europe's main spaceport at Kourou, launching rockets from South America?",
+    "timezone": "America/Cayenne"
   },
   {
     "code": "PF",
@@ -2653,7 +2731,8 @@
       "symbol": "₣",
       "usdRate": 104.619335
     },
-    "factQuestion": "Which country includes Bora Bora and Tahiti, which helped define the image of a tropical paradise?"
+    "factQuestion": "Which country includes Bora Bora and Tahiti, which helped define the image of a tropical paradise?",
+    "timezone": "Pacific/Tahiti"
   },
   {
     "code": "TF",
@@ -2684,7 +2763,8 @@
       "symbol": "€",
       "usdRate": 0.876691
     },
-    "factQuestion": "Which country includes remote sub-Antarctic islands with no permanent human population?"
+    "factQuestion": "Which country includes remote sub-Antarctic islands with no permanent human population?",
+    "timezone": "Indian/Kerguelen"
   },
   {
     "code": "GA",
@@ -2718,7 +2798,8 @@
       "symbol": "Fr",
       "usdRate": 575.082836
     },
-    "factQuestion": "Which country preserves about 11% of its land in national parks—among the highest proportions worldwide?"
+    "factQuestion": "Which country preserves about 11% of its land in national parks—among the highest proportions worldwide?",
+    "timezone": "Africa/Libreville"
   },
   {
     "code": "GM",
@@ -2750,7 +2831,8 @@
       "symbol": "D",
       "usdRate": 74.412388
     },
-    "factQuestion": "Which country is a narrow strip of land along a river, surrounded on three sides by Senegal?"
+    "factQuestion": "Which country is a narrow strip of land along a river, surrounded on three sides by Senegal?",
+    "timezone": "Africa/Banjul"
   },
   {
     "code": "GE",
@@ -2785,7 +2867,8 @@
       "symbol": "₾",
       "usdRate": 2.627584
     },
-    "factQuestion": "Which country has 8,000-year-old winemaking evidence supporting a claim as wine's birthplace?"
+    "factQuestion": "Which country has 8,000-year-old winemaking evidence supporting a claim as wine's birthplace?",
+    "timezone": "Asia/Tbilisi"
   },
   {
     "code": "DE",
@@ -2826,7 +2909,8 @@
       "symbol": "€",
       "usdRate": 0.876691
     },
-    "factQuestion": "Which country has an Autobahn with long stretches and no official speed limit for cars?"
+    "factQuestion": "Which country has an Autobahn with long stretches and no official speed limit for cars?",
+    "timezone": "Europe/Berlin"
   },
   {
     "code": "GH",
@@ -2860,7 +2944,8 @@
       "symbol": "₵",
       "usdRate": 11.594989
     },
-    "factQuestion": "Which country was the first sub-Saharan African nation to gain independence from colonial rule, in 1957?"
+    "factQuestion": "Which country was the first sub-Saharan African nation to gain independence from colonial rule, in 1957?",
+    "timezone": "Africa/Accra"
   },
   {
     "code": "GI",
@@ -2891,7 +2976,8 @@
       "symbol": "£",
       "usdRate": 0.747079
     },
-    "factQuestion": "Which country is guarded by wild Barbary macaques—the only wild monkeys in Europe?"
+    "factQuestion": "Which country is guarded by wild Barbary macaques—the only wild monkeys in Europe?",
+    "timezone": "Europe/Gibraltar"
   },
   {
     "code": "GR",
@@ -2927,7 +3013,8 @@
       "symbol": "€",
       "usdRate": 0.876691
     },
-    "factQuestion": "Which country has thousands of islands, though only a few hundred are inhabited?"
+    "factQuestion": "Which country has thousands of islands, though only a few hundred are inhabited?",
+    "timezone": "Europe/Athens"
   },
   {
     "code": "GL",
@@ -2957,7 +3044,8 @@
       "symbol": "kr.",
       "usdRate": 6.542063
     },
-    "factQuestion": "Which country is the world's largest island, covered by an ice sheet up to three kilometers thick?"
+    "factQuestion": "Which country is the world's largest island, covered by an ice sheet up to three kilometers thick?",
+    "timezone": "America/Nuuk"
   },
   {
     "code": "GD",
@@ -2986,7 +3074,8 @@
       "symbol": "$",
       "usdRate": 2.7
     },
-    "factQuestion": "Which country is known as the 'Spice Isle' for nutmeg, mace, and cinnamon exports?"
+    "factQuestion": "Which country is known as the 'Spice Isle' for nutmeg, mace, and cinnamon exports?",
+    "timezone": "America/Grenada"
   },
   {
     "code": "GP",
@@ -3015,7 +3104,8 @@
       "symbol": "€",
       "usdRate": 0.876691
     },
-    "factQuestion": "Which country saw La Soufrière volcano erupt in 1976, forcing the evacuation of 73,000 people?"
+    "factQuestion": "Which country saw La Soufrière volcano erupt in 1976, forcing the evacuation of 73,000 people?",
+    "timezone": "America/Guadeloupe"
   },
   {
     "code": "GU",
@@ -3045,7 +3135,8 @@
       "symbol": "$",
       "usdRate": 1
     },
-    "factQuestion": "Which country is the westernmost U.S. territory and a key military hub in the Pacific?"
+    "factQuestion": "Which country is the westernmost U.S. territory and a key military hub in the Pacific?",
+    "timezone": "Pacific/Guam"
   },
   {
     "code": "GT",
@@ -3080,7 +3171,8 @@
       "symbol": "Q",
       "usdRate": 7.631616
     },
-    "factQuestion": "Which country is home to the Tikal ruins, a major Maya city rising above the Petén jungle?"
+    "factQuestion": "Which country is home to the Tikal ruins, a major Maya city rising above the Petén jungle?",
+    "timezone": "America/Guatemala"
   },
   {
     "code": "GG",
@@ -3111,7 +3203,8 @@
       "symbol": "£",
       "usdRate": 0.747063
     },
-    "factQuestion": "Which country gives its name to a famous breed of dairy cows from the Channel Islands?"
+    "factQuestion": "Which country gives its name to a famous breed of dairy cows from the Channel Islands?",
+    "timezone": "Europe/Guernsey"
   },
   {
     "code": "GN",
@@ -3149,7 +3242,8 @@
       "symbol": "Fr",
       "usdRate": 8782.205095
     },
-    "factQuestion": "Which country holds about one-third of the world's bauxite, the ore used to make aluminum?"
+    "factQuestion": "Which country holds about one-third of the world's bauxite, the ore used to make aluminum?",
+    "timezone": "Africa/Conakry"
   },
   {
     "code": "GW",
@@ -3183,7 +3277,8 @@
       "symbol": "Fr",
       "usdRate": 575.082836
     },
-    "factQuestion": "Which country contains the Bijagós Archipelago, a UNESCO biosphere reserve of mangroves and sea turtles?"
+    "factQuestion": "Which country contains the Bijagós Archipelago, a UNESCO biosphere reserve of mangroves and sea turtles?",
+    "timezone": "Africa/Bissau"
   },
   {
     "code": "GY",
@@ -3217,7 +3312,8 @@
       "symbol": "$",
       "usdRate": 209.179097
     },
-    "factQuestion": "Which country has about 80% of its land covered by pristine Amazon rainforest?"
+    "factQuestion": "Which country has about 80% of its land covered by pristine Amazon rainforest?",
+    "timezone": "America/Guyana"
   },
   {
     "code": "HT",
@@ -3250,7 +3346,8 @@
       "symbol": "G",
       "usdRate": 130.667411
     },
-    "factQuestion": "Which country was the first nation founded by formerly enslaved people who won independence, in 1804?"
+    "factQuestion": "Which country was the first nation founded by formerly enslaved people who won independence, in 1804?",
+    "timezone": "America/Port-au-Prince"
   },
   {
     "code": "HM",
@@ -3273,7 +3370,8 @@
     "isTerritory": true,
     "fact": "Among the most remote places on Earth, near Antarctica.",
     "languages": "English",
-    "factQuestion": "Which country includes islands among the most remote places on Earth, near Antarctica?"
+    "factQuestion": "Which country includes islands among the most remote places on Earth, near Antarctica?",
+    "timezone": "Indian/Kerguelen"
   },
   {
     "code": "HN",
@@ -3307,7 +3405,8 @@
       "symbol": "L",
       "usdRate": 26.799781
     },
-    "factQuestion": "Which country is home to the Copán ruins, featuring some of the finest Maya stone carving in Central America?"
+    "factQuestion": "Which country is home to the Copán ruins, featuring some of the finest Maya stone carving in Central America?",
+    "timezone": "America/Tegucigalpa"
   },
   {
     "code": "HK",
@@ -3340,7 +3439,8 @@
       "symbol": "$",
       "usdRate": 7.842023
     },
-    "factQuestion": "Which country has more skyscrapers than any other city—well over 500 buildings above 150 meters?"
+    "factQuestion": "Which country has more skyscrapers than any other city—well over 500 buildings above 150 meters?",
+    "timezone": "Asia/Hong_Kong"
   },
   {
     "code": "HU",
@@ -3378,7 +3478,8 @@
       "symbol": "Ft",
       "usdRate": 316.957688
     },
-    "factQuestion": "Which country is home to Budapest, formed by merging three cities atop more than 100 thermal springs?"
+    "factQuestion": "Which country is home to Budapest, formed by merging three cities atop more than 100 thermal springs?",
+    "timezone": "Europe/Budapest"
   },
   {
     "code": "IS",
@@ -3408,7 +3509,8 @@
       "symbol": "kr",
       "usdRate": 125.226659
     },
-    "factQuestion": "Which country runs almost entirely on renewable energy and sits atop the Mid-Atlantic Ridge?"
+    "factQuestion": "Which country runs almost entirely on renewable energy and sits atop the Mid-Atlantic Ridge?",
+    "timezone": "Atlantic/Reykjavik"
   },
   {
     "code": "IN",
@@ -3446,7 +3548,8 @@
       "symbol": "₹",
       "usdRate": 96.339012
     },
-    "factQuestion": "Which country has 22 official languages and is on track to become the world's most populous nation?"
+    "factQuestion": "Which country has 22 official languages and is on track to become the world's most populous nation?",
+    "timezone": "Asia/Kolkata"
   },
   {
     "code": "ID",
@@ -3480,7 +3583,8 @@
       "symbol": "Rp",
       "usdRate": 17905.298943
     },
-    "factQuestion": "Which country is the world's largest archipelago, with more than 17,000 islands spanning three time zones?"
+    "factQuestion": "Which country is the world's largest archipelago, with more than 17,000 islands spanning three time zones?",
+    "timezone": "Asia/Jakarta"
   },
   {
     "code": "IR",
@@ -3519,7 +3623,8 @@
       "symbol": "﷼",
       "usdRate": 1353382.13832
     },
-    "factQuestion": "Which country produces Persian carpets so prized that fine antique rugs sell for millions?"
+    "factQuestion": "Which country produces Persian carpets so prized that fine antique rugs sell for millions?",
+    "timezone": "Asia/Tehran"
   },
   {
     "code": "IQ",
@@ -3557,7 +3662,8 @@
       "symbol": "ع.د",
       "usdRate": 1309.378705
     },
-    "factQuestion": "Which country contains Mesopotamia, where writing, the wheel, and cities first emerged?"
+    "factQuestion": "Which country contains Mesopotamia, where writing, the wheel, and cities first emerged?",
+    "timezone": "Asia/Baghdad"
   },
   {
     "code": "IE",
@@ -3590,7 +3696,8 @@
       "symbol": "€",
       "usdRate": 0.876691
     },
-    "factQuestion": "Which country has lush green countryside shaped by Gulf Stream rains?"
+    "factQuestion": "Which country has lush green countryside shaped by Gulf Stream rains?",
+    "timezone": "Europe/Dublin"
   },
   {
     "code": "IM",
@@ -3620,7 +3727,8 @@
       "symbol": "£",
       "usdRate": 0.747063
     },
-    "factQuestion": "Which country is a self-governing Crown dependency famous for the TT motorcycle races since 1907?"
+    "factQuestion": "Which country is a self-governing Crown dependency famous for the TT motorcycle races since 1907?",
+    "timezone": "Europe/Isle_of_Man"
   },
   {
     "code": "IL",
@@ -3657,7 +3765,8 @@
       "symbol": "₪",
       "usdRate": 3.048643
     },
-    "factQuestion": "Which country contains the Dead Sea shoreline, the lowest dry land on Earth?"
+    "factQuestion": "Which country contains the Dead Sea shoreline, the lowest dry land on Earth?",
+    "timezone": "Asia/Jerusalem"
   },
   {
     "code": "IT",
@@ -3695,7 +3804,8 @@
       "symbol": "€",
       "usdRate": 0.876691
     },
-    "factQuestion": "Which country has more UNESCO World Heritage Sites than any other—58 and counting?"
+    "factQuestion": "Which country has more UNESCO World Heritage Sites than any other—58 and counting?",
+    "timezone": "Europe/Rome"
   },
   {
     "code": "CI",
@@ -3734,7 +3844,8 @@
       "symbol": "Fr",
       "usdRate": 575.082836
     },
-    "factQuestion": "Which country produces about 40% of the world's cocoa, making it the top chocolate ingredient supplier?"
+    "factQuestion": "Which country produces about 40% of the world's cocoa, making it the top chocolate ingredient supplier?",
+    "timezone": "Africa/Abidjan"
   },
   {
     "code": "JM",
@@ -3763,7 +3874,8 @@
       "symbol": "$",
       "usdRate": 158.627294
     },
-    "factQuestion": "Which country gave the world reggae, turning a small island sound into a global movement?"
+    "factQuestion": "Which country gave the world reggae, turning a small island sound into a global movement?",
+    "timezone": "America/Jamaica"
   },
   {
     "code": "JP",
@@ -3793,7 +3905,8 @@
       "symbol": "¥",
       "usdRate": 163.013007
     },
-    "factQuestion": "Which country has more than 6,800 islands and over 100 active volcanoes on the Pacific Ring of Fire?"
+    "factQuestion": "Which country has more than 6,800 islands and over 100 active volcanoes on the Pacific Ring of Fire?",
+    "timezone": "Asia/Tokyo"
   },
   {
     "code": "JE",
@@ -3824,7 +3937,8 @@
       "symbol": "£",
       "usdRate": 0.747063
     },
-    "factQuestion": "Which country has one of the world's largest tidal ranges—at low tide the island nearly doubles in size?"
+    "factQuestion": "Which country has one of the world's largest tidal ranges—at low tide the island nearly doubles in size?",
+    "timezone": "Europe/Jersey"
   },
   {
     "code": "JO",
@@ -3861,7 +3975,8 @@
       "symbol": "د.ا",
       "usdRate": 0.709
     },
-    "factQuestion": "Which country is home to Petra, a rose-red city carved into sandstone cliffs by the Nabataeans?"
+    "factQuestion": "Which country is home to Petra, a rose-red city carved into sandstone cliffs by the Nabataeans?",
+    "timezone": "Asia/Amman"
   },
   {
     "code": "KZ",
@@ -3898,7 +4013,8 @@
       "symbol": "₸",
       "usdRate": 468.495614
     },
-    "factQuestion": "Which country is the world's largest landlocked nation and the last Soviet republic to declare independence?"
+    "factQuestion": "Which country is the world's largest landlocked nation and the last Soviet republic to declare independence?",
+    "timezone": "Asia/Almaty"
   },
   {
     "code": "KE",
@@ -3934,7 +4050,8 @@
       "symbol": "Sh",
       "usdRate": 129.382422
     },
-    "factQuestion": "Which country's Great Rift Valley lakes draw millions of flamingos, turning shores pink?"
+    "factQuestion": "Which country's Great Rift Valley lakes draw millions of flamingos, turning shores pink?",
+    "timezone": "Africa/Nairobi"
   },
   {
     "code": "KI",
@@ -3964,7 +4081,8 @@
       "symbol": "$",
       "usdRate": 1.428082
     },
-    "factQuestion": "Which country is among the first likely to lose land to rising seas, with islands just two meters above water?"
+    "factQuestion": "Which country is among the first likely to lose land to rising seas, with islands just two meters above water?",
+    "timezone": "Pacific/Tarawa"
   },
   {
     "code": "XK",
@@ -4000,7 +4118,8 @@
       "symbol": "€",
       "usdRate": 0.876691
     },
-    "factQuestion": "Which country has a 'Newborn' monument in its capital that is repainted in a new design every year on Independence Day?"
+    "factQuestion": "Which country has a 'Newborn' monument in its capital that is repainted in a new design every year on Independence Day?",
+    "timezone": "Europe/Belgrade"
   },
   {
     "code": "KW",
@@ -4034,7 +4153,8 @@
       "symbol": "د.ك",
       "usdRate": 0.309775
     },
-    "factQuestion": "Which country named its Liberation Tower after the 1991 Gulf War that ended Iraqi occupation?"
+    "factQuestion": "Which country named its Liberation Tower after the 1991 Gulf War that ended Iraqi occupation?",
+    "timezone": "Asia/Kuwait"
   },
   {
     "code": "KG",
@@ -4070,7 +4190,8 @@
       "symbol": "с",
       "usdRate": 87.451377
     },
-    "factQuestion": "Which country is over 90% mountainous, dominated by the Tian Shan range?"
+    "factQuestion": "Which country is over 90% mountainous, dominated by the Tian Shan range?",
+    "timezone": "Asia/Bishkek"
   },
   {
     "code": "LA",
@@ -4107,7 +4228,8 @@
       "symbol": "₭",
       "usdRate": 22431.530479
     },
-    "factQuestion": "Which country is the most heavily bombed per capita in history due to the Secret War during the Vietnam era?"
+    "factQuestion": "Which country is the most heavily bombed per capita in history due to the Secret War during the Vietnam era?",
+    "timezone": "Asia/Vientiane"
   },
   {
     "code": "LV",
@@ -4143,7 +4265,8 @@
       "symbol": "€",
       "usdRate": 0.876691
     },
-    "factQuestion": "Which country's capital Riga has one of Europe's largest collections of Art Nouveau architecture?"
+    "factQuestion": "Which country's capital Riga has one of Europe's largest collections of Art Nouveau architecture?",
+    "timezone": "Europe/Riga"
   },
   {
     "code": "LB",
@@ -4177,7 +4300,8 @@
       "symbol": "ل.ل",
       "usdRate": 89500
     },
-    "factQuestion": "Which country features cedars on its flag that were prized by ancient Egyptians and Phoenicians?"
+    "factQuestion": "Which country features cedars on its flag that were prized by ancient Egyptians and Phoenicians?",
+    "timezone": "Asia/Beirut"
   },
   {
     "code": "LS",
@@ -4209,7 +4333,8 @@
       "symbol": "L",
       "usdRate": 16.461323
     },
-    "factQuestion": "Which country is entirely surrounded by South Africa and lies entirely above 1,000 meters?"
+    "factQuestion": "Which country is entirely surrounded by South Africa and lies entirely above 1,000 meters?",
+    "timezone": "Africa/Maseru"
   },
   {
     "code": "LR",
@@ -4243,7 +4368,8 @@
       "symbol": "$",
       "usdRate": 181.167029
     },
-    "factQuestion": "Which country was founded in the 19th century by freed American slaves with a flag echoing U.S. stars and stripes?"
+    "factQuestion": "Which country was founded in the 19th century by freed American slaves with a flag echoing U.S. stars and stripes?",
+    "timezone": "Africa/Monrovia"
   },
   {
     "code": "LY",
@@ -4281,7 +4407,8 @@
       "symbol": "ل.د",
       "usdRate": 6.393734
     },
-    "factQuestion": "Which country has ancient Roman ruins of Leptis Magna on its coast within the Sahara?"
+    "factQuestion": "Which country has ancient Roman ruins of Leptis Magna on its coast within the Sahara?",
+    "timezone": "Africa/Tripoli"
   },
   {
     "code": "LI",
@@ -4314,7 +4441,8 @@
       "symbol": "Fr",
       "usdRate": 0.812218
     },
-    "factQuestion": "Which country is one of only two doubly landlocked nations, surrounded by landlocked countries?"
+    "factQuestion": "Which country is one of only two doubly landlocked nations, surrounded by landlocked countries?",
+    "timezone": "Europe/Vaduz"
   },
   {
     "code": "LT",
@@ -4350,7 +4478,8 @@
       "symbol": "€",
       "usdRate": 0.876691
     },
-    "factQuestion": "Which country was the last European nation to abandon paganism and the first Soviet republic to declare independence?"
+    "factQuestion": "Which country was the last European nation to abandon paganism and the first Soviet republic to declare independence?",
+    "timezone": "Europe/Vilnius"
   },
   {
     "code": "LU",
@@ -4385,7 +4514,8 @@
       "symbol": "€",
       "usdRate": 0.876691
     },
-    "factQuestion": "Which country has the highest GDP per capita in the world and is a founding EU member?"
+    "factQuestion": "Which country has the highest GDP per capita in the world and is a founding EU member?",
+    "timezone": "Europe/Luxembourg"
   },
   {
     "code": "MO",
@@ -4418,7 +4548,8 @@
       "symbol": "P",
       "usdRate": 8.077185
     },
-    "factQuestion": "Which country was a Portuguese colony for 400 years and rivals Las Vegas for gambling revenue?"
+    "factQuestion": "Which country was a Portuguese colony for 400 years and rivals Las Vegas for gambling revenue?",
+    "timezone": "Asia/Macau"
   },
   {
     "code": "MG",
@@ -4449,7 +4580,8 @@
       "symbol": "Ar",
       "usdRate": 4314.993562
     },
-    "factQuestion": "Which country broke away from Africa 88 million years ago, with 90% of wildlife found nowhere else?"
+    "factQuestion": "Which country broke away from Africa 88 million years ago, with 90% of wildlife found nowhere else?",
+    "timezone": "Indian/Antananarivo"
   },
   {
     "code": "MW",
@@ -4484,7 +4616,8 @@
       "symbol": "MK",
       "usdRate": 1745.497087
     },
-    "factQuestion": "Which country contains Lake Malawi, which has more fish species than any other lake on Earth?"
+    "factQuestion": "Which country contains Lake Malawi, which has more fish species than any other lake on Earth?",
+    "timezone": "Africa/Blantyre"
   },
   {
     "code": "MY",
@@ -4518,7 +4651,8 @@
       "symbol": "RM",
       "usdRate": 4.088918
     },
-    "factQuestion": "Which country is home to the Petronas Towers, the world's tallest buildings from 1998 to 2004?"
+    "factQuestion": "Which country is home to the Petronas Towers, the world's tallest buildings from 1998 to 2004?",
+    "timezone": "Asia/Kuala_Lumpur"
   },
   {
     "code": "MV",
@@ -4549,7 +4683,8 @@
       "symbol": ".ރ",
       "usdRate": 15.448708
     },
-    "factQuestion": "Which country is the world's lowest, with a highest natural point of only about 2.4 meters above sea level?"
+    "factQuestion": "Which country is the world's lowest, with a highest natural point of only about 2.4 meters above sea level?",
+    "timezone": "Indian/Maldives"
   },
   {
     "code": "ML",
@@ -4587,7 +4722,8 @@
       "symbol": "Fr",
       "usdRate": 575.082836
     },
-    "factQuestion": "Which country is home to Timbuktu, once a legendary center of Islamic learning and trans-Saharan trade?"
+    "factQuestion": "Which country is home to Timbuktu, once a legendary center of Islamic learning and trans-Saharan trade?",
+    "timezone": "Africa/Bamako"
   },
   {
     "code": "MT",
@@ -4617,7 +4753,8 @@
       "symbol": "€",
       "usdRate": 0.876691
     },
-    "factQuestion": "Which country has Megalithic Temples older than Stonehenge and the Egyptian pyramids?"
+    "factQuestion": "Which country has Megalithic Temples older than Stonehenge and the Egyptian pyramids?",
+    "timezone": "Europe/Malta"
   },
   {
     "code": "MH",
@@ -4648,7 +4785,8 @@
       "symbol": "$",
       "usdRate": 1
     },
-    "factQuestion": "Which country includes Bikini Atoll, where U.S. nuclear tests forced entire communities to relocate?"
+    "factQuestion": "Which country includes Bikini Atoll, where U.S. nuclear tests forced entire communities to relocate?",
+    "timezone": "Pacific/Majuro"
   },
   {
     "code": "MQ",
@@ -4677,7 +4815,8 @@
       "symbol": "€",
       "usdRate": 0.876691
     },
-    "factQuestion": "Which country saw Mount Pelée erupt in 1902, destroying the city of Saint-Pierre in minutes?"
+    "factQuestion": "Which country saw Mount Pelée erupt in 1902, destroying the city of Saint-Pierre in minutes?",
+    "timezone": "America/Martinique"
   },
   {
     "code": "MR",
@@ -4713,7 +4852,8 @@
       "symbol": "UM",
       "usdRate": 40.059953
     },
-    "factQuestion": "Which country is home to the Richat Structure, a giant bull's-eye in the Sahara visible from space?"
+    "factQuestion": "Which country is home to the Richat Structure, a giant bull's-eye in the Sahara visible from space?",
+    "timezone": "Africa/Nouakchott"
   },
   {
     "code": "MU",
@@ -4744,7 +4884,8 @@
       "symbol": "₨",
       "usdRate": 47.220323
     },
-    "factQuestion": "Which country was the only known home of the dodo before it was hunted to extinction by the 1680s?"
+    "factQuestion": "Which country was the only known home of the dodo before it was hunted to extinction by the 1680s?",
+    "timezone": "Indian/Mauritius"
   },
   {
     "code": "YT",
@@ -4774,7 +4915,8 @@
       "symbol": "€",
       "usdRate": 0.876691
     },
-    "factQuestion": "Which country sits in the Comoros archipelago but chose to remain French?"
+    "factQuestion": "Which country sits in the Comoros archipelago but chose to remain French?",
+    "timezone": "Indian/Mayotte"
   },
   {
     "code": "MX",
@@ -4809,7 +4951,8 @@
       "symbol": "$",
       "usdRate": 17.404263
     },
-    "factQuestion": "Which country's capital was built on the ruins of Tenochtitlán, the Aztec capital that once floated on a lake?"
+    "factQuestion": "Which country's capital was built on the ruins of Tenochtitlán, the Aztec capital that once floated on a lake?",
+    "timezone": "America/Mexico_City"
   },
   {
     "code": "FM",
@@ -4839,7 +4982,8 @@
       "symbol": "$",
       "usdRate": 1
     },
-    "factQuestion": "Which country spans more than 2.7 million square kilometers of ocean but has land smaller than Rhode Island?"
+    "factQuestion": "Which country spans more than 2.7 million square kilometers of ocean but has land smaller than Rhode Island?",
+    "timezone": "Pacific/Pohnpei"
   },
   {
     "code": "MD",
@@ -4872,7 +5016,8 @@
       "symbol": "L",
       "usdRate": 17.567872
     },
-    "factQuestion": "Which country is home to Mileștii Mici, one of the world's largest wine cellars with over 200 km of tunnels?"
+    "factQuestion": "Which country is home to Mileștii Mici, one of the world's largest wine cellars with over 200 km of tunnels?",
+    "timezone": "Europe/Chisinau"
   },
   {
     "code": "MC",
@@ -4904,7 +5049,8 @@
       "symbol": "€",
       "usdRate": 0.876691
     },
-    "factQuestion": "Which country is smaller than Central Park yet has luxury casinos, a Grand Prix, and a royal palace?"
+    "factQuestion": "Which country is smaller than Central Park yet has luxury casinos, a Grand Prix, and a royal palace?",
+    "timezone": "Europe/Monaco"
   },
   {
     "code": "MN",
@@ -4937,7 +5083,8 @@
       "symbol": "₮",
       "usdRate": 3607.087356
     },
-    "factQuestion": "Which country is where Genghis Khan's empire began on the steppe?"
+    "factQuestion": "Which country is where Genghis Khan's empire began on the steppe?",
+    "timezone": "Asia/Ulaanbaatar"
   },
   {
     "code": "ME",
@@ -4973,7 +5120,8 @@
       "symbol": "€",
       "usdRate": 0.876691
     },
-    "factQuestion": "Which country's name means 'Black Mountain' in Venetian Italian, for the dark forests on Mount Lovćen?"
+    "factQuestion": "Which country's name means 'Black Mountain' in Venetian Italian, for the dark forests on Mount Lovćen?",
+    "timezone": "Europe/Podgorica"
   },
   {
     "code": "MS",
@@ -5002,7 +5150,8 @@
       "symbol": "$",
       "usdRate": 2.7
     },
-    "factQuestion": "Which country saw Soufrière Hills volcano erupt in 1995, burying its capital in ash?"
+    "factQuestion": "Which country saw Soufrière Hills volcano erupt in 1995, burying its capital in ash?",
+    "timezone": "America/Montserrat"
   },
   {
     "code": "MA",
@@ -5037,7 +5186,8 @@
       "symbol": "د.م.",
       "usdRate": 9.378687
     },
-    "factQuestion": "Which country is home to Chefchaouen, famous for buildings painted in shades of blue?"
+    "factQuestion": "Which country is home to Chefchaouen, famous for buildings painted in shades of blue?",
+    "timezone": "Africa/Casablanca"
   },
   {
     "code": "MZ",
@@ -5075,7 +5225,8 @@
       "symbol": "MT",
       "usdRate": 63.562138
     },
-    "factQuestion": "Which country's Bazaruto Archipelago protects dugongs, rare sea cows once mistaken for mermaids?"
+    "factQuestion": "Which country's Bazaruto Archipelago protects dugongs, rare sea cows once mistaken for mermaids?",
+    "timezone": "Africa/Maputo"
   },
   {
     "code": "MM",
@@ -5113,7 +5264,8 @@
       "symbol": "Ks",
       "usdRate": 2102.646218
     },
-    "factQuestion": "Which country is home to the Shwedagon Pagoda, covered in gold leaf and topped with thousands of gems?"
+    "factQuestion": "Which country is home to the Shwedagon Pagoda, covered in gold leaf and topped with thousands of gems?",
+    "timezone": "Asia/Yangon"
   },
   {
     "code": "NA",
@@ -5149,7 +5301,8 @@
       "symbol": "$",
       "usdRate": 16.461323
     },
-    "factQuestion": "Which country has a coastal desert considered the world's oldest, with dunes millions of years old?"
+    "factQuestion": "Which country has a coastal desert considered the world's oldest, with dunes millions of years old?",
+    "timezone": "Africa/Windhoek"
   },
   {
     "code": "NR",
@@ -5179,7 +5332,8 @@
       "symbol": "$",
       "usdRate": 1.428082
     },
-    "factQuestion": "Which country was once among the richest per capita thanks to phosphate mining, but deposits are nearly gone?"
+    "factQuestion": "Which country was once among the richest per capita thanks to phosphate mining, but deposits are nearly gone?",
+    "timezone": "Pacific/Nauru"
   },
   {
     "code": "NP",
@@ -5213,7 +5367,8 @@
       "symbol": "₨",
       "usdRate": 154.140313
     },
-    "factQuestion": "Which country shares Mount Everest's summit on its border with China—the world's highest point?"
+    "factQuestion": "Which country shares Mount Everest's summit on its border with China—the world's highest point?",
+    "timezone": "Asia/Kathmandu"
   },
   {
     "code": "NL",
@@ -5249,7 +5404,8 @@
       "symbol": "€",
       "usdRate": 0.876691
     },
-    "factQuestion": "Which country has about a quarter of its land below sea level, protected by dikes and pumps?"
+    "factQuestion": "Which country has about a quarter of its land below sea level, protected by dikes and pumps?",
+    "timezone": "Europe/Amsterdam"
   },
   {
     "code": "NC",
@@ -5279,7 +5435,8 @@
       "symbol": "₣",
       "usdRate": 104.619335
     },
-    "factQuestion": "Which country has the world's largest lagoon, surrounded by the second-longest barrier reef?"
+    "factQuestion": "Which country has the world's largest lagoon, surrounded by the second-longest barrier reef?",
+    "timezone": "Pacific/Noumea"
   },
   {
     "code": "NZ",
@@ -5309,7 +5466,8 @@
       "symbol": "$",
       "usdRate": 1.715316
     },
-    "factQuestion": "Which country was the first to give women the right to vote, in 1893?"
+    "factQuestion": "Which country was the first to give women the right to vote, in 1893?",
+    "timezone": "Pacific/Auckland"
   },
   {
     "code": "NI",
@@ -5342,7 +5500,8 @@
       "symbol": "C$",
       "usdRate": 36.821579
     },
-    "factQuestion": "Which country has the two largest freshwater lakes in Central America, one with freshwater sharks?"
+    "factQuestion": "Which country has the two largest freshwater lakes in Central America, one with freshwater sharks?",
+    "timezone": "America/Managua"
   },
   {
     "code": "NE",
@@ -5380,7 +5539,8 @@
       "symbol": "Fr",
       "usdRate": 575.082836
     },
-    "factQuestion": "Which country is mostly Sahara desert, with a great river arcing through its southwest corner?"
+    "factQuestion": "Which country is mostly Sahara desert, with a great river arcing through its southwest corner?",
+    "timezone": "Africa/Niamey"
   },
   {
     "code": "NG",
@@ -5415,7 +5575,8 @@
       "symbol": "₦",
       "usdRate": 1377.172985
     },
-    "factQuestion": "Which country has Africa's largest population and a film industry that produces more films than Hollywood?"
+    "factQuestion": "Which country has Africa's largest population and a film industry that produces more films than Hollywood?",
+    "timezone": "Africa/Lagos"
   },
   {
     "code": "NU",
@@ -5445,7 +5606,8 @@
       "symbol": "$",
       "usdRate": 1.715316
     },
-    "factQuestion": "Which country is one of the world's largest raised coral atolls and uses New Zealand currency?"
+    "factQuestion": "Which country is one of the world's largest raised coral atolls and uses New Zealand currency?",
+    "timezone": "Pacific/Niue"
   },
   {
     "code": "NF",
@@ -5476,7 +5638,8 @@
       "symbol": "$",
       "usdRate": 1.428082
     },
-    "factQuestion": "Which country was settled by descendants of the Bounty mutineers after they left Pitcairn?"
+    "factQuestion": "Which country was settled by descendants of the Bounty mutineers after they left Pitcairn?",
+    "timezone": "Pacific/Norfolk"
   },
   {
     "code": "KP",
@@ -5511,7 +5674,8 @@
       "name": "North Korean won",
       "symbol": "₩"
     },
-    "factQuestion": "Which country is still technically at war with its southern neighbor since a 1953 armistice never became peace?"
+    "factQuestion": "Which country is still technically at war with its southern neighbor since a 1953 armistice never became peace?",
+    "timezone": "Asia/Pyongyang"
   },
   {
     "code": "MK",
@@ -5549,7 +5713,8 @@
       "symbol": "den",
       "usdRate": 53.842037
     },
-    "factQuestion": "Which country contains Lake Ohrid, one of Europe's oldest and deepest lakes?"
+    "factQuestion": "Which country contains Lake Ohrid, one of Europe's oldest and deepest lakes?",
+    "timezone": "Europe/Skopje"
   },
   {
     "code": "MP",
@@ -5580,7 +5745,8 @@
       "symbol": "$",
       "usdRate": 1
     },
-    "factQuestion": "Which country is near the Mariana Trench, the deepest point in the ocean at almost 11 km down?"
+    "factQuestion": "Which country is near the Mariana Trench, the deepest point in the ocean at almost 11 km down?",
+    "timezone": "Pacific/Saipan"
   },
   {
     "code": "NO",
@@ -5615,7 +5781,8 @@
       "symbol": "kr",
       "usdRate": 9.633253
     },
-    "factQuestion": "Which country has fjords carved by Ice Age glaciers and a coastline that would stretch halfway around the equator?"
+    "factQuestion": "Which country has fjords carved by Ice Age glaciers and a coastline that would stretch halfway around the equator?",
+    "timezone": "Europe/Oslo"
   },
   {
     "code": "OM",
@@ -5650,7 +5817,8 @@
       "symbol": "ر.ع.",
       "usdRate": 0.384497
     },
-    "factQuestion": "Which country was transformed from an isolated sultanate into a modern state over Sultan Qaboos's 50-year reign?"
+    "factQuestion": "Which country was transformed from an isolated sultanate into a modern state over Sultan Qaboos's 50-year reign?",
+    "timezone": "Asia/Muscat"
   },
   {
     "code": "PK",
@@ -5686,7 +5854,8 @@
       "symbol": "₨",
       "usdRate": 278.003
     },
-    "factQuestion": "Which country is home to K2, the world's second-highest mountain nicknamed the Savage Mountain?"
+    "factQuestion": "Which country is home to K2, the world's second-highest mountain nicknamed the Savage Mountain?",
+    "timezone": "Asia/Karachi"
   },
   {
     "code": "PW",
@@ -5717,7 +5886,8 @@
       "symbol": "$",
       "usdRate": 1
     },
-    "factQuestion": "Which country has a Jellyfish Lake where swimmers snorkel among millions of harmless golden jellyfish?"
+    "factQuestion": "Which country has a Jellyfish Lake where swimmers snorkel among millions of harmless golden jellyfish?",
+    "timezone": "Pacific/Palau"
   },
   {
     "code": "PS",
@@ -5752,7 +5922,8 @@
       "symbol": "E£",
       "usdRate": 51.008475
     },
-    "factQuestion": "Which country is home to Jericho, one of the oldest continuously inhabited cities in the world?"
+    "factQuestion": "Which country is home to Jericho, one of the oldest continuously inhabited cities in the world?",
+    "timezone": "Asia/Hebron"
   },
   {
     "code": "PA",
@@ -5786,7 +5957,8 @@
       "symbol": "B/.",
       "usdRate": 1
     },
-    "factQuestion": "Which country has a canal that saves ships a 13,000-km journey around South America?"
+    "factQuestion": "Which country has a canal that saves ships a 13,000-km journey around South America?",
+    "timezone": "America/Panama"
   },
   {
     "code": "PG",
@@ -5819,7 +5991,8 @@
       "symbol": "K",
       "usdRate": 4.47379
     },
-    "factQuestion": "Which country has more than 800 living languages—more than any other nation?"
+    "factQuestion": "Which country has more than 800 living languages—more than any other nation?",
+    "timezone": "Pacific/Port_Moresby"
   },
   {
     "code": "PY",
@@ -5854,7 +6027,8 @@
       "symbol": "₲",
       "usdRate": 6055.67788
     },
-    "factQuestion": "Which country gives Guaraní official status alongside Spanish?"
+    "factQuestion": "Which country gives Guaraní official status alongside Spanish?",
+    "timezone": "America/Asuncion"
   },
   {
     "code": "PE",
@@ -5891,7 +6065,8 @@
       "symbol": "S/.",
       "usdRate": 3.397041
     },
-    "factQuestion": "Which country is home to Machu Picchu, a 15th-century Inca citadel perched in the Andes?"
+    "factQuestion": "Which country is home to Machu Picchu, a 15th-century Inca citadel perched in the Andes?",
+    "timezone": "America/Lima"
   },
   {
     "code": "PH",
@@ -5922,7 +6097,8 @@
       "symbol": "₱",
       "usdRate": 61.778739
     },
-    "factQuestion": "Which country has about 7,641 islands and is the world's top exporter of nurses?"
+    "factQuestion": "Which country has about 7,641 islands and is the world's top exporter of nurses?",
+    "timezone": "Asia/Manila"
   },
   {
     "code": "PN",
@@ -5952,7 +6128,8 @@
       "symbol": "$",
       "usdRate": 1.715316
     },
-    "factQuestion": "Which country was settled by mutineers from HMS Bounty, with fewer than 50 people living there today?"
+    "factQuestion": "Which country was settled by mutineers from HMS Bounty, with fewer than 50 people living there today?",
+    "timezone": "Pacific/Pitcairn"
   },
   {
     "code": "PL",
@@ -5991,7 +6168,8 @@
       "symbol": "zł",
       "usdRate": 3.794625
     },
-    "factQuestion": "Which country is home to the Wieliczka Salt Mine, with chapels and chandeliers carved from salt?"
+    "factQuestion": "Which country is home to the Wieliczka Salt Mine, with chapels and chandeliers carved from salt?",
+    "timezone": "Europe/Warsaw"
   },
   {
     "code": "PT",
@@ -6023,7 +6201,8 @@
       "symbol": "€",
       "usdRate": 0.876691
     },
-    "factQuestion": "Which country's explorers opened sea routes to India, Brazil, and Japan, shaping the first global age of trade?"
+    "factQuestion": "Which country's explorers opened sea routes to India, Brazil, and Japan, shaping the first global age of trade?",
+    "timezone": "Europe/Lisbon"
   },
   {
     "code": "PR",
@@ -6053,7 +6232,8 @@
       "symbol": "$",
       "usdRate": 1
     },
-    "factQuestion": "Which country has bioluminescent bays that glow blue at night when organisms are disturbed in the water?"
+    "factQuestion": "Which country has bioluminescent bays that glow blue at night when organisms are disturbed in the water?",
+    "timezone": "America/Puerto_Rico"
   },
   {
     "code": "QA",
@@ -6086,7 +6266,8 @@
       "symbol": "ر.ق",
       "usdRate": 3.64
     },
-    "factQuestion": "Which country hosted a FIFA World Cup where every stadium was within about an hour's drive of each other?"
+    "factQuestion": "Which country hosted a FIFA World Cup where every stadium was within about an hour's drive of each other?",
+    "timezone": "Asia/Qatar"
   },
   {
     "code": "RE",
@@ -6117,7 +6298,8 @@
       "symbol": "€",
       "usdRate": 0.876691
     },
-    "factQuestion": "Which country is home to Piton de la Fournaise, one of the world's most active volcanoes?"
+    "factQuestion": "Which country is home to Piton de la Fournaise, one of the world's most active volcanoes?",
+    "timezone": "Indian/Reunion"
   },
   {
     "code": "RO",
@@ -6153,7 +6335,8 @@
       "symbol": "lei",
       "usdRate": 4.588323
     },
-    "factQuestion": "Which country's Transylvania region inspired Bram Stoker's Dracula?"
+    "factQuestion": "Which country's Transylvania region inspired Bram Stoker's Dracula?",
+    "timezone": "Europe/Bucharest"
   },
   {
     "code": "RU",
@@ -6199,7 +6382,8 @@
       "symbol": "₽",
       "usdRate": 78.486585
     },
-    "factQuestion": "Which country spans 11 time zones and is the largest on Earth by area?"
+    "factQuestion": "Which country spans 11 time zones and is the largest on Earth by area?",
+    "timezone": "Europe/Moscow"
   },
   {
     "code": "RW",
@@ -6234,7 +6418,8 @@
       "symbol": "Fr",
       "usdRate": 1471.350212
     },
-    "factQuestion": "Which country banned plastic bags nationwide in 2008 and holds a monthly cleanup called Umuganda?"
+    "factQuestion": "Which country banned plastic bags nationwide in 2008 and holds a monthly cleanup called Umuganda?",
+    "timezone": "Africa/Kigali"
   },
   {
     "code": "BL",
@@ -6265,7 +6450,8 @@
       "symbol": "€",
       "usdRate": 0.876691
     },
-    "factQuestion": "Which country is a glamorous Caribbean island popular with yachts and celebrities?"
+    "factQuestion": "Which country is a glamorous Caribbean island popular with yachts and celebrities?",
+    "timezone": "America/St_Barthelemy"
   },
   {
     "code": "SH",
@@ -6294,7 +6480,8 @@
       "symbol": "£",
       "usdRate": 0.747063
     },
-    "factQuestion": "Which country was where Napoleon was exiled after Waterloo?"
+    "factQuestion": "Which country was where Napoleon was exiled after Waterloo?",
+    "timezone": "Atlantic/St_Helena"
   },
   {
     "code": "KN",
@@ -6324,7 +6511,8 @@
       "symbol": "$",
       "usdRate": 2.7
     },
-    "factQuestion": "Which country is the smallest sovereign nation in the Western Hemisphere by area and population?"
+    "factQuestion": "Which country is the smallest sovereign nation in the Western Hemisphere by area and population?",
+    "timezone": "America/St_Kitts"
   },
   {
     "code": "LC",
@@ -6353,7 +6541,8 @@
       "symbol": "$",
       "usdRate": 2.7
     },
-    "factQuestion": "Which country has twin Pitons—volcanic spires rising from the sea—as a UNESCO World Heritage Site?"
+    "factQuestion": "Which country has twin Pitons—volcanic spires rising from the sea—as a UNESCO World Heritage Site?",
+    "timezone": "America/St_Lucia"
   },
   {
     "code": "MF",
@@ -6385,7 +6574,8 @@
       "symbol": "€",
       "usdRate": 0.876691
     },
-    "factQuestion": "Which country is split between France and the Netherlands—the smallest landmass shared by two nations?"
+    "factQuestion": "Which country is split between France and the Netherlands—the smallest landmass shared by two nations?",
+    "timezone": "America/Marigot"
   },
   {
     "code": "PM",
@@ -6415,7 +6605,8 @@
       "symbol": "€",
       "usdRate": 0.876691
     },
-    "factQuestion": "Which country has French islands off Canada's coast where residents use the euro 25 km from Newfoundland?"
+    "factQuestion": "Which country has French islands off Canada's coast where residents use the euro 25 km from Newfoundland?",
+    "timezone": "America/Miquelon"
   },
   {
     "code": "VC",
@@ -6444,7 +6635,8 @@
       "symbol": "$",
       "usdRate": 2.7
     },
-    "factQuestion": "Which country saw La Soufrière volcano erupt in 2021, covering much of the island in ash?"
+    "factQuestion": "Which country saw La Soufrière volcano erupt in 2021, covering much of the island in ash?",
+    "timezone": "America/St_Vincent"
   },
   {
     "code": "WS",
@@ -6475,7 +6667,8 @@
       "symbol": "T",
       "usdRate": 2.706612
     },
-    "factQuestion": "Which country skipped December 30, 2011 entirely when it moved across the International Date Line?"
+    "factQuestion": "Which country skipped December 30, 2011 entirely when it moved across the International Date Line?",
+    "timezone": "Pacific/Apia"
   },
   {
     "code": "SM",
@@ -6507,7 +6700,8 @@
       "symbol": "€",
       "usdRate": 0.876691
     },
-    "factQuestion": "Which country claims to be the world's oldest republic, founded in 301 AD on Mount Titano?"
+    "factQuestion": "Which country claims to be the world's oldest republic, founded in 301 AD on Mount Titano?",
+    "timezone": "Europe/San_Marino"
   },
   {
     "code": "ST",
@@ -6538,7 +6732,8 @@
       "symbol": "Db",
       "usdRate": 21.479349
     },
-    "factQuestion": "Which country's cocoa plantations once made it a major chocolate supplier to Europe?"
+    "factQuestion": "Which country's cocoa plantations once made it a major chocolate supplier to Europe?",
+    "timezone": "Africa/Sao_Tome"
   },
   {
     "code": "SA",
@@ -6577,7 +6772,8 @@
       "symbol": "ر.س",
       "usdRate": 3.75
     },
-    "factQuestion": "Which country has no permanent rivers and is mostly desert, including the vast Empty Quarter?"
+    "factQuestion": "Which country has no permanent rivers and is mostly desert, including the vast Empty Quarter?",
+    "timezone": "Asia/Riyadh"
   },
   {
     "code": "SN",
@@ -6614,7 +6810,8 @@
       "symbol": "Fr",
       "usdRate": 575.082836
     },
-    "factQuestion": "Which country has Lake Retba, bright pink from salt-loving algae and harvested for salt?"
+    "factQuestion": "Which country has Lake Retba, bright pink from salt-loving algae and harvested for salt?",
+    "timezone": "Africa/Dakar"
   },
   {
     "code": "RS",
@@ -6654,7 +6851,8 @@
       "symbol": "дин.",
       "usdRate": 102.780119
     },
-    "factQuestion": "Which country sits at a crossroads of empires, with Belgrade among Europe's oldest continuously inhabited cities?"
+    "factQuestion": "Which country sits at a crossroads of empires, with Belgrade among Europe's oldest continuously inhabited cities?",
+    "timezone": "Europe/Belgrade"
   },
   {
     "code": "SC",
@@ -6685,7 +6883,8 @@
       "symbol": "₨",
       "usdRate": 14.000401
     },
-    "factQuestion": "Which country preserves the coco de mer in Vallée de Mai—a palm with the world's heaviest seed?"
+    "factQuestion": "Which country preserves the coco de mer in Vallée de Mai—a palm with the world's heaviest seed?",
+    "timezone": "Indian/Mahe"
   },
   {
     "code": "SL",
@@ -6718,7 +6917,8 @@
       "symbol": "Le",
       "usdRate": 24.357914
     },
-    "factQuestion": "Which country's name means 'lion mountains' in Portuguese, though lions no longer live there?"
+    "factQuestion": "Which country's name means 'lion mountains' in Portuguese, though lions no longer live there?",
+    "timezone": "Africa/Freetown"
   },
   {
     "code": "SG",
@@ -6749,7 +6949,8 @@
       "symbol": "$",
       "usdRate": 1.291588
     },
-    "factQuestion": "Which country transformed from a fishing village to a global financial hub in a single generation?"
+    "factQuestion": "Which country transformed from a fishing village to a global financial hub in a single generation?",
+    "timezone": "Asia/Singapore"
   },
   {
     "code": "SX",
@@ -6781,7 +6982,8 @@
       "symbol": "ƒ",
       "usdRate": 1.79
     },
-    "factQuestion": "Which country has Maho Beach, where airliners pass just meters overhead on approach to the runway?"
+    "factQuestion": "Which country has Maho Beach, where airliners pass just meters overhead on approach to the runway?",
+    "timezone": "America/Anguilla"
   },
   {
     "code": "SK",
@@ -6818,7 +7020,8 @@
       "symbol": "€",
       "usdRate": 0.876691
     },
-    "factQuestion": "Which country has more castles and châteaux per capita than almost anywhere else in Europe?"
+    "factQuestion": "Which country has more castles and châteaux per capita than almost anywhere else in Europe?",
+    "timezone": "Europe/Bratislava"
   },
   {
     "code": "SI",
@@ -6854,7 +7057,8 @@
       "symbol": "€",
       "usdRate": 0.876691
     },
-    "factQuestion": "Which country is home to Postojna Cave and the olm, a blind salamander called the 'human fish'?"
+    "factQuestion": "Which country is home to Postojna Cave and the olm, a blind salamander called the 'human fish'?",
+    "timezone": "Europe/Ljubljana"
   },
   {
     "code": "SB",
@@ -6883,7 +7087,8 @@
       "symbol": "$",
       "usdRate": 7.96279
     },
-    "factQuestion": "Which country's residents fought alongside U.S. Marines in World War II's Guadalcanal campaign?"
+    "factQuestion": "Which country's residents fought alongside U.S. Marines in World War II's Guadalcanal campaign?",
+    "timezone": "Pacific/Guadalcanal"
   },
   {
     "code": "SO",
@@ -6918,7 +7123,8 @@
       "symbol": "Sh",
       "usdRate": 571.930366
     },
-    "factQuestion": "Which country has the longest coastline on mainland Africa?"
+    "factQuestion": "Which country has the longest coastline on mainland Africa?",
+    "timezone": "Africa/Mogadishu"
   },
   {
     "code": "ZA",
@@ -6956,7 +7162,8 @@
       "symbol": "R",
       "usdRate": 16.461425
     },
-    "factQuestion": "Which country has three capital cities, each hosting a different branch of government?"
+    "factQuestion": "Which country has three capital cities, each hosting a different branch of government?",
+    "timezone": "Africa/Johannesburg"
   },
   {
     "code": "GS",
@@ -6986,7 +7193,8 @@
       "symbol": "£",
       "usdRate": 0.747079
     },
-    "factQuestion": "Which country is where explorer Ernest Shackleton is buried at Grytviken whaling station?"
+    "factQuestion": "Which country is where explorer Ernest Shackleton is buried at Grytviken whaling station?",
+    "timezone": "Atlantic/South_Georgia"
   },
   {
     "code": "KR",
@@ -7019,7 +7227,8 @@
       "symbol": "₩",
       "usdRate": 1480.020746
     },
-    "factQuestion": "Which country scientifically designed the Hangul alphabet in 1443 so anyone could learn to read?"
+    "factQuestion": "Which country scientifically designed the Hangul alphabet in 1443 so anyone could learn to read?",
+    "timezone": "Asia/Seoul"
   },
   {
     "code": "SS",
@@ -7056,7 +7265,8 @@
       "symbol": "£",
       "usdRate": 4850.71167
     },
-    "factQuestion": "Which country is the world's newest widely recognized nation, gaining independence in 2011?"
+    "factQuestion": "Which country is the world's newest widely recognized nation, gaining independence in 2011?",
+    "timezone": "Africa/Juba"
   },
   {
     "code": "ES",
@@ -7093,7 +7303,8 @@
       "symbol": "€",
       "usdRate": 0.876691
     },
-    "factQuestion": "Which country is home to the Sagrada Família in Barcelona, under construction since 1882?"
+    "factQuestion": "Which country is home to the Sagrada Família in Barcelona, under construction since 1882?",
+    "timezone": "Europe/Madrid"
   },
   {
     "code": "LK",
@@ -7126,7 +7337,8 @@
       "symbol": "Rs රු",
       "usdRate": 336.190656
     },
-    "factQuestion": "Which country produces distinctive highland tea from plantations and was once known by a colonial-era name?"
+    "factQuestion": "Which country produces distinctive highland tea from plantations and was once known by a colonial-era name?",
+    "timezone": "Asia/Colombo"
   },
   {
     "code": "SD",
@@ -7165,7 +7377,8 @@
       "symbol": "PT",
       "usdRate": 449.443084
     },
-    "factQuestion": "Which country has more pyramids than Egypt, left by ancient Nubian kingdoms along the Nile?"
+    "factQuestion": "Which country has more pyramids than Egypt, left by ancient Nubian kingdoms along the Nile?",
+    "timezone": "Africa/Khartoum"
   },
   {
     "code": "SR",
@@ -7199,7 +7412,8 @@
       "symbol": "$",
       "usdRate": 37.751053
     },
-    "factQuestion": "Which country is the smallest independent nation in South America and one of the most forested?"
+    "factQuestion": "Which country is the smallest independent nation in South America and one of the most forested?",
+    "timezone": "America/Paramaribo"
   },
   {
     "code": "SJ",
@@ -7230,7 +7444,8 @@
       "symbol": "kr",
       "usdRate": 9.633253
     },
-    "factQuestion": "Which country stores backup copies of crop seeds from around the world in an Arctic Global Seed Vault?"
+    "factQuestion": "Which country stores backup copies of crop seeds from around the world in an Arctic Global Seed Vault?",
+    "timezone": "Arctic/Longyearbyen"
   },
   {
     "code": "SE",
@@ -7264,7 +7479,8 @@
       "symbol": "kr",
       "usdRate": 9.699263
     },
-    "factQuestion": "Which country awards Nobel Prizes each year in Stockholm—except Peace, given in Oslo?"
+    "factQuestion": "Which country awards Nobel Prizes each year in Stockholm—except Peace, given in Oslo?",
+    "timezone": "Europe/Stockholm"
   },
   {
     "code": "CH",
@@ -7301,7 +7517,8 @@
       "symbol": "Fr.",
       "usdRate": 0.812218
     },
-    "factQuestion": "Which country has four official languages and has not fought a foreign war since 1815?"
+    "factQuestion": "Which country has four official languages and has not fought a foreign war since 1815?",
+    "timezone": "Europe/Zurich"
   },
   {
     "code": "SY",
@@ -7338,7 +7555,8 @@
       "symbol": "£",
       "usdRate": 121.76991
     },
-    "factQuestion": "Which country is home to Damascus, one of the oldest continuously inhabited cities in the world?"
+    "factQuestion": "Which country is home to Damascus, one of the oldest continuously inhabited cities in the world?",
+    "timezone": "Asia/Damascus"
   },
   {
     "code": "TW",
@@ -7369,7 +7587,8 @@
       "symbol": "$",
       "usdRate": 32.34328
     },
-    "factQuestion": "Which country is home to Taipei 101, the world's tallest building from 2004 to 2010?"
+    "factQuestion": "Which country is home to Taipei 101, the world's tallest building from 2004 to 2010?",
+    "timezone": "Asia/Taipei"
   },
   {
     "code": "TJ",
@@ -7405,7 +7624,8 @@
       "symbol": "ЅМ",
       "usdRate": 9.238437
     },
-    "factQuestion": "Which country is over 90% mountainous, with the Pamir range nicknamed the 'Roof of the World'?"
+    "factQuestion": "Which country is over 90% mountainous, with the Pamir range nicknamed the 'Roof of the World'?",
+    "timezone": "Asia/Dushanbe"
   },
   {
     "code": "TZ",
@@ -7444,7 +7664,8 @@
       "symbol": "Sh",
       "usdRate": 2628.102311
     },
-    "factQuestion": "Which country is home to the Serengeti, hosting the largest terrestrial mammal migration on Earth?"
+    "factQuestion": "Which country is home to the Serengeti, hosting the largest terrestrial mammal migration on Earth?",
+    "timezone": "Africa/Dar_es_Salaam"
   },
   {
     "code": "TH",
@@ -7480,7 +7701,8 @@
       "symbol": "฿",
       "usdRate": 33.69783
     },
-    "factQuestion": "Which country is the only Southeast Asian nation never colonized by a European power?"
+    "factQuestion": "Which country is the only Southeast Asian nation never colonized by a European power?",
+    "timezone": "Asia/Bangkok"
   },
   {
     "code": "TL",
@@ -7513,7 +7735,8 @@
       "symbol": "$",
       "usdRate": 1
     },
-    "factQuestion": "Which country is one of the world's youngest, gaining full independence in 2002?"
+    "factQuestion": "Which country is one of the world's youngest, gaining full independence in 2002?",
+    "timezone": "Asia/Dili"
   },
   {
     "code": "TG",
@@ -7547,7 +7770,8 @@
       "symbol": "Fr",
       "usdRate": 575.082836
     },
-    "factQuestion": "Which country is one of the world's top producers of phosphates used in fertilizer?"
+    "factQuestion": "Which country is one of the world's top producers of phosphates used in fertilizer?",
+    "timezone": "Africa/Lome"
   },
   {
     "code": "TK",
@@ -7576,7 +7800,8 @@
       "symbol": "$",
       "usdRate": 1.715316
     },
-    "factQuestion": "Which country was among the first to produce more than 100% of its electricity from solar power?"
+    "factQuestion": "Which country was among the first to produce more than 100% of its electricity from solar power?",
+    "timezone": "Pacific/Fakaofo"
   },
   {
     "code": "TO",
@@ -7606,7 +7831,8 @@
       "symbol": "T$",
       "usdRate": 2.38493
     },
-    "factQuestion": "Which country is the only Pacific nation never fully colonized, becoming a constitutional monarchy in 1875?"
+    "factQuestion": "Which country is the only Pacific nation never fully colonized, becoming a constitutional monarchy in 1875?",
+    "timezone": "Pacific/Tongatapu"
   },
   {
     "code": "TT",
@@ -7636,7 +7862,8 @@
       "symbol": "$",
       "usdRate": 6.768211
     },
-    "factQuestion": "Which country invented the steelpan, the only acoustic instrument created in the 20th century?"
+    "factQuestion": "Which country invented the steelpan, the only acoustic instrument created in the 20th century?",
+    "timezone": "America/Port_of_Spain"
   },
   {
     "code": "TN",
@@ -7670,7 +7897,8 @@
       "symbol": "د.ت",
       "usdRate": 2.947032
     },
-    "factQuestion": "Which country was home to ancient Carthage, which once rivaled Rome?"
+    "factQuestion": "Which country was home to ancient Carthage, which once rivaled Rome?",
+    "timezone": "Africa/Tunis"
   },
   {
     "code": "TR",
@@ -7711,7 +7939,8 @@
       "symbol": "₺",
       "usdRate": 47.203836
     },
-    "factQuestion": "Which country is home to Istanbul, the only major city spanning two continents?"
+    "factQuestion": "Which country is home to Istanbul, the only major city spanning two continents?",
+    "timezone": "Europe/Istanbul"
   },
   {
     "code": "TM",
@@ -7746,7 +7975,8 @@
       "symbol": "m",
       "usdRate": 3.499985
     },
-    "factQuestion": "Which country has the Darvaza gas crater, burning continuously in the desert since 1971?"
+    "factQuestion": "Which country has the Darvaza gas crater, burning continuously in the desert since 1971?",
+    "timezone": "Asia/Ashgabat"
   },
   {
     "code": "TC",
@@ -7775,7 +8005,8 @@
       "symbol": "$",
       "usdRate": 1
     },
-    "factQuestion": "Which country has some of the clearest turquoise water in the Caribbean and a thriving conch fishery?"
+    "factQuestion": "Which country has some of the clearest turquoise water in the Caribbean and a thriving conch fishery?",
+    "timezone": "America/Grand_Turk"
   },
   {
     "code": "TV",
@@ -7804,7 +8035,8 @@
       "symbol": "$",
       "usdRate": 1.428082
     },
-    "factQuestion": "Which country is among the world's smallest and most low-lying, with rising seas threatening its existence?"
+    "factQuestion": "Which country is among the world's smallest and most low-lying, with rising seas threatening its existence?",
+    "timezone": "Pacific/Funafuti"
   },
   {
     "code": "UG",
@@ -7840,7 +8072,8 @@
       "symbol": "Sh",
       "usdRate": 3692.47881
     },
-    "factQuestion": "Which country is home to about half the world's wild mountain gorilla population?"
+    "factQuestion": "Which country is home to about half the world's wild mountain gorilla population?",
+    "timezone": "Africa/Kampala"
   },
   {
     "code": "UA",
@@ -7878,7 +8111,8 @@
       "symbol": "₴",
       "usdRate": 44.775914
     },
-    "factQuestion": "Which country is one of the world's largest grain exporters, called the 'breadbasket of Europe'?"
+    "factQuestion": "Which country is one of the world's largest grain exporters, called the 'breadbasket of Europe'?",
+    "timezone": "Europe/Kyiv"
   },
   {
     "code": "AE",
@@ -7913,7 +8147,8 @@
       "symbol": "د.إ",
       "usdRate": 3.6725
     },
-    "factQuestion": "Which country is home to the Burj Khalifa, the world's tallest building at 828 meters?"
+    "factQuestion": "Which country is home to the Burj Khalifa, the world's tallest building at 828 meters?",
+    "timezone": "Asia/Dubai"
   },
   {
     "code": "GB",
@@ -7950,7 +8185,8 @@
       "symbol": "£",
       "usdRate": 0.747063
     },
-    "factQuestion": "Which country is made up of four countries—England, Scotland, Wales, and Northern Ireland?"
+    "factQuestion": "Which country is made up of four countries—England, Scotland, Wales, and Northern Ireland?",
+    "timezone": "Europe/London"
   },
   {
     "code": "US",
@@ -7987,7 +8223,8 @@
       "symbol": "$",
       "usdRate": 1
     },
-    "factQuestion": "Which country has the world's largest economy and is the third most populous?"
+    "factQuestion": "Which country has the world's largest economy and is the third most populous?",
+    "timezone": "America/New_York"
   },
   {
     "code": "UM",
@@ -8016,7 +8253,8 @@
       "symbol": "$",
       "usdRate": 1
     },
-    "factQuestion": "Which country includes Midway Atoll, site of a pivotal 1942 naval battle in World War II?"
+    "factQuestion": "Which country includes Midway Atoll, site of a pivotal 1942 naval battle in World War II?",
+    "timezone": "Pacific/Wake"
   },
   {
     "code": "VI",
@@ -8046,7 +8284,8 @@
       "symbol": "$",
       "usdRate": 1
     },
-    "factQuestion": "Which country was purchased from Denmark in 1917 for $25 million in gold?"
+    "factQuestion": "Which country was purchased from Denmark in 1917 for $25 million in gold?",
+    "timezone": "America/St_Thomas"
   },
   {
     "code": "UY",
@@ -8079,7 +8318,8 @@
       "symbol": "$",
       "usdRate": 40.270807
     },
-    "factQuestion": "Which country was the first to legalize recreational cannabis nationwide, in 2013?"
+    "factQuestion": "Which country was the first to legalize recreational cannabis nationwide, in 2013?",
+    "timezone": "America/Montevideo"
   },
   {
     "code": "UZ",
@@ -8116,7 +8356,8 @@
       "symbol": "so'm",
       "usdRate": 11930.641883
     },
-    "factQuestion": "Which country is home to the Registan in Samarkand, a center of the Silk Road trade route?"
+    "factQuestion": "Which country is home to the Registan in Samarkand, a center of the Silk Road trade route?",
+    "timezone": "Asia/Tashkent"
   },
   {
     "code": "VU",
@@ -8146,7 +8387,8 @@
       "symbol": "Vt",
       "usdRate": 118.972771
     },
-    "factQuestion": "Which country's land divers on Pentecost Island inspired the invention of bungee jumping?"
+    "factQuestion": "Which country's land divers on Pentecost Island inspired the invention of bungee jumping?",
+    "timezone": "Pacific/Efate"
   },
   {
     "code": "VA",
@@ -8180,7 +8422,8 @@
       "symbol": "€",
       "usdRate": 0.876691
     },
-    "factQuestion": "Which country is the world's smallest independent state, about 44 hectares enclosed within Rome?"
+    "factQuestion": "Which country is the world's smallest independent state, about 44 hectares enclosed within Rome?",
+    "timezone": "Europe/Vatican"
   },
   {
     "code": "VE",
@@ -8214,7 +8457,8 @@
       "symbol": "Bs.S.",
       "usdRate": 737.2321
     },
-    "factQuestion": "Which country is home to Angel Falls, the world's highest uninterrupted waterfall?"
+    "factQuestion": "Which country is home to Angel Falls, the world's highest uninterrupted waterfall?",
+    "timezone": "America/Caracas"
   },
   {
     "code": "VN",
@@ -8250,7 +8494,8 @@
       "symbol": "₫",
       "usdRate": 26238.632049
     },
-    "factQuestion": "Which country is home to Ha Long Bay, with thousands of limestone karsts rising from emerald water?"
+    "factQuestion": "Which country is home to Ha Long Bay, with thousands of limestone karsts rising from emerald water?",
+    "timezone": "Asia/Ho_Chi_Minh"
   },
   {
     "code": "WF",
@@ -8281,7 +8526,8 @@
       "symbol": "₣",
       "usdRate": 104.619335
     },
-    "factQuestion": "Which country is one of the last French territories where traditional kings still hold official authority?"
+    "factQuestion": "Which country is one of the last French territories where traditional kings still hold official authority?",
+    "timezone": "Pacific/Wallis"
   },
   {
     "code": "EH",
@@ -8316,7 +8562,8 @@
       "symbol": "دج",
       "usdRate": 133.229912
     },
-    "factQuestion": "Which country is one of the most sparsely populated places on Earth, mostly desert with disputed status?"
+    "factQuestion": "Which country is one of the most sparsely populated places on Earth, mostly desert with disputed status?",
+    "timezone": "Africa/El_Aaiun"
   },
   {
     "code": "YE",
@@ -8350,7 +8597,8 @@
       "symbol": "﷼",
       "usdRate": 238.142523
     },
-    "factQuestion": "Which country is home to the Old City of Sana'a, with multi-story tower houses decorated with white gypsum?"
+    "factQuestion": "Which country is home to the Old City of Sana'a, with multi-story tower houses decorated with white gypsum?",
+    "timezone": "Asia/Aden"
   },
   {
     "code": "ZM",
@@ -8389,7 +8637,8 @@
       "symbol": "ZK",
       "usdRate": 18.372644
     },
-    "factQuestion": "Which country is home to Victoria Falls, locally called Mosi-oa-Tunya, 'the smoke that thunders'?"
+    "factQuestion": "Which country is home to Victoria Falls, locally called Mosi-oa-Tunya, 'the smoke that thunders'?",
+    "timezone": "Africa/Lusaka"
   },
   {
     "code": "ZW",
@@ -8424,6 +8673,7 @@
       "symbol": "$",
       "usdRate": 1
     },
-    "factQuestion": "Which country is home to medieval stone ruins that were the capital of a trading empire exporting gold?"
+    "factQuestion": "Which country is home to medieval stone ruins that were the capital of a trading empire exporting gold?",
+    "timezone": "Africa/Harare"
   }
 ]

@@ -143,7 +143,7 @@ function InlineLearnCard({
   return (
     <div
       className={cn(
-        "animate-learn-card-pop-in flex min-h-full w-full flex-col rounded-2xl border-2 bg-white shadow-md dark:bg-slate-900 sm:min-h-0 sm:block",
+        "animate-learn-card-pop-in flex min-h-0 w-full flex-col overflow-hidden rounded-2xl border-2 bg-white shadow-md dark:bg-slate-900",
         wasCorrect ? "border-emerald-400 dark:border-emerald-600" : "border-rose-400 dark:border-rose-600",
       )}
     >
@@ -211,10 +211,10 @@ function InlineLearnCard({
         </dl>
       </div>
 
-      <div className="hidden flex-col gap-3 p-4 sm:flex lg:px-6 lg:py-4">
+      <div className="hidden shrink-0 flex-col gap-3 p-4 sm:flex lg:px-6 lg:py-4">
         <div
           className={cn(
-            "grid gap-4",
+            "grid items-start gap-4",
             country.hasFlag ? "grid-cols-[4.5rem_minmax(0,1fr)] lg:grid-cols-[5rem_minmax(0,1fr)]" : "grid-cols-1",
           )}
         >
@@ -278,7 +278,7 @@ function InlineLearnCard({
         />
       </div>
 
-      <p className="mt-auto shrink-0 border-t border-slate-100 px-4 py-2.5 text-center text-xs font-medium text-slate-400 dark:border-slate-800 dark:text-slate-500 sm:mt-0 sm:px-6 sm:py-2">
+      <p className="shrink-0 border-t border-slate-100 px-4 py-2.5 text-center text-xs font-medium text-slate-400 dark:border-slate-800 dark:text-slate-500 sm:px-6 sm:py-2">
         Tap anywhere to continue
       </p>
     </div>

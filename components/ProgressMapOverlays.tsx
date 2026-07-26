@@ -16,6 +16,8 @@ type ProgressMapOverlayProps = {
 type ProgressMapContainerProps = ProgressMapOverlayProps & {
   containerRef: RefObject<HTMLDivElement | null>;
   className?: string;
+  /** Class for the outer flex wrapper (e.g. to absolutely fill a section). */
+  wrapperClassName?: string;
   inlinePanelClassName?: string;
   children: ReactNode;
 };
@@ -38,6 +40,7 @@ function ProgressMapHoverLabel({ hoverLabel }: { hoverLabel: string | null }) {
 export function ProgressMapContainer({
   containerRef,
   className,
+  wrapperClassName,
   hoverLabel,
   selectedCode,
   profile,
@@ -47,7 +50,7 @@ export function ProgressMapContainer({
   children,
 }: ProgressMapContainerProps) {
   return (
-    <div className="flex flex-col">
+    <div className={cn("flex flex-col", wrapperClassName)}>
       <div ref={containerRef} className={className}>
         {children}
         <ProgressMapHoverLabel hoverLabel={hoverLabel} />

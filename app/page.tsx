@@ -32,7 +32,7 @@ export default function HomePage() {
     : false;
 
   return (
-    <>
+    <div className="flex min-h-0 flex-1 flex-col">
       <GlobeBackground profile={profile} handleRef={globeHandleRef} />
       <HomePlayHero
         profile={profile}
@@ -46,6 +46,6 @@ export default function HomePage() {
         globeHandleRef={globeHandleRef}
         heroRef={heroRef}
       />
-    </>
+    </div>
   );
 }

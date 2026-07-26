@@ -45,16 +45,19 @@ const CROP_OPTIONS = {
     aspectRatio: 2.2,
     paddingRatio: 0.35,
     useFocusBounds: true,
+    completeSurroundings: true,
   },
   learn: {
     aspectRatio: 2.2,
     paddingRatio: 0.45,
     useFocusBounds: true,
+    completeSurroundings: true,
   },
   hero: {
     aspectRatio: 1.6,
     paddingRatio: 0.4,
     useFocusBounds: true,
+    completeSurroundings: true,
   },
 } as const;
 

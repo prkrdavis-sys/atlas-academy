@@ -3,11 +3,16 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { GlobeUsModeToggle } from "@/components/GlobeUsModeToggle";
 import { useProfiles } from "@/components/ProfileProvider";
 import { SoundToggle } from "@/components/SoundToggle";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { cn } from "@/lib/utils";
 
+/**
+ * The "main menu": the header profile dropdown that holds app-wide toggles
+ * (appearance, sound, globe rendering) alongside profile switching.
+ */
 export function ProfileSwitcher({ compact = false }: { compact?: boolean }) {
   const pathname = usePathname();
   const { profiles, activeProfile, switchProfile, hydrated } = useProfiles();
@@ -132,6 +137,7 @@ export function ProfileSwitcher({ compact = false }: { compact?: boolean }) {
           <div className="border-b border-slate-100 dark:border-slate-800">
             <ThemeToggle variant="menu" />
             <SoundToggle />
+            <GlobeUsModeToggle />
           </div>
 
           <div className="p-2">

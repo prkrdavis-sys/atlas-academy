@@ -10,6 +10,7 @@
 import { existsSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { getStateFact, getStateFactQuestion } from "./place-facts";
+import { STATE_TIMEZONES } from "./timezone-data";
 
 type StateRow = [
   postal: string,
@@ -104,11 +105,17 @@ const states = STATE_ROWS.map(
     if (!hasFlag || !hasShape) {
       throw new Error(`Missing assets for ${name}: flag=${hasFlag} shape=${hasShape}`);
     }
+    const timezone = STATE_TIMEZONES[postal];
+    if (!timezone) {
+      throw new Error(`Missing timezone for ${name} (${postal})`);
+    }
+
     return {
       code,
       code3: code,
       name,
       officialName: `State of ${name}`,
+      timezone,
       capital,
       continent: region,
       subregion: division,

@@ -9,6 +9,7 @@
     "lint": "eslint",
     "refresh-data": "tsx scripts/refresh-country-data.ts",
     "enrich-currency-data": "tsx scripts/enrich-currency-data.ts",
+    "enrich-timezone-data": "tsx scripts/enrich-timezone-data.ts",
     "refresh-state-data": "tsx scripts/refresh-state-data.ts",
     "refresh-place-facts": "tsx scripts/refresh-place-facts.ts",
     "fetch-state-flags": "bash scripts/fetch-state-flags.sh",

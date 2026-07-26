@@ -714,14 +714,14 @@ export function GameBoard({
               <div
                 className={
                   question.displayType === "flags-grid"
-                    ? "mx-auto flex min-h-0 w-full max-w-2xl flex-1 flex-col overflow-y-auto sm:shrink-0"
+                    ? "mx-auto flex min-h-0 w-full max-w-2xl shrink-0 flex-col"
                     : "mx-auto flex min-h-0 w-full max-w-2xl flex-1 flex-col sm:shrink-0"
                 }
               >
                 {inlineLearnCard}
               </div>
               {question.displayType === "flags-grid" && question.optionCodes && (
-                <div className="flex min-h-0 w-full flex-1 items-center justify-center">
+                <div className="flex min-h-0 w-full min-w-0 flex-1 items-center justify-center">
                   <FlagGrid
                     codes={question.optionCodes.filter((c) => !hiddenOptions.includes(c))}
                     onSelect={(code) => handleAnswer(code, code)}

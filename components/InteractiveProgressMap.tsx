@@ -21,11 +21,17 @@ import {
   getWorldMapPathIds,
   resolvePlaceCodeFromParam,
 } from "@/lib/context-maps";
+import {
+  formatSvgViewBox,
+  getMapOverviewViewBox,
+  loadMapBoundsManifest,
+} from "@/lib/map-bounds";
 import { createInteractiveProgressPathStyleResolver, EMPTY_MAP_PATH_ID_SET } from "@/lib/map-interaction";
 import { buildUsaProgressFillMap, buildWorldProgressFillMap } from "@/lib/map-progress";
 import { MAP_PANZOOM_OPTIONS, MAP_ZOOM_BUTTON_STEP } from "@/lib/map-panzoom";
 import type { Country, GameScope, MapProgressDifficulty, Profile } from "@/lib/types";
 import { useIsDark } from "@/lib/use-is-dark";
+import { cn } from "@/lib/utils";
 import { focusWorldMapOnPaths } from "@/lib/world-map-focus";
 
 type InteractiveProgressMapProps = {
@@ -73,6 +79,7 @@ export function InteractiveProgressMap({
   const panzoomRef = useRef<ReturnType<typeof Panzoom> | null>(null);
   const hasInitialFocusRef = useRef(false);
   const [map, setMap] = useState<ParsedContextMap | null>(null);
+  const [overviewViewBox, setOverviewViewBox] = useState<string | null>(null);
   const [panzoomReady, setPanzoomReady] = useState(false);
   const [loadFailed, setLoadFailed] = useState(false);
   const [selectedPlace, setSelectedPlace] = useState<Country | null>(null);
@@ -124,11 +131,20 @@ export function InteractiveProgressMap({
     setLoadFailed(false);
     setSelectedPlace(null);
     setHoveredPathId(null);
+    setOverviewViewBox(null);
     hasInitialFocusRef.current = false;
 
-    loadContextMapTemplate(copy.templateKey)
-      .then((loaded) => {
-        if (!cancelled) setMap(loaded);
+    Promise.all([loadContextMapTemplate(copy.templateKey), loadMapBoundsManifest()])
+      .then(([loaded, manifest]) => {
+        if (cancelled) return;
+        const template = manifest[copy.templateKey];
+        // USA artboard already frames AK/HI insets — keep it. World crops empty ocean.
+        const overview =
+          scope === "usa"
+            ? ([template.viewBox[0], template.viewBox[1], template.viewBox[2], template.viewBox[3]] as const)
+            : getMapOverviewViewBox(template, { aspectRatio: 2, paddingRatio: 0.02 });
+        setOverviewViewBox(formatSvgViewBox(overview));
+        setMap(loaded);
       })
       .catch(() => {
         if (!cancelled) setLoadFailed(true);
@@ -137,15 +153,16 @@ export function InteractiveProgressMap({
     return () => {
       cancelled = true;
     };
-  }, [copy.templateKey]);
+  }, [copy.templateKey, scope]);
 
   useEffect(() => {
     const element = mapRef.current;
-    if (!element || !map) return;
+    if (!element || !map || !overviewViewBox) return;
 
     panzoomRef.current?.destroy();
     panzoomRef.current = Panzoom(element, MAP_PANZOOM_OPTIONS);
     setPanzoomReady(true);
+    hasInitialFocusRef.current = false;
 
     const container = containerRef.current;
     const onWheel = (event: WheelEvent) => {
@@ -160,12 +177,13 @@ export function InteractiveProgressMap({
       panzoomRef.current = null;
       setPanzoomReady(false);
     };
-  }, [map, ready]);
+  }, [map, overviewViewBox, ready]);
 
   useEffect(() => {
-    if (!map || !panzoomReady || !panzoomRef.current || !containerRef.current || hasInitialFocusRef.current) {
+    if (!map || !overviewViewBox || !panzoomReady || !panzoomRef.current || !containerRef.current) {
       return;
     }
+    if (hasInitialFocusRef.current) return;
 
     const resolvedCode = resolvePlaceCodeFromParam(initialPlaceCode);
     if (!resolvedCode) return;
@@ -189,14 +207,14 @@ export function InteractiveProgressMap({
           hasInitialFocusRef.current = true;
         }
       } catch {
-        // Ignore focus failures; the map remains usable at the default view.
+        // Ignore focus failures; the map remains usable at the overview.
       }
     });
 
     return () => {
       cancelAnimationFrame(frame);
     };
-  }, [initialPlaceCode, map, panzoomReady, scope]);
+  }, [initialPlaceCode, map, overviewViewBox, panzoomReady, scope]);
 
   const handlePathClick = useCallback(
     (pathId: string) => {
@@ -238,7 +256,11 @@ export function InteractiveProgressMap({
 
       <ProgressMapContainer
         containerRef={containerRef}
-        className="relative aspect-[16/9] w-full touch-none overflow-hidden bg-gradient-to-b from-sky-50 to-white dark:from-slate-900 dark:to-slate-950 sm:aspect-[2/1]"
+        className={cn(
+          "relative w-full touch-none overflow-hidden bg-gradient-to-b from-sky-50 to-white dark:from-slate-900 dark:to-slate-950",
+          // Aspects match the overview viewBox so scale-1 fills edge-to-edge.
+          scope === "usa" ? "aspect-[10/7]" : "aspect-[2/1]",
+        )}
         hoverLabel={hoverLabel}
         selectedCode={selectedPlace?.code ?? null}
         profile={profile}
@@ -246,10 +268,11 @@ export function InteractiveProgressMap({
         scope={scope}
         inlinePanelClassName="px-4"
       >
-        {map && ready ? (
-          <div ref={mapRef} className="h-full w-full origin-center">
+        {map && overviewViewBox && ready ? (
+          <div ref={mapRef} className="absolute inset-0 h-full w-full origin-center">
             <ContextMapSvg
               map={map}
+              viewBox={overviewViewBox}
               highlightIds={EMPTY_MAP_PATH_ID_SET}
               neighborIds={EMPTY_MAP_PATH_ID_SET}
               ariaLabel={copy.ariaLabel}
