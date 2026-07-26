@@ -13,13 +13,11 @@ import {
 import {
   computeFocusedViewBox,
   loadMapBoundsManifest,
-  pathFullyInsideViewBox,
   type MapBoundsManifest,
 } from "@/lib/map-bounds";
 import {
   getMapPalette,
   getMapPathRole,
-  getSubtleNeighborMapStyle,
   parseMapViewBox,
   sortMapPathsForRender,
   type MapPathStyle,
@@ -38,21 +36,26 @@ export type ParsedContextMap = {
 const templateCache = new Map<string, ParsedContextMap>();
 const boundsCache: { data: MapBoundsManifest | null } = { data: null };
 
+/**
+ * Photo-crop framing for context maps.
+ * Learn cards use a generous regional crop so the featured place is legible
+ * and nearby countries remain visible in the frame.
+ */
 const CROP_OPTIONS = {
   compact: {
     aspectRatio: 2.2,
-    paddingRatio: 0.14,
-    minSizeRatio: 0.00005,
+    paddingRatio: 0.5,
+    minSizeRatio: 0.05,
   },
   learn: {
-    aspectRatio: 2.5,
-    paddingRatio: 0.14,
-    minSizeRatio: 0.00005,
+    aspectRatio: 2.2,
+    paddingRatio: 0.75,
+    minSizeRatio: 0.07,
   },
   hero: {
     aspectRatio: 1.6,
-    paddingRatio: 0.14,
-    minSizeRatio: 0.00005,
+    paddingRatio: 0.55,
+    minSizeRatio: 0.06,
   },
 } as const;
 
@@ -99,11 +102,25 @@ type ContextMapSvgProps = {
   isDark?: boolean;
   interactive?: boolean;
   viewBox?: string;
+  /** Scale borders with geography (better for static zoomed crops). */
+  scaleStrokesWithMap?: boolean;
   pathStyleResolver?: (pathId: string) => MapPathStyle | null;
   onPathClick?: (pathId: string) => void;
   onPathHover?: (pathId: string | null) => void;
   onBackgroundClick?: () => void;
 };
+
+function strokeWidthForViewBox(
+  baseWidth: number,
+  viewBoxWidth: number,
+  viewBoxHeight: number,
+  scaleWithMap: boolean,
+): number {
+  if (!scaleWithMap) return baseWidth;
+  const diagonal = Math.hypot(viewBoxWidth, viewBoxHeight);
+  // Keep borders readable at any zoom without hairline screen-pixel strokes.
+  return Math.max(diagonal * 0.0011 * (baseWidth / 0.35), diagonal * 0.0007);
+}
 
 export function ContextMapSvg({
   map,
@@ -114,6 +131,7 @@ export function ContextMapSvg({
   isDark = false,
   interactive = false,
   viewBox,
+  scaleStrokesWithMap = false,
   pathStyleResolver,
   onPathClick,
   onPathHover,
@@ -168,6 +186,12 @@ export function ContextMapSvg({
         const resolvedStyle = pathStyleResolver?.(path.id);
         const role = getMapPathRole(path.id, highlightIds, neighborIds);
         const style: MapPathStyle = resolvedStyle ?? palette[role];
+        const strokeWidth = strokeWidthForViewBox(
+          style.strokeWidth,
+          viewBoxWidth,
+          viewBoxHeight,
+          scaleStrokesWithMap,
+        );
 
         return (
           <path
@@ -177,8 +201,8 @@ export function ContextMapSvg({
             data-map-place={interactive ? path.id : undefined}
             fill={style.fill}
             stroke={style.stroke}
-            strokeWidth={style.strokeWidth}
-            vectorEffect="non-scaling-stroke"
+            strokeWidth={strokeWidth}
+            vectorEffect={scaleStrokesWithMap ? undefined : "non-scaling-stroke"}
             strokeLinejoin="round"
             strokeLinecap="round"
             className={
@@ -232,35 +256,8 @@ export function PlaceContextMap({
     const template = boundsManifest[templateKey];
     if (!template) return undefined;
 
-    return computeFocusedViewBox(
-      template,
-      getContextMapPathIds(country),
-      CROP_OPTIONS[variant],
-    );
+    return computeFocusedViewBox(template, getContextMapPathIds(country), CROP_OPTIONS[variant]);
   }, [boundsManifest, templateKey, country, variant]);
-
-  const renderPaths = useMemo(() => {
-    if (!map) return [];
-    let paths = visiblePaths;
-    if (variant === "learn" && focusedViewBox && boundsManifest) {
-      const template = boundsManifest[templateKey];
-      if (template) {
-        paths = paths.filter((path) =>
-          highlightIds.has(path.id) ||
-          pathFullyInsideViewBox(template, path.id, focusedViewBox),
-        );
-      }
-    }
-    return paths;
-  }, [
-    map,
-    visiblePaths,
-    variant,
-    focusedViewBox,
-    boundsManifest,
-    templateKey,
-    highlightIds,
-  ]);
 
   useEffect(() => {
     let cancelled = false;
@@ -287,7 +284,6 @@ export function PlaceContextMap({
   }
 
   const ariaLabel = getContextMapAriaLabel(country, isState);
-  const subtleNeighborStyle = getSubtleNeighborMapStyle(isDark);
 
   return (
     <div
@@ -296,7 +292,7 @@ export function PlaceContextMap({
         variant === "compact"
           ? "h-20 sm:h-24"
           : variant === "learn"
-            ? "aspect-[5/2] w-full min-h-[8.75rem] sm:aspect-[5/2] sm:min-h-[6.5rem]"
+            ? "aspect-[11/5] w-full min-h-[9rem] sm:min-h-[7rem]"
             : "aspect-[16/10] w-full",
         interactive && "touch-none",
         className,
@@ -304,15 +300,13 @@ export function PlaceContextMap({
     >
       {map && ready ? (
         <ContextMapSvg
-          map={{ ...map, paths: renderPaths }}
+          map={{ ...map, paths: visiblePaths }}
           highlightIds={highlightIds}
           neighborIds={neighborIds}
           ariaLabel={ariaLabel}
           isDark={isDark}
           viewBox={focusedViewBox}
-          pathStyleResolver={(pathId) =>
-            variant === "learn" && neighborIds.has(pathId) ? subtleNeighborStyle : null
-          }
+          scaleStrokesWithMap={variant === "learn" || variant === "hero"}
         />
       ) : loadFailed ? (
         <div className="flex h-full items-center justify-center px-4 text-center text-xs font-semibold text-slate-500 dark:text-slate-400">
