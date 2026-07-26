@@ -1,10 +1,12 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { getMillisecondsUntilDailyReset } from "@/lib/game-engine";
 import {
   createProfile,
   deleteProfile,
   loadState,
+  recordDailyLogin,
   setActiveProfile,
   upsertProfile,
 } from "@/lib/storage";
@@ -32,7 +34,11 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    setState(loadState());
+    const loaded = loadState();
+    // Hydrate from localStorage after mount (SSR renders the empty state).
+    // Opening the app counts as the day's login for the active profile.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setState(loaded.activeProfileId ? recordDailyLogin(loaded.activeProfileId).state : loaded);
     setHydrated(true);
   }, []);
 
@@ -59,6 +65,20 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     [profiles, activeProfileId],
   );
 
+  // If the app stays open across the EST day boundary, secure the new day's
+  // login as soon as it starts. Re-arms itself because recording changes
+  // lastDateKey, which re-runs this effect for the following day.
+  const lastLoginDateKey = activeProfile?.loginStreak?.lastDateKey ?? null;
+  useEffect(() => {
+    if (!hydrated || !activeProfileId) return;
+    const msUntilReset = getMillisecondsUntilDailyReset();
+    if (msUntilReset <= 0) return;
+    const timeout = window.setTimeout(() => {
+      setState(recordDailyLogin(activeProfileId).state);
+    }, msUntilReset + 1000);
+    return () => window.clearTimeout(timeout);
+  }, [hydrated, activeProfileId, lastLoginDateKey]);
+
   const value = useMemo<ProfileContextValue>(
     () => ({
       profiles,
@@ -69,12 +89,12 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
         const profile = createProfile(name, color);
         upsertProfile(profile);
         setActiveProfile(profile.id);
-        setState(loadState());
+        setState(recordDailyLogin(profile.id).state);
         return profile;
       },
       switchProfile: (id) => {
         setActiveProfile(id);
-        setState(loadState());
+        setState(recordDailyLogin(id).state);
       },
       removeProfile: (id) => {
         deleteProfile(id);

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useProfiles } from "@/components/ProfileProvider";
+import { SoundToggle } from "@/components/SoundToggle";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { cn } from "@/lib/utils";
 
@@ -130,6 +131,7 @@ export function ProfileSwitcher({ compact = false }: { compact?: boolean }) {
 
           <div className="border-b border-slate-100 dark:border-slate-800">
             <ThemeToggle variant="menu" />
+            <SoundToggle />
           </div>
 
           <div className="p-2">

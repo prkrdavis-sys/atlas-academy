@@ -539,7 +539,7 @@ const WEEKDAY_INDEX: Record<string, number> = {
   Sat: 6,
 };
 
-function getWeekdayInEastern(dateKey: string): number {
+export function getWeekdayInEastern(dateKey: string): number {
   const [year, month, day] = dateKey.split("-").map(Number);
   for (let hour = 12; hour <= 20; hour += 1) {
     const probe = new Date(Date.UTC(year, month - 1, day, hour));

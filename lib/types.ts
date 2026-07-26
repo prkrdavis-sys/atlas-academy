@@ -286,11 +286,17 @@ export type Profile = {
     roundQuestionCount: RoundQuestionSetting;
     lastSelectedMode: GameMode;
     recentModes?: GameMode[];
+    /** Sound effects on/off; defaults to on. */
+    soundEnabled?: boolean;
   };
   achievements: string[];
   countryProgress?: Record<string, { correct: number; total: number }>;
   /** Per-place category mastery for stats map progress (Normal/Hard only). */
   placeMapProgress?: Record<string, PlaceMapProgressByDifficulty>;
+  /** Daily login streak: last EST date key the app was opened and consecutive-day length. */
+  loginStreak?: { lastDateKey: string; length: number };
+  /** Recent EST date keys (YYYY-MM-DD) the app was opened; pruned to ~2 weeks for the week view. */
+  loginDates?: string[];
   /** EST date keys (YYYY-MM-DD) when the daily challenge was first played with stats */
   dailyChallengePlayedDates?: string[];
   /** EST date keys (YYYY-MM-DD) when the daily challenge was fully completed */

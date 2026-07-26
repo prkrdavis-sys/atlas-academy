@@ -26,6 +26,7 @@ import {
   recordAnswer,
   recordDailyChallengeCompletion,
 } from "@/lib/storage";
+import { playSound } from "@/lib/sound";
 import { getGlobalStreakOrZero } from "@/lib/stats-helpers";
 import {
   getMapProgressSummary,
@@ -270,6 +271,7 @@ export function GameBoard({
     setLastSelectedAnswer(answer);
     setLastSelectedCode(code ?? null);
     spawnBurst(correct);
+    playSound(correct ? "correct" : "incorrect", activeProfile);
 
     if (countStats) {
       recordAnswer(

@@ -24,7 +24,8 @@ import {
   normalizeRoundQuestionSetting,
 } from "@/lib/types";
 import { checkAchievements as evaluateAchievements, reconcileAchievements } from "@/lib/achievements";
-import { getDailyDateKey } from "@/lib/game-engine";
+import { getDailyDateKey, offsetDailyDateKey } from "@/lib/game-engine";
+import { MAX_LOGIN_DATE_HISTORY_DAYS } from "@/lib/login-streak";
 import { scopedDailyKey } from "@/lib/scope";
 import {
   createEmptyGlobalStreaksByDifficulty,
@@ -84,6 +85,7 @@ function getDefaultProfileSettings(): Profile["settings"] {
     roundQuestionCount: DEFAULT_ROUND_QUESTION_COUNT,
     lastSelectedMode: "mixed",
     recentModes: ["mixed"],
+    soundEnabled: true,
   };
 }
 
@@ -238,6 +240,9 @@ export function normalizeProfile(profile: Profile): Profile {
     includeTerritories:
       settings.includeTerritories ?? (lastTerritoryFilter?.length ?? 0) > 0,
   };
+  if (!normalized.loginDates) {
+    normalized.loginDates = [];
+  }
   if (!normalized.dailyChallengePlayedDates) {
     normalized.dailyChallengePlayedDates = [];
   }
@@ -487,6 +492,43 @@ export function recordAnswer(
 
   saveState(state);
   return { state, stats };
+}
+
+export type DailyLoginResult = {
+  state: ReturnType<typeof getDefaultState>;
+  /** True when this call secured a new day (first open of the EST day). */
+  extended: boolean;
+  /** Streak length after recording, for milestone celebrations. */
+  streakLength: number;
+};
+
+/**
+ * Records that the player opened the app today (EST). Extends the login
+ * streak when yesterday was the last recorded day, otherwise restarts it.
+ */
+export function recordDailyLogin(profileId: string): DailyLoginResult {
+  const state = loadState();
+  const profile = state.profiles.find((p) => p.id === profileId);
+  if (!profile) return { state, extended: false, streakLength: 0 };
+
+  const today = getDailyDateKey();
+  if (profile.loginStreak?.lastDateKey === today) {
+    return { state, extended: false, streakLength: profile.loginStreak.length };
+  }
+
+  const yesterday = offsetDailyDateKey(today, -1);
+  profile.loginStreak =
+    profile.loginStreak?.lastDateKey === yesterday
+      ? { lastDateKey: today, length: profile.loginStreak.length + 1 }
+      : { lastDateKey: today, length: 1 };
+
+  const cutoff = offsetDailyDateKey(today, -(MAX_LOGIN_DATE_HISTORY_DAYS - 1));
+  profile.loginDates = [...new Set([...(profile.loginDates ?? []), today])]
+    .filter((dateKey) => dateKey >= cutoff)
+    .sort();
+
+  saveState(state);
+  return { state, extended: true, streakLength: profile.loginStreak.length };
 }
 
 export function recordDailyChallengeCompletion(profileId: string, scope: GameScope = "world") {
