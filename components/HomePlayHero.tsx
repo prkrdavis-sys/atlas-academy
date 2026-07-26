@@ -10,23 +10,21 @@ import {
   pickHomeHeroTaglineExcluding,
   type HomeHeroTaglineContext,
 } from "@/lib/home-hero-tagline";
-import { ActiveGameSummary } from "@/components/ActiveGameSummary";
+import { DailyCalendarIcon } from "@/components/DailyCalendarIcon";
 import { HomeHeroTaglineContent } from "@/components/HomeHeroTaglineContent";
-import { HomeStreakHighlights } from "@/components/HomeStreakHighlights";
 import { ProfileRequiredDialog } from "@/components/ProfileRequiredDialog";
-import { RecentModeShortcuts } from "@/components/RecentModeShortcuts";
-import { resolvePlayMode } from "@/lib/game-setup";
+import { getActiveGameSummaryParts, resolvePlayMode } from "@/lib/game-setup";
 import { hasPlayedDailyToday } from "@/lib/game-engine";
-import { getStoredScope, scopedHref, scopeQuery } from "@/lib/scope";
+import { getStoredScope, scopedHref, scopeQuery, SCOPE_INFO } from "@/lib/scope";
 import { recordModeSelection, updateProfileSettings } from "@/lib/storage";
-import type { GameMode, GameScope, Profile } from "@/lib/types";
+import type { GameMode, GameScope, GlobalStreakSnapshot, Profile } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 type HomePlayHeroProps = {
   profile: Profile | null;
   scope: GameScope;
   onRefresh: () => void;
-  streak: Parameters<typeof HomeStreakHighlights>[0]["streak"];
+  streak: GlobalStreakSnapshot;
   todayBest: number;
   storedTodayBest: number;
   dailyRun: number;
@@ -52,7 +50,6 @@ export function HomePlayHero({
   const [toast, setToast] = useState<string | null>(null);
 
   const activeMode = profile?.settings.lastSelectedMode ?? "mixed";
-  const recentModes = profile?.settings.recentModes ?? [activeMode];
   const dailyPlayedToday = profile
     ? hasPlayedDailyToday(profile.dailyChallengePlayedDates, scope)
     : false;
@@ -76,6 +73,8 @@ export function HomePlayHero({
   );
 
   useEffect(() => {
+    // Tagline is randomized client-side after mount to avoid hydration mismatch.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setHeroTagline(
       taglineContext
         ? pickHomeHeroTagline(taglineContext)
@@ -93,150 +92,29 @@ export function HomePlayHero({
 
   const hideProfileDialog = useCallback(() => setShowProfileDialog(false), []);
 
-  const startPlay = useCallback(
-    (modeOverride?: GameMode) => {
-      if (!profile) {
-        setShowProfileDialog(true);
-        return;
-      }
+  const startPlay = useCallback(() => {
+    if (!profile) {
+      setShowProfileDialog(true);
+      return;
+    }
 
-      const resolved = modeOverride
-        ? { mode: modeOverride }
-        : resolvePlayMode(profile, scope);
+    const resolved = resolvePlayMode(profile, scope);
 
-      if (resolved.fallbackMessage) {
-        setToast(resolved.fallbackMessage);
-        window.setTimeout(() => setToast(null), 4000);
-      }
+    if (resolved.fallbackMessage) {
+      setToast(resolved.fallbackMessage);
+      window.setTimeout(() => setToast(null), 4000);
+    }
 
-      updateProfileSettings(profile.id, { lastSelectedMode: resolved.mode });
-      recordModeSelection(profile.id, resolved.mode);
-      onRefresh();
+    updateProfileSettings(profile.id, { lastSelectedMode: resolved.mode });
+    recordModeSelection(profile.id, resolved.mode);
+    onRefresh();
 
-      const activeScope = getStoredScope();
-      router.push(scopedHref(`/play/${resolved.mode}`, activeScope, { autostart: "1" }));
-    },
-    [profile, onRefresh, router],
-  );
-
-  const selectRecentMode = useCallback(
-    (mode: GameMode) => {
-      if (!profile) {
-        setShowProfileDialog(true);
-        return;
-      }
-      updateProfileSettings(profile.id, { lastSelectedMode: mode });
-      recordModeSelection(profile.id, mode);
-      onRefresh();
-    },
-    [profile, onRefresh],
-  );
+    const activeScope = getStoredScope();
+    router.push(scopedHref(`/play/${resolved.mode}`, activeScope, { autostart: "1" }));
+  }, [profile, scope, onRefresh, router]);
 
   const heroPanelClass =
-    "relative overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-emerald-500 via-teal-600 to-sky-700 p-5 text-white shadow-[0_16px_40px_rgb(15_118_110_/_0.22)] sm:p-10";
-
-  const headingBlock = (
-    <div
-      className={cn(profile ? "min-w-0 lg:col-start-1 lg:row-start-1" : "max-w-xl")}
-    >
-      <h1 className="font-display text-3xl font-extrabold tracking-tight sm:text-5xl">
-        {profile ? (
-          <>
-            Welcome back,{" "}
-            <span className="whitespace-nowrap">Atlas Explorer</span>!
-          </>
-        ) : (
-          "Learn world geography"
-        )}
-      </h1>
-      <button
-        type="button"
-        onClick={rerollTagline}
-        aria-label="Show another pro tip"
-        className="group/protip mt-3 flex w-full max-w-2xl cursor-pointer gap-1.5 rounded-xl border border-transparent px-2 py-1.5 text-left text-sm leading-relaxed text-emerald-50 transition-[background-color,border-color,transform] duration-150 hover:border-white/25 hover:bg-white/10 active:scale-[0.99] active:bg-white/15 sm:max-w-3xl sm:text-base lg:max-w-none"
-      >
-        <span className="shrink-0 font-semibold transition-transform duration-150 group-hover/protip:scale-105 group-active/protip:scale-95">
-          Pro tip{" "}
-          <span aria-hidden className="inline-block transition-transform duration-150 group-hover/protip:-rotate-6 group-active/protip:rotate-12">
-            💡
-          </span>{" "}
-          -
-        </span>
-        <span
-          key={heroTagline ?? "loading"}
-          className="[animation:hero-tip-in_0.2s_ease-out]"
-        >
-          {heroTagline ? (
-            <HomeHeroTaglineContent text={heroTagline} scope={scope} />
-          ) : (
-            "\u00a0"
-          )}
-        </span>
-      </button>
-    </div>
-  );
-
-  const playBlock = profile ? (
-    <div className="flex w-full flex-col items-stretch gap-4 lg:col-span-2 lg:row-start-2">
-      <div className="flex w-full flex-col gap-2">
-        <button
-          type="button"
-          onClick={() => startPlay()}
-          className="flex min-h-14 w-full items-center justify-center gap-2 rounded-[1.25rem] bg-white px-8 py-4 font-display text-lg font-extrabold text-teal-800 shadow-[0_4px_0_rgb(255_255_255_/_0.45)] transition-transform hover:scale-[1.01] active:translate-y-1 active:shadow-none sm:min-h-16 sm:text-xl"
-        >
-          <span aria-hidden>▶</span>
-          Play
-        </button>
-
-        <ActiveGameSummary
-          profile={profile}
-          mode={activeMode}
-          scope={scope}
-          onClick={() => router.push(`/play/setup${scopeQuery(getStoredScope())}`)}
-        />
-      </div>
-
-      <div className="flex w-full gap-3">
-        <Link
-          href={`/play/setup${scopeQuery(getStoredScope())}`}
-          className="flex min-h-12 flex-1 min-w-0 items-center justify-center gap-2 rounded-[1.25rem] border-2 border-white/70 bg-white/15 px-3 py-3 text-center font-display text-sm font-extrabold text-white shadow-[0_3px_0_rgb(255_255_255_/_0.2)] backdrop-blur-sm transition-transform hover:scale-[1.01] hover:border-white hover:bg-white/25 active:translate-y-0.5 active:shadow-none sm:min-h-[3.25rem] sm:gap-2.5 sm:px-4 sm:text-base"
-        >
-          <span aria-hidden className="shrink-0 text-lg">
-            ⚙️
-          </span>
-          <span className="flex min-w-0 flex-col items-start text-left leading-tight">
-            <span>Choose your Journey</span>
-            <span className="text-[0.6875rem] font-semibold text-emerald-100/85 sm:text-xs">
-              Game mode selection
-            </span>
-          </span>
-        </Link>
-
-        <Link
-          href={scopedHref("/play/daily-challenge", scope, { autostart: "1" })}
-          className="flex min-h-12 flex-1 min-w-0 items-center justify-center gap-2 rounded-[1.25rem] border-2 border-white/70 bg-white/15 px-3 py-3 text-center font-display text-sm font-extrabold text-white shadow-[0_3px_0_rgb(255_255_255_/_0.2)] backdrop-blur-sm transition-transform hover:scale-[1.01] hover:border-white hover:bg-white/25 active:translate-y-0.5 active:shadow-none sm:min-h-[3.25rem] sm:gap-2.5 sm:px-4 sm:text-base"
-          aria-label={`${dailyPlayedToday ? "Review today" : "Daily challenge"}. Daily challenge streak: ${dailyRun} ${dailyRun === 1 ? "day" : "days"}`}
-        >
-          <span aria-hidden className="shrink-0 text-lg">📅</span>
-          <span className="flex min-w-0 flex-col items-start text-left leading-tight">
-            <span>{dailyPlayedToday ? "Review today" : "Daily challenge"}</span>
-            <span className="text-[0.6875rem] font-semibold tabular-nums text-emerald-100/85 sm:text-xs">
-              <span aria-hidden>🔥</span> {dailyRun}
-            </span>
-          </span>
-        </Link>
-      </div>
-    </div>
-  ) : (
-    <div className="flex w-full flex-col items-stretch gap-4">
-      <Link
-        href="/profiles"
-        className="flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 font-display text-sm font-extrabold text-teal-800 shadow-[0_3px_0_rgb(255_255_255_/_0.45)] transition-transform hover:scale-[1.03] active:translate-y-[3px] active:shadow-none sm:text-base"
-      >
-        Create your first profile
-      </Link>
-    </div>
-  );
+    "relative overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-emerald-500 via-teal-600 to-sky-700 p-5 text-white shadow-[0_16px_40px_rgb(15_118_110_/_0.22)] sm:p-8";
 
   return (
     <>
@@ -251,70 +129,174 @@ export function HomePlayHero({
         </div>
       ) : null}
 
-      <section
-        ref={heroRef}
+      <div className={cn("space-y-4 sm:space-y-5", className)}>
+        <section ref={heroRef} className={heroPanelClass}>
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -right-8 -top-8 select-none overflow-hidden text-[8rem] opacity-15 sm:-right-10 sm:-top-14 sm:text-[11rem]"
+          >
+            🗺️
+          </div>
+
+          {profile ? (
+            <div className="relative flex flex-col gap-3 sm:gap-4">
+              <h1 className="hidden font-display text-3xl font-extrabold tracking-tight lg:block lg:text-4xl">
+                Welcome back, <span className="whitespace-nowrap">Atlas Explorer</span>!
+              </h1>
+
+              <button
+                type="button"
+                onClick={startPlay}
+                className="flex min-h-14 w-full items-center justify-center gap-2 rounded-[1.25rem] bg-white px-8 py-4 font-display text-lg font-extrabold text-teal-800 shadow-[0_4px_0_rgb(255_255_255_/_0.45)] transition-transform hover:scale-[1.01] active:translate-y-1 active:shadow-none sm:min-h-16 sm:text-xl"
+              >
+                <span aria-hidden>▶</span>
+                Play
+              </button>
+
+              <ModeLoadoutRow profile={profile} mode={activeMode} scope={scope} />
+            </div>
+          ) : (
+            <div className="relative flex max-w-xl flex-col gap-5">
+              <div>
+                <h1 className="font-display text-3xl font-extrabold tracking-tight sm:text-5xl">
+                  Learn world geography
+                </h1>
+                <p className="mt-3 text-sm leading-relaxed text-emerald-50 sm:text-base">
+                  {heroTagline ? (
+                    <HomeHeroTaglineContent text={heroTagline} scope={scope} />
+                  ) : (
+                    "\u00a0"
+                  )}
+                </p>
+              </div>
+              <Link
+                href="/profiles"
+                className="flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 font-display text-sm font-extrabold text-teal-800 shadow-[0_3px_0_rgb(255_255_255_/_0.45)] transition-transform hover:scale-[1.03] active:translate-y-[3px] active:shadow-none sm:text-base"
+              >
+                Create your first profile
+              </Link>
+            </div>
+          )}
+        </section>
+
+        {profile ? (
+          <DailyChallengeCard
+            scope={scope}
+            dailyRun={dailyRun}
+            playedToday={dailyPlayedToday}
+          />
+        ) : null}
+
+        {profile ? (
+          <button
+            type="button"
+            onClick={rerollTagline}
+            aria-label="Show another pro tip"
+            className="group/protip w-full rounded-2xl border border-slate-200 bg-white/70 px-4 py-3 text-left text-sm leading-relaxed text-slate-600 transition-colors hover:border-slate-300 hover:bg-white active:bg-slate-50 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300 dark:hover:border-slate-600 dark:hover:bg-slate-900"
+          >
+            <span className="font-bold text-slate-700 dark:text-slate-200">
+              <span
+                aria-hidden
+                className="mr-1 inline-block transition-transform duration-150 group-hover/protip:-rotate-6"
+              >
+                💡
+              </span>
+              Pro tip:
+            </span>{" "}
+            <span key={heroTagline ?? "loading"} className="[animation:hero-tip-in_0.2s_ease-out]">
+              {heroTagline ? (
+                <HomeHeroTaglineContent text={heroTagline} scope={scope} />
+              ) : (
+                "\u00a0"
+              )}
+            </span>
+          </button>
+        ) : null}
+      </div>
+    </>
+  );
+}
+
+type ModeLoadoutRowProps = {
+  profile: Profile;
+  mode: GameMode;
+  scope: GameScope;
+};
+
+/**
+ * Shows what pressing Play will start (mode, difficulty, round length) as a
+ * single settings row, styled like an editable loadout beneath the Play button.
+ */
+function ModeLoadoutRow({ profile, mode, scope }: ModeLoadoutRowProps) {
+  const parts = getActiveGameSummaryParts(profile, mode, scope);
+  const scopeInfo = SCOPE_INFO[scope];
+  const summary = [...parts, `${scopeInfo.icon} ${scopeInfo.shortLabel}`].join("  ·  ");
+
+  return (
+    <Link
+      href={`/play/setup${scopeQuery(getStoredScope())}`}
+      aria-label={`Current game: ${summary}. Change game mode and settings.`}
+      className="flex min-h-12 w-full items-center gap-3 rounded-[1.25rem] border border-white/30 bg-white/15 px-4 py-2.5 backdrop-blur-sm transition-colors hover:border-white/60 hover:bg-white/25 active:bg-white/30"
+    >
+      <span aria-hidden className="shrink-0 text-base">
+        ⚙️
+      </span>
+      <span className="min-w-0 flex-1 truncate text-sm font-semibold text-emerald-50">
+        {summary}
+      </span>
+      <span className="flex shrink-0 items-center gap-1 text-sm font-extrabold text-white">
+        Change
+        <span aria-hidden>›</span>
+      </span>
+    </Link>
+  );
+}
+
+type DailyChallengeCardProps = {
+  scope: GameScope;
+  dailyRun: number;
+  playedToday: boolean;
+};
+
+/** Daily challenge as a distinct quest card with its own streak and clear CTA. */
+function DailyChallengeCard({ scope, dailyRun, playedToday }: DailyChallengeCardProps) {
+  return (
+    <Link
+      href={scopedHref("/play/daily-challenge", scope, { autostart: "1" })}
+      aria-label={`Daily challenge. ${playedToday ? "Completed today — review your results." : "Play today's challenge."} Daily run: ${dailyRun} ${dailyRun === 1 ? "day" : "days"}.`}
+      className="group flex items-center gap-3.5 rounded-2xl border-2 border-amber-200 bg-gradient-to-r from-amber-50 via-orange-50 to-amber-50 p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:border-amber-300 hover:shadow-md dark:border-amber-800 dark:from-amber-950/50 dark:via-orange-950/40 dark:to-amber-950/50 dark:hover:border-amber-600 sm:p-5"
+    >
+      <DailyCalendarIcon
+        variant="solid"
+        className="w-12 shrink-0 drop-shadow-sm transition-transform group-hover:scale-105 sm:w-14"
+      />
+      <div className="min-w-0 flex-1">
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+          <h2 className="font-display text-base font-extrabold text-slate-900 dark:text-slate-100 sm:text-lg">
+            Daily Challenge
+          </h2>
+          {dailyRun > 0 ? (
+            <span className="inline-flex items-center gap-0.5 rounded-full bg-orange-100 px-2 py-0.5 text-xs font-extrabold tabular-nums text-orange-700 dark:bg-orange-900/60 dark:text-orange-300">
+              <span aria-hidden>🔥</span> {dailyRun}
+            </span>
+          ) : null}
+        </div>
+        <p className="mt-0.5 truncate text-xs text-slate-600 dark:text-slate-400 sm:text-sm">
+          {playedToday
+            ? "Done for today — see how you stacked up"
+            : "A fresh round of questions every day"}
+        </p>
+      </div>
+      <span
         className={cn(
-          profile
-            ? "relative flex flex-col gap-3 sm:gap-4 lg:grid lg:grid-cols-[minmax(0,1fr)_18rem] lg:grid-rows-[auto_auto_auto] lg:items-start lg:gap-x-8 lg:gap-y-5 lg:overflow-hidden lg:rounded-[1.75rem] lg:bg-gradient-to-br lg:from-emerald-500 lg:via-teal-600 lg:to-sky-700 lg:p-10 lg:text-white lg:shadow-[0_16px_40px_rgb(15_118_110_/_0.22)]"
-            : heroPanelClass,
-          className,
+          "flex min-h-10 shrink-0 items-center justify-center rounded-xl px-4 font-display text-sm font-extrabold transition-transform group-hover:scale-105",
+          playedToday
+            ? "border-2 border-amber-300 bg-white/70 text-amber-800 dark:border-amber-700 dark:bg-slate-900/50 dark:text-amber-300"
+            : "bg-amber-500 text-white shadow-[0_3px_0_var(--color-amber-600)]",
         )}
       >
-        {profile ? (
-          <>
-            <div
-              aria-hidden
-              className="pointer-events-none absolute -right-8 -top-8 hidden select-none overflow-hidden text-[8rem] opacity-15 lg:block sm:-right-10 sm:-top-14 sm:text-[11rem]"
-            >
-              🗺️
-            </div>
-
-            <div className={cn(heroPanelClass, "flex flex-col gap-5 sm:gap-6 lg:contents")}>
-              <div
-                aria-hidden
-                className="pointer-events-none absolute -right-8 -top-8 select-none overflow-hidden text-[8rem] opacity-15 sm:-right-10 sm:-top-14 sm:text-[11rem] lg:hidden"
-              >
-                🗺️
-              </div>
-
-              {headingBlock}
-              {playBlock}
-              <RecentModeShortcuts
-                modes={recentModes}
-                activeMode={activeMode}
-                scope={scope}
-                onSelect={selectRecentMode}
-                className="lg:col-span-2"
-              />
-            </div>
-
-            <div className={cn(heroPanelClass, "lg:contents")}>
-              <HomeStreakHighlights
-                streak={streak}
-                todayBest={todayBest}
-                storedTodayBest={storedTodayBest}
-                dailyRun={dailyRun}
-                dailyCompletedToday={dailyCompletedToday}
-                className="lg:col-start-2 lg:row-start-1 lg:max-w-[18rem] lg:justify-self-end lg:self-start"
-              />
-            </div>
-          </>
-        ) : (
-          <>
-            <div
-              aria-hidden
-              className="pointer-events-none absolute -right-8 -top-8 select-none overflow-hidden text-[8rem] opacity-15 sm:-right-10 sm:-top-14 sm:text-[11rem]"
-            >
-              🗺️
-            </div>
-
-            <div className="relative flex flex-col gap-5 sm:gap-6">
-              {headingBlock}
-              {playBlock}
-            </div>
-          </>
-        )}
-      </section>
-    </>
+        {playedToday ? "Review" : "Play"}
+      </span>
+    </Link>
   );
 }

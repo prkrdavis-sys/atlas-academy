@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { HeaderStreakChip } from "@/components/HeaderStreakChip";
 import { PlayModeSwitcher } from "@/components/PlayModeSwitcher";
 import { ProfileSwitcher } from "@/components/ProfileSwitcher";
 import { getPrimaryNavHref } from "@/lib/navigation";
@@ -36,10 +37,12 @@ export function AppHeader() {
           <div className="hidden flex-1 justify-center sm:flex">
             <PlayModeSwitcher />
           </div>
-          <div className="ml-auto flex items-center sm:hidden">
+          <div className="ml-auto flex items-center gap-1 sm:hidden">
+            <HeaderStreakChip />
             <ProfileSwitcher compact />
           </div>
-          <div className="hidden items-center sm:flex">
+          <div className="hidden items-center gap-1.5 sm:flex">
+            <HeaderStreakChip />
             <ProfileSwitcher />
           </div>
         </div>
