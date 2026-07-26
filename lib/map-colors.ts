@@ -1,3 +1,5 @@
+import type { MapProgressDifficulty } from "@/lib/types";
+
 /** Panzoom skips pointer handling on elements with this class (and their descendants). */
 export const PANZOOM_EXCLUDE_CLASS = "panzoom-exclude";
 
@@ -125,6 +127,7 @@ function progressPathStyle(fill: string, isDark: boolean): MapPathStyle {
   return { fill, ...border };
 }
 
+/** Normal (medium) progress — teal mastery scale. */
 const LIGHT_PROGRESS_FILL_COLORS: Record<0 | 1 | 2 | 3 | 4, string> = {
   0: LIGHT_MAP_PALETTE.default.fill,
   1: "#134e4a",
@@ -140,6 +143,33 @@ const DARK_PROGRESS_FILL_COLORS: Record<0 | 1 | 2 | 3 | 4, string> = {
   3: "#119e90",
   4: "#2dd4bf",
 };
+
+/** Hard progress — burgundy → red mastery scale. */
+const LIGHT_HARD_PROGRESS_FILL_COLORS: Record<0 | 1 | 2 | 3 | 4, string> = {
+  0: LIGHT_MAP_PALETTE.default.fill,
+  1: "#4c0519",
+  2: "#9f1239",
+  3: "#e11d48",
+  4: "#fb7185",
+};
+
+const DARK_HARD_PROGRESS_FILL_COLORS: Record<0 | 1 | 2 | 3 | 4, string> = {
+  0: DARK_MAP_PALETTE.default.fill,
+  1: "#2a0610",
+  2: "#7f1d1d",
+  3: "#be123c",
+  4: "#fb7185",
+};
+
+function progressFillColors(
+  difficulty: MapProgressDifficulty,
+  isDark: boolean,
+): Record<0 | 1 | 2 | 3 | 4, string> {
+  if (difficulty === "hard") {
+    return isDark ? DARK_HARD_PROGRESS_FILL_COLORS : LIGHT_HARD_PROGRESS_FILL_COLORS;
+  }
+  return isDark ? DARK_PROGRESS_FILL_COLORS : LIGHT_PROGRESS_FILL_COLORS;
+}
 
 const LIGHT_PROGRESS_FILLS: Record<0 | 1 | 2 | 3 | 4, MapPathStyle> = {
   0: progressPathStyle(LIGHT_PROGRESS_FILL_COLORS[0], false),
@@ -157,15 +187,46 @@ const DARK_PROGRESS_FILLS: Record<0 | 1 | 2 | 3 | 4, MapPathStyle> = {
   4: progressPathStyle(DARK_PROGRESS_FILL_COLORS[4], true),
 };
 
+const LIGHT_HARD_PROGRESS_FILLS: Record<0 | 1 | 2 | 3 | 4, MapPathStyle> = {
+  0: progressPathStyle(LIGHT_HARD_PROGRESS_FILL_COLORS[0], false),
+  1: progressPathStyle(LIGHT_HARD_PROGRESS_FILL_COLORS[1], false),
+  2: progressPathStyle(LIGHT_HARD_PROGRESS_FILL_COLORS[2], false),
+  3: progressPathStyle(LIGHT_HARD_PROGRESS_FILL_COLORS[3], false),
+  4: progressPathStyle(LIGHT_HARD_PROGRESS_FILL_COLORS[4], false),
+};
+
+const DARK_HARD_PROGRESS_FILLS: Record<0 | 1 | 2 | 3 | 4, MapPathStyle> = {
+  0: progressPathStyle(DARK_HARD_PROGRESS_FILL_COLORS[0], true),
+  1: progressPathStyle(DARK_HARD_PROGRESS_FILL_COLORS[1], true),
+  2: progressPathStyle(DARK_HARD_PROGRESS_FILL_COLORS[2], true),
+  3: progressPathStyle(DARK_HARD_PROGRESS_FILL_COLORS[3], true),
+  4: progressPathStyle(DARK_HARD_PROGRESS_FILL_COLORS[4], true),
+};
+
+function progressFills(
+  difficulty: MapProgressDifficulty,
+  isDark: boolean,
+): Record<0 | 1 | 2 | 3 | 4, MapPathStyle> {
+  if (difficulty === "hard") {
+    return isDark ? DARK_HARD_PROGRESS_FILLS : LIGHT_HARD_PROGRESS_FILLS;
+  }
+  return isDark ? DARK_PROGRESS_FILLS : LIGHT_PROGRESS_FILLS;
+}
+
 export function getProgressPathStyle(
   level: 0 | 1 | 2 | 3 | 4,
   isDark: boolean,
+  difficulty: MapProgressDifficulty = "medium",
 ): MapPathStyle {
-  return isDark ? DARK_PROGRESS_FILLS[level] : LIGHT_PROGRESS_FILLS[level];
+  return progressFills(difficulty, isDark)[level];
 }
 
-export function getProgressFillColor(level: 0 | 1 | 2 | 3 | 4, isDark: boolean): string {
-  return isDark ? DARK_PROGRESS_FILL_COLORS[level] : LIGHT_PROGRESS_FILL_COLORS[level];
+export function getProgressFillColor(
+  level: 0 | 1 | 2 | 3 | 4,
+  isDark: boolean,
+  difficulty: MapProgressDifficulty = "medium",
+): string {
+  return progressFillColors(difficulty, isDark)[level];
 }
 
 /** Hover/selection emphasis with the same standardized border color. */

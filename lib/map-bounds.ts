@@ -5,7 +5,10 @@ export type PathBounds = [left: number, top: number, right: number, bottom: numb
 export type MapTemplateBounds = {
   viewBox: PathBounds;
   paths: Record<string, PathBounds>;
-  /** Optional mainland-only bounds; not used for framing (full paths must stay unclipped). */
+  /**
+   * Mainland / core-landmass bounds: primary polygon plus nearby islands,
+   * excluding remote overseas territories that would force an unreadably wide crop.
+   */
   focusPaths?: Record<string, PathBounds>;
 };
 
@@ -96,8 +99,10 @@ function fitCloseUpViewBox(
 }
 
 /**
- * Close-up crop of a place on its context map. Uses the full path bounds so the
- * entire country/state stays inside the frame.
+ * Close-up crop of a place on its context map.
+ * By default frames the mainland/core landmass (`focusPaths`) so remote
+ * territories (e.g. Caribbean Netherlands) and antimeridian fragments do not
+ * force a continent-scale zoom-out.
  */
 export function computeFocusedViewBox(
   template: MapTemplateBounds,
@@ -106,13 +111,22 @@ export function computeFocusedViewBox(
     aspectRatio?: number;
     /** Padding around the subject relative to its larger side. */
     paddingRatio: number;
+    /**
+     * When true (default), prefer mainland focus bounds over full path bounds.
+     * Set false only when the full overseas footprint must stay in frame.
+     */
+    useFocusBounds?: boolean;
   },
 ): string {
-  // Always frame the full rendered geometry — never focusPaths — so islands,
-  // exclaves, and elongated countries are not clipped at the edges.
+  const useFocusBounds = options.useFocusBounds !== false;
   const subjectBounds = unionBounds(
     focusPathIds
-      .map((pathId) => template.paths[pathId])
+      .map((pathId) => {
+        if (useFocusBounds && template.focusPaths?.[pathId]) {
+          return template.focusPaths[pathId];
+        }
+        return template.paths[pathId];
+      })
       .filter((bounds): bounds is PathBounds => Boolean(bounds)),
   );
 

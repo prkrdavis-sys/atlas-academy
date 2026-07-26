@@ -99,10 +99,11 @@ export function InteractiveProgressMap({
       createInteractiveProgressPathStyleResolver(
         fillMap,
         isDark,
+        difficulty,
         selectedPlace?.code,
         hoveredPathId,
       ),
-    [fillMap, isDark, selectedPlace, hoveredPathId],
+    [fillMap, isDark, difficulty, selectedPlace, hoveredPathId],
   );
 
   const hoveredPlace = useMemo(() => {
@@ -231,7 +232,7 @@ export function InteractiveProgressMap({
 
       {ready ? (
         <div className="border-b border-slate-200 px-4 py-2.5 dark:border-slate-700 sm:px-5">
-          <MapProgressFillLegend isDark={isDark} />
+          <MapProgressFillLegend isDark={isDark} difficulty={difficulty} />
         </div>
       ) : null}
 

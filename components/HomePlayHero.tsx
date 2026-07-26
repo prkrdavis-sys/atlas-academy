@@ -134,7 +134,16 @@ export function HomePlayHero({
         </div>
       ) : null}
 
-      <section ref={heroRef} className={cn("flex flex-col", className)}>
+      <section
+        ref={heroRef}
+        className={cn(
+          "flex flex-col",
+          // Desktop: fill the viewport under the header so the action stack
+          // sits low and leaves the globe's lower hemisphere open.
+          "lg:min-h-[calc(100dvh-var(--app-header-offset)-4rem)]",
+          className,
+        )}
+      >
         {profile ? (
           <>
             <header className="text-center">
@@ -145,7 +154,7 @@ export function HomePlayHero({
 
             <GlobeDragZone href={mapHref} globeHandleRef={globeHandleRef} />
 
-            <div className="mx-auto flex w-full max-w-xl flex-col gap-4">
+            <div className="mx-auto flex w-full max-w-xl flex-col gap-4 lg:pb-2">
               <button
                 type="button"
                 onClick={startPlay}
@@ -253,7 +262,13 @@ function GlobeDragZone({ href, globeHandleRef }: GlobeDragZoneProps) {
       href={href}
       aria-label="Open your progress map"
       draggable={false}
-      className="block h-[24vh] min-h-[6.5rem] w-full cursor-grab touch-pan-y select-none active:cursor-grabbing sm:h-[30vh] lg:h-[55vh]"
+      className={cn(
+        "block w-full cursor-grab touch-pan-y select-none active:cursor-grabbing",
+        // Phone / tablet: fixed-height drag band (not applied on desktop).
+        "h-[24vh] min-h-[6.5rem] sm:max-lg:h-[30vh]",
+        // Desktop: grow to push the panels toward the bottom of the viewport.
+        "lg:h-auto lg:min-h-[18rem] lg:flex-1 lg:basis-0",
+      )}
       onPointerDown={(event) => {
         dragRef.current = { pointerId: event.pointerId, lastX: event.clientX };
         traveledRef.current = 0;

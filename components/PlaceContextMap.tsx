@@ -37,21 +37,24 @@ const templateCache = new Map<string, ParsedContextMap>();
 const boundsCache: { data: MapBoundsManifest | null } = { data: null };
 
 /**
- * Close-up framing: full country/state bounds + padding, then expand to aspect.
- * Never zooms in past the full shape, so nothing is cut off at the edges.
+ * Close-up framing around the mainland/core landmass (focusPaths), so overseas
+ * territories do not force a tiny speck-in-ocean crop on Learn/Library cards.
  */
 const CROP_OPTIONS = {
   compact: {
     aspectRatio: 2.2,
     paddingRatio: 0.35,
+    useFocusBounds: true,
   },
   learn: {
     aspectRatio: 2.2,
     paddingRatio: 0.45,
+    useFocusBounds: true,
   },
   hero: {
     aspectRatio: 1.6,
     paddingRatio: 0.4,
+    useFocusBounds: true,
   },
 } as const;
 

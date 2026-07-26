@@ -2,7 +2,7 @@ import { getContextMapPathIds } from "@/lib/context-maps";
 import { getCountryByCode } from "@/lib/countries";
 import { PANZOOM_EXCLUDE_CLASS, resolveProgressMapPathStyle } from "@/lib/map-colors";
 import { createProgressPathStyleResolver } from "@/lib/map-progress";
-import type { PlaceMasteryLevel } from "@/lib/types";
+import type { MapProgressDifficulty, PlaceMasteryLevel } from "@/lib/types";
 
 const MAP_TAP_MOVE_THRESHOLD_PX = 8;
 
@@ -139,11 +139,12 @@ export function getMapSelectionPathIds(selectedCode: string | null | undefined):
 export function createInteractiveProgressPathStyleResolver(
   fillMap: Map<string, PlaceMasteryLevel>,
   isDark: boolean,
+  difficulty: MapProgressDifficulty,
   selectedCode: string | null | undefined,
   hoveredPathId: string | null,
 ) {
   const selectedPathIds = getMapSelectionPathIds(selectedCode);
-  const baseResolver = createProgressPathStyleResolver(fillMap, isDark);
+  const baseResolver = createProgressPathStyleResolver(fillMap, isDark, difficulty);
 
   return (pathId: string) =>
     resolveProgressMapPathStyle(pathId, {

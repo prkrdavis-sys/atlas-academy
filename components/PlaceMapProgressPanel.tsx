@@ -53,7 +53,9 @@ export function MapProgressDifficultySelector({
             className={cn(
               "min-h-9 rounded-xl px-3 py-1.5 font-display text-sm font-extrabold transition-all",
               selected
-                ? "bg-white text-teal-800 shadow-sm dark:bg-slate-900 dark:text-teal-300"
+                ? level === "hard"
+                  ? "bg-white text-rose-800 shadow-sm dark:bg-slate-900 dark:text-rose-300"
+                  : "bg-white text-teal-800 shadow-sm dark:bg-slate-900 dark:text-teal-300"
                 : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100",
             )}
           >
@@ -65,14 +67,20 @@ export function MapProgressDifficultySelector({
   );
 }
 
-export function MapProgressFillLegend({ isDark }: { isDark: boolean }) {
+export function MapProgressFillLegend({
+  isDark,
+  difficulty,
+}: {
+  isDark: boolean;
+  difficulty: MapProgressDifficulty;
+}) {
   const border = getProgressBorder(isDark);
 
   return (
     <div className="flex flex-wrap items-center gap-3 text-xs text-slate-600 dark:text-slate-400">
       <span className="font-semibold text-slate-700 dark:text-slate-300">Fill levels:</span>
       {MAP_PROGRESS_FILL_LEVELS.map((level) => {
-        const fill = getProgressFillColor(level, isDark);
+        const fill = getProgressFillColor(level, isDark, difficulty);
 
         return (
           <span key={level} className="inline-flex items-center gap-1.5">

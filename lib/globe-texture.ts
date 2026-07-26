@@ -26,14 +26,10 @@ export const GLOBE_MASTERY_COLORS: Record<PlaceMasteryLevel, string> = {
 };
 
 /**
- * Highest mastery reached at any counting difficulty, so the globe lights up
- * with every bit of real progress the player has made.
+ * Normal-mode mastery only — the home globe mirrors Normal map progress for now.
  */
 export function getGlobeMasteryLevel(code: string, profile: Profile): PlaceMasteryLevel {
-  return Math.max(
-    getPlaceMasteryLevel(code, profile, "medium"),
-    getPlaceMasteryLevel(code, profile, "hard"),
-  ) as PlaceMasteryLevel;
+  return getPlaceMasteryLevel(code, profile, "medium");
 }
 
 function addRingToPath(path: Path2D, ring: number[], offsetX: number) {
@@ -66,8 +62,8 @@ function buildPath(rings: number[][]): Path2D {
 
 /**
  * Paints the equirectangular globe texture: dark ocean, dim base land, and
- * the player's per-country mastery in brightening teal — the same progress
- * that drives the 2D map, wrapped around the planet.
+ * the player's Normal-mode mastery in brightening teal — the same progress
+ * shown on the 2D map for Normal, wrapped around the planet.
  */
 export function buildGlobeTextureCanvas(profile: Profile | null): HTMLCanvasElement {
   const canvas = document.createElement("canvas");

@@ -347,6 +347,7 @@ export function buildUsaProgressFillMap(
 export function createProgressPathStyleResolver(
   fillMap: Map<string, PlaceMasteryLevel>,
   isDark: boolean,
+  difficulty: MapProgressDifficulty = "medium",
   regionCodes?: Set<string>,
   resolveCode?: (pathId: string) => string | undefined,
 ): (pathId: string) => MapPathStyle | null {
@@ -358,7 +359,7 @@ export function createProgressPathStyleResolver(
       }
     }
     const level = fillMap.get(pathId) ?? 0;
-    return getProgressPathStyle(level, isDark);
+    return getProgressPathStyle(level, isDark, difficulty);
   };
 }
 

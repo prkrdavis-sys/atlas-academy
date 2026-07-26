@@ -45,9 +45,18 @@ export function getContextMapTemplatePath(templateKey: ContextMapTemplateKey): s
   return `/maps/${templateKey}.svg`;
 }
 
+/**
+ * Transcontinental places need the world template so Learn/Library maps show
+ * real surroundings on both the European and Asian sides (Russia especially).
+ */
+const WORLD_CONTEXT_MAP_CODES = new Set(["RU"]);
+
 export function getContextMapTemplateKey(country: Country): ContextMapTemplateKey {
   if (isStateCode(country.code)) {
     return "usa";
+  }
+  if (WORLD_CONTEXT_MAP_CODES.has(country.code.toUpperCase())) {
+    return "world";
   }
   if (CONTINENTS.includes(country.continent as Continent)) {
     return continentToTemplateKey(country.continent as Continent);

@@ -5,8 +5,8 @@ import type { GameScope, Profile } from "@/lib/types";
 export type MasteredProgress = { mastered: number; total: number };
 
 /**
- * Places fully mastered at any counting difficulty — the same measure the
- * globe texture glows with, so the counter and the planet always agree.
+ * Places fully mastered on Normal — the same measure the home globe glows
+ * with, so the counter and the planet always agree.
  */
 export function getMasteredProgress(scope: GameScope, profile: Profile): MasteredProgress {
   const places = getPlayablePlacesForScope(scope);
