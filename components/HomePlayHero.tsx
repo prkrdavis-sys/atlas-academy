@@ -253,7 +253,7 @@ function GlobeDragZone({ href, globeHandleRef }: GlobeDragZoneProps) {
       href={href}
       aria-label="Open your progress map"
       draggable={false}
-      className="block h-[24vh] min-h-[6.5rem] w-full cursor-grab touch-pan-y select-none active:cursor-grabbing sm:h-[30vh]"
+      className="block h-[24vh] min-h-[6.5rem] w-full cursor-grab touch-pan-y select-none active:cursor-grabbing sm:h-[30vh] lg:h-[55vh]"
       onPointerDown={(event) => {
         dragRef.current = { pointerId: event.pointerId, lastX: event.clientX };
         traveledRef.current = 0;
