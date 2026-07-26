@@ -15,7 +15,7 @@ import { HomeHeroTaglineContent } from "@/components/HomeHeroTaglineContent";
 import { ProfileRequiredDialog } from "@/components/ProfileRequiredDialog";
 import type { GlobeHandle } from "@/components/home/GlobeBackground";
 import { getExplorerRank, type MasteredProgress } from "@/lib/explorer-rank";
-import { getActiveGameSummaryParts, resolvePlayMode } from "@/lib/game-setup";
+import { getActiveGameSummaryParts, getMainPlayMode, resolvePlayMode } from "@/lib/game-setup";
 import { hasPlayedDailyToday } from "@/lib/game-engine";
 import { getStoredScope, scopedHref, scopeQuery, SCOPE_INFO } from "@/lib/scope";
 import { playSound } from "@/lib/sound";
@@ -56,7 +56,7 @@ export function HomePlayHero({
   const [showProfileDialog, setShowProfileDialog] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
 
-  const activeMode = profile?.settings.lastSelectedMode ?? "mixed";
+  const activeMode = profile ? getMainPlayMode(profile) : "mixed";
   const dailyPlayedToday = profile
     ? hasPlayedDailyToday(profile.dailyChallengePlayedDates, scope)
     : false;

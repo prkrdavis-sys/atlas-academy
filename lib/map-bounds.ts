@@ -1,10 +1,12 @@
 import type { ContextMapTemplateKey } from "@/lib/context-maps";
+import { parseMapViewBox } from "@/lib/map-colors";
 
 export type PathBounds = [left: number, top: number, right: number, bottom: number];
 
 export type MapTemplateBounds = {
   viewBox: PathBounds;
   paths: Record<string, PathBounds>;
+  focusPaths?: Record<string, PathBounds>;
 };
 
 export type MapBoundsManifest = Record<ContextMapTemplateKey, MapTemplateBounds>;
@@ -41,90 +43,9 @@ function unionBounds(boundsList: PathBounds[]): PathBounds | null {
   return [left, top, right, bottom];
 }
 
-function pathBoundsArea(bounds: PathBounds): number {
-  const [left, top, right, bottom] = bounds;
-  return Math.max(0, right - left) * Math.max(0, bottom - top);
-}
-
-function rectDistance(a: PathBounds, b: PathBounds): number {
-  const dx = Math.max(0, a[0] - b[2], b[0] - a[2]);
-  const dy = Math.max(0, a[1] - b[3], b[1] - a[3]);
-  return Math.hypot(dx, dy);
-}
-
-function templateViewBoxSize(viewBox: PathBounds): { width: number; height: number } {
-  return { width: viewBox[2], height: viewBox[3] };
-}
-
-/** Skip dominant neighbors that would pull tiny islands off-center (e.g. CX + Australia). */
-const MIN_FOCUS_TO_SHORE_AREA_RATIO = 0.01;
-
-function shouldIncludeShoreContext(focusBounds: PathBounds, shoreBounds: PathBounds): boolean {
-  const focusArea = pathBoundsArea(focusBounds);
-  const shoreArea = pathBoundsArea(shoreBounds);
-  if (shoreArea === 0) return false;
-  return focusArea / shoreArea >= MIN_FOCUS_TO_SHORE_AREA_RATIO;
-}
-
-/** Adds nearby land paths when an island has no bordering neighbors to crop around. */
-export function findNearestShorePathIds(
-  template: MapTemplateBounds,
-  focusPathIds: string[],
-  options: {
-    maxCount?: number;
-    focusAreaRatioThreshold?: number;
-    maxShoreAreaRatio?: number;
-    minShoreAreaRatio?: number;
-  } = {},
-): string[] {
-  const {
-    maxCount = 1,
-    focusAreaRatioThreshold = 0.015,
-    maxShoreAreaRatio = 0.08,
-    minShoreAreaRatio = 0.00008,
-  } = options;
-  const focusSet = new Set(focusPathIds);
-  const focusBounds = unionBounds(
-    focusPathIds
-      .map((pathId) => template.paths[pathId])
-      .filter((bounds): bounds is PathBounds => Boolean(bounds)),
-  );
-  if (!focusBounds) return [];
-
-  if (focusPathIds.length === 1 && focusPathIds[0] === "hi" && template.paths.ca) {
-    return ["ca"];
-  }
-
-  const focusArea = pathBoundsArea(focusBounds);
-  const { width: templateWidth, height: templateHeight } = templateViewBoxSize(template.viewBox);
-  const templateArea = templateWidth * templateHeight;
-  if (focusArea / templateArea >= focusAreaRatioThreshold) {
-    return [];
-  }
-
-  const minShoreArea = templateArea * minShoreAreaRatio;
-  const maxShoreArea = templateArea * maxShoreAreaRatio;
-  const candidates: { id: string; distance: number }[] = [];
-
-  for (const [pathId, bounds] of Object.entries(template.paths)) {
-    if (focusSet.has(pathId)) continue;
-
-    const area = pathBoundsArea(bounds);
-    if (area < minShoreArea || area > maxShoreArea) continue;
-
-    const edgeDistance = rectDistance(focusBounds, bounds);
-    if (edgeDistance === 0 && area > focusArea * 20 && area > maxShoreArea * 0.5) continue;
-
-    candidates.push({ id: pathId, distance: edgeDistance });
-  }
-
-  candidates.sort((a, b) => a.distance - b.distance);
-  return candidates.slice(0, maxCount).map((candidate) => candidate.id);
-}
-
 function fitViewBoxToAspect(
   bounds: PathBounds,
-  aspectRatio: number,
+  aspectRatio: number | undefined,
   paddingRatio: number,
   minSizeRatio: number,
   templateBounds: PathBounds,
@@ -155,69 +76,73 @@ function fitViewBoxToAspect(
   width += pad * 2;
   height += pad * 2;
 
-  const currentAspect = width / height;
-  if (currentAspect < aspectRatio) {
-    const newWidth = height * aspectRatio;
-    const expand = (newWidth - width) / 2;
-    left -= expand;
-    width = newWidth;
-  } else if (currentAspect > aspectRatio) {
-    const newHeight = width / aspectRatio;
-    const expand = (newHeight - height) / 2;
-    top -= expand;
-    height = newHeight;
+  if (aspectRatio !== undefined) {
+    const currentAspect = width / height;
+    if (currentAspect < aspectRatio) {
+      const newWidth = height * aspectRatio;
+      const expand = (newWidth - width) / 2;
+      left -= expand;
+      width = newWidth;
+    } else if (currentAspect > aspectRatio) {
+      const newHeight = width / aspectRatio;
+      const expand = (newHeight - height) / 2;
+      top -= expand;
+      height = newHeight;
+    }
   }
 
   return [left, top, width, height];
 }
 
+export function pathFullyInsideViewBox(
+  template: MapTemplateBounds,
+  pathId: string,
+  viewBox: string,
+): boolean {
+  const pathBounds = template.paths[pathId];
+  if (!pathBounds) return true;
+
+  const [viewLeft, viewTop, viewWidth, viewHeight] = parseMapViewBox(viewBox);
+  const viewRight = viewLeft + viewWidth;
+  const viewBottom = viewTop + viewHeight;
+  const [pathLeft, pathTop, pathRight, pathBottom] = pathBounds;
+
+  return (
+    pathLeft >= viewLeft &&
+    pathRight <= viewRight &&
+    pathTop >= viewTop &&
+    pathBottom <= viewBottom
+  );
+}
+
 export function computeFocusedViewBox(
   template: MapTemplateBounds,
   focusPathIds: string[],
-  contextPathIds: string[],
   options: {
-    aspectRatio: number;
+    aspectRatio?: number;
     paddingRatio: number;
     minSizeRatio?: number;
   },
 ): string {
   const focusBounds = unionBounds(
     focusPathIds
-      .map((pathId) => template.paths[pathId])
+      .map((pathId) => template.focusPaths?.[pathId] ?? template.paths[pathId])
       .filter((bounds): bounds is PathBounds => Boolean(bounds)),
   );
-
-  const autoShoreIds =
-    contextPathIds.length === 0 && focusBounds
-      ? findNearestShorePathIds(template, focusPathIds).filter((shoreId) => {
-          const shoreBounds = template.paths[shoreId];
-          return shoreBounds ? shouldIncludeShoreContext(focusBounds, shoreBounds) : false;
-        })
-      : [];
-  const contextIds = contextPathIds.length > 0 ? contextPathIds : autoShoreIds;
-  const pathIds = [...new Set([...focusPathIds, ...contextIds])];
-  const boundsList = pathIds
-    .map((pathId) => template.paths[pathId])
-    .filter((bounds): bounds is PathBounds => Boolean(bounds));
-
-  const combinedBounds = unionBounds(boundsList) ?? focusBounds;
-  if (!combinedBounds) {
+  if (!focusBounds) {
     const [x, y, width, height] = template.viewBox;
     return `${x} ${y} ${width} ${height}`;
   }
 
-  const paddingRatio =
-    autoShoreIds.length > 0 ? options.paddingRatio * 1.15 : options.paddingRatio;
-
   const [left, top, width, height] = fitViewBoxToAspect(
-    combinedBounds,
+    focusBounds,
     options.aspectRatio,
-    paddingRatio,
+    options.paddingRatio,
     options.minSizeRatio ?? 0.06,
     template.viewBox,
   );
 
-  return `${left.toFixed(2)} ${top.toFixed(2)} ${width.toFixed(2)} ${height.toFixed(2)}`;
+  return formatViewBox([left, top, width, height]);
 }
 
 export function formatViewBox(bounds: PathBounds): string {

@@ -123,7 +123,6 @@ function PlayPageInner() {
       if (shouldCountStats && typeof window !== "undefined") {
         sessionStorage.setItem(DAILY_COUNTING_SESSION_KEY, today);
       }
-      recordModeSelection(profile.id, "daily-challenge");
       setCountStats(shouldCountStats);
     } else {
       const settingsDraft = { ...draft, mode, challengeModifier: activeChallengeModifier };

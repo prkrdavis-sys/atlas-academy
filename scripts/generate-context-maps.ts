@@ -25,6 +25,41 @@ function toPathBounds(path: string): PathBounds {
   return [left, top, right, bottom];
 }
 
+function boundsArea([left, top, right, bottom]: PathBounds): number {
+  return Math.max(0, right - left) * Math.max(0, bottom - top);
+}
+
+function boundsDistance(a: PathBounds, b: PathBounds): number {
+  const dx = Math.max(0, a[0] - b[2], b[0] - a[2]);
+  const dy = Math.max(0, a[1] - b[3], b[1] - a[3]);
+  return Math.hypot(dx, dy);
+}
+
+/**
+ * Keeps the main connected landmass and nearby substantial islands in frame,
+ * while excluding remote territories that make the featured place unreadably small.
+ */
+function toFocusBounds(path: string): PathBounds {
+  const subpathBounds = (path.match(/M[^M]*/g) ?? [path])
+    .map(toPathBounds)
+    .sort((a, b) => boundsArea(b) - boundsArea(a));
+  const primary = subpathBounds[0];
+  const primaryArea = boundsArea(primary);
+  const primaryDiagonal = Math.hypot(primary[2] - primary[0], primary[3] - primary[1]);
+  const included = subpathBounds.filter(
+    (bounds) =>
+      boundsArea(bounds) >= primaryArea * 0.01 &&
+      boundsDistance(primary, bounds) <= primaryDiagonal * 1.5,
+  );
+
+  return [
+    Math.min(...included.map((bounds) => bounds[0])),
+    Math.min(...included.map((bounds) => bounds[1])),
+    Math.max(...included.map((bounds) => bounds[2])),
+    Math.max(...included.map((bounds) => bounds[3])),
+  ];
+}
+
 function buildTemplate(
   locations: SvgMapLocation[],
 ): { svg: string; bounds: MapTemplateBounds } {
@@ -54,6 +89,9 @@ function buildTemplate(
   const bounds: MapTemplateBounds = {
     viewBox,
     paths: Object.fromEntries(pathBounds.map((entry) => [entry.id, entry.bounds])),
+    focusPaths: Object.fromEntries(
+      locations.map((location) => [location.id, toFocusBounds(location.path)]),
+    ),
   };
 
   return { svg, bounds };

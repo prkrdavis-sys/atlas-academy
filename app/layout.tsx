@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { AppAnalytics } from "@/components/AppAnalytics";
 import { Geist, Geist_Mono, Nunito } from "next/font/google";
 import { AppShell } from "@/components/AppShell";
+import { AudioUnlock } from "@/components/AudioUnlock";
 import { ProfileProvider } from "@/components/ProfileProvider";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import "./globals.css";
@@ -74,6 +75,7 @@ export default function RootLayout({
       <body className="min-h-full">
         <ThemeProvider>
           <ProfileProvider>
+            <AudioUnlock />
             <a
               href="#main-content"
               className="fixed left-3 top-3 z-[70] -translate-y-20 rounded-xl bg-slate-900 px-4 py-2 text-sm font-bold text-white transition-transform focus:translate-y-0 dark:bg-slate-100 dark:text-slate-900"

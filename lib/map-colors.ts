@@ -49,8 +49,24 @@ const DARK_MAP_PALETTE: MapPalette = {
   },
 };
 
+const LIGHT_SUBTLE_NEIGHBOR: MapPathStyle = {
+  fill: "#bdcfd2",
+  stroke: "#94a3b8",
+  strokeWidth: 0.35,
+};
+
+const DARK_SUBTLE_NEIGHBOR: MapPathStyle = {
+  fill: "#405b60",
+  stroke: "#64748b",
+  strokeWidth: 0.35,
+};
+
 export function getMapPalette(isDark: boolean): MapPalette {
   return isDark ? DARK_MAP_PALETTE : LIGHT_MAP_PALETTE;
+}
+
+export function getSubtleNeighborMapStyle(isDark: boolean): MapPathStyle {
+  return isDark ? DARK_SUBTLE_NEIGHBOR : LIGHT_SUBTLE_NEIGHBOR;
 }
 
 export function getMapPathRole(

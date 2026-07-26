@@ -13,11 +13,13 @@ import {
 import {
   computeFocusedViewBox,
   loadMapBoundsManifest,
+  pathFullyInsideViewBox,
   type MapBoundsManifest,
 } from "@/lib/map-bounds";
 import {
   getMapPalette,
   getMapPathRole,
+  getSubtleNeighborMapStyle,
   parseMapViewBox,
   sortMapPathsForRender,
   type MapPathStyle,
@@ -39,18 +41,18 @@ const boundsCache: { data: MapBoundsManifest | null } = { data: null };
 const CROP_OPTIONS = {
   compact: {
     aspectRatio: 2.2,
-    paddingRatio: 0.18,
-    minSizeRatio: 0.05,
+    paddingRatio: 0.14,
+    minSizeRatio: 0.00005,
   },
   learn: {
-    aspectRatio: 2.45,
-    paddingRatio: 0.26,
-    minSizeRatio: 0.05,
+    aspectRatio: 2.5,
+    paddingRatio: 0.14,
+    minSizeRatio: 0.00005,
   },
   hero: {
     aspectRatio: 1.6,
-    paddingRatio: 0.22,
-    minSizeRatio: 0.07,
+    paddingRatio: 0.14,
+    minSizeRatio: 0.00005,
   },
 } as const;
 
@@ -120,8 +122,6 @@ export function ContextMapSvg({
   const svgRef = useRef<SVGSVGElement>(null);
   const onPathClickRef = useRef(onPathClick);
   const onBackgroundClickRef = useRef(onBackgroundClick);
-  onPathClickRef.current = onPathClick;
-  onBackgroundClickRef.current = onBackgroundClick;
   const palette = getMapPalette(isDark);
   const activeViewBox = viewBox ?? map.viewBox;
   const [viewBoxX, viewBoxY, viewBoxWidth, viewBoxHeight] = parseMapViewBox(activeViewBox);
@@ -129,6 +129,11 @@ export function ContextMapSvg({
     () => sortMapPathsForRender(map.paths, highlightIds, neighborIds),
     [map.paths, highlightIds, neighborIds],
   );
+
+  useEffect(() => {
+    onPathClickRef.current = onPathClick;
+    onBackgroundClickRef.current = onBackgroundClick;
+  }, [onPathClick, onBackgroundClick]);
 
   useEffect(() => {
     if (!interactive || !onPathClick) return;
@@ -216,11 +221,6 @@ export function PlaceContextMap({
     return new Set(neighbors.filter((id) => !highlightIds.has(id)));
   }, [country, highlightIds, highlightNeighbors]);
 
-  const contextPathIds = useMemo(
-    () => (countryOnly ? [] : getNeighborContextMapPathIds(country)),
-    [country, countryOnly],
-  );
-
   const visiblePaths = useMemo(() => {
     if (!map) return [];
     if (!countryOnly) return map.paths;
@@ -235,18 +235,40 @@ export function PlaceContextMap({
     return computeFocusedViewBox(
       template,
       getContextMapPathIds(country),
-      contextPathIds,
       CROP_OPTIONS[variant],
     );
-  }, [boundsManifest, templateKey, country, contextPathIds, variant]);
+  }, [boundsManifest, templateKey, country, variant]);
+
+  const renderPaths = useMemo(() => {
+    if (!map) return [];
+    let paths = visiblePaths;
+    if (variant === "learn" && focusedViewBox && boundsManifest) {
+      const template = boundsManifest[templateKey];
+      if (template) {
+        paths = paths.filter((path) =>
+          highlightIds.has(path.id) ||
+          pathFullyInsideViewBox(template, path.id, focusedViewBox),
+        );
+      }
+    }
+    return paths;
+  }, [
+    map,
+    visiblePaths,
+    variant,
+    focusedViewBox,
+    boundsManifest,
+    templateKey,
+    highlightIds,
+  ]);
 
   useEffect(() => {
     let cancelled = false;
-    setLoadFailed(false);
 
     Promise.all([loadContextMapTemplate(templateKey), loadMapBoundsManifest()])
       .then(([loaded, bounds]) => {
         if (cancelled) return;
+        setLoadFailed(false);
         setMap(loaded);
         boundsCache.data = bounds;
         setBoundsManifest(bounds);
@@ -265,6 +287,7 @@ export function PlaceContextMap({
   }
 
   const ariaLabel = getContextMapAriaLabel(country, isState);
+  const subtleNeighborStyle = getSubtleNeighborMapStyle(isDark);
 
   return (
     <div
@@ -281,12 +304,15 @@ export function PlaceContextMap({
     >
       {map && ready ? (
         <ContextMapSvg
-          map={{ ...map, paths: visiblePaths }}
+          map={{ ...map, paths: renderPaths }}
           highlightIds={highlightIds}
           neighborIds={neighborIds}
           ariaLabel={ariaLabel}
           isDark={isDark}
           viewBox={focusedViewBox}
+          pathStyleResolver={(pathId) =>
+            variant === "learn" && neighborIds.has(pathId) ? subtleNeighborStyle : null
+          }
         />
       ) : loadFailed ? (
         <div className="flex h-full items-center justify-center px-4 text-center text-xs font-semibold text-slate-500 dark:text-slate-400">

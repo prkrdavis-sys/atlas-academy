@@ -479,8 +479,8 @@ export const COUNTRY_FACTS: Record<string, PlaceFactEntry> = {
     question: "Which country is among the first likely to lose land to rising seas, with islands just two meters above water?",
   },
   UNK: {
-    fact: "Independence was declared in 2008; the flag shows a map with six stars for the main ethnic groups.",
-    question: "Which country declared independence in 2008 and has a flag showing a map with six stars?",
+    fact: "Pristina's 'Newborn' monument is stripped and repainted in a new design every year on Independence Day.",
+    question: "Which country has a 'Newborn' monument in its capital that is repainted in a new design every year on Independence Day?",
   },
   KWT: {
     fact: "The Liberation Tower was named after the 1991 Gulf War that ended the Iraqi occupation.",

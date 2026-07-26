@@ -384,6 +384,7 @@ export function GameBoard({
     }
     setShowLearnCard(false);
     setExitedEarly(true);
+    playSound("complete", activeProfile);
   }
 
   function handleContinue() {
@@ -401,12 +402,16 @@ export function GameBoard({
       (sessionQuestionLimit && questionCount >= sessionQuestionLimit)
     ) {
       setSessionComplete(true);
+      if (!gameOver) {
+        playSound("complete", activeProfile);
+      }
       return;
     }
 
     const nextQuestion = engine.nextQuestion();
     if (!nextQuestion) {
       setSessionComplete(true);
+      playSound("complete", activeProfile);
       return;
     }
     setQuestion(nextQuestion);
@@ -420,6 +425,7 @@ export function GameBoard({
       tracksMapProgress && mapProgressDifficulty
         ? getMapProgressSummary(scope, activeProfile, mapProgressDifficulty)
         : null;
+    const mapHref = scope === "usa" ? "/map?view=usa" : "/map";
     const challengeComplete =
       !exitedEarly &&
       !gameOver &&
@@ -492,16 +498,12 @@ export function GameBoard({
                 variant="secondary"
                 size="lg"
                 className="w-full gap-2.5 px-6 text-lg max-sm:gap-1.5 max-sm:px-2.5 max-sm:whitespace-nowrap"
-                onClick={() => router.push("/stats")}
+                onClick={() => router.push(mapHref)}
               >
-                <img
-                  src="/icons/stats.svg"
-                  alt=""
-                  aria-hidden
-                  className="size-7 shrink-0 max-sm:size-6"
-                  draggable={false}
-                />
-                View stats
+                <span className="text-2xl leading-none max-sm:text-xl" aria-hidden>
+                  🗺️
+                </span>
+                View map
               </Button>
               <Button
                 size="lg"

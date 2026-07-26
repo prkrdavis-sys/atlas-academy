@@ -23,16 +23,28 @@ export const FLAG_MAP_PROGRESS_MODES = ["flag-to-country", "country-to-flag"] as
 
 export const MAP_PROGRESS_CATEGORY_INFO: Record<
   MapProgressCategory,
-  { label: string; icon: string; modes?: readonly GameMode[] }
+  { label: string; icon: string; modes: readonly GameMode[] }
 > = {
   flag: {
     label: "Flag",
     icon: "🏳️",
     modes: FLAG_MAP_PROGRESS_MODES,
   },
-  shape: { label: "Shape", icon: "🗺️" },
-  capital: { label: "Capital", icon: "📍" },
-  trivia: { label: "Trivia", icon: "💡" },
+  shape: {
+    label: "Shape",
+    icon: "🗺️",
+    modes: ["shape-to-country"],
+  },
+  capital: {
+    label: "Capital",
+    icon: "📍",
+    modes: ["capital-to-country", "country-to-capital"],
+  },
+  trivia: {
+    label: "Trivia",
+    icon: "💡",
+    modes: ["fact-to-country"],
+  },
 };
 
 function resolveMapProgressCategoryFromGameMode(mode: GameMode): MapProgressCategory | null {
@@ -150,20 +162,108 @@ export function getPlayablePlacesForScope(scope: GameScope) {
   });
 }
 
+export type RegionMapProgress = {
+  region: Region;
+  mastered: number;
+  total: number;
+  completedCategories: number;
+  totalCategories: number;
+  percentComplete: number;
+};
+
+export type CategoryMapProgress = {
+  category: MapProgressCategory;
+  completed: number;
+  total: number;
+  percentComplete: number;
+};
+
+function summarizePlacesProgress(
+  places: ReturnType<typeof getPlayablePlacesForScope>,
+  profile: Profile,
+  difficulty: MapProgressDifficulty,
+): MapProgressSummary {
+  const totalPlaces = places.length;
+  const totalCategories = totalPlaces * MAP_PROGRESS_CATEGORIES.length;
+  let completedCategories = 0;
+  let masteredPlaces = 0;
+
+  for (const place of places) {
+    const level = getPlaceMasteryLevel(place.code, profile, difficulty);
+    completedCategories += level;
+    if (level === 4) masteredPlaces += 1;
+  }
+
+  return {
+    completedCategories,
+    totalCategories,
+    masteredPlaces,
+    totalPlaces,
+    percentComplete:
+      totalCategories > 0 ? Math.round((completedCategories / totalCategories) * 100) : 0,
+  };
+}
+
 export function getRegionMapProgress(
   scope: GameScope,
   region: Region,
   profile: Profile,
   difficulty: MapProgressDifficulty,
 ): { mastered: number; total: number } {
+  const summary = getRegionMapProgressSummary(scope, region, profile, difficulty);
+  return { mastered: summary.mastered, total: summary.total };
+}
+
+export function getRegionMapProgressSummary(
+  scope: GameScope,
+  region: Region,
+  profile: Profile,
+  difficulty: MapProgressDifficulty,
+): RegionMapProgress {
   const places = filterCountries({ scope, continents: [region] });
-  let mastered = 0;
-  for (const place of places) {
-    if (isPlaceFullyMastered(place.code, profile, difficulty)) {
-      mastered += 1;
+  const summary = summarizePlacesProgress(places, profile, difficulty);
+  return {
+    region,
+    mastered: summary.masteredPlaces,
+    total: summary.totalPlaces,
+    completedCategories: summary.completedCategories,
+    totalCategories: summary.totalCategories,
+    percentComplete: summary.percentComplete,
+  };
+}
+
+export function getRegionsMapProgress(
+  scope: GameScope,
+  profile: Profile,
+  difficulty: MapProgressDifficulty,
+): RegionMapProgress[] {
+  return getRegionsForScope(scope)
+    .map((region) => getRegionMapProgressSummary(scope, region, profile, difficulty))
+    .filter((entry) => entry.total > 0);
+}
+
+export function getCategoryMapProgress(
+  scope: GameScope,
+  profile: Profile,
+  difficulty: MapProgressDifficulty,
+): CategoryMapProgress[] {
+  const places = getPlayablePlacesForScope(scope);
+  const total = places.length;
+
+  return MAP_PROGRESS_CATEGORIES.map((category) => {
+    let completed = 0;
+    for (const place of places) {
+      if (getPlaceCategoryCompletion(place.code, profile, difficulty)[category]) {
+        completed += 1;
+      }
     }
-  }
-  return { mastered, total: places.length };
+    return {
+      category,
+      completed,
+      total,
+      percentComplete: total > 0 ? Math.round((completed / total) * 100) : 0,
+    };
+  });
 }
 
 export function getOverallMapProgress(
@@ -211,26 +311,7 @@ export function getMapProgressSummary(
   profile: Profile,
   difficulty: MapProgressDifficulty,
 ): MapProgressSummary {
-  const places = getPlayablePlacesForScope(scope);
-  const totalPlaces = places.length;
-  const totalCategories = totalPlaces * MAP_PROGRESS_CATEGORIES.length;
-  let completedCategories = 0;
-  let masteredPlaces = 0;
-
-  for (const place of places) {
-    const level = getPlaceMasteryLevel(place.code, profile, difficulty);
-    completedCategories += level;
-    if (level === 4) masteredPlaces += 1;
-  }
-
-  return {
-    completedCategories,
-    totalCategories,
-    masteredPlaces,
-    totalPlaces,
-    percentComplete:
-      totalCategories > 0 ? Math.round((completedCategories / totalCategories) * 100) : 0,
-  };
+  return summarizePlacesProgress(getPlayablePlacesForScope(scope), profile, difficulty);
 }
 
 export function buildProgressFillMap(

@@ -1,7 +1,7 @@
 "use client";
 
 import { useProfiles } from "@/components/ProfileProvider";
-import { isSoundEnabled, playSound } from "@/lib/sound";
+import { isSoundEnabled, playSound, unlockAudio } from "@/lib/sound";
 import { updateProfileSettings } from "@/lib/storage";
 import { cn } from "@/lib/utils";
 
@@ -16,7 +16,10 @@ export function SoundToggle() {
     if (!activeProfile) return;
     updateProfileSettings(activeProfile.id, { soundEnabled: next });
     refresh();
-    if (next) playSound("tap");
+    if (next) {
+      unlockAudio();
+      playSound("tap");
+    }
   }
 
   return (

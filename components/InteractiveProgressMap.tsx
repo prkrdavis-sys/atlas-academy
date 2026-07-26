@@ -23,7 +23,7 @@ import {
 } from "@/lib/context-maps";
 import { createInteractiveProgressPathStyleResolver, EMPTY_MAP_PATH_ID_SET } from "@/lib/map-interaction";
 import { buildUsaProgressFillMap, buildWorldProgressFillMap } from "@/lib/map-progress";
-import { MAP_PANZOOM_OPTIONS } from "@/lib/map-panzoom";
+import { MAP_PANZOOM_OPTIONS, MAP_ZOOM_BUTTON_STEP } from "@/lib/map-panzoom";
 import type { Country, GameScope, MapProgressDifficulty, Profile } from "@/lib/types";
 import { useIsDark } from "@/lib/use-is-dark";
 import { focusWorldMapOnPaths } from "@/lib/world-map-focus";
@@ -223,8 +223,8 @@ export function InteractiveProgressMap({
           </p>
         </div>
         <MapZoomControls
-          onZoomOut={() => panzoomRef.current?.zoomOut()}
-          onZoomIn={() => panzoomRef.current?.zoomIn()}
+          onZoomOut={() => panzoomRef.current?.zoomOut({ step: MAP_ZOOM_BUTTON_STEP })}
+          onZoomIn={() => panzoomRef.current?.zoomIn({ step: MAP_ZOOM_BUTTON_STEP })}
           onReset={() => panzoomRef.current?.reset()}
         />
       </div>

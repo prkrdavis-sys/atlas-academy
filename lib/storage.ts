@@ -17,6 +17,7 @@ import {
 import {
   AVATAR_COLORS,
   DEFAULT_ROUND_QUESTION_COUNT,
+  DEFAULT_SELECTED_MODE,
   DIFFICULTIES,
   GAME_MODES,
   SPEED_ROUND_ALL_TYPES,
@@ -24,6 +25,7 @@ import {
   normalizeRoundQuestionSetting,
 } from "@/lib/types";
 import { checkAchievements as evaluateAchievements, reconcileAchievements } from "@/lib/achievements";
+import { isValidSetupMode } from "@/lib/game-setup";
 import { getDailyDateKey, offsetDailyDateKey } from "@/lib/game-engine";
 import { MAX_LOGIN_DATE_HISTORY_DAYS } from "@/lib/login-streak";
 import { scopedDailyKey } from "@/lib/scope";
@@ -270,7 +272,12 @@ export function normalizeProfile(profile: Profile): Profile {
   normalized.achievements = reconcileAchievements(normalized as Profile);
   migrateCommonlyMissedCountries(normalized as Profile);
   if (!normalized.settings.lastSelectedMode) {
-    normalized.settings.lastSelectedMode = "mixed";
+    normalized.settings.lastSelectedMode = DEFAULT_SELECTED_MODE;
+  }
+  if (!isValidSetupMode(normalized.settings.lastSelectedMode)) {
+    normalized.settings.lastSelectedMode =
+      normalized.settings.recentModes?.find((mode) => isValidSetupMode(mode)) ??
+      DEFAULT_SELECTED_MODE;
   }
   if (!normalized.settings.recentModes?.length) {
     normalized.settings.recentModes = [normalized.settings.lastSelectedMode];
@@ -389,6 +396,7 @@ export function updateProfileSettings(
 
 export function recordModeSelection(profileId: string, mode: GameMode) {
   const state = loadState();
+  if (!isValidSetupMode(mode)) return state;
   const profile = state.profiles.find((p) => p.id === profileId);
   if (!profile) return state;
 

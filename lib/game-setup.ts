@@ -161,16 +161,27 @@ export function buildSettingsPatch(
   };
 }
 
+/** Last setup-screen mode used for the home Play button (excludes daily and legacy modes). */
+export function getMainPlayMode(profile: Profile): GameMode {
+  const lastSelected = profile.settings.lastSelectedMode ?? DEFAULT_SELECTED_MODE;
+  if (isValidSetupMode(lastSelected)) {
+    return lastSelected;
+  }
+
+  const fromRecent = profile.settings.recentModes?.find((mode) => isValidSetupMode(mode));
+  if (fromRecent) {
+    return fromRecent;
+  }
+
+  return DEFAULT_SELECTED_MODE;
+}
+
 /** @deprecated Use resolvePlayConfig instead. */
 export function resolvePlayMode(
   profile: Profile,
   scope: GameScope,
 ): { mode: GameMode; fallbackMessage?: string } {
-  const resolved = resolvePlayConfig(
-    profile,
-    profile.settings.lastSelectedMode ?? DEFAULT_SELECTED_MODE,
-    scope,
-  );
+  const resolved = resolvePlayConfig(profile, getMainPlayMode(profile), scope);
   return { mode: resolved.mode, fallbackMessage: resolved.fallbackMessage };
 }
 

@@ -3,8 +3,9 @@
 import dynamic from "next/dynamic";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useProfiles } from "@/components/ProfileProvider";
+import { MapPageProgressPanel } from "@/components/MapPageProgressPanel";
 import { MapProgressDifficultySelector } from "@/components/PlaceMapProgressPanel";
+import { useProfiles } from "@/components/ProfileProvider";
 import { resolvePlaceCodeFromParam } from "@/lib/context-maps";
 import { isStateCode } from "@/lib/scope";
 import type { GameScope, MapProgressDifficulty } from "@/lib/types";
@@ -135,6 +136,14 @@ export function MapPageContent() {
         profile={profile}
         difficulty={mapDifficulty}
       />
+
+      {profile ? (
+        <MapPageProgressPanel
+          scope={view}
+          profile={profile}
+          difficulty={mapDifficulty}
+        />
+      ) : null}
     </div>
   );
 }

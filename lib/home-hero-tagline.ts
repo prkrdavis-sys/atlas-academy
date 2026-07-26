@@ -1,3 +1,4 @@
+import { getMainPlayMode } from "@/lib/game-setup";
 import { modeRef } from "@/lib/mode-ref";
 import { getScopedModeInfo, SCOPE_INFO } from "@/lib/scope";
 import {
@@ -67,7 +68,7 @@ export function buildHomeHeroTaglineCandidates({
   const achievementCount = profile.achievements.length;
   const modesTried = modesWithMinPlayed(profile, 1, scope);
   const allTimeBest = maxGlobalBestStreak(profile, scope);
-  const lastMode = getScopedModeInfo(profile.settings.lastSelectedMode, scope);
+  const lastMode = getScopedModeInfo(getMainPlayMode(profile), scope);
   const otherScope = scope === "world" ? "usa" : "world";
   const otherScopeInfo = SCOPE_INFO[otherScope];
 
