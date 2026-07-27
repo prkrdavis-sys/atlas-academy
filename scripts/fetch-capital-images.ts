@@ -414,10 +414,10 @@ const COMMONS_FILE_OVERRIDES: Record<string, string> = {
   CV: "Praia - Stadt vom Plateau.JPG",
   CF: "Bangui City Centre.jpg",
   TD: "Storm clouds over N'Djamena (15386229016).jpg",
-  EG: "Cairo skyline, Nile River, Egypt.jpg",
+  EG: "Flickr - Bakar 88 - Cairo, Egypt (HDR).jpg",
   GQ: "Malabo a 13-oct-01.jpg",
   ET: "Addis Ababa skyline.jpg",
-  GW: "DC - Foto Serra No 027 - Bissau - Vista Aérea (1955).jpg",
+  GW: "DC - Foto Serra No 118 - Vista aérea de Bissau.jpg",
   CI: "Yamoussoukro panorama.jpg",
   KE: "Nairobi skyline.jpg",
   LY: "Tripoli aerial view.jpg",
@@ -450,7 +450,7 @@ const COMMONS_FILE_OVERRIDES: Record<string, string> = {
   PW: "בניין הקפיטול בבירת פלאו נגרולומוד 01530.jpg",
   PF: "Tahiti - Papeete 4.JPG",
   // Asia capital skyline/aerial downtown redo (2026-07-27 visual audit)
-  IN: "Delhi and sarroundings aerial photo 08-2016 img9.jpg",
+  IN: "New Delhi skyline at dusk.jpg",
   NP: "Swayambhu and Kathmandu From Syuchatar 8 - panoramio.jpg",
   BH: "Manama Manama Skyline 04.jpg",
   KZ: "Central Downtown Astana pamorama.jpg",
@@ -462,6 +462,20 @@ const COMMONS_FILE_OVERRIDES: Record<string, string> = {
   TH: "Bangkok Baiyoke 02.jpg",
   LA: "Vientiane Patouxai Laos.jpg",
   OM: "Muscatomanpanoramacityview.JPG",
+  // Remaining no-match / weak redo overrides (2026-07-27 follow-up)
+  MW: "Lilongwe City Centre.JPG",
+  BZ: "Belmopan 1 mark (28048263557).jpg",
+  BQ: "The Town of Kralendijk in Bonaire (13256557603).jpg",
+  TZ: "Dodoma, Tanzania.JPG",
+  TF: "2020-11 Kerguelen Islands - PAF from the sea 04.jpg",
+  TK: "Fakaofo village square 20070716.jpg",
+  PN: "Adamstown.jpg",
+  ST: "São Tomé e Príncipe - city.jpg",
+  NR: "Nauru Aerial.jpg",
+  AI: "Anguilla-aerial view western portion.jpg",
+  AG: "St. John's Antigua Cruise Port 1.jpg",
+  VG: "Road Town, Tortola, British Virgin Islands (32824455796).jpg",
+  SZ: "Mbabane Landscape.jpg",
 };
 
 // Required for automated selection — filenames must signal a city overview.
