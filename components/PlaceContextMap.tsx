@@ -39,6 +39,7 @@ const boundsCache: { data: MapBoundsManifest | null } = { data: null };
 /**
  * Close-up framing around the mainland/core landmass (focusPaths), so overseas
  * territories do not force a tiny speck-in-ocean crop on Learn/Library cards.
+ * Zoom is relative to the featured place; surroundings stay subject-centered.
  */
 const CROP_OPTIONS = {
   compact: {
@@ -46,18 +47,21 @@ const CROP_OPTIONS = {
     paddingRatio: 0.35,
     useFocusBounds: true,
     completeSurroundings: true,
+    maxExpandRatio: 1.55,
   },
   learn: {
     aspectRatio: 2.2,
     paddingRatio: 0.45,
     useFocusBounds: true,
     completeSurroundings: true,
+    maxExpandRatio: 1.6,
   },
   hero: {
     aspectRatio: 1.6,
     paddingRatio: 0.4,
     useFocusBounds: true,
     completeSurroundings: true,
+    maxExpandRatio: 1.55,
   },
 } as const;
 
@@ -258,7 +262,12 @@ export function PlaceContextMap({
     const template = boundsManifest[templateKey];
     if (!template) return undefined;
 
-    return computeFocusedViewBox(template, getContextMapPathIds(country), CROP_OPTIONS[variant]);
+    return computeFocusedViewBox(template, getContextMapPathIds(country), {
+      ...CROP_OPTIONS[variant],
+      // Restrict surroundings completion to land-border neighbors so a wide
+      // aspect crop cannot cascade to distant countries and shove the subject off-center.
+      neighborPathIds: getNeighborContextMapPathIds(country),
+    });
   }, [boundsManifest, templateKey, country, variant]);
 
   useEffect(() => {

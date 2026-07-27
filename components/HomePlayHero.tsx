@@ -13,6 +13,7 @@ import {
 import { DailyCalendarIcon } from "@/components/DailyCalendarIcon";
 import { HomeHeroTaglineContent } from "@/components/HomeHeroTaglineContent";
 import { ProfileRequiredDialog } from "@/components/ProfileRequiredDialog";
+import { GLOBE_TAP_TRAVEL_THRESHOLD } from "@/components/globe/globe-scene";
 import type { GlobeHandle } from "@/components/home/GlobeBackground";
 import { getActiveGameSummaryParts, getMainPlayMode, resolvePlayMode } from "@/lib/game-setup";
 import { hasPlayedDailyToday } from "@/lib/game-engine";
@@ -221,21 +222,19 @@ export function HomePlayHero({
   );
 }
 
-/** Pointer travel (px) below which a release counts as a tap, not a drag. */
-const GLOBE_TAP_TRAVEL_THRESHOLD = 8;
-
 type GlobeDragZoneProps = {
   href: string;
   globeHandleRef?: React.RefObject<GlobeHandle | null>;
 };
 
 /**
- * The open space over the planet. Dragging it spins the globe (via the
- * imperative handle, since this overlay sits above the canvas), while a plain
- * tap, click, or keyboard activation opens the progress map.
+ * The open space over the planet. Dragging it spins the globe in any direction
+ * (via the imperative handle, since this overlay sits above the canvas), while
+ * a plain tap, click, or keyboard activation opens the progress map. Touch
+ * scrolling is disabled here so mobile gestures move the globe, not the page.
  */
 function GlobeDragZone({ href, globeHandleRef }: GlobeDragZoneProps) {
-  const dragRef = useRef<{ pointerId: number; lastX: number } | null>(null);
+  const dragRef = useRef<{ pointerId: number; lastX: number; lastY: number } | null>(null);
   const traveledRef = useRef(0);
 
   function endDrag(event: React.PointerEvent<HTMLAnchorElement>) {
@@ -254,9 +253,13 @@ function GlobeDragZone({ href, globeHandleRef }: GlobeDragZoneProps) {
       href={href}
       aria-label="Open your progress map"
       draggable={false}
-      className="block min-h-[5rem] w-full flex-1 basis-0 cursor-grab touch-pan-y select-none active:cursor-grabbing"
+      className="block min-h-[5rem] w-full flex-1 basis-0 cursor-grab touch-none select-none active:cursor-grabbing"
       onPointerDown={(event) => {
-        dragRef.current = { pointerId: event.pointerId, lastX: event.clientX };
+        dragRef.current = {
+          pointerId: event.pointerId,
+          lastX: event.clientX,
+          lastY: event.clientY,
+        };
         traveledRef.current = 0;
         globeHandleRef?.current?.setDragging(true);
         try {
@@ -269,9 +272,11 @@ function GlobeDragZone({ href, globeHandleRef }: GlobeDragZoneProps) {
         const drag = dragRef.current;
         if (!drag || drag.pointerId !== event.pointerId) return;
         const deltaX = event.clientX - drag.lastX;
+        const deltaY = event.clientY - drag.lastY;
         drag.lastX = event.clientX;
-        traveledRef.current += Math.abs(deltaX);
-        globeHandleRef?.current?.spinByPixels(deltaX);
+        drag.lastY = event.clientY;
+        traveledRef.current += Math.hypot(deltaX, deltaY);
+        globeHandleRef?.current?.spinByPixels(deltaX, deltaY);
       }}
       onPointerUp={endDrag}
       onPointerCancel={endDrag}

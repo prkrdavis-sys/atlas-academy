@@ -13,10 +13,15 @@ export const MAP_PANZOOM_OPTIONS = {
   minScale: 1,
   step: MAP_PANZOOM_STEP,
   contain: "outside",
+  // Bind pointers to the viewport parent so panning works across the whole
+  // visible frame when the map is scaled past the container edges.
+  canvas: true,
   cursor: "grab",
   excludeClass: PANZOOM_EXCLUDE_CLASS,
-  // Pan while pinching feels more natural on touch screens.
-  pinchAndPan: true,
+  // Pinch+pan while `contain` is on uses stale dimensions mid-gesture and makes
+  // follow-up pans feel wrongly scaled on mobile. Pinch still zooms; single-finger
+  // pan divides deltas by the current scale for 1:1 screen tracking.
+  pinchAndPan: false,
   duration: 120,
   handleStartEvent: (event: Event) => {
     event.preventDefault();

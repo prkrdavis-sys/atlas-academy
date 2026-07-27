@@ -184,8 +184,7 @@ export function MapPageContent() {
             {profile ? <ExplorerRankBadge profile={profile} scope={panelScope} /> : null}
           </div>
           <p className="mt-1 max-w-2xl text-sm text-slate-600 dark:text-slate-400">
-            Explore every country and all 50 U.S. states. Pan and zoom to find a place, then click to
-            see your map progress and jump to its Library entry.
+            Click a country or U.S. state to see your progress and open its Library page.
           </p>
         </div>
         <div className="flex flex-col items-stretch gap-3 sm:items-end">

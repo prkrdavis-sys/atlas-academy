@@ -14,8 +14,14 @@ import type { MapProgressDifficulty, Profile } from "@/lib/types";
 export const GLOBE_ROTATION_SPEED = 0.045;
 /** Pointer travel (px) below which a release counts as a tap, not a drag. */
 export const GLOBE_TAP_TRAVEL_THRESHOLD = 8;
-/** Radians of spin per pixel of horizontal drag. */
+/** Radians of spin per pixel of pointer drag. */
 export const GLOBE_DRAG_SPIN_FACTOR = 0.006;
+/** Max mesh tilt (radians) from vertical drag before clamping. */
+export const GLOBE_MAX_TILT = Math.PI * 0.45;
+/** Idle time after a drag before the globe eases back onto its default axis. */
+export const GLOBE_IDLE_RETURN_DELAY_MS = 2000;
+/** Damping factor for easing tilt back to the default axis (higher = snappier). */
+export const GLOBE_TILT_RETURN_DAMP = 2.4;
 
 export function supportsWebGL(): boolean {
   try {
@@ -62,16 +68,18 @@ export type GlobeTextureConfig = {
   difficulty: MapProgressDifficulty;
   usMode: GlobeUsMode;
   isDark: boolean;
+  /** Place currently selected on the interactive map globe. */
+  selectedCode?: string | null;
 };
 
 /**
  * Builds the progress-painted planet texture at the highest resolution the
  * device's GPU comfortably supports, rebuilding when the profile, difficulty,
- * US rendering mode, or theme changes.
+ * US rendering mode, theme, or selected place changes.
  */
 export function useGlobeTexture(
   profile: Profile | null,
-  { difficulty, usMode, isDark }: GlobeTextureConfig,
+  { difficulty, usMode, isDark, selectedCode = null }: GlobeTextureConfig,
 ): THREE.CanvasTexture {
   const gl = useThree((state) => state.gl);
   const size = useMemo(
@@ -81,12 +89,12 @@ export function useGlobeTexture(
 
   const texture = useMemo(() => {
     const canvasTexture = new THREE.CanvasTexture(
-      buildGlobeTextureCanvas(profile, { difficulty, usMode, isDark, size }),
+      buildGlobeTextureCanvas(profile, { difficulty, usMode, isDark, size, selectedCode }),
     );
     canvasTexture.colorSpace = THREE.SRGBColorSpace;
     canvasTexture.anisotropy = Math.min(8, gl.capabilities.getMaxAnisotropy());
     return canvasTexture;
-  }, [profile, difficulty, usMode, isDark, size, gl]);
+  }, [profile, difficulty, usMode, isDark, size, selectedCode, gl]);
 
   useEffect(() => () => texture.dispose(), [texture]);
 
@@ -111,11 +119,35 @@ export function GlobeAtmosphere({ isDark }: { isDark: boolean }) {
 }
 
 /**
+ * Scene fill lights for the globe. When day/night is on, a dim ambient keeps
+ * mastery colors readable and the real-time sun (mounted on the mesh) adds the
+ * terminator. When off, studio lighting lights the whole planet evenly.
+ */
+export function GlobeFillLights({
+  isDark,
+  dayNight,
+}: {
+  isDark: boolean;
+  dayNight: boolean;
+}) {
+  if (dayNight) {
+    // Dark mode needs more fill so navy oceans stay visible; light stays a bit dimmer.
+    return <ambientLight intensity={isDark ? 0.78 : 0.62} />;
+  }
+  return (
+    <>
+      <ambientLight intensity={1.15} />
+      <directionalLight position={[3, 2, 4]} intensity={1.7} />
+    </>
+  );
+}
+
+/**
  * Real-time sunlight for the planet mesh. Mount as a child of the earth mesh
  * so the day/night terminator stays locked to geographic longitude while the
  * globe spins or the camera orbits.
  */
-export function EarthSunLight() {
+export function EarthSunLight({ isDark }: { isDark: boolean }) {
   const lightRef = useRef<THREE.DirectionalLight>(null);
 
   useLayoutEffect(() => {
@@ -137,8 +169,14 @@ export function EarthSunLight() {
     light.position.set(sun.x, sun.y, sun.z).multiplyScalar(5);
   });
 
-  // Keep the sun gentle — ambient does most of the lighting so night stays readable.
-  return <directionalLight ref={lightRef} intensity={0.65} color="#fff4e0" />;
+  // Slightly stronger in dark mode so the day side pops against space.
+  return (
+    <directionalLight
+      ref={lightRef}
+      intensity={isDark ? 1.95 : 1.75}
+      color="#fff4e0"
+    />
+  );
 }
 
 /** Pointer capture can throw for already-released or synthetic pointers. */

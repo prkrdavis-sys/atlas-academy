@@ -22,6 +22,9 @@ export function GameSetupPageContent() {
           <h1 className="mt-3 font-display text-2xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 sm:text-3xl">
             Choose a mode
           </h1>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400 sm:text-base">
+            Which way do you like to play?
+          </p>
         </div>
         <ScopeSelector scope={scope} onSelect={selectScope} />
       </header>

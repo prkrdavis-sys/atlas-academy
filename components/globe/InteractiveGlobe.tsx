@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
-import { Canvas, type ThreeEvent } from "@react-three/fiber";
+import { useCallback, useRef, useState, type RefObject } from "react";
+import { Canvas, useFrame, type ThreeEvent } from "@react-three/fiber";
 import { OrbitControls, Stars } from "@react-three/drei";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
@@ -10,6 +10,7 @@ import {
   GLOBE_ROTATION_SPEED,
   GLOBE_TAP_TRAVEL_THRESHOLD,
   GlobeAtmosphere,
+  GlobeFillLights,
   useGlobeSceneEnvironment,
   useGlobeTexture,
 } from "@/components/globe/globe-scene";
@@ -21,6 +22,7 @@ import { pickGlobePlaceAtUv } from "@/lib/globe-picking";
 import type { GlobeUsMode } from "@/lib/globe-texture";
 import { isStateCode } from "@/lib/scope";
 import type { MapProgressDifficulty, Profile } from "@/lib/types";
+import { useGlobeDayNight } from "@/lib/use-globe-day-night";
 import { useIsDark } from "@/lib/use-is-dark";
 import { cn } from "@/lib/utils";
 
@@ -30,6 +32,26 @@ const MAX_CAMERA_DISTANCE = 4;
 const INITIAL_CAMERA_DISTANCE = 2.9;
 /** Camera-distance multiplier for one zoom button press. */
 const ZOOM_BUTTON_FACTOR = 0.75;
+/** Orbit drag speed at {@link INITIAL_CAMERA_DISTANCE}; scaled by zoom so close-ups stay controllable. */
+const BASE_ROTATE_SPEED = 0.45;
+
+/**
+ * Keep drag/spin sensitivity proportional to camera distance so a finger swipe
+ * moves the surface at a similar screen-space rate whether zoomed in or out.
+ */
+function SyncOrbitRotateSpeed({
+  controlsRef,
+}: {
+  controlsRef: RefObject<OrbitControlsImpl | null>;
+}) {
+  useFrame(() => {
+    const controls = controlsRef.current;
+    if (!controls) return;
+    controls.rotateSpeed =
+      BASE_ROTATE_SPEED * (controls.getDistance() / INITIAL_CAMERA_DISTANCE);
+  });
+  return null;
+}
 
 type TapState = { pointerId: number; lastX: number; lastY: number; traveled: number };
 
@@ -38,12 +60,22 @@ type GlobeSceneProps = {
   difficulty: MapProgressDifficulty;
   usMode: GlobeUsMode;
   isDark: boolean;
+  dayNight: boolean;
+  selectedCode: string | null;
   onPickPlace: (code: string | null) => void;
 };
 
 /** The planet mesh with tap-to-select picking via texture UVs. */
-function PickableGlobe({ profile, difficulty, usMode, isDark, onPickPlace }: GlobeSceneProps) {
-  const texture = useGlobeTexture(profile, { difficulty, usMode, isDark });
+function PickableGlobe({
+  profile,
+  difficulty,
+  usMode,
+  isDark,
+  dayNight,
+  selectedCode,
+  onPickPlace,
+}: GlobeSceneProps) {
+  const texture = useGlobeTexture(profile, { difficulty, usMode, isDark, selectedCode });
   const tapRef = useRef<TapState | null>(null);
 
   const onPointerDown = (event: ThreeEvent<PointerEvent>) => {
@@ -87,7 +119,7 @@ function PickableGlobe({ profile, difficulty, usMode, isDark, onPickPlace }: Glo
       >
         <sphereGeometry args={[1, 96, 96]} />
         <meshStandardMaterial map={texture} roughness={0.9} metalness={0} />
-        <EarthSunLight />
+        {dayNight ? <EarthSunLight isDark={isDark} /> : null}
       </mesh>
       <GlobeAtmosphere isDark={isDark} />
     </group>
@@ -119,6 +151,7 @@ export default function InteractiveGlobe({
 }: InteractiveGlobeProps) {
   const { webglOk, reducedMotion, pageVisible } = useGlobeSceneEnvironment();
   const { isDark, ready } = useIsDark();
+  const { enabled: dayNight } = useGlobeDayNight();
   const containerRef = useRef<HTMLDivElement>(null);
   const controlsRef = useRef<OrbitControlsImpl | null>(null);
   const [autoSpin, setAutoSpin] = useState(true);
@@ -172,8 +205,7 @@ export default function InteractiveGlobe({
             style={{ touchAction: "none" }}
             onPointerMissed={() => onSelectPlace(null)}
           >
-            {/* High fill keeps mastery colors legible; sun only adds a soft terminator. */}
-            <ambientLight intensity={isDark ? 0.95 : 1.05} />
+            <GlobeFillLights isDark={isDark} dayNight={dayNight} />
             {isDark ? (
               <Stars
                 radius={60}
@@ -190,14 +222,17 @@ export default function InteractiveGlobe({
               difficulty={difficulty}
               usMode={usMode}
               isDark={isDark}
+              dayNight={dayNight}
+              selectedCode={selectedCode}
               onPickPlace={onSelectPlace}
             />
+            <SyncOrbitRotateSpeed controlsRef={controlsRef} />
             <OrbitControls
               ref={controlsRef}
               enablePan={false}
               enableDamping
               dampingFactor={0.08}
-              rotateSpeed={0.45}
+              rotateSpeed={BASE_ROTATE_SPEED}
               zoomSpeed={0.7}
               minDistance={MIN_CAMERA_DISTANCE}
               maxDistance={MAX_CAMERA_DISTANCE}

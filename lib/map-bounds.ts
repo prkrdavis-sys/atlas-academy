@@ -64,17 +64,26 @@ function boundsArea([left, top, right, bottom]: PathBounds): number {
 }
 
 /**
- * Decide whether a partially visible country should be pulled fully into frame.
+ * Decide whether a partially visible neighbor should be pulled fully into frame.
  * Completes meaningful surroundings; ignores tiny corner overlaps of huge countries.
  */
-function shouldCompletePartiallyVisible(focus: PathBounds, crop: PathBounds): boolean {
+function shouldCompletePartiallyVisible(
+  focus: PathBounds,
+  crop: PathBounds,
+  subjectArea: number,
+): boolean {
   const visible = intersectionArea(focus, crop);
   const area = boundsArea(focus);
   if (visible <= 0 || area <= 0) return false;
   if (visible >= area * 0.999) return false;
 
   const visibleFraction = visible / area;
-  if (visibleFraction >= 0.2) return true;
+  // Huge neighbors (e.g. Brazil next to Guyana): leave partial unless already mostly in view.
+  if (subjectArea > 0 && area > subjectArea * 6 && visibleFraction < 0.55) {
+    return false;
+  }
+
+  if (visibleFraction >= 0.15) return true;
 
   const overflowX =
     Math.max(0, crop[0] - focus[0]) + Math.max(0, focus[2] - crop[2]);
@@ -82,84 +91,125 @@ function shouldCompletePartiallyVisible(focus: PathBounds, crop: PathBounds): bo
     Math.max(0, crop[1] - focus[1]) + Math.max(0, focus[3] - crop[3]);
   const cropWidth = crop[2] - crop[0];
   const cropHeight = crop[3] - crop[1];
-  return overflowX <= cropWidth * 0.4 && overflowY <= cropHeight * 0.4;
+  return overflowX <= cropWidth * 0.35 && overflowY <= cropHeight * 0.35;
 }
 
 /**
- * Expand an x/y/width/height crop so countries that are already substantially
- * in view are not sliced mid-shape at the frame edge.
+ * Subject-centered crop that fully covers `bounds` (LTRB), matching aspect if given.
+ */
+function cropCenteredOnSubject(
+  subjectCenterX: number,
+  subjectCenterY: number,
+  boundsLtrb: PathBounds,
+  options: { aspectRatio?: number; padRatio?: number },
+): PathBounds {
+  const pad =
+    Math.max(boundsLtrb[2] - boundsLtrb[0], boundsLtrb[3] - boundsLtrb[1]) *
+    (options.padRatio ?? 0.04);
+  const needLeft = subjectCenterX - (boundsLtrb[0] - pad);
+  const needRight = boundsLtrb[2] + pad - subjectCenterX;
+  const needTop = subjectCenterY - (boundsLtrb[1] - pad);
+  const needBottom = boundsLtrb[3] + pad - subjectCenterY;
+  let width = 2 * Math.max(needLeft, needRight, 1e-6);
+  let height = 2 * Math.max(needTop, needBottom, 1e-6);
+
+  if (options.aspectRatio !== undefined) {
+    const aspectRatio = options.aspectRatio;
+    if (width / height < aspectRatio) {
+      width = height * aspectRatio;
+    } else {
+      height = width / aspectRatio;
+    }
+  }
+
+  return [subjectCenterX - width / 2, subjectCenterY - height / 2, width, height];
+}
+
+/**
+ * Expand a subject-centered close-up so border neighbors already in view are not
+ * sliced mid-shape. Always keeps the featured place centered; never recenters on
+ * surrounding countries (which previously pushed places like France off-frame).
  */
 function expandCropToCompleteSurroundings(
   cropXYWH: PathBounds,
   template: MapTemplateBounds,
-  options: { aspectRatio?: number; maxExpandRatio: number },
+  subject: PathBounds,
+  options: {
+    aspectRatio?: number;
+    maxExpandRatio: number;
+    /** When set, only these path ids are candidates (typically land-border neighbors). */
+    neighborPathIds?: string[];
+  },
 ): PathBounds {
-  let [x, y, width, height] = cropXYWH;
-  const originalWidth = width;
-  const originalHeight = height;
+  const [x0, y0, originalWidth, originalHeight] = cropXYWH;
+  const subjectCenterX = (subject[0] + subject[2]) / 2;
+  const subjectCenterY = (subject[1] + subject[3]) / 2;
+  const subjectArea = boundsArea(subject);
+  const originalCropLtrb: PathBounds = [x0, y0, x0 + originalWidth, y0 + originalHeight];
 
-  for (let iteration = 0; iteration < 5; iteration += 1) {
-    const cropLtrb: PathBounds = [x, y, x + width, y + height];
-    const toInclude: PathBounds[] = [];
+  const candidateIds =
+    options.neighborPathIds !== undefined
+      ? options.neighborPathIds
+      : Object.keys(template.focusPaths ?? template.paths);
 
-    for (const pathId of Object.keys(template.paths)) {
-      const focus = template.focusPaths?.[pathId] ?? template.paths[pathId];
-      if (!focus || !shouldCompletePartiallyVisible(focus, cropLtrb)) continue;
-      toInclude.push(focus);
+  const toInclude: PathBounds[] = [];
+  for (const pathId of candidateIds) {
+    const focus = template.focusPaths?.[pathId] ?? template.paths[pathId];
+    if (!focus || !shouldCompletePartiallyVisible(focus, originalCropLtrb, subjectArea)) {
+      continue;
     }
 
-    if (toInclude.length === 0) break;
-
-    const united = unionBounds([cropLtrb, ...toInclude]);
-    if (!united) break;
-
-    const pad = Math.max(united[2] - united[0], united[3] - united[1]) * 0.04;
-    let nextLeft = united[0] - pad;
-    let nextTop = united[1] - pad;
-    let nextWidth = united[2] - united[0] + pad * 2;
-    let nextHeight = united[3] - united[1] + pad * 2;
-    const centerX = nextLeft + nextWidth / 2;
-    const centerY = nextTop + nextHeight / 2;
-
-    if (options.aspectRatio !== undefined) {
-      const aspectRatio = options.aspectRatio;
-      if (nextWidth / nextHeight < aspectRatio) {
-        nextWidth = nextHeight * aspectRatio;
-      } else {
-        nextHeight = nextWidth / aspectRatio;
-      }
-    }
-
-    const widthScale = nextWidth / originalWidth;
-    const heightScale = nextHeight / originalHeight;
-    if (widthScale > options.maxExpandRatio || heightScale > options.maxExpandRatio) {
-      const scale = Math.min(
-        options.maxExpandRatio / widthScale,
-        options.maxExpandRatio / heightScale,
-        1,
-      );
-      nextWidth *= scale;
-      nextHeight *= scale;
-    }
-
-    const nextX = centerX - nextWidth / 2;
-    const nextY = centerY - nextHeight / 2;
+    // Only complete a neighbor if it fits within the zoom budget while staying
+    // subject-centered — otherwise leave it partially visible at the edge.
+    const needed = cropCenteredOnSubject(subjectCenterX, subjectCenterY, focus, {
+      aspectRatio: options.aspectRatio,
+      padRatio: 0.04,
+    });
     if (
-      Math.abs(nextX - x) < 0.01 &&
-      Math.abs(nextY - y) < 0.01 &&
-      Math.abs(nextWidth - width) < 0.01 &&
-      Math.abs(nextHeight - height) < 0.01
+      needed[2] / originalWidth > options.maxExpandRatio ||
+      needed[3] / originalHeight > options.maxExpandRatio
     ) {
-      break;
+      continue;
     }
 
-    x = nextX;
-    y = nextY;
-    width = nextWidth;
-    height = nextHeight;
+    toInclude.push(focus);
   }
 
-  return [x, y, width, height];
+  if (toInclude.length === 0) {
+    return cropXYWH;
+  }
+
+  const united = unionBounds([originalCropLtrb, ...toInclude]);
+  if (!united) return cropXYWH;
+
+  let next = cropCenteredOnSubject(subjectCenterX, subjectCenterY, united, {
+    aspectRatio: options.aspectRatio,
+    padRatio: 0.04,
+  });
+
+  const widthScale = next[2] / originalWidth;
+  const heightScale = next[3] / originalHeight;
+  if (widthScale > options.maxExpandRatio || heightScale > options.maxExpandRatio) {
+    const scale = Math.min(
+      options.maxExpandRatio / widthScale,
+      options.maxExpandRatio / heightScale,
+      1,
+    );
+    next = [
+      subjectCenterX - (next[2] * scale) / 2,
+      subjectCenterY - (next[3] * scale) / 2,
+      next[2] * scale,
+      next[3] * scale,
+    ];
+  }
+
+  // Subject-centered crops always contain the subject when at least as large as
+  // the original close-up (which already framed it with margin).
+  if (next[2] < originalWidth || next[3] < originalHeight) {
+    return cropXYWH;
+  }
+
+  return next;
 }
 
 /**
@@ -219,6 +269,10 @@ function fitCloseUpViewBox(
  * By default frames the mainland/core landmass (`focusPaths`) so remote
  * territories (e.g. Caribbean Netherlands) and antimeridian fragments do not
  * force a continent-scale zoom-out.
+ *
+ * The featured place stays centered. Zoom is relative to its size (via
+ * `paddingRatio`); optional surroundings completion only pulls in nearby
+ * border neighbors that fit within `maxExpandRatio`.
  */
 export function computeFocusedViewBox(
   template: MapTemplateBounds,
@@ -233,10 +287,17 @@ export function computeFocusedViewBox(
      */
     useFocusBounds?: boolean;
     /**
-     * Expand the crop so countries already substantially in view are not cut
-     * off mid-shape. Default true.
+     * Expand the crop so border neighbors already substantially in view are not
+     * cut off mid-shape. Default true. The subject remains centered.
      */
     completeSurroundings?: boolean;
+    /**
+     * Path ids allowed for surroundings completion (typically land-border
+     * neighbors). When provided — including an empty list — only these ids are
+     * considered, which prevents cascading to distant countries grazed by a
+     * wide aspect frame. Omit to fall back to any partially visible path.
+     */
+    neighborPathIds?: string[];
     /** Max crop growth vs the initial subject close-up when completing surroundings. */
     maxExpandRatio?: number;
   },
@@ -264,9 +325,10 @@ export function computeFocusedViewBox(
   });
 
   if (options.completeSurroundings !== false) {
-    crop = expandCropToCompleteSurroundings(crop, template, {
+    crop = expandCropToCompleteSurroundings(crop, template, subjectBounds, {
       aspectRatio: options.aspectRatio,
-      maxExpandRatio: options.maxExpandRatio ?? 1.85,
+      maxExpandRatio: options.maxExpandRatio ?? 1.6,
+      neighborPathIds: options.neighborPathIds,
     });
   }
 

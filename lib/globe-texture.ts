@@ -1,5 +1,5 @@
 import globeData from "@/data/globe-countries.json";
-import { getProgressFillColor } from "@/lib/map-colors";
+import { getMapPalette, getProgressFillColor } from "@/lib/map-colors";
 import { getPlaceMasteryLevel } from "@/lib/map-progress";
 import type { MapProgressDifficulty, PlaceMasteryLevel, Profile } from "@/lib/types";
 
@@ -51,16 +51,16 @@ type GlobePalette = {
   stateBorder: string;
 };
 
-/** Deep-space ocean tuned to read against black space. */
+/** Deep navy ocean — blue enough to read as water against black space, not ink-black. */
 const DARK_GLOBE_PALETTE: GlobePalette = {
-  ocean: "#0a1224",
+  ocean: "#0c4a6e",
   border: "rgba(2, 6, 23, 0.55)",
   stateBorder: "rgba(2, 6, 23, 0.45)",
 };
 
-/** Daytime-sky ocean tuned to read against the pale light-mode space backdrop. */
+/** Soft sky-blue ocean — muted enough for light mode, still clearly water. */
 const LIGHT_GLOBE_PALETTE: GlobePalette = {
-  ocean: "#b7dcf2",
+  ocean: "#71b6d9",
   border: "rgba(51, 65, 85, 0.5)",
   stateBorder: "rgba(51, 65, 85, 0.4)",
 };
@@ -112,6 +112,8 @@ export type GlobeTextureOptions = {
   isDark?: boolean;
   /** Texture width in pixels; height is width / 2. */
   size?: number;
+  /** Place code currently selected on the map globe (shows teal highlight). */
+  selectedCode?: string | null;
 };
 
 /**
@@ -119,6 +121,8 @@ export type GlobeTextureOptions = {
  * player's mastery in the same fill scale as the 2D progress map (teal for
  * Normal, red for Hard), wrapped around the planet. In "states" mode the USA
  * is painted as 50 individually colored states instead of one country.
+ * When `selectedCode` is set, that place is overpainted with the same
+ * highlight fill used by the 2D progress map.
  */
 export function buildGlobeTextureCanvas(
   profile: Profile | null,
@@ -127,11 +131,13 @@ export function buildGlobeTextureCanvas(
     usMode = "states",
     isDark = true,
     size = GLOBE_BASE_TEXTURE_SIZE,
+    selectedCode = null,
   }: GlobeTextureOptions = {},
 ): HTMLCanvasElement {
   const width = size;
   const height = size / 2;
   const palette = getGlobePalette(isDark);
+  const mapPalette = getMapPalette(isDark);
   const pixelScale = width / GLOBE_BASE_TEXTURE_SIZE;
 
   const canvas = document.createElement("canvas");
@@ -177,6 +183,7 @@ export function buildGlobeTextureCanvas(
   // Ascending mastery so glows from bright places sit on top.
   const shapes = GLOBE_TEXTURE_DATA.countries
     .map((country) => ({
+      code: country.code,
       rings: country.rings,
       // In states mode the US country shape is just neutral base land under
       // the states; US-country mastery is intentionally ignored there.
@@ -186,6 +193,7 @@ export function buildGlobeTextureCanvas(
     .concat(
       showStates
         ? GLOBE_TEXTURE_DATA.usStates.map((state) => ({
+            code: state.code,
             rings: state.rings,
             level: masteryOf(state.code),
             isState: true,
@@ -196,6 +204,19 @@ export function buildGlobeTextureCanvas(
 
   for (const shape of shapes) {
     drawShape(shape.rings, shape.level, { isState: shape.isState });
+  }
+
+  if (selectedCode) {
+    const selected = shapes.find((shape) => shape.code === selectedCode);
+    if (selected) {
+      const path = buildPath(selected.rings, width, height);
+      const highlight = mapPalette.highlight;
+      ctx.fillStyle = highlight.fill;
+      ctx.fill(path, "evenodd");
+      ctx.lineWidth = (selected.isState ? 1.6 : 2.2) * pixelScale;
+      ctx.strokeStyle = highlight.stroke;
+      ctx.stroke(path);
+    }
   }
 
   return canvas;

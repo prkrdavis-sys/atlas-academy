@@ -2,6 +2,7 @@
 
 import type { RefObject, ReactNode } from "react";
 import { PlaceMapProgressPanel } from "@/components/PlaceMapProgressPanel";
+import { PANZOOM_EXCLUDE_CLASS } from "@/lib/map-colors";
 import type { GameScope, MapProgressDifficulty, Profile } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -61,7 +62,7 @@ export function ProgressMapContainer({
             difficulty={difficulty}
             scope={scope}
             variant="overlay"
-            className="max-sm:hidden"
+            className={cn(PANZOOM_EXCLUDE_CLASS, "max-sm:hidden")}
           />
         ) : null}
       </div>

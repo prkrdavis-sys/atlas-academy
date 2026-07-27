@@ -8,9 +8,13 @@ import * as THREE from "three";
 import {
   EarthSunLight,
   GLOBE_DRAG_SPIN_FACTOR,
+  GLOBE_IDLE_RETURN_DELAY_MS,
+  GLOBE_MAX_TILT,
   GLOBE_ROTATION_SPEED,
   GLOBE_TAP_TRAVEL_THRESHOLD,
+  GLOBE_TILT_RETURN_DAMP,
   GlobeAtmosphere,
+  GlobeFillLights,
   tryReleasePointerCapture,
   trySetPointerCapture,
   useGlobeSceneEnvironment,
@@ -18,6 +22,7 @@ import {
 } from "@/components/globe/globe-scene";
 import { SpaceBackdrop, StaticStarfield } from "@/components/globe/SpaceBackdrop";
 import type { Profile } from "@/lib/types";
+import { useGlobeDayNight } from "@/lib/use-globe-day-night";
 import { useGlobeUsMode } from "@/lib/use-globe-us-mode";
 import { useIsDark } from "@/lib/use-is-dark";
 
@@ -26,8 +31,8 @@ import { useIsDark } from "@/lib/use-is-dark";
  * and would otherwise swallow pointer events) can spin the planet by dragging.
  */
 export type GlobeHandle = {
-  /** Spin the globe by a horizontal pointer movement in pixels. */
-  spinByPixels: (deltaX: number) => void;
+  /** Spin the globe by a pointer movement in pixels (any direction). */
+  spinByPixels: (deltaX: number, deltaY?: number) => void;
   /** Pause/resume auto-spin while an external drag is in progress. */
   setDragging: (dragging: boolean) => void;
 };
@@ -37,25 +42,40 @@ type GlobeProps = {
   reducedMotion: boolean;
   isDark: boolean;
   usMode: "country" | "states";
+  dayNight: boolean;
   handleRef?: React.RefObject<GlobeHandle | null>;
 };
 
-type DragState = { pointerId: number; lastX: number; traveled: number };
+type DragState = { pointerId: number; lastX: number; lastY: number; traveled: number };
 
-function ProgressGlobe({ profile, reducedMotion, isDark, usMode, handleRef }: GlobeProps) {
+function applyGlobeSpin(mesh: THREE.Mesh, deltaX: number, deltaY: number) {
+  mesh.rotation.y += deltaX * GLOBE_DRAG_SPIN_FACTOR;
+  mesh.rotation.x = THREE.MathUtils.clamp(
+    mesh.rotation.x + deltaY * GLOBE_DRAG_SPIN_FACTOR,
+    -GLOBE_MAX_TILT,
+    GLOBE_MAX_TILT,
+  );
+}
+
+function ProgressGlobe({ profile, reducedMotion, isDark, usMode, dayNight, handleRef }: GlobeProps) {
   const router = useRouter();
   const globeRef = useRef<THREE.Mesh>(null);
   const dragRef = useRef<DragState | null>(null);
   const externallyDraggingRef = useRef(false);
+  /** 0 means "never interacted" so auto-spin starts immediately on mount. */
+  const lastInteractAtRef = useRef(0);
 
   useEffect(() => {
     if (!handleRef) return;
     handleRef.current = {
-      spinByPixels: (deltaX) => {
-        if (globeRef.current) globeRef.current.rotation.y += deltaX * GLOBE_DRAG_SPIN_FACTOR;
+      spinByPixels: (deltaX, deltaY = 0) => {
+        if (!globeRef.current) return;
+        applyGlobeSpin(globeRef.current, deltaX, deltaY);
+        lastInteractAtRef.current = performance.now();
       },
       setDragging: (dragging) => {
         externallyDraggingRef.current = dragging;
+        lastInteractAtRef.current = performance.now();
       },
     };
     return () => {
@@ -72,17 +92,34 @@ function ProgressGlobe({ profile, reducedMotion, isDark, usMode, handleRef }: Gl
   const texture = useGlobeTexture(profile, { difficulty: "medium", usMode, isDark });
 
   useFrame((_, delta) => {
-    // Auto-spin pauses while the player is dragging and resumes on release.
-    if (reducedMotion || dragRef.current || externallyDraggingRef.current || !globeRef.current) {
-      return;
+    if (reducedMotion || !globeRef.current) return;
+
+    const mesh = globeRef.current;
+    if (dragRef.current || externallyDraggingRef.current) return;
+
+    const lastInteractAt = lastInteractAtRef.current;
+    const idleMs = lastInteractAt === 0 ? GLOBE_IDLE_RETURN_DELAY_MS : performance.now() - lastInteractAt;
+    const onDefaultAxis = Math.abs(mesh.rotation.x) < 0.0005 && Math.abs(mesh.rotation.z) < 0.0005;
+
+    // Horizontal-only spins leave the default axis, so auto-spin resumes right
+    // away. A free tilt holds for a beat, then eases back before spinning.
+    if (idleMs < GLOBE_IDLE_RETURN_DELAY_MS && !onDefaultAxis) return;
+
+    if (!onDefaultAxis) {
+      mesh.rotation.x = THREE.MathUtils.damp(mesh.rotation.x, 0, GLOBE_TILT_RETURN_DAMP, delta);
+      mesh.rotation.z = THREE.MathUtils.damp(mesh.rotation.z, 0, GLOBE_TILT_RETURN_DAMP, delta);
+      if (Math.abs(mesh.rotation.x) <= 0.0005) mesh.rotation.x = 0;
+      if (Math.abs(mesh.rotation.z) <= 0.0005) mesh.rotation.z = 0;
     }
-    globeRef.current.rotation.y += delta * GLOBE_ROTATION_SPEED;
+
+    mesh.rotation.y += delta * GLOBE_ROTATION_SPEED;
   });
 
   function endDrag(event: ThreeEvent<PointerEvent>, { navigateOnTap }: { navigateOnTap: boolean }) {
     const drag = dragRef.current;
     if (!drag || drag.pointerId !== event.pointerId) return;
     dragRef.current = null;
+    lastInteractAtRef.current = performance.now();
     tryReleasePointerCapture(event.target as Element, event.pointerId);
     document.body.style.cursor = "grab";
     if (navigateOnTap && drag.traveled < GLOBE_TAP_TRAVEL_THRESHOLD) {
@@ -102,8 +139,10 @@ function ProgressGlobe({ profile, reducedMotion, isDark, usMode, handleRef }: Gl
           dragRef.current = {
             pointerId: event.pointerId,
             lastX: event.nativeEvent.clientX,
+            lastY: event.nativeEvent.clientY,
             traveled: 0,
           };
+          lastInteractAtRef.current = performance.now();
           trySetPointerCapture(event.target as Element, event.pointerId);
           document.body.style.cursor = "grabbing";
         }}
@@ -111,9 +150,12 @@ function ProgressGlobe({ profile, reducedMotion, isDark, usMode, handleRef }: Gl
           const drag = dragRef.current;
           if (!drag || drag.pointerId !== event.pointerId || !globeRef.current) return;
           const deltaX = event.nativeEvent.clientX - drag.lastX;
+          const deltaY = event.nativeEvent.clientY - drag.lastY;
           drag.lastX = event.nativeEvent.clientX;
-          drag.traveled += Math.abs(deltaX);
-          globeRef.current.rotation.y += deltaX * GLOBE_DRAG_SPIN_FACTOR;
+          drag.lastY = event.nativeEvent.clientY;
+          drag.traveled += Math.hypot(deltaX, deltaY);
+          applyGlobeSpin(globeRef.current, deltaX, deltaY);
+          lastInteractAtRef.current = performance.now();
         }}
         onPointerUp={(event) => endDrag(event, { navigateOnTap: true })}
         onPointerCancel={(event) => endDrag(event, { navigateOnTap: false })}
@@ -126,7 +168,7 @@ function ProgressGlobe({ profile, reducedMotion, isDark, usMode, handleRef }: Gl
       >
         <sphereGeometry args={[1, 64, 64]} />
         <meshStandardMaterial map={texture} roughness={0.9} metalness={0} />
-        <EarthSunLight />
+        {dayNight ? <EarthSunLight isDark={isDark} /> : null}
       </mesh>
       <GlobeAtmosphere isDark={isDark} />
     </group>
@@ -150,6 +192,7 @@ export default function GlobeBackground({
   const { webglOk, reducedMotion, pageVisible } = useGlobeSceneEnvironment();
   const { isDark } = useIsDark();
   const { usMode } = useGlobeUsMode();
+  const { enabled: dayNight } = useGlobeDayNight();
 
   return (
     <SpaceBackdrop
@@ -165,10 +208,9 @@ export default function GlobeBackground({
           dpr={[1, 1.75]}
           frameloop={pageVisible ? "always" : "never"}
           gl={{ antialias: true, alpha: true }}
-          style={{ touchAction: "pan-y" }}
+          style={{ touchAction: "none" }}
         >
-          {/* High fill keeps mastery colors legible; sun only adds a soft terminator. */}
-          <ambientLight intensity={isDark ? 0.95 : 1.05} />
+          <GlobeFillLights isDark={isDark} dayNight={dayNight} />
           {isDark ? (
             <Stars
               radius={60}
@@ -185,6 +227,7 @@ export default function GlobeBackground({
             reducedMotion={reducedMotion}
             isDark={isDark}
             usMode={usMode}
+            dayNight={dayNight}
             handleRef={handleRef}
           />
         </Canvas>
