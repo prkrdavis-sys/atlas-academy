@@ -7,9 +7,11 @@ import {
   atlasleLetters,
   buildAtlasleClues,
   collectAtlasleDictionary,
+  collectKnownCorrectLetterIndices,
   formatGuessIntoPattern,
   getUnlockedClueCount,
   patternStatuses,
+  pickAtlasleLetterHintIndex,
   scoreAtlasleGuess,
   toAtlaslePattern,
   type AtlasleTileStatus,
@@ -32,7 +34,7 @@ type AnswerAtlasleProps = {
   difficulty: Difficulty;
   scope: GameScope;
   disabled?: boolean;
-  onComplete: (correct: boolean, finalGuess: string) => void;
+  onComplete: (correct: boolean, finalGuess: string, hintsUsed: number) => void;
 };
 
 function Tile({
@@ -117,21 +119,58 @@ export function AnswerAtlasle({
   const [message, setMessage] = useState<string | null>(null);
   const [focused, setFocused] = useState(false);
   const [resolved, setResolved] = useState(false);
+  const [revealedLetterIndices, setRevealedLetterIndices] = useState<Set<number>>(() => new Set());
+  const [hintsUsed, setHintsUsed] = useState(0);
 
   const wrongGuesses = guesses.length;
   const unlockedClues = getUnlockedClueCount(wrongGuesses, difficulty, clues.length);
   const guessesLeft = maxGuesses - guesses.length;
-  const blankStatuses = useMemo(
-    () => answerPattern.split("").map(() => "empty" as const),
-    [answerPattern],
-  );
+  const canRevealLetters = difficulty === "easy";
+  const knownCorrect = useMemo(() => collectKnownCorrectLetterIndices(guesses), [guesses]);
+  const lettersAvailableToReveal = useMemo(() => {
+    let available = 0;
+    for (let i = 0; i < letterCount; i += 1) {
+      if (!revealedLetterIndices.has(i) && !knownCorrect.has(i)) available += 1;
+    }
+    return available;
+  }, [letterCount, revealedLetterIndices, knownCorrect]);
+
+  const currentRowStatuses = useMemo(() => {
+    let letterIndex = 0;
+    return answerPattern.split("").map((char) => {
+      if (char === " ") return "empty" as const;
+      const status = revealedLetterIndices.has(letterIndex) ? ("correct" as const) : ("empty" as const);
+      letterIndex += 1;
+      return status;
+    });
+  }, [answerPattern, revealedLetterIndices]);
 
   useEffect(() => {
     setGuesses([]);
     setValue("");
     setMessage(null);
     setResolved(false);
+    setRevealedLetterIndices(new Set());
+    setHintsUsed(0);
   }, [countryCode, correctAnswer, target]);
+
+  function handleRevealLetter() {
+    if (disabled || resolved || !canRevealLetters) return;
+
+    const index = pickAtlasleLetterHintIndex(
+      letterCount,
+      revealedLetterIndices,
+      knownCorrect,
+    );
+    if (index === null) {
+      setMessage("All letters revealed");
+      return;
+    }
+
+    setRevealedLetterIndices((prev) => new Set(prev).add(index));
+    setHintsUsed((count) => count + 1);
+    setMessage(null);
+  }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -163,13 +202,13 @@ export function AnswerAtlasle({
     const isWin = letters === answerLetters;
     if (isWin) {
       setResolved(true);
-      onComplete(true, displayPattern);
+      onComplete(true, displayPattern, hintsUsed);
       return;
     }
 
     if (nextGuesses.length >= maxGuesses) {
       setResolved(true);
-      onComplete(false, displayPattern);
+      onComplete(false, displayPattern, hintsUsed);
     }
   }
 
@@ -193,6 +232,11 @@ export function AnswerAtlasle({
         <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
           {guessesLeft} guess{guessesLeft === 1 ? "" : "es"} left
         </span>
+        {canRevealLetters && hintsUsed > 0 && (
+          <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
+            {hintsUsed} hint{hintsUsed === 1 ? "" : "s"} used
+          </span>
+        )}
       </div>
 
       {unlockedClues > 0 && (
@@ -220,7 +264,7 @@ export function AnswerAtlasle({
         {guesses.map((row, index) => (
           <PatternRow key={`guess-${index}`} pattern={row.pattern} statuses={row.statuses} size="sm" />
         ))}
-        {!resolved && <PatternRow pattern={answerPattern} statuses={blankStatuses} size="sm" />}
+        {!resolved && <PatternRow pattern={answerPattern} statuses={currentRowStatuses} size="sm" />}
         {resolved && guesses[guesses.length - 1]?.pattern !== answerPattern && (
           <PatternRow
             pattern={answerPattern}
@@ -234,28 +278,43 @@ export function AnswerAtlasle({
         <form
           onSubmit={handleSubmit}
           autoComplete="off"
-          className="grid grid-cols-[minmax(0,1fr)_auto] gap-2 sm:gap-3"
+          className="space-y-2"
         >
-          <input
-            type="text"
-            name="atlasle-guess"
-            value={value}
-            readOnly={!focused}
-            onFocus={() => setFocused(true)}
-            onChange={(e) => {
-              setValue(e.target.value);
-              if (message) setMessage(null);
-            }}
-            disabled={disabled}
-            placeholder={`Type ${letterCount}-letter guess...`}
-            className="min-w-0 rounded-2xl border-2 border-slate-200 bg-white px-4 py-3 text-base uppercase shadow-sm focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-emerald-500 dark:focus:ring-emerald-900 sm:text-sm"
-            autoComplete="off"
-            spellCheck={false}
-            autoCapitalize="characters"
-          />
-          <Button type="submit" disabled={disabled || !value.trim()}>
-            Guess
-          </Button>
+          <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-2 sm:gap-3">
+            <input
+              type="text"
+              name="atlasle-guess"
+              value={value}
+              readOnly={!focused}
+              onFocus={() => setFocused(true)}
+              onChange={(e) => {
+                setValue(e.target.value);
+                if (message) setMessage(null);
+              }}
+              disabled={disabled}
+              placeholder={`Type ${letterCount}-letter guess...`}
+              className="min-w-0 rounded-2xl border-2 border-slate-200 bg-white px-4 py-3 text-base uppercase shadow-sm focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-emerald-500 dark:focus:ring-emerald-900 sm:text-sm"
+              autoComplete="off"
+              spellCheck={false}
+              autoCapitalize="characters"
+            />
+            <Button type="submit" disabled={disabled || !value.trim()}>
+              Guess
+            </Button>
+          </div>
+          {canRevealLetters && (
+            <div className="flex justify-end">
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={handleRevealLetter}
+                disabled={disabled || lettersAvailableToReveal === 0}
+              >
+                Reveal letter
+              </Button>
+            </div>
+          )}
         </form>
       )}
 

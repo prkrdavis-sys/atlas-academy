@@ -25,6 +25,32 @@ function formatPrimaryLanguage(languages?: string): string {
   return languages.split(" · ")[0]?.trim() || "Not listed";
 }
 
+function formatNeighborCount(borders: string[]): string {
+  const count = borders.length;
+  return `${count}`;
+}
+
+function LanguageOrNeighbors({
+  country,
+  isState,
+  dtClassName,
+  ddClassName,
+}: {
+  country: Country;
+  isState: boolean;
+  dtClassName: string;
+  ddClassName: string;
+}) {
+  return (
+    <>
+      <dt className={dtClassName}>{isState ? "Neighbors" : "Language"}</dt>
+      <dd className={ddClassName}>
+        {isState ? formatNeighborCount(country.borders) : formatPrimaryLanguage(country.languages)}
+      </dd>
+    </>
+  );
+}
+
 function ContinentValue({ country, isState }: { country: Country; isState: boolean }) {
   if (isState) {
     return country.continent;
@@ -203,10 +229,12 @@ function InlineLearnCard({
             </div>
           )}
           <div className={compareCountryCode ? "col-span-2" : ""}>
-            <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Language</dt>
-            <dd className="mt-1 text-base font-semibold text-slate-800 dark:text-slate-200">
-              {formatPrimaryLanguage(country.languages)}
-            </dd>
+            <LanguageOrNeighbors
+              country={country}
+              isState={isState}
+              dtClassName="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400"
+              ddClassName="mt-1 text-base font-semibold text-slate-800 dark:text-slate-200"
+            />
           </div>
         </dl>
       </div>
@@ -261,10 +289,12 @@ function InlineLearnCard({
                 </div>
               )}
               <div className={compareCountryCode ? "col-span-2" : ""}>
-                <dt className="font-semibold text-slate-500 dark:text-slate-400">Language</dt>
-                <dd className="font-medium text-slate-800 dark:text-slate-200">
-                  {formatPrimaryLanguage(country.languages)}
-                </dd>
+                <LanguageOrNeighbors
+                  country={country}
+                  isState={isState}
+                  dtClassName="font-semibold text-slate-500 dark:text-slate-400"
+                  ddClassName="font-medium text-slate-800 dark:text-slate-200"
+                />
               </div>
             </dl>
           </div>
@@ -360,7 +390,8 @@ export function LearnCard({
               <p><span className="font-semibold">Population:</span> {formatPopulation(country.population)}</p>
             )}
             <p>
-              <span className="font-semibold">Language:</span> {formatPrimaryLanguage(country.languages)}
+              <span className="font-semibold">{isState ? "Neighbors" : "Language"}:</span>{" "}
+              {isState ? formatNeighborCount(country.borders) : formatPrimaryLanguage(country.languages)}
             </p>
           </div>
         </div>

@@ -205,11 +205,11 @@ export function getDifficultyHint(mode: GameMode, level: Difficulty): string {
   if (mode === "atlasle") {
     switch (level) {
       case "easy":
-        return " - 8 guesses + early clues";
+        return " - 8 guesses + letter reveals";
       case "medium":
         return " - 6 guesses";
       case "hard":
-        return " - 5 guesses, delayed clues";
+        return " - 4 guesses, delayed clues";
       default: {
         const _exhaustive: never = level;
         return _exhaustive;
@@ -447,7 +447,7 @@ export const GAME_MODES: {
   {
     id: "atlasle",
     title: "Atlasle",
-    description: "Wordle for places — guess the country or capital, unlock geography clues as you miss",
+    description: "Wordle for places — guess the country or capital; Easy lets you reveal letters",
     icon: "🔤",
     phase: 2,
   },

@@ -117,6 +117,11 @@ export function GameSetupPanel({
               );
             })}
           </div>
+          {difficulty === "easy" ? (
+            <p className="mt-2 inline-flex rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-800 dark:bg-amber-950/50 dark:text-amber-200">
+              Map progress is not tracked on Easy
+            </p>
+          ) : null}
         </div>
 
         <div>

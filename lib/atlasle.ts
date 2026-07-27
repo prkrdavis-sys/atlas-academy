@@ -58,12 +58,50 @@ export function getAtlasleMaxGuesses(difficulty: Difficulty): number {
     case "medium":
       return 6;
     case "hard":
-      return 5;
+      return 4;
     default: {
       const _exhaustive: never = difficulty;
       return _exhaustive;
     }
   }
+}
+
+/**
+ * Pick a letter index to reveal as a hint. Prefers positions that are not yet
+ * known correct from prior guesses and have not already been revealed.
+ */
+export function pickAtlasleLetterHintIndex(
+  letterCount: number,
+  alreadyRevealed: ReadonlySet<number>,
+  knownCorrect: ReadonlySet<number> = new Set(),
+  random: () => number = Math.random,
+): number | null {
+  const candidates: number[] = [];
+  for (let i = 0; i < letterCount; i += 1) {
+    if (!alreadyRevealed.has(i) && !knownCorrect.has(i)) {
+      candidates.push(i);
+    }
+  }
+  if (candidates.length === 0) return null;
+  const index = Math.floor(random() * candidates.length);
+  return candidates[index] ?? null;
+}
+
+/** Letter indices marked correct on any prior guess row. */
+export function collectKnownCorrectLetterIndices(guesses: {
+  pattern: string;
+  statuses: AtlasleTileStatus[];
+}[]): Set<number> {
+  const known = new Set<number>();
+  for (const row of guesses) {
+    let letterIndex = 0;
+    for (let i = 0; i < row.pattern.length; i += 1) {
+      if (row.pattern[i] === " ") continue;
+      if (row.statuses[i] === "correct") known.add(letterIndex);
+      letterIndex += 1;
+    }
+  }
+  return known;
 }
 
 function populationBand(population: number, scope: GameScope): string {

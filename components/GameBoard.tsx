@@ -113,6 +113,7 @@ export function GameBoard({
   const [questionCount, setQuestionCount] = useState(0);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [skippedAnswers, setSkippedAnswers] = useState(0);
+  const [hintsUsed, setHintsUsed] = useState(0);
   const [timeLeft, setTimeLeft] = useState(60);
   const [gameOver, setGameOver] = useState(false);
   const [sessionComplete, setSessionComplete] = useState(false);
@@ -472,7 +473,13 @@ export function GameBoard({
               <p className="font-display text-2xl font-extrabold text-sky-700 dark:text-sky-400">{accuracy}%</p>
               <p className="text-xs font-semibold text-sky-800 dark:text-sky-300">Accuracy</p>
             </div>
-            {difficulty === "easy" && (
+            {difficulty === "easy" && mode === "atlasle" && (
+              <div className="rounded-2xl bg-amber-50 p-3 dark:bg-amber-950/50">
+                <p className="font-display text-2xl font-extrabold text-amber-700 dark:text-amber-400">{hintsUsed}</p>
+                <p className="text-xs font-semibold text-amber-800 dark:text-amber-300">Hints</p>
+              </div>
+            )}
+            {difficulty === "easy" && mode !== "atlasle" && (
               <div className="rounded-2xl bg-slate-100 p-3 dark:bg-slate-800">
                 <p className="font-display text-2xl font-extrabold text-slate-700 dark:text-slate-200">{skippedAnswers}</p>
                 <p className="text-xs font-semibold text-slate-600 dark:text-slate-400">Skipped</p>
@@ -758,7 +765,10 @@ export function GameBoard({
                 difficulty={difficulty}
                 scope={scope}
                 disabled={disabled || interactionLocked}
-                onComplete={(_correct, finalGuess) => handleAnswer(finalGuess)}
+                onComplete={(_correct, finalGuess, puzzleHints) => {
+                  setHintsUsed((count) => count + puzzleHints);
+                  handleAnswer(finalGuess);
+                }}
               />
             </div>
           ) : !showLearnCard && !isTextOnlyPrompt ? (

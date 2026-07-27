@@ -294,3 +294,99 @@ export function sortGameModesByMostPlayed<T extends { id: GameMode }>(
     return (defaultOrder.get(a.id) ?? 0) - (defaultOrder.get(b.id) ?? 0);
   });
 }
+
+export type ModeStatRow = {
+  mode: GameMode;
+  icon: string;
+  title: string;
+  currentStreak: number;
+  bestStreak: number;
+  totalCorrect: number;
+  totalPlayed: number;
+  accuracy: number;
+};
+
+export function getModeStatRows(
+  profile: Profile,
+  difficulty: Difficulty,
+  scope: GameScope,
+): ModeStatRow[] {
+  return sortGameModesByMostPlayed(GAME_MODES, profile, difficulty, scope).map((mode) => {
+    const stats = profile.stats[scope][mode.id][difficulty];
+    return {
+      mode: mode.id,
+      icon: mode.icon,
+      title: mode.title,
+      currentStreak: stats.currentStreak,
+      bestStreak: stats.bestStreak,
+      totalCorrect: stats.totalCorrect,
+      totalPlayed: stats.totalPlayed,
+      accuracy:
+        stats.totalPlayed > 0
+          ? Math.round((stats.totalCorrect / stats.totalPlayed) * 100)
+          : 0,
+    };
+  });
+}
+
+export function getDifficultyTotals(
+  profile: Profile,
+  difficulty: Difficulty,
+  scope: GameScope,
+): { totalCorrect: number; totalPlayed: number; accuracy: number } {
+  const totals = GAME_MODES.reduce(
+    (acc, mode) => {
+      const stats = profile.stats[scope][mode.id][difficulty];
+      acc.totalCorrect += stats.totalCorrect;
+      acc.totalPlayed += stats.totalPlayed;
+      return acc;
+    },
+    { totalCorrect: 0, totalPlayed: 0 },
+  );
+
+  return {
+    ...totals,
+    accuracy:
+      totals.totalPlayed > 0
+        ? Math.round((totals.totalCorrect / totals.totalPlayed) * 100)
+        : 0,
+  };
+}
+
+export function getScopeTotals(
+  profile: Profile,
+  scope: GameScope,
+): { totalCorrect: number; totalPlayed: number; accuracy: number } {
+  const totalCorrect = sumStatAcrossDifficulties(profile, "totalCorrect", scope);
+  const totalPlayed = sumStatAcrossDifficulties(profile, "totalPlayed", scope);
+  return {
+    totalCorrect,
+    totalPlayed,
+    accuracy: totalPlayed > 0 ? Math.round((totalCorrect / totalPlayed) * 100) : 0,
+  };
+}
+
+export function getTopMissedPlaces(
+  profile: Profile,
+  scope: GameScope,
+  limit = 8,
+): { code: string; misses: number }[] {
+  const counts = new Map<string, number>();
+
+  for (const mode of GAME_MODES) {
+    for (const difficulty of DIFFICULTIES) {
+      for (const code of profile.stats[scope][mode.id][difficulty].missedCountries) {
+        counts.set(code, (counts.get(code) ?? 0) + 1);
+      }
+    }
+  }
+
+  for (const code of getCommonlyMissedCountries(profile, scope)) {
+    if (!counts.has(code)) counts.set(code, 1);
+  }
+
+  return [...counts.entries()]
+    .map(([code, misses]) => ({ code, misses }))
+    .sort((a, b) => b.misses - a.misses || a.code.localeCompare(b.code))
+    .slice(0, limit);
+}
