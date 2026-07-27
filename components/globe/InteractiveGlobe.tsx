@@ -6,6 +6,7 @@ import { OrbitControls, Stars } from "@react-three/drei";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
 import {
+  DistantSun,
   EarthSunLight,
   GLOBE_ROTATION_SPEED,
   GLOBE_TAP_TRAVEL_THRESHOLD,
@@ -28,8 +29,8 @@ import { cn } from "@/lib/utils";
 
 const MIN_CAMERA_DISTANCE = 1.3;
 const MAX_CAMERA_DISTANCE = 4;
-/** Far enough that the atmosphere halo has a little space margin above/below. */
-const INITIAL_CAMERA_DISTANCE = 2.9;
+/** Start fully zoomed out so the whole planet + atmosphere fit with margin. */
+const INITIAL_CAMERA_DISTANCE = MAX_CAMERA_DISTANCE;
 /** Camera-distance multiplier for one zoom button press. */
 const ZOOM_BUTTON_FACTOR = 0.75;
 /** Orbit drag speed at {@link INITIAL_CAMERA_DISTANCE}; scaled by zoom so close-ups stay controllable. */
@@ -119,6 +120,7 @@ function PickableGlobe({
       >
         <sphereGeometry args={[1, 96, 96]} />
         <meshStandardMaterial map={texture} roughness={0.9} metalness={0} />
+        <DistantSun isDark={isDark} />
         {dayNight ? <EarthSunLight isDark={isDark} /> : null}
       </mesh>
       <GlobeAtmosphere isDark={isDark} />

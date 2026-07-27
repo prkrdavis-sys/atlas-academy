@@ -1,0 +1,156 @@
+{
+  "auditedAt": "2026-07-27",
+  "scope": "Asia countries from data/countries.json (includes Middle East / Western Asia; Türkiye included; Russia not Asia here). Excludes US-* state codes.",
+  "criteria": {
+    "pass": "Skyline, aerial, or wide downtown/city overview of the correct capital",
+    "fail": "Street-level narrow scene, beach-only, single building, small area, fort/ruins-dominant, highway-only, balcony obstruction, satellite/map-too-far, or missing image"
+  },
+  "storage": {
+    "images": "public/capitals/{lowercase-code}.jpg",
+    "mapping": "data/countries.json (capital, hasCapitalImage)",
+    "sources": "data/capital-image-sources.json",
+    "overrides": "scripts/fetch-capital-images.ts COMMONS_FILE_OVERRIDES",
+    "fetch": "npm run fetch-capital-images -- --refresh --code=XX"
+  },
+  "summary": {
+    "total": 50,
+    "fine": 34,
+    "redone": 13,
+    "blockedOrIncomplete": 3
+  },
+  "fine": [
+    { "code": "AE", "capital": "Abu Dhabi", "note": "Skyline OK" },
+    { "code": "AF", "capital": "Kabul", "note": "Elevated city panorama over valley" },
+    { "code": "AM", "capital": "Yerevan", "note": "Elevated skyline with Ararat" },
+    { "code": "AZ", "capital": "Baku", "note": "Skyline OK" },
+    { "code": "BD", "capital": "Dhaka", "note": "Skyline OK" },
+    { "code": "BN", "capital": "Bandar Seri Begawan", "note": "City overview OK" },
+    { "code": "BT", "capital": "Thimphu", "note": "Valley downtown panorama" },
+    { "code": "CN", "capital": "Beijing", "note": "Skyline OK" },
+    { "code": "GE", "capital": "Tbilisi", "note": "Panorama OK" },
+    { "code": "HK", "capital": "City of Victoria", "note": "Skyline OK" },
+    { "code": "ID", "capital": "Jakarta", "note": "Skyline OK" },
+    { "code": "IL", "capital": "Jerusalem", "note": "City overview OK" },
+    { "code": "IR", "capital": "Tehran", "note": "Milad Tower skyline (B&W but valid overview)" },
+    { "code": "JO", "capital": "Amman", "note": "City overview OK" },
+    { "code": "JP", "capital": "Tokyo", "note": "Skyline OK" },
+    { "code": "KG", "capital": "Bishkek", "note": "Elevated downtown with mountains" },
+    { "code": "KH", "capital": "Phnom Penh", "note": "City overview OK" },
+    { "code": "KR", "capital": "Seoul", "note": "Skyline OK" },
+    { "code": "LK", "capital": "Colombo", "note": "Skyline OK" },
+    { "code": "MN", "capital": "Ulan Bator", "note": "City overview OK" },
+    { "code": "MV", "capital": "Malé", "note": "City overview OK" },
+    { "code": "MY", "capital": "Kuala Lumpur", "note": "Skyline OK" },
+    { "code": "PH", "capital": "Manila", "note": "Skyline OK" },
+    { "code": "PK", "capital": "Islamabad", "note": "Skyline OK" },
+    { "code": "QA", "capital": "Doha", "note": "Skyline OK" },
+    { "code": "SA", "capital": "Riyadh", "note": "Skyline OK" },
+    { "code": "SG", "capital": "Singapore", "note": "Skyline OK" },
+    { "code": "TJ", "capital": "Dushanbe", "note": "Elevated downtown skyline" },
+    { "code": "TM", "capital": "Ashgabat", "note": "City overview OK" },
+    { "code": "TR", "capital": "Ankara", "note": "Aerial/downtown OK" },
+    { "code": "TW", "capital": "Taipei", "note": "Skyline OK" },
+    { "code": "UZ", "capital": "Tashkent", "note": "City overview OK" },
+    { "code": "VN", "capital": "Hanoi", "note": "Elevated aerial downtown (hazy but valid)" },
+    { "code": "YE", "capital": "Sana'a", "note": "City overview OK" }
+  ],
+  "redone": [
+    {
+      "code": "BH",
+      "capital": "Manama",
+      "oldIssue": "Fort ruins dominate; skyline secondary",
+      "newSourceTitle": "Manama Manama Skyline 04.jpg"
+    },
+    {
+      "code": "IN",
+      "capital": "New Delhi",
+      "oldIssue": "Republic Day helicopters + flag only — no city",
+      "newSourceTitle": "Delhi and sarroundings aerial photo 08-2016 img9.jpg"
+    },
+    {
+      "code": "IQ",
+      "capital": "Baghdad",
+      "oldIssue": "High satellite/map-like nadir view",
+      "newSourceTitle": "View on Baghdad 2017.jpg"
+    },
+    {
+      "code": "KP",
+      "capital": "Pyongyang",
+      "oldIssue": "Tight building cluster, no horizon",
+      "newSourceTitle": "Pyongyang (vista panorámica) 00001.JPG"
+    },
+    {
+      "code": "KW",
+      "capital": "Kuwait City",
+      "oldIssue": "Ground-level tight night skyscraper cluster",
+      "newSourceTitle": "Kuwait City Skyline 1.jpg"
+    },
+    {
+      "code": "KZ",
+      "capital": "Astana",
+      "oldIssue": "Water/landscape; city tiny in distance",
+      "newSourceTitle": "Central Downtown Astana pamorama.jpg"
+    },
+    {
+      "code": "LA",
+      "capital": "Vientiane",
+      "oldIssue": "Ground-level street corridor",
+      "newSourceTitle": "Vientiane Patouxai Laos.jpg"
+    },
+    {
+      "code": "LB",
+      "capital": "Beirut",
+      "oldIssue": "Street/highway corridor",
+      "newSourceTitle": "Beirut From Airplane (5578982458).jpg"
+    },
+    {
+      "code": "NP",
+      "capital": "Kathmandu",
+      "oldIssue": "Durbar Square temple complex close-up",
+      "newSourceTitle": "Swayambhu and Kathmandu From Syuchatar 8 - panoramio.jpg"
+    },
+    {
+      "code": "OM",
+      "capital": "Muscat",
+      "oldIssue": "Old Muscat neighborhood / fort, not wide downtown",
+      "newSourceTitle": "Muscatomanpanoramacityview.JPG"
+    },
+    {
+      "code": "PS",
+      "capital": "Ramallah",
+      "oldIssue": "Semi-rural hillside / scattered houses",
+      "newSourceTitle": "PS-Ramallah view.JPG"
+    },
+    {
+      "code": "SY",
+      "capital": "Damascus",
+      "oldIssue": "Street/highway corridor",
+      "newSourceTitle": "Damascus Panorama.jpg"
+    },
+    {
+      "code": "TH",
+      "capital": "Bangkok",
+      "oldIssue": "Balcony railing obstruction",
+      "newSourceTitle": "Bangkok Baiyoke 02.jpg"
+    }
+  ],
+  "blockedOrIncomplete": [
+    {
+      "code": "MM",
+      "capital": "Naypyidaw",
+      "issue": "Current image is empty multi-lane highway. Commons has no usable skyline/aerial downtown of Naypyidaw — only highways, single hotels, roundabouts, parliament, or satellite footprints.",
+      "keptSourceTitle": "Ministry Zone, Naypyitaw, Myanmar (Burma) - panoramio.jpg"
+    },
+    {
+      "code": "TL",
+      "capital": "Dili",
+      "issue": "Current image is foliage-framed landscape with distant coast. Commons alternatives are beaches, single buildings, harbor close-ups, or scenic overlooks — no clear downtown skyline/aerial.",
+      "keptSourceTitle": "DSCI3101 Blick runter auf Dili.JPG"
+    },
+    {
+      "code": "MO",
+      "capital": "",
+      "issue": "No capital set in countries.json; hasCapitalImage=false. Override exists for Macau Peninsula panorama but is unused without a capital."
+    }
+  ]
+}

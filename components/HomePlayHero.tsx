@@ -236,6 +236,22 @@ type GlobeDragZoneProps = {
 function GlobeDragZone({ href, globeHandleRef }: GlobeDragZoneProps) {
   const dragRef = useRef<{ pointerId: number; lastX: number; lastY: number } | null>(null);
   const traveledRef = useRef(0);
+  const zoneRef = useRef<HTMLAnchorElement>(null);
+
+  // iOS Safari can still scroll a parent even with touch-action: none unless
+  // touchmove is cancelled with a non-passive listener while dragging.
+  useEffect(() => {
+    const zone = zoneRef.current;
+    if (!zone) return;
+
+    const onTouchMove = (event: TouchEvent) => {
+      if (!dragRef.current) return;
+      event.preventDefault();
+    };
+
+    zone.addEventListener("touchmove", onTouchMove, { passive: false });
+    return () => zone.removeEventListener("touchmove", onTouchMove);
+  }, []);
 
   function endDrag(event: React.PointerEvent<HTMLAnchorElement>) {
     if (dragRef.current?.pointerId !== event.pointerId) return;
@@ -250,9 +266,13 @@ function GlobeDragZone({ href, globeHandleRef }: GlobeDragZoneProps) {
 
   return (
     <Link
+      ref={zoneRef}
       href={href}
       aria-label="Open your progress map"
       draggable={false}
+      // Inline touchAction beats the global `a { touch-action: manipulation }`
+      // rule so vertical drags stay on the globe, not the page.
+      style={{ touchAction: "none" }}
       className="block min-h-[5rem] w-full flex-1 basis-0 cursor-grab touch-none select-none active:cursor-grabbing"
       onPointerDown={(event) => {
         dragRef.current = {

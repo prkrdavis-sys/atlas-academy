@@ -23,7 +23,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             : isHomeRoute
               ? // Exact viewport height under the header so the home hero can
                 // pin its action panels to the bottom (above the mobile tab bar).
-                "flex h-[calc(100dvh-var(--app-header-offset))] flex-col overflow-y-auto px-4 pb-[calc(6.5rem+env(safe-area-inset-bottom))] pt-5 sm:pb-8 sm:pt-8"
+                // Overflow is locked — the home layout is sized to fit, and
+                // scrolling would steal vertical drags from the globe.
+                "flex h-[calc(100dvh-var(--app-header-offset))] flex-col overflow-hidden overscroll-none px-4 pb-[calc(6.5rem+env(safe-area-inset-bottom))] pt-5 sm:pb-8 sm:pt-8"
               : "px-4 pb-[calc(6.5rem+env(safe-area-inset-bottom))] pt-5 sm:py-8",
         )}
       >

@@ -219,6 +219,10 @@ export function getQuestionTaskLabel(
       return isTerritory ? "Pick the larger territory" : "Pick the larger population";
     case "fact-to-country":
       return placeText("Which country does this profile describe?", scope, place ?? undefined);
+    case "atlasle":
+      return question.atlasleTarget === "capital"
+        ? "Guess the capital"
+        : placeText("Guess the country", scope, place ?? undefined);
     case "country-to-capital":
       return "Name the capital";
     case "marathon":

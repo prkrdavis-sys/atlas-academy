@@ -6,6 +6,7 @@ import { Canvas, useFrame, useThree, type ThreeEvent } from "@react-three/fiber"
 import { Stars } from "@react-three/drei";
 import * as THREE from "three";
 import {
+  DistantSun,
   EarthSunLight,
   GLOBE_DRAG_SPIN_FACTOR,
   GLOBE_IDLE_RETURN_DELAY_MS,
@@ -168,6 +169,7 @@ function ProgressGlobe({ profile, reducedMotion, isDark, usMode, dayNight, handl
       >
         <sphereGeometry args={[1, 64, 64]} />
         <meshStandardMaterial map={texture} roughness={0.9} metalness={0} />
+        <DistantSun isDark={isDark} />
         {dayNight ? <EarthSunLight isDark={isDark} /> : null}
       </mesh>
       <GlobeAtmosphere isDark={isDark} />

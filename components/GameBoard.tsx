@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnswerFeedbackLayer, type FeedbackBurst } from "@/components/AnswerFeedback";
+import { AnswerAtlasle } from "@/components/AnswerAtlasle";
 import { AnswerMultipleChoice } from "@/components/AnswerMultipleChoice";
 import { AnswerTypeIn } from "@/components/AnswerTypeIn";
 import { AchievementToast } from "@/components/AchievementToast";
@@ -548,9 +549,11 @@ export function GameBoard({
     (question.mode === "country-to-capital" && question.displayType === "text") ||
     (question.mode === "capital-to-country" && question.displayType === "text") ||
     question.mode === "fact-to-country";
+  const isAtlasleRound = question.displayType === "atlasle";
   const isMultipleChoiceRound =
-    question.displayType === "flags-grid" ||
-    Boolean(question.options && difficulty !== "hard");
+    !isAtlasleRound &&
+    (question.displayType === "flags-grid" ||
+      Boolean(question.options && difficulty !== "hard"));
   const showChoiceReveal = showLearnCard && isMultipleChoiceRound;
   const learnCardCountryCode =
     question.mode === "neighbor-quiz"
@@ -667,7 +670,7 @@ export function GameBoard({
             showChoiceReveal ? "justify-start overflow-hidden" : "overflow-hidden"
           } ${showChoiceReveal || question.displayType === "flags-grid" ? "sm:justify-start" : "sm:justify-center"}`}
         >
-          {!showChoiceReveal && !(showLearnCard && !isMultipleChoiceRound) && (
+          {!showChoiceReveal && !(showLearnCard && !isMultipleChoiceRound) && !isAtlasleRound && (
             <>
               <div className="min-h-0 flex-[0.24] sm:hidden" aria-hidden />
 
@@ -681,6 +684,14 @@ export function GameBoard({
                 </p>
               </div>
             </>
+          )}
+
+          {!showLearnCard && isAtlasleRound && (
+            <div className="shrink-0 px-3 pb-2 text-center sm:hidden">
+              <p className="font-display text-base font-extrabold leading-snug text-slate-800 dark:text-slate-100">
+                {question.prompt}
+              </p>
+            </div>
           )}
 
           {showChoiceReveal && isTextOnlyPrompt && (
@@ -737,6 +748,19 @@ export function GameBoard({
             <div className="flex min-h-0 flex-1 flex-col overflow-hidden sm:hidden">
               <div className="mx-auto flex min-h-0 w-full max-w-2xl flex-1 flex-col">{inlineLearnCard}</div>
             </div>
+          ) : !showLearnCard && isAtlasleRound ? (
+            <div className="flex min-h-0 flex-1 flex-col items-center justify-start overflow-y-auto py-1 sm:justify-center">
+              <AnswerAtlasle
+                countryCode={question.countryCode}
+                correctAnswer={question.correctAnswer}
+                target={question.atlasleTarget ?? "name"}
+                maxGuesses={question.atlasleMaxGuesses ?? 6}
+                difficulty={difficulty}
+                scope={scope}
+                disabled={disabled || interactionLocked}
+                onComplete={(_correct, finalGuess) => handleAnswer(finalGuess)}
+              />
+            </div>
           ) : !showLearnCard && !isTextOnlyPrompt ? (
             <div className="flex min-h-0 flex-[0.76] flex-col items-center justify-center overflow-hidden sm:flex-1">
               {question.displayType === "flag" && (
@@ -765,7 +789,9 @@ export function GameBoard({
           ) : null}
         </div>
 
-        {(showChoiceReveal || !showLearnCard) && question.displayType !== "flags-grid" && (
+        {(showChoiceReveal || !showLearnCard) &&
+          question.displayType !== "flags-grid" &&
+          !isAtlasleRound && (
           <div className="mt-2 shrink-0 space-y-2 sm:mt-3 sm:space-y-3">
             {!showLearnCard && difficulty === "easy" && (
               <div className="flex justify-end gap-2">

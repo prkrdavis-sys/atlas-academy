@@ -22,7 +22,7 @@ export default function HomePage() {
   const globeHandleRef = useRef<GlobeHandle>(null);
   const { scope } = useGameScope({ layoutAnchorRef: heroRef });
 
-  const difficulty = profile?.settings.difficulty ?? "easy";
+  const difficulty = profile?.settings.difficulty ?? "medium";
   const globalStreak = getGlobalStreakOrZero(profile, difficulty, scope);
   const todayBest = getTodayBestStreakDisplay(profile, difficulty, scope);
   const storedTodayBest = getTodayBestStreakOrZero(profile, difficulty, scope);

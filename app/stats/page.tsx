@@ -110,7 +110,7 @@ export default function StatsPage() {
   const { activeProfile, hydrated } = useProfiles();
   const profile = hydrated ? activeProfile : null;
   const [activeTab, setActiveTab] = useState<StatsTab>("overview");
-  const [difficulty, setDifficulty] = useState<Difficulty>("easy");
+  const [difficulty, setDifficulty] = useState<Difficulty>("medium");
   const [achievementSort, setAchievementSort] = useState<AchievementSort>("default");
   const [scope, setScope] = useState<GameScope>("world");
 
@@ -126,7 +126,7 @@ export default function StatsPage() {
 
   useEffect(() => {
     if (profile) {
-      setDifficulty(profile.settings.difficulty ?? "easy");
+      setDifficulty(profile.settings.difficulty ?? "medium");
     }
   }, [profile?.id, profile?.settings.difficulty]);
 

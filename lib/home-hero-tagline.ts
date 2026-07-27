@@ -117,7 +117,7 @@ export function buildHomeHeroTaglineCandidates({
   } else if (!dailyCompletedToday) {
     candidates.push(
       `Finish today's ${dailyChallenge} to start your daily run streak.`,
-      `${dailyChallenge} is 10 mixed questions — a quick way to warm up every day.`,
+      `${dailyChallenge} is 10 mixed questions — including trivia — a quick way to warm up every day.`,
     );
   }
 
@@ -171,12 +171,13 @@ export function buildHomeHeroTaglineCandidates({
   }
 
   candidates.push(
-    `${modeRef("mixed")} shuffles flags, capitals, shapes, and more — great when you want variety.`,
+    `${modeRef("mixed")} shuffles flags, capitals, shapes, trivia, and more — great when you want variety.`,
     `${modeRef("speed-round")} gives you 60 seconds — how many can you get?`,
     `${modeRef("marathon")} keeps going until your first mistake. How far can you run?`,
     `${modeRef("neighbor-quiz")} is perfect for learning which countries share borders.`,
     `${modeRef("population-showdown")} asks a simple question: which place has more people?`,
     `${modeRef("fact-to-country")} draws on curated geographic details from the Library.`,
+    `${modeRef("atlasle")} is Wordle for geography — guess the place, unlock clues as you miss.`,
     `${modeRef("shape-to-country")} is a signature challenge — identify places from silhouettes alone.`,
     `Browse the ${scopeInfo.libraryTitle} for flags, capitals, shapes, neighbors, and geographic profiles.`,
     "Pan and zoom the World Map, then click any country to open its Library page.",
@@ -201,8 +202,8 @@ function buildGuestHomeHeroTaglineCandidates(scope: GameScope): string[] {
     "Create a profile to save streaks, stats, and daily progress on this device.",
     `${modeRef("weak-spots")} reviews the places you miss most once you start playing.`,
     "Pan and zoom the World Map or USA Map, then click any place to open the Library.",
-    `${modeRef("mixed")} shuffles flags, capitals, shapes, and more.`,
-    `${modeRef("daily-challenge")} is 10 mixed questions — a fresh set every day.`,
+    `${modeRef("mixed")} shuffles flags, capitals, shapes, trivia, and more.`,
+    `${modeRef("daily-challenge")} is 10 mixed questions — including trivia — a fresh set every day.`,
   ];
 }
 

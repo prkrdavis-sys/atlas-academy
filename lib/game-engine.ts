@@ -1,4 +1,9 @@
 import {
+  getAtlasleAnswer,
+  getAtlasleMaxGuesses,
+  getAtlasleTargets,
+} from "@/lib/atlasle";
+import {
   getCountryByCode,
   getCountryName,
   getEligibleMixedQuestionTypes,
@@ -219,14 +224,16 @@ export class GameEngine {
   }
 
   private buildDailyQuestionTypeSequence(): DailyChallengeQuestionType[] {
-    const baseTypes = [
-      ...DAILY_CHALLENGE_QUESTION_TYPES,
-      ...DAILY_CHALLENGE_QUESTION_TYPES,
-    ];
-    const extraTypes: DailyChallengeQuestionType[] = [
-      pickFromPool([...DAILY_CHALLENGE_QUESTION_TYPES], this.random),
-      pickFromPool([...DAILY_CHALLENGE_QUESTION_TYPES], this.random),
-    ];
+    const types = [...DAILY_CHALLENGE_QUESTION_TYPES];
+    const baseTypes: DailyChallengeQuestionType[] = [...types, ...types];
+    if (baseTypes.length >= DAILY_CHALLENGE_QUESTION_COUNT) {
+      return shuffleWith(baseTypes.slice(0, DAILY_CHALLENGE_QUESTION_COUNT), this.random);
+    }
+    const extraTypes: DailyChallengeQuestionType[] = [];
+    const extrasNeeded = DAILY_CHALLENGE_QUESTION_COUNT - baseTypes.length;
+    for (let i = 0; i < extrasNeeded; i += 1) {
+      extraTypes.push(pickFromPool(types, this.random));
+    }
     return shuffleWith([...baseTypes, ...extraTypes], this.random);
   }
 
@@ -240,6 +247,8 @@ export class GameEngine {
           return country.hasShape;
         case "country-to-capital":
           return country.capital.length > 0;
+        case "fact-to-country":
+          return country.factQuestion.trim().length > 0;
         default: {
           const _exhaustive: never = type;
           return _exhaustive;
@@ -466,10 +475,39 @@ export class GameEngine {
           ...mc,
         };
       }
+      case "atlasle": {
+        const targets = getAtlasleTargets(country);
+        if (targets.length === 0) {
+          return this.buildQuestion(country, "flag-to-country");
+        }
+        const target = pickFromPool(targets, this.random);
+        const answer = getAtlasleAnswer(country, target);
+        const maxGuesses = getAtlasleMaxGuesses(this.difficulty);
+        const prompt =
+          target === "capital"
+            ? `Guess the capital (${maxGuesses} tries)`
+            : placeText(`Guess the country (${maxGuesses} tries)`, this.scope, country);
+        return {
+          id,
+          mode,
+          countryCode: country.code,
+          prompt,
+          correctAnswer: answer,
+          correctCode: country.code,
+          displayType: "atlasle",
+          atlasleTarget: target,
+          atlasleMaxGuesses: maxGuesses,
+        };
+      }
       case "daily-challenge":
         throw new Error("Daily challenge questions must use a concrete question type");
-      default:
+      case "speed-round":
+      case "mixed":
         return this.buildQuestion(country, "flag-to-country");
+      default: {
+        const _exhaustive: never = mode;
+        return _exhaustive;
+      }
     }
   }
 
@@ -484,8 +522,12 @@ export class GameEngine {
       return isSameCountry(answer, correctCode);
     }
 
-    if (question.mode === "country-to-capital") {
+    if (question.mode === "country-to-capital" || question.atlasleTarget === "capital") {
       return validateAnswer(answer, question.countryCode, "capital");
+    }
+
+    if (question.mode === "atlasle") {
+      return validateAnswer(answer, correctCode, "name");
     }
 
     if (question.mode === "neighbor-quiz") {

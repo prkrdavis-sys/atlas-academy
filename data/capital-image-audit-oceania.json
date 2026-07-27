@@ -1,0 +1,158 @@
+{
+  "auditedAt": "2026-07-27",
+  "scope": "Remaining countries outside Americas/Europe/Africa/Asia parallel slices: Oceania + Antarctica from data/countries.json (continent field). Excludes US-* state codes. Russia/Turkey skipped (claimed by Europe/Asia).",
+  "criteria": {
+    "pass": "Skyline, aerial, or wide settlement/downtown view of the correct capital (or best available settlement overview for tiny island/Antarctic posts)",
+    "fail": "Wrong city/island, flag/emblem, street-only, beach-only, single building without settlement context, airplane-suburb without CBD, disaster street scene"
+  },
+  "summary": {
+    "total": 32,
+    "pass": 12,
+    "fixed": 14,
+    "blockedOrIncomplete": 6,
+    "noCapitalNoImage": 3
+  },
+  "scopeCodes": [
+    "AS", "AQ", "AU", "BV", "CX", "CC", "CK", "FJ", "PF", "TF",
+    "GU", "HM", "KI", "MH", "FM", "NR", "NC", "NZ", "NU", "NF",
+    "MP", "PW", "PG", "PN", "WS", "SB", "GS", "TK", "TO", "TV",
+    "VU", "WF"
+  ],
+  "verifiedAlreadyPass": [
+    { "code": "NC", "capital": "Nouméa", "note": "Elevated downtown/harbor aerial with cathedral — OK" },
+    { "code": "SB", "capital": "Honiara", "note": "Aerial city-over-hills to coast — OK" },
+    { "code": "MP", "capital": "Saipan", "note": "Aerial coastal downtown — OK" },
+    { "code": "VU", "capital": "Port Vila", "note": "Aerial harbor settlement — OK" },
+    { "code": "WF", "capital": "Mata-Utu", "note": "Drone aerial of town center — OK for small capital" },
+    { "code": "TV", "capital": "Funafuti", "note": "Aerial of inhabited atoll settlement — OK" },
+    { "code": "CX", "capital": "Flying Fish Cove", "note": "Elevated cove settlement overview — OK for tiny capital" },
+    { "code": "TF", "capital": "Port-aux-Français", "note": "Wide view of entire research station — best available" },
+    { "code": "TO", "capital": "Nuku'alofa", "note": "Waterfront capital overview with palace — OK for Tonga" },
+    { "code": "KI", "capital": "South Tarawa", "note": "Aerial inhabited atoll strip — OK for Kiribati geography" },
+    { "code": "NR", "capital": "Yaren", "note": "Aerial of island/settlement from distance — limited Commons options" },
+    { "code": "PN", "capital": "Adamstown", "note": "Hillside settlement overview — best available for tiny capital" }
+  ],
+  "fixed": [
+    {
+      "code": "AU",
+      "capital": "Canberra",
+      "was": "Airplane-wing suburban aerial, not CBD",
+      "now": "Canberra From Black Mountain Tower.jpg"
+    },
+    {
+      "code": "NZ",
+      "capital": "Wellington",
+      "was": "Ground-level plaza/wharf (wrong feel / not skyline)",
+      "now": "Wellington Skyline (34319401232).jpg"
+    },
+    {
+      "code": "GS",
+      "capital": "King Edward Point",
+      "was": "Wrong city (Rome/Savannah, Georgia USA)",
+      "now": "King Edward Point (South Georgia).jpg"
+    },
+    {
+      "code": "FJ",
+      "capital": "Suva",
+      "was": "Rural mountains/coastline, not Suva downtown",
+      "now": "Suva City 2 February 2015.jpg"
+    },
+    {
+      "code": "PG",
+      "capital": "Port Moresby",
+      "was": "Rural hills with tiny settlement, not downtown",
+      "now": "Aerial view of Port Moresby.jpg"
+    },
+    {
+      "code": "AS",
+      "capital": "Pago Pago",
+      "was": "Mountains/coastline only, no town",
+      "now": "Pagopago amerika sāmoa.jpg"
+    },
+    {
+      "code": "GU",
+      "capital": "Hagåtña",
+      "was": "1943 historical B&W aerial",
+      "now": "Hagatna from Fort Santa Agueda.JPG"
+    },
+    {
+      "code": "WS",
+      "capital": "Apia",
+      "was": "Street + fallen tree + single bank building",
+      "now": "Apia, Samoa.JPG"
+    },
+    {
+      "code": "MH",
+      "capital": "Majuro",
+      "was": "Kwajalein Atoll (wrong atoll)",
+      "now": "11.01 馬紹爾共和國馬久羅島鳥瞰 (38041559416).jpg"
+    },
+    {
+      "code": "CK",
+      "capital": "Avarua",
+      "was": "Manuae atoll (wrong island)",
+      "now": "Rarotonga Island.jpg"
+    },
+    {
+      "code": "NF",
+      "capital": "Kingston",
+      "was": "Norfolk Island flag graphic",
+      "now": "Kingston from Flagstaff Hill.jpg"
+    },
+    {
+      "code": "FM",
+      "capital": "Palikir",
+      "was": "Falalop/Ulithi airfield (wrong island)",
+      "now": "Palikir Government Buildings.jpg"
+    },
+    {
+      "code": "PW",
+      "capital": "Ngerulmud",
+      "was": "Empty Rock Islands nature aerial (not capital)",
+      "now": "בניין הקפיטול בבירת פלאו נגרולומוד 01530.jpg"
+    },
+    {
+      "code": "PF",
+      "capital": "Papeetē",
+      "was": "Lagoon/coast residential sprawl (weak downtown)",
+      "now": "Tahiti - Papeete 4.JPG"
+    }
+  ],
+  "blockedOrIncomplete": [
+    {
+      "code": "CC",
+      "capital": "West Island",
+      "reason": "Commons only has beach/nature/WWII airfield photos; no usable settlement aerial found"
+    },
+    {
+      "code": "NU",
+      "capital": "Alofi",
+      "reason": "Current and available Commons images are street-level; no skyline/aerial downtown on Commons"
+    },
+    {
+      "code": "TK",
+      "capital": "Fakaofo",
+      "reason": "Only whole-atoll aerial available; no closer settlement downtown photo on Commons"
+    },
+    {
+      "code": "AQ",
+      "capital": "",
+      "reason": "No capital defined; no image"
+    },
+    {
+      "code": "BV",
+      "capital": "",
+      "reason": "No capital defined; no image"
+    },
+    {
+      "code": "HM",
+      "capital": "",
+      "reason": "No capital defined; no image"
+    }
+  ],
+  "notes": [
+    "Tiny Pacific/Antarctic capitals (Kingston, King Edward Point, Palikir, Ngerulmud) have no true skyscraper skyline; replacements use best available wide settlement or capital-complex views of the correct place.",
+    "CK replacement is island-scale aerial of Rarotonga (correct island containing Avarua); no strong Avarua downtown aerial found on Commons.",
+    "Overrides added to scripts/fetch-capital-images.ts COMMONS_FILE_OVERRIDES for the 14 fixed codes."
+  ]
+}

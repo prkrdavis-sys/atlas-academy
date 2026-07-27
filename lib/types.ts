@@ -110,15 +110,17 @@ export const CORE_QUESTION_TYPES: CoreQuestionType[] = [
 export const MIXED_QUESTION_TYPES = [
   ...CORE_QUESTION_TYPES,
   "country-to-flag",
+  "fact-to-country",
 ] as const;
 
-export type MixedQuestionType = CoreQuestionType | "country-to-flag";
+export type MixedQuestionType = CoreQuestionType | "country-to-flag" | "fact-to-country";
 
 export const DAILY_CHALLENGE_QUESTION_TYPES = [
   "flag-to-country",
   "country-to-flag",
   "shape-to-country",
   "country-to-capital",
+  "fact-to-country",
 ] as const satisfies readonly MixedQuestionType[];
 
 export type DailyChallengeQuestionType = (typeof DAILY_CHALLENGE_QUESTION_TYPES)[number];
@@ -135,6 +137,7 @@ export type GameMode =
   | "neighbor-quiz"
   | "population-showdown"
   | "fact-to-country"
+  | "atlasle"
   | "daily-challenge"
   | "marathon"
   | "speed-round"
@@ -199,6 +202,21 @@ const TYPE_IN_HARD_MODES: GameMode[] = [
 ];
 
 export function getDifficultyHint(mode: GameMode, level: Difficulty): string {
+  if (mode === "atlasle") {
+    switch (level) {
+      case "easy":
+        return " - 8 guesses + early clues";
+      case "medium":
+        return " - 6 guesses";
+      case "hard":
+        return " - 5 guesses, delayed clues";
+      default: {
+        const _exhaustive: never = level;
+        return _exhaustive;
+      }
+    }
+  }
+
   switch (level) {
     case "easy":
       return " - multiple choice + boosts";
@@ -322,6 +340,8 @@ export type AppState = {
   activeProfileId: string | null;
 };
 
+export type AtlasleGuessTarget = "name" | "capital";
+
 export type Question = {
   id: string;
   mode: GameMode;
@@ -331,8 +351,12 @@ export type Question = {
   correctCode?: string;
   options?: string[];
   optionCodes?: string[];
-  displayType?: "flag" | "shape" | "capital" | "text" | "flags-grid" | "population";
+  displayType?: "flag" | "shape" | "capital" | "text" | "flags-grid" | "population" | "atlasle";
   secondaryCountryCode?: string;
+  /** Atlasle: whether the puzzle answer is a place name or a capital. */
+  atlasleTarget?: AtlasleGuessTarget;
+  /** Atlasle: max guesses for this puzzle (difficulty-dependent). */
+  atlasleMaxGuesses?: number;
 };
 
 export type AnswerResult = {
@@ -351,6 +375,7 @@ export const EXTRA_QUIZ_MODES: GameMode[] = [
   "neighbor-quiz",
   "population-showdown",
   "fact-to-country",
+  "atlasle",
 ];
 
 /** Modes available on the pre-game setup screen (excludes daily and legacy challenge modes). */
@@ -420,9 +445,16 @@ export const GAME_MODES: {
     phase: 2,
   },
   {
+    id: "atlasle",
+    title: "Atlasle",
+    description: "Wordle for places — guess the country or capital, unlock geography clues as you miss",
+    icon: "🔤",
+    phase: 2,
+  },
+  {
     id: "daily-challenge",
     title: "Daily Challenge",
-    description: "10 mixed questions — resets at midnight Eastern",
+    description: "10 mixed questions including trivia — resets at midnight Eastern",
     icon: "📅",
     phase: 2,
   },
@@ -443,7 +475,7 @@ export const GAME_MODES: {
   {
     id: "mixed",
     title: "Mixed",
-    description: "Flags, capitals, shapes, and flag picking — shuffled",
+    description: "Flags, capitals, shapes, trivia, and flag picking — shuffled",
     icon: "🎲",
     phase: 2,
   },
@@ -505,6 +537,7 @@ export const ACHIEVEMENTS = [
   { id: "border-boss", title: "Border Boss", description: "Answer 50 neighbor quiz questions correctly" },
   { id: "population-prophet", title: "Population Prophet", description: "Answer 50 population showdown questions correctly" },
   { id: "fact-finder", title: "Profile Expert", description: "Answer 50 Country Profiles questions correctly" },
+  { id: "atlasle-ace", title: "Atlasle Ace", description: "Solve 50 Atlasle puzzles correctly" },
   { id: "marathon-25", title: "Endurance", description: "Reach a best marathon run of 25" },
   { id: "marathon-45", title: "Long Distance", description: "Reach a best marathon run of 45" },
   { id: "marathon-65", title: "Ultra Mapper", description: "Reach a best marathon run of 65" },

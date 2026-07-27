@@ -58,9 +58,9 @@ const DARK_GLOBE_PALETTE: GlobePalette = {
   stateBorder: "rgba(2, 6, 23, 0.45)",
 };
 
-/** Soft sky-blue ocean — muted enough for light mode, still clearly water. */
+/** Soft sky-blue ocean — clearly water in light mode, without a loud saturation. */
 const LIGHT_GLOBE_PALETTE: GlobePalette = {
-  ocean: "#71b6d9",
+  ocean: "#6aa5c2",
   border: "rgba(51, 65, 85, 0.5)",
   stateBorder: "rgba(51, 65, 85, 0.4)",
 };

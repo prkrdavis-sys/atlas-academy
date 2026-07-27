@@ -150,6 +150,7 @@ export function buildAchievementChecks(
     "border-boss": modeCorrectCount(profile, "neighbor-quiz") >= 50,
     "population-prophet": modeCorrectCount(profile, "population-showdown") >= 50,
     "fact-finder": modeCorrectCount(profile, "fact-to-country") >= 50,
+    "atlasle-ace": modeCorrectCount(profile, "atlasle") >= 50,
     "marathon-25": marathonBest >= 25,
     "marathon-45": marathonBest >= 45,
     "marathon-65": marathonBest >= 65,

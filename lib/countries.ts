@@ -95,6 +95,23 @@ export function filterCountries(options: FilterOptions): Country[] {
     pool = pool.filter((c) => c.factQuestion.trim().length > 0);
   }
 
+  if (options.mode === "atlasle") {
+    pool = pool.filter((c) => {
+      const nameLetters = c.name
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-zA-Z]/g, "");
+      const capitalLetters = c.capital
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-zA-Z]/g, "");
+      const nameOk = nameLetters.length >= 4 && nameLetters.length <= 12;
+      const capitalOk =
+        capitalLetters.length >= 4 && capitalLetters.length <= 12;
+      return nameOk || capitalOk;
+    });
+  }
+
   if (options.mode === "weak-spots" && options.weakSpotCodes?.length) {
     const weakSet = new Set(options.weakSpotCodes);
     pool = pool.filter((c) => weakSet.has(c.code));
@@ -146,6 +163,7 @@ export function getEligibleCoreQuestionTypes(country: Country): CoreQuestionType
 export function getEligibleMixedQuestionTypes(country: Country): MixedQuestionType[] {
   const types: MixedQuestionType[] = [...getEligibleCoreQuestionTypes(country)];
   if (country.hasFlag) types.push("country-to-flag");
+  if (country.factQuestion.trim().length > 0) types.push("fact-to-country");
   return types;
 }
 

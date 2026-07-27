@@ -226,7 +226,10 @@ export function MapPageContent() {
           aria-label="Interactive 3D globe showing your map progress"
           className="relative left-1/2 w-screen -translate-x-1/2"
         >
-          <div className="h-[max(28rem,calc(100dvh-14rem))]">
+          {/* Shorter than before: default camera is fully zoomed out, so a
+              tall strip left empty bands above/below the planet. Still tall
+              enough for the globe + atmosphere halo without clipping. */}
+          <div className="h-[max(20rem,calc(100dvh-22rem))]">
             <InteractiveGlobe
               profile={profile}
               difficulty={mapDifficulty}

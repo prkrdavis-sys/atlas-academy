@@ -1,225 +1,335 @@
 {
-  "auditedAt": "2026-07-17",
-  "scope": "Western Hemisphere countries from data/countries.json (North America, South America, Caribbean, Central America). Excludes US-* state codes.",
+  "auditedAt": "2026-07-27",
+  "scope": "Western Hemisphere countries from data/countries.json (North America, Central America, Caribbean, South America). Excludes US-* state codes.",
   "criteria": {
-    "pass": "Skyline, aerial, or wide city view of the correct capital",
-    "fail": "Single building, wrong city, harbor-only, military, parade, portrait, disaster rubble, or missing image"
+    "pass": "Skyline, aerial, or wide downtown/city overview of the correct capital",
+    "fail": "Street-level narrow scene, beach-only, single building, small courtyard, historical B&W postcard, disaster rubble, window reflections, or missing image"
+  },
+  "storage": {
+    "images": "public/capitals/{lowercase-code}.jpg",
+    "mapping": "data/countries.json (capital, hasCapitalImage)",
+    "sources": "data/capital-image-sources.json",
+    "overrides": "scripts/fetch-capital-images.ts COMMONS_FILE_OVERRIDES",
+    "fetch": "npm run fetch-capital-images -- --refresh --code=XX"
   },
   "summary": {
     "total": 56,
-    "pass": 55,
-    "fail": 1,
-    "fixed": 19,
-    "remainingFailures": 1
+    "fine": 37,
+    "redone": 12,
+    "blockedOrIncomplete": 7
   },
-  "pass": [
-    "AI",
-    "AG",
-    "AR",
-    "AW",
-    "BB",
-    "BM",
-    "BO",
-    "BQ",
-    "BR",
-    "BS",
-    "BZ",
-    "CA",
-    "CL",
-    "CO",
-    "CR",
-    "CU",
-    "CW",
-    "DM",
-    "DO",
-    "EC",
-    "SV",
-    "FK",
-    "GF",
-    "GL",
-    "GD",
-    "GP",
-    "GT",
-    "GY",
-    "HT",
-    "HN",
-    "JM",
-    "KY",
-    "MQ",
-    "MX",
-    "MS",
-    "MF",
-    "NI",
-    "PA",
-    "PE",
-    "PM",
-    "PR",
-    "BL",
-    "KN",
-    "LC",
-    "VC",
-    "SR",
-    "SX",
-    "TT",
-    "TC",
-    "US",
-    "VI",
-    "UY",
-    "VE",
-    "PY",
-    "VG"
-  ],
-  "fail": [
+  "fine": [
     {
-      "code": "UM",
-      "capital": "",
-      "reason": "No capital defined in countries.json; no image fetch possible",
-      "source": null
-    }
-  ],
-  "fixed": [
+      "code": "AG",
+      "capital": "Saint John's",
+      "note": "Elevated harbor/downtown overview"
+    },
+    {
+      "code": "AR",
+      "capital": "Buenos Aires",
+      "note": "Sunset skyline"
+    },
     {
       "code": "AW",
       "capital": "Oranjestad",
-      "was": "Archaeological Museum Panorama (1), Oranjestad, ARUBA.JPG — single building",
-      "now": "BNA-DIG-MEINERS-0154 - Luchtfoto's 27 - 640900 - Oranjestad c.jpg"
+      "note": "Aerial city view"
     },
     {
-      "code": "BO",
-      "capital": "Sucre",
-      "was": "Pair of Men in Downtown Plaza — street portrait scene",
-      "now": "Sucre capital of Bolivia.JPG"
+      "code": "BB",
+      "capital": "Bridgetown",
+      "note": "Aerial Careenage/downtown"
+    },
+    {
+      "code": "BL",
+      "capital": "Gustavia",
+      "note": "Elevated harbor/town overview"
+    },
+    {
+      "code": "BM",
+      "capital": "Hamilton",
+      "note": "City overview OK"
     },
     {
       "code": "BR",
       "capital": "Brasília",
-      "was": "Sao Paulo Skyline in Brazil.jpg — wrong city",
-      "now": "Brasília Panorama.jpg"
+      "note": "Brasília panorama"
     },
     {
       "code": "BS",
       "capital": "Nassau",
-      "was": "Nassau-Harbour-Cruise-Ships-Aerial-Bahamas.jpg — harbor/cruise ships only",
-      "now": "Nassau, Bahamas aerial view.jpg"
+      "note": "Aerial city view"
+    },
+    {
+      "code": "BZ",
+      "capital": "Belmopan",
+      "note": "Low-density aerial of Belmopan; city has almost no skyline on Commons — best available aerial left as-is"
+    },
+    {
+      "code": "CA",
+      "capital": "Ottawa",
+      "note": "Parliament Hill / river skyline panorama"
+    },
+    {
+      "code": "CL",
+      "capital": "Santiago",
+      "note": "City skyline OK"
+    },
+    {
+      "code": "CO",
+      "capital": "Bogotá",
+      "note": "City skyline OK"
+    },
+    {
+      "code": "CR",
+      "capital": "San José",
+      "note": "City skyline OK"
+    },
+    {
+      "code": "CU",
+      "capital": "Havana",
+      "note": "City skyline OK"
     },
     {
       "code": "DO",
       "capital": "Santo Domingo",
-      "was": "Young Woman (Ana Martinez) in Downtown Santo Domingo — portrait",
-      "now": "View of Santo Domingo Skyline.jpg"
+      "note": "Skyline OK"
     },
     {
-      "code": "GP",
-      "capital": "Basse-Terre",
-      "was": "Soufrière volcano panorama — distant/wrong subject",
-      "now": "Vue du centre de Basse-Terre, Guadeloupe.jpg"
+      "code": "SV",
+      "capital": "San Salvador",
+      "note": "City skyline OK"
+    },
+    {
+      "code": "FK",
+      "capital": "Stanley",
+      "note": "Town overview OK for scale"
+    },
+    {
+      "code": "GF",
+      "capital": "Cayenne",
+      "note": "City overview OK"
+    },
+    {
+      "code": "GL",
+      "capital": "Nuuk",
+      "note": "Town overview OK"
+    },
+    {
+      "code": "GD",
+      "capital": "St. George's",
+      "note": "Elevated downtown hillside overview"
+    },
+    {
+      "code": "GT",
+      "capital": "Guatemala City",
+      "note": "City skyline OK"
+    },
+    {
+      "code": "GY",
+      "capital": "Georgetown",
+      "note": "City overview OK"
     },
     {
       "code": "HT",
       "capital": "Port-au-Prince",
-      "was": "US Navy earthquake damage aerial — disaster/military",
-      "now": "Port-Au-Prince, Haiti from the Black Mountains.jpg"
-    },
-    {
-      "code": "JM",
-      "capital": "Kingston",
-      "was": "Painted building in downtown Kingston — single building",
-      "now": "Kingston, Jamaica.JPG"
-    },
-    {
-      "code": "KY",
-      "capital": "George Town",
-      "was": "Harbor pier construction view — harbor-only",
-      "now": "Camana Bay skyline.jpg"
-    },
-    {
-      "code": "MF",
-      "capital": "Marigot",
-      "was": "Saint Martin island 360° atoll panorama — wrong location",
-      "now": "Marigot, Saint Martin (15648526873).jpg"
+      "note": "Distant Black Mountains overlook of city sprawl; Commons alternatives were disaster scenes or furniture-heavy balcony shots — left as best non-disaster aerial"
     },
     {
       "code": "MQ",
       "capital": "Fort-de-France",
-      "was": "Historical B&W harbor panorama with person in foreground",
-      "now": "Martinique - Fort-de-France Centre-Ville.jpg"
+      "note": "Centre-ville overview OK"
     },
     {
-      "code": "MS",
-      "capital": "Plymouth",
-      "was": "Soufrière Hills volcanic destruction — abandoned city",
-      "now": "Little Bay from above, Montserrat.JPG"
+      "code": "MX",
+      "capital": "Mexico City",
+      "note": "Elevated downtown with Torre Latinoamericana"
     },
     {
       "code": "NI",
       "capital": "Managua",
-      "was": "Earthquake rubble workers — disaster scene",
-      "now": "Managua skyline.jpg"
+      "note": "Skyline OK"
+    },
+    {
+      "code": "PA",
+      "capital": "Panama City",
+      "note": "Waterfront high-rise skyline"
+    },
+    {
+      "code": "PE",
+      "capital": "Lima",
+      "note": "City skyline OK"
     },
     {
       "code": "PM",
       "capital": "Saint-Pierre",
-      "was": "Miquelon-Langlade island geology — wrong island",
-      "now": "Sainte-Pierre aerial.jpg"
+      "note": "Aerial town OK"
     },
     {
       "code": "PY",
       "capital": "Asunción",
-      "was": "Friendship Bridge to Brazil — bridge focus, not city",
-      "now": "Asunción skyline from Chaco'i.jpg"
+      "note": "Skyline OK"
     },
     {
-      "code": "SX",
-      "capital": "Philipsburg",
-      "was": "Oil painting panorama — non-photographic",
-      "now": "Philipsburg, St. Maarten, Netherlands Antilles (32741901691).jpg"
+      "code": "LC",
+      "capital": "Castries",
+      "note": "Elevated harbor/downtown panorama"
+    },
+    {
+      "code": "VC",
+      "capital": "Kingstown",
+      "note": "Elevated coastal city overview"
+    },
+    {
+      "code": "SR",
+      "capital": "Paramaribo",
+      "note": "City overview OK"
     },
     {
       "code": "TT",
       "capital": "Port of Spain",
-      "was": "Tradewinds 2017 military raid — military",
-      "now": "Port of Spain night skyline 2008.jpg"
+      "note": "Night skyline OK"
     },
     {
       "code": "UY",
       "capital": "Montevideo",
-      "was": "Street-level 18 de Julio avenue — not skyline",
-      "now": "Montevideo skyline (282952662).jpg"
+      "note": "Skyline OK"
     },
     {
       "code": "VE",
       "capital": "Caracas",
-      "was": "LCF-24 military helicopter recon — military",
-      "now": "Caracas skyline and Avila mountain from my penthouse.JPG"
+      "note": "Skyline OK"
+    },
+    {
+      "code": "VG",
+      "capital": "Road Town",
+      "note": "Elevated harbor/downtown overview"
     }
   ],
-  "verifiedAlreadyPass": [
+  "redone": [
     {
-      "code": "AR",
-      "note": "Buenos Aires skyline verified OK"
+      "code": "BO",
+      "capital": "Sucre",
+      "was": "Blurry night 2-building shot (Sucre capital of Bolivia.JPG / night skyline drift)",
+      "now": "Panorama, Sucre, Bolivia.jpg",
+      "reason": "Not a clear city skyline"
     },
     {
-      "code": "BZ",
-      "note": "Belmopan aerial city grid verified OK"
+      "code": "CW",
+      "capital": "Willemstad",
+      "was": "Handelskade facade row only",
+      "now": "Curacao Willemstad Pano (36653932906).jpg",
+      "reason": "Narrow landmark waterfront street"
     },
     {
-      "code": "FK",
-      "note": "Stanley aerial town verified OK"
+      "code": "DM",
+      "capital": "Roseau",
+      "was": "Hurricane-damage aerial of rooftops",
+      "now": "View of Roseau (4).jpg",
+      "reason": "Disaster content, not representative downtown"
     },
     {
-      "code": "GY",
-      "note": "Georgetown aerial with cathedral verified OK"
+      "code": "EC",
+      "capital": "Quito",
+      "was": "Park-heavy window shot with Bristol reflection",
+      "now": "Vista de Quito desde El Panecillo, Ecuador, 2015-07-22, DD 25-29 PAN.JPG",
+      "reason": "Window reflections / park-dominant, not clean city overview"
     },
     {
-      "code": "SR",
-      "note": "Paramaribo waterfront skyline verified OK"
+      "code": "HN",
+      "capital": "Tegucigalpa",
+      "was": "Residential barrio / river trash aerial",
+      "now": "Tegucigalpa-skyline-2024.jpg",
+      "reason": "Not downtown skyline"
+    },
+    {
+      "code": "JM",
+      "capital": "Kingston",
+      "was": "Kingston, Jamaica.JPG — high-altitude satellite of whole metro",
+      "now": "PortofKingston.jpg",
+      "reason": "Satellite footprint, not downtown skyline profile"
+    },
+    {
+      "code": "KN",
+      "capital": "Basseterre",
+      "was": "B&W historical postcard (Warner Park panorama)",
+      "now": "Basseterre.jpeg",
+      "reason": "Historical monochrome postcard"
+    },
+    {
+      "code": "KY",
+      "capital": "George Town",
+      "was": "Camana Bay skyline.jpg — courtyard / building cluster with pool",
+      "now": "George Town Harbour.jpg",
+      "reason": "Small area / courtyard, not city waterfront skyline"
+    },
+    {
+      "code": "MF",
+      "capital": "Marigot",
+      "was": "Street corner at Hotel de la Collectivité",
+      "now": "Marigot St Martin.jpg",
+      "reason": "Street-level narrow scene"
+    },
+    {
+      "code": "PR",
+      "capital": "San Juan",
+      "was": "Neighborhood roofs with distant skyline",
+      "now": "The Skyline of San Juan with the Capitol of Puerto Rico.jpg",
+      "reason": "Foreground neighborhood, skyline too distant"
+    },
+    {
+      "code": "US",
+      "capital": "Washington D.C.",
+      "was": "B&W historical rooftops toward Capitol",
+      "now": "Washington DC Panorama.jpg",
+      "reason": "Historical black-and-white"
+    },
+    {
+      "code": "VI",
+      "capital": "Charlotte Amalie",
+      "was": "B&W historical aerial",
+      "now": "U.S. Virgin Islands - View of Charlotte Amalie from cruise terminal.jpg",
+      "reason": "Historical black-and-white"
     }
   ],
-  "outOfScopeNotTouched": [
-    "GS — Antarctica (Rome GA wrong-city issue; not Western Hemisphere continent filter)",
-    "CK — Oceania",
-    "FM — Oceania",
-    "SA — Asia (Mont Blanc wrong image; not Western Hemisphere)",
-    "US-* — US states handled by separate agent"
+  "blockedOrIncomplete": [
+    {
+      "code": "UM",
+      "capital": "",
+      "reason": "No capital defined in countries.json; no image fetch possible"
+    },
+    {
+      "code": "SX",
+      "capital": "Philipsburg",
+      "reason": "Current image is beach/umbrellas. Commons inventory is beach, marina, or street — no usable downtown skyline/aerial found. Left unchanged.",
+      "current": "Philipsburg, St. Maarten, Netherlands Antilles (32741901691).jpg"
+    },
+    {
+      "code": "GP",
+      "capital": "Basse-Terre",
+      "reason": "Current image is street-level shops + church tower. Wikipedia/Commons pages are mostly single buildings, fort views, or beaches — no proper downtown aerial found. Left unchanged.",
+      "current": "Vue du centre de Basse-Terre, Guadeloupe.jpg"
+    },
+    {
+      "code": "BQ",
+      "capital": "Kralendijk",
+      "reason": "Current image is a small waterfront street/harbor strip. Alternatives are similar street views or low-density residential overlooks toward Klein Bonaire — no dense downtown skyline exists. Left unchanged."
+    },
+    {
+      "code": "TC",
+      "capital": "Cockburn Town",
+      "reason": "Current image is street + beach with 2006 date stamp. Cockburn Town is tiny; Commons is mostly beach/street/museum. No skyline/aerial downtown found. Left unchanged.",
+      "current": "Cockburn Town, Grand Turk.jpg"
+    },
+    {
+      "code": "AI",
+      "capital": "The Valley",
+      "reason": "Current image is western-island coastal aerial (beaches/low density), not The Valley downtown. Almost no The Valley city overview on Commons (Wallblake House etc.). Left unchanged."
+    },
+    {
+      "code": "MS",
+      "capital": "Plymouth",
+      "reason": "Plymouth abandoned after volcano; current Little Bay port aerial is de facto hub but is port/industrial/beach, not downtown. No better capital downtown on Commons. Left unchanged.",
+      "current": "Little Bay from above, Montserrat.JPG"
+    }
   ]
 }

@@ -70,7 +70,7 @@ function questionTypeToBaseMode(questionType: SpeedRoundQuestionType): GameMode 
 
 function getDefaultProfileSettings(): Profile["settings"] {
   return {
-    difficulty: "easy",
+    difficulty: "medium",
     lastContinentFilter: [
       "Africa",
       "Asia",

@@ -1,0 +1,358 @@
+{
+  "auditedAt": "2026-07-27",
+  "scope": "Europe countries from countries.json (continent === Europe)",
+  "criteria": {
+    "pass": "Skyline, aerial, or wide downtown/town overview of the correct capital",
+    "fail": "Street, beach, single building, small area, narrow landmark, unusable blur, or missing image"
+  },
+  "summary": {
+    "total": 53,
+    "fine": 33,
+    "redone": 20,
+    "blocked": 0
+  },
+  "fine": [
+    {
+      "code": "AX",
+      "name": "Åland Islands",
+      "capital": "Mariehamn",
+      "sourceTitle": "Aerial photo of Mariehamn.jpg"
+    },
+    {
+      "code": "AD",
+      "name": "Andorra",
+      "capital": "Andorra la Vella",
+      "sourceTitle": "Vue d'Andorra la Vieille depuis la tour Caldea panorama.jpg"
+    },
+    {
+      "code": "AT",
+      "name": "Austria",
+      "capital": "Vienna",
+      "sourceTitle": "Vienna Austria Skyline Aerial, October 2024.jpg"
+    },
+    {
+      "code": "BE",
+      "name": "Belgium",
+      "capital": "Brussels",
+      "sourceTitle": "Brussels skyline 1003.JPG"
+    },
+    {
+      "code": "BA",
+      "name": "Bosnia and Herzegovina",
+      "capital": "Sarajevo",
+      "sourceTitle": "Sarajevo Night Skyline Bosnia & Herzegovina 2014 (15510458883).jpg"
+    },
+    {
+      "code": "BG",
+      "name": "Bulgaria",
+      "capital": "Sofia",
+      "sourceTitle": "Sofia skyline.jpg"
+    },
+    {
+      "code": "CY",
+      "name": "Cyprus",
+      "capital": "Nicosia",
+      "sourceTitle": "Nicosia panoramic view Cyprus Tower 25 Jean Nouvel.jpg"
+    },
+    {
+      "code": "EE",
+      "name": "Estonia",
+      "capital": "Tallinn",
+      "sourceTitle": "Tallinn Skyline at Night - Estonia.jpg"
+    },
+    {
+      "code": "FI",
+      "name": "Finland",
+      "capital": "Helsinki",
+      "sourceTitle": "Skyline of Helsinki as seen from the Erottaja fire station.jpg"
+    },
+    {
+      "code": "FR",
+      "name": "France",
+      "capital": "Paris",
+      "sourceTitle": "Paris Panorama.jpg"
+    },
+    {
+      "code": "DE",
+      "name": "Germany",
+      "capital": "Berlin",
+      "sourceTitle": "Berlin Skyline, Germany (43219996764).jpg"
+    },
+    {
+      "code": "GI",
+      "name": "Gibraltar",
+      "capital": "Gibraltar",
+      "sourceTitle": "Aerial-view-Gibraltar-2011.jpg"
+    },
+    {
+      "code": "HU",
+      "name": "Hungary",
+      "capital": "Budapest",
+      "sourceTitle": "Budapest skyline panorama (22972090381).jpg"
+    },
+    {
+      "code": "IS",
+      "name": "Iceland",
+      "capital": "Reykjavik",
+      "sourceTitle": "Reykjavik, Iceland aerial cityscape (Unsplash).jpg"
+    },
+    {
+      "code": "IE",
+      "name": "Ireland",
+      "capital": "Dublin",
+      "sourceTitle": "North Wall Quay Dublin Ireland Cityscape Photography (169960849).jpeg"
+    },
+    {
+      "code": "IM",
+      "name": "Isle of Man",
+      "capital": "Douglas",
+      "sourceTitle": "Cmglee Douglas Isle of Man aerial view.jpg"
+    },
+    {
+      "code": "JE",
+      "name": "Jersey",
+      "capital": "Saint Helier",
+      "sourceTitle": "Panorama of St.Helier, Jersey, Channel Islands - panoramio.jpg"
+    },
+    {
+      "code": "XK",
+      "name": "Kosovo",
+      "capital": "Pristina",
+      "sourceTitle": "PrishtinaKosovoSkyline.JPG"
+    },
+    {
+      "code": "LV",
+      "name": "Latvia",
+      "capital": "Riga",
+      "sourceTitle": "Riga Skyline Panorama, Latvia - Diliff.jpg"
+    },
+    {
+      "code": "LI",
+      "name": "Liechtenstein",
+      "capital": "Vaduz",
+      "sourceTitle": "Vista de Vaduz, Liechtenstein, 2022-10-23, DD 28.jpg"
+    },
+    {
+      "code": "LT",
+      "name": "Lithuania",
+      "capital": "Vilnius",
+      "sourceTitle": "Vilnius Modern Skyline, Lithuania - Diliff.jpg"
+    },
+    {
+      "code": "LU",
+      "name": "Luxembourg",
+      "capital": "Luxembourg",
+      "sourceTitle": "Luxembourg Skyline (3756386370).jpg"
+    },
+    {
+      "code": "MC",
+      "name": "Monaco",
+      "capital": "Monaco",
+      "sourceTitle": "Skyline monaco 1.JPG"
+    },
+    {
+      "code": "MK",
+      "name": "North Macedonia",
+      "capital": "Skopje",
+      "sourceTitle": "Skopje, Macedonia banner-City view.jpg"
+    },
+    {
+      "code": "PL",
+      "name": "Poland",
+      "capital": "Warsaw",
+      "sourceTitle": "Warsaw cityscape, Warsaw, Masovian Voivodeship, Poland, November 2019.jpg"
+    },
+    {
+      "code": "RO",
+      "name": "Romania",
+      "capital": "Bucharest",
+      "sourceTitle": "Bucharest, Romania - panorama -a.jpg"
+    },
+    {
+      "code": "RU",
+      "name": "Russia",
+      "capital": "Moscow",
+      "sourceTitle": "Moscow Skyline.jpg"
+    },
+    {
+      "code": "SM",
+      "name": "San Marino",
+      "capital": "City of San Marino",
+      "sourceTitle": "San Marino and Romagna background - Panorama.jpg"
+    },
+    {
+      "code": "SI",
+      "name": "Slovenia",
+      "capital": "Ljubljana",
+      "sourceTitle": "Panorama over Old Town from Ljubljana Castle - Ljubljana - Slovenia (54557308241).jpg"
+    },
+    {
+      "code": "ES",
+      "name": "Spain",
+      "capital": "Madrid",
+      "sourceTitle": "Skyline view of Madrid, Spain at night - 50317258357.jpg"
+    },
+    {
+      "code": "CH",
+      "name": "Switzerland",
+      "capital": "Bern",
+      "sourceTitle": "Bern Skyline.jpg"
+    },
+    {
+      "code": "GB",
+      "name": "United Kingdom",
+      "capital": "London",
+      "sourceTitle": "01 London cityscape - Aerial view of London UK - free stock photo with attribution .jpg"
+    },
+    {
+      "code": "VA",
+      "name": "Vatican City",
+      "capital": "Vatican City",
+      "sourceTitle": "Panorama Vatican, St. Peter's Basilica and Gardens of Vatican City (46800435851).jpg"
+    }
+  ],
+  "redone": [
+    {
+      "code": "AL",
+      "name": "Albania",
+      "capital": "Tirana",
+      "was": "Night art installation / single landmark",
+      "now": "Tirana panorama (7246584338).jpg"
+    },
+    {
+      "code": "BY",
+      "name": "Belarus",
+      "capital": "Minsk",
+      "was": "Narrow aerial of one housing complex",
+      "now": "MinskCityPanorama.jpg"
+    },
+    {
+      "code": "CZ",
+      "name": "Czechia",
+      "capital": "Prague",
+      "was": "Street-level single hotel building",
+      "now": "Prague skyline panorama 2 (7155167583).jpg"
+    },
+    {
+      "code": "DK",
+      "name": "Denmark",
+      "capital": "Copenhagen",
+      "was": "Single neon waterfront block",
+      "now": "Skyline, Copenhagen, 2023.jpg"
+    },
+    {
+      "code": "FO",
+      "name": "Faroe Islands",
+      "capital": "Tórshavn",
+      "was": "Street-level night streetscape",
+      "now": "Tórshavn Panorama.jpg"
+    },
+    {
+      "code": "GG",
+      "name": "Guernsey",
+      "capital": "St. Peter Port",
+      "was": "Coastal rural point / not town",
+      "now": "Guernsey, St. Peter's Port, general view of harbor, Channel Islands-LCCN2002696477.jpg",
+      "note": "Historical elevated harbor/town panorama — best available skyline-style overview for this small capital after modern Commons candidates failed (lido, beach, street pump)"
+    },
+    {
+      "code": "GR",
+      "name": "Greece",
+      "capital": "Athens",
+      "was": "Extremely blurry night cityscape",
+      "now": "View of Athens from Lycabettus.jpg"
+    },
+    {
+      "code": "HR",
+      "name": "Croatia",
+      "capital": "Zagreb",
+      "was": "Travno residential borough only",
+      "now": "Vista de Zagreb, Croacia, 2014-04-13, DD 01.JPG"
+    },
+    {
+      "code": "IT",
+      "name": "Italy",
+      "capital": "Rome",
+      "was": "Silhouetted single dome rooftop",
+      "now": "Roma dall'alto.jpg"
+    },
+    {
+      "code": "MD",
+      "name": "Moldova",
+      "capital": "Chișinău",
+      "was": "Park/field with no city buildings",
+      "now": "Chisinau, Republic of Moldova.jpg"
+    },
+    {
+      "code": "ME",
+      "name": "Montenegro",
+      "capital": "Podgorica",
+      "was": "Driver street view toward bridge",
+      "now": "Podgorica panorama.jpg"
+    },
+    {
+      "code": "MT",
+      "name": "Malta",
+      "capital": "Valletta",
+      "was": "Narrow Victoria Gate street canyon",
+      "now": "Valletta skyline.jpg"
+    },
+    {
+      "code": "NL",
+      "name": "Netherlands",
+      "capital": "Amsterdam",
+      "was": "Rooftop patio foreground / then ultra-thin strip",
+      "now": "Amsterdam A'DAM Tower Blick vom Turm auf den IJ 03.jpg"
+    },
+    {
+      "code": "NO",
+      "name": "Norway",
+      "capital": "Oslo",
+      "was": "Street intersection small area",
+      "now": "Oslo panorama.jpg"
+    },
+    {
+      "code": "PT",
+      "name": "Portugal",
+      "capital": "Lisbon",
+      "was": "Hillside neighborhood close-up",
+      "now": "LisbonSkyline.jpg"
+    },
+    {
+      "code": "RS",
+      "name": "Serbia",
+      "capital": "Belgrade",
+      "was": "Bridge-focused riverbank",
+      "now": "Serbia, Novi Beograd, panorama, 06 May 2012.jpg"
+    },
+    {
+      "code": "SE",
+      "name": "Sweden",
+      "capital": "Stockholm",
+      "was": "Small harbor/boat cluster",
+      "now": "Stockholm aerial 5.jpg"
+    },
+    {
+      "code": "SJ",
+      "name": "Svalbard and Jan Mayen",
+      "capital": "Longyearbyen",
+      "was": "Single cableway industrial building",
+      "now": "Longyearbyen, Svalbard - aerial view.jpg"
+    },
+    {
+      "code": "SK",
+      "name": "Slovakia",
+      "capital": "Bratislava",
+      "was": "Distant tiny skyline across empty field",
+      "now": "Bratislava (Pressburg, Pozsony) - panorama.jpg"
+    },
+    {
+      "code": "UA",
+      "name": "Ukraine",
+      "capital": "Kyiv",
+      "was": "Street-level square night scene",
+      "now": "Kyiv skyline (15688086793).jpg"
+    }
+  ],
+  "blocked": []
+}

@@ -1,0 +1,4283 @@
+{
+  "auditedAt": "2026-07-27",
+  "criteria": {
+    "pass": "Clear skyline or elevated/aerial view of the correct capital's downtown/city core",
+    "fail": "Single building, street-scale, beach/harbor-only, map/satellite-too-far, nature/animal focus, wrong subject, unusable quality, or wrong city"
+  },
+  "summary": {
+    "totalWithImages": 245,
+    "needRedo": 140,
+    "lookFine": 105,
+    "noImage": [
+      "AQ",
+      "BV",
+      "HM",
+      "MO",
+      "UM"
+    ],
+    "byContinent": {
+      "Africa": {
+        "redo": 39,
+        "fine": 20
+      },
+      "Antarctica": {
+        "redo": 2,
+        "fine": 0
+      },
+      "Asia": {
+        "redo": 20,
+        "fine": 29
+      },
+      "Europe": {
+        "redo": 27,
+        "fine": 26
+      },
+      "North America": {
+        "redo": 24,
+        "fine": 17
+      },
+      "Oceania": {
+        "redo": 21,
+        "fine": 6
+      },
+      "South America": {
+        "redo": 7,
+        "fine": 7
+      }
+    }
+  },
+  "needRedoByContinent": {
+    "Africa": [
+      {
+        "code": "BJ",
+        "name": "Benin",
+        "capital": "Porto-Novo",
+        "continent": "Africa",
+        "subregion": "Western Africa",
+        "image": "/capitals/bj.jpg",
+        "reason": "satellite/map view, not a photo of the city"
+      },
+      {
+        "code": "BW",
+        "name": "Botswana",
+        "capital": "Gaborone",
+        "continent": "Africa",
+        "subregion": "Southern Africa",
+        "image": "/capitals/bw.jpg",
+        "reason": "group photo of people, not the city"
+      },
+      {
+        "code": "IO",
+        "name": "British Indian Ocean Territory",
+        "capital": "Diego Garcia",
+        "continent": "Africa",
+        "subregion": "Eastern Africa",
+        "image": "/capitals/io.jpg",
+        "reason": "satellite atoll, no city"
+      },
+      {
+        "code": "BF",
+        "name": "Burkina Faso",
+        "capital": "Ouagadougou",
+        "continent": "Africa",
+        "subregion": "Western Africa",
+        "image": "/capitals/bf.jpg",
+        "reason": "street-level dusty lot / small area"
+      },
+      {
+        "code": "BI",
+        "name": "Burundi",
+        "capital": "Gitega",
+        "continent": "Africa",
+        "subregion": "Eastern Africa",
+        "image": "/capitals/bi.jpg",
+        "reason": "single building facade"
+      },
+      {
+        "code": "CM",
+        "name": "Cameroon",
+        "capital": "Yaoundé",
+        "continent": "Africa",
+        "subregion": "Middle Africa",
+        "image": "/capitals/cm.jpg",
+        "reason": "street corridor view, not skyline/aerial downtown"
+      },
+      {
+        "code": "CV",
+        "name": "Cape Verde",
+        "capital": "Praia",
+        "continent": "Africa",
+        "subregion": "Western Africa",
+        "image": "/capitals/cv.jpg",
+        "reason": "volcano/mountain landscape, city barely visible"
+      },
+      {
+        "code": "CF",
+        "name": "Central African Republic",
+        "capital": "Bangui",
+        "continent": "Africa",
+        "subregion": "Middle Africa",
+        "image": "/capitals/cf.jpg",
+        "reason": "street / roundabout, small area"
+      },
+      {
+        "code": "TD",
+        "name": "Chad",
+        "capital": "N'Djamena",
+        "continent": "Africa",
+        "subregion": "Middle Africa",
+        "image": "/capitals/td.jpg",
+        "reason": "single large building"
+      },
+      {
+        "code": "KM",
+        "name": "Comoros",
+        "capital": "Moroni",
+        "continent": "Africa",
+        "subregion": "Eastern Africa",
+        "image": "/capitals/km.jpg",
+        "reason": "beach / palm / coastline, not downtown"
+      },
+      {
+        "code": "CG",
+        "name": "Congo",
+        "capital": "Brazzaville",
+        "continent": "Africa",
+        "subregion": "Middle Africa",
+        "image": "/capitals/cg.jpg",
+        "reason": "basket of tomatoes — completely wrong subject"
+      },
+      {
+        "code": "EG",
+        "name": "Egypt",
+        "capital": "Cairo",
+        "continent": "Africa",
+        "subregion": "Northern Africa",
+        "image": "/capitals/eg.jpg",
+        "reason": "Giza pyramids, not Cairo downtown skyline"
+      },
+      {
+        "code": "GQ",
+        "name": "Equatorial Guinea",
+        "capital": "Malabo",
+        "continent": "Africa",
+        "subregion": "Middle Africa",
+        "image": "/capitals/gq.jpg",
+        "reason": "airport runway, not downtown"
+      },
+      {
+        "code": "SZ",
+        "name": "Eswatini",
+        "capital": "Lobamba",
+        "continent": "Africa",
+        "subregion": "Southern Africa",
+        "image": "/capitals/sz.jpg",
+        "reason": "single dome building on lawn"
+      },
+      {
+        "code": "ET",
+        "name": "Ethiopia",
+        "capital": "Addis Ababa",
+        "continent": "Africa",
+        "subregion": "Eastern Africa",
+        "image": "/capitals/et.jpg",
+        "reason": "suburban residential sprawl, not downtown"
+      },
+      {
+        "code": "GA",
+        "name": "Gabon",
+        "capital": "Libreville",
+        "continent": "Africa",
+        "subregion": "Middle Africa",
+        "image": "/capitals/ga.jpg",
+        "reason": "building facade / partial person, not city overview"
+      },
+      {
+        "code": "GW",
+        "name": "Guinea-Bissau",
+        "capital": "Bissau",
+        "continent": "Africa",
+        "subregion": "Western Africa",
+        "image": "/capitals/gw.jpg",
+        "reason": "satellite/map delta view, not city photo"
+      },
+      {
+        "code": "CI",
+        "name": "Ivory Coast",
+        "capital": "Yamoussoukro",
+        "continent": "Africa",
+        "subregion": "Western Africa",
+        "image": "/capitals/ci.jpg",
+        "reason": "rural field / distant low buildings"
+      },
+      {
+        "code": "KE",
+        "name": "Kenya",
+        "capital": "Nairobi",
+        "continent": "Africa",
+        "subregion": "Eastern Africa",
+        "image": "/capitals/ke.jpg",
+        "reason": "wildlife (buffalo) foreground; skyline tiny/illegible"
+      },
+      {
+        "code": "LY",
+        "name": "Libya",
+        "capital": "Tripoli",
+        "continent": "Africa",
+        "subregion": "Northern Africa",
+        "image": "/capitals/ly.jpg",
+        "reason": "grainy unusable B&W image"
+      },
+      {
+        "code": "MG",
+        "name": "Madagascar",
+        "capital": "Antananarivo",
+        "continent": "Africa",
+        "subregion": "Eastern Africa",
+        "image": "/capitals/mg.jpg",
+        "reason": "high barren landscape; city hard to see"
+      },
+      {
+        "code": "MW",
+        "name": "Malawi",
+        "capital": "Lilongwe",
+        "continent": "Africa",
+        "subregion": "Eastern Africa",
+        "image": "/capitals/mw.jpg",
+        "reason": "landscape/river aerial; no urban center"
+      },
+      {
+        "code": "MR",
+        "name": "Mauritania",
+        "capital": "Nouakchott",
+        "continent": "Africa",
+        "subregion": "Western Africa",
+        "image": "/capitals/mr.jpg",
+        "reason": "grainy sepia rooftops; poor quality / limited scope"
+      },
+      {
+        "code": "MU",
+        "name": "Mauritius",
+        "capital": "Port Louis",
+        "continent": "Africa",
+        "subregion": "Eastern Africa",
+        "image": "/capitals/mu.jpg",
+        "reason": "airplane wing shot over water/hills"
+      },
+      {
+        "code": "YT",
+        "name": "Mayotte",
+        "capital": "Mamoudzou",
+        "continent": "Africa",
+        "subregion": "Eastern Africa",
+        "image": "/capitals/yt.jpg",
+        "reason": "harbor boats, not downtown overview"
+      },
+      {
+        "code": "MA",
+        "name": "Morocco",
+        "capital": "Rabat",
+        "continent": "Africa",
+        "subregion": "Northern Africa",
+        "image": "/capitals/ma.jpg",
+        "reason": "wall/river shoreline; little city visible"
+      },
+      {
+        "code": "NE",
+        "name": "Niger",
+        "capital": "Niamey",
+        "continent": "Africa",
+        "subregion": "Western Africa",
+        "image": "/capitals/ne.jpg",
+        "reason": "arid landscape with trees; no clear city"
+      },
+      {
+        "code": "NG",
+        "name": "Nigeria",
+        "capital": "Abuja",
+        "continent": "Africa",
+        "subregion": "Western Africa",
+        "image": "/capitals/ng.jpg",
+        "reason": "park/winding road aerial; not Abuja downtown"
+      },
+      {
+        "code": "RE",
+        "name": "Réunion",
+        "capital": "Saint-Denis",
+        "continent": "Africa",
+        "subregion": "Eastern Africa",
+        "image": "/capitals/re.jpg",
+        "reason": "old B&W shoreline; poor quality"
+      },
+      {
+        "code": "SC",
+        "name": "Seychelles",
+        "capital": "Victoria",
+        "continent": "Africa",
+        "subregion": "Eastern Africa",
+        "image": "/capitals/sc.jpg",
+        "reason": "tropical beach / island water focus"
+      },
+      {
+        "code": "SL",
+        "name": "Sierra Leone",
+        "capital": "Freetown",
+        "continent": "Africa",
+        "subregion": "Western Africa",
+        "image": "/capitals/sl.jpg",
+        "reason": "indoor portrait looking out window — not city"
+      },
+      {
+        "code": "SO",
+        "name": "Somalia",
+        "capital": "Mogadishu",
+        "continent": "Africa",
+        "subregion": "Eastern Africa",
+        "image": "/capitals/so.jpg",
+        "reason": "washed-out hazy aerial; details unusable"
+      },
+      {
+        "code": "SS",
+        "name": "South Sudan",
+        "capital": "Juba",
+        "continent": "Africa",
+        "subregion": "Middle Africa",
+        "image": "/capitals/ss.jpg",
+        "reason": "distant low-contrast landscape; city unclear"
+      },
+      {
+        "code": "ST",
+        "name": "São Tomé and Príncipe",
+        "capital": "São Tomé",
+        "continent": "Africa",
+        "subregion": "Middle Africa",
+        "image": "/capitals/st.jpg",
+        "reason": "street-level parked cars / building facades"
+      },
+      {
+        "code": "TZ",
+        "name": "Tanzania",
+        "capital": "Dodoma",
+        "continent": "Africa",
+        "subregion": "Eastern Africa",
+        "image": "/capitals/tz.jpg",
+        "reason": "mostly empty dusty landscape; not Dodoma downtown"
+      },
+      {
+        "code": "TG",
+        "name": "Togo",
+        "capital": "Lomé",
+        "continent": "Africa",
+        "subregion": "Western Africa",
+        "image": "/capitals/tg.jpg",
+        "reason": "resort pool / beach, not downtown"
+      },
+      {
+        "code": "TN",
+        "name": "Tunisia",
+        "capital": "Tunis",
+        "continent": "Africa",
+        "subregion": "Northern Africa",
+        "image": "/capitals/tn.jpg",
+        "reason": "distant water/peninsula; city not clear"
+      },
+      {
+        "code": "UG",
+        "name": "Uganda",
+        "capital": "Kampala",
+        "continent": "Africa",
+        "subregion": "Eastern Africa",
+        "image": "/capitals/ug.jpg",
+        "reason": "matatu/van parking lot street scene"
+      },
+      {
+        "code": "EH",
+        "name": "Western Sahara",
+        "capital": "El Aaiún",
+        "continent": "Africa",
+        "subregion": "Northern Africa",
+        "image": "/capitals/eh.jpg",
+        "reason": "close-up fishing boats in harbor"
+      }
+    ],
+    "Antarctica": [
+      {
+        "code": "TF",
+        "name": "French Southern and Antarctic Lands",
+        "capital": "Port-aux-Français",
+        "continent": "Antarctica",
+        "subregion": "",
+        "image": "/capitals/tf.jpg",
+        "reason": "tiny research outpost landscape; not a city skyline"
+      },
+      {
+        "code": "GS",
+        "name": "South Georgia",
+        "capital": "King Edward Point",
+        "continent": "Antarctica",
+        "subregion": "",
+        "image": "/capitals/gs.jpg",
+        "reason": "WRONG PLACE — temperate city aerial, not King Edward Point"
+      }
+    ],
+    "Asia": [
+      {
+        "code": "AF",
+        "name": "Afghanistan",
+        "capital": "Kabul",
+        "continent": "Asia",
+        "subregion": "Southern Asia",
+        "image": "/capitals/af.jpg",
+        "reason": "hillside overlook with people; not downtown skyline"
+      },
+      {
+        "code": "AM",
+        "name": "Armenia",
+        "capital": "Yerevan",
+        "continent": "Asia",
+        "subregion": "Western Asia",
+        "image": "/capitals/am.jpg",
+        "reason": "residential apartment blocks; not downtown skyline"
+      },
+      {
+        "code": "BH",
+        "name": "Bahrain",
+        "capital": "Manama",
+        "continent": "Asia",
+        "subregion": "Western Asia",
+        "image": "/capitals/bh.jpg",
+        "reason": "ruins/empty ground foreground; skyline distant/weak"
+      },
+      {
+        "code": "BT",
+        "name": "Bhutan",
+        "capital": "Thimphu",
+        "continent": "Asia",
+        "subregion": "Southern Asia",
+        "image": "/capitals/bt.jpg",
+        "reason": "valley landscape; not downtown skyline"
+      },
+      {
+        "code": "IN",
+        "name": "India",
+        "capital": "New Delhi",
+        "continent": "Asia",
+        "subregion": "Southern Asia",
+        "image": "/capitals/in.jpg",
+        "reason": "Republic Day helicopters + flag in sky — no city"
+      },
+      {
+        "code": "IR",
+        "name": "Iran",
+        "capital": "Tehran",
+        "continent": "Asia",
+        "subregion": "Southern Asia",
+        "image": "/capitals/ir.jpg",
+        "reason": "washed-out hazy; weak skyline quality"
+      },
+      {
+        "code": "IQ",
+        "name": "Iraq",
+        "capital": "Baghdad",
+        "continent": "Asia",
+        "subregion": "Western Asia",
+        "image": "/capitals/iq.jpg",
+        "reason": "high satellite river bend; map-like, not cityscape"
+      },
+      {
+        "code": "KZ",
+        "name": "Kazakhstan",
+        "capital": "Astana",
+        "continent": "Asia",
+        "subregion": "Central Asia",
+        "image": "/capitals/kz.jpg",
+        "reason": "blurry/unreadable; city not discernible"
+      },
+      {
+        "code": "KW",
+        "name": "Kuwait",
+        "capital": "Kuwait City",
+        "continent": "Asia",
+        "subregion": "Western Asia",
+        "image": "/capitals/kw.jpg",
+        "reason": "dark limited night crop of few towers"
+      },
+      {
+        "code": "KG",
+        "name": "Kyrgyzstan",
+        "capital": "Bishkek",
+        "continent": "Asia",
+        "subregion": "Central Asia",
+        "image": "/capitals/kg.jpg",
+        "reason": "monument/park street-level, not skyline"
+      },
+      {
+        "code": "LA",
+        "name": "Laos",
+        "capital": "Vientiane",
+        "continent": "Asia",
+        "subregion": "South-Eastern Asia",
+        "image": "/capitals/la.jpg",
+        "reason": "street with parked cars / low-rises"
+      },
+      {
+        "code": "LB",
+        "name": "Lebanon",
+        "capital": "Beirut",
+        "continent": "Asia",
+        "subregion": "Western Asia",
+        "image": "/capitals/lb.jpg",
+        "reason": "street corridor toward buildings"
+      },
+      {
+        "code": "MM",
+        "name": "Myanmar",
+        "capital": "Naypyidaw",
+        "continent": "Asia",
+        "subregion": "South-Eastern Asia",
+        "image": "/capitals/mm.jpg",
+        "reason": "empty multi-lane highway; no downtown"
+      },
+      {
+        "code": "NP",
+        "name": "Nepal",
+        "capital": "Kathmandu",
+        "continent": "Asia",
+        "subregion": "Southern Asia",
+        "image": "/capitals/np.jpg",
+        "reason": "temple square close-up; not city overview"
+      },
+      {
+        "code": "PS",
+        "name": "Palestine",
+        "capital": "Ramallah",
+        "continent": "Asia",
+        "subregion": "Western Asia",
+        "image": "/capitals/ps.jpg",
+        "reason": "green hills / scattered houses; not downtown"
+      },
+      {
+        "code": "SY",
+        "name": "Syria",
+        "capital": "Damascus",
+        "continent": "Asia",
+        "subregion": "Western Asia",
+        "image": "/capitals/sy.jpg",
+        "reason": "street-level road with traffic"
+      },
+      {
+        "code": "TJ",
+        "name": "Tajikistan",
+        "capital": "Dushanbe",
+        "continent": "Asia",
+        "subregion": "Central Asia",
+        "image": "/capitals/tj.jpg",
+        "reason": "small neighborhood / few apartments"
+      },
+      {
+        "code": "TH",
+        "name": "Thailand",
+        "capital": "Bangkok",
+        "continent": "Asia",
+        "subregion": "South-Eastern Asia",
+        "image": "/capitals/th.jpg",
+        "reason": "balcony railing obscures view; hazy"
+      },
+      {
+        "code": "TL",
+        "name": "Timor-Leste",
+        "capital": "Dili",
+        "continent": "Asia",
+        "subregion": "South-Eastern Asia",
+        "image": "/capitals/tl.jpg",
+        "reason": "city blocked by dense foreground trees"
+      },
+      {
+        "code": "VN",
+        "name": "Vietnam",
+        "capital": "Hanoi",
+        "continent": "Asia",
+        "subregion": "South-Eastern Asia",
+        "image": "/capitals/vn.jpg",
+        "reason": "messy rooftops + construction; hazy"
+      }
+    ],
+    "Europe": [
+      {
+        "code": "AL",
+        "name": "Albania",
+        "capital": "Tirana",
+        "continent": "Europe",
+        "subregion": "Southeast Europe",
+        "image": "/capitals/al.jpg",
+        "reason": "close-up of single architectural structure at night"
+      },
+      {
+        "code": "BY",
+        "name": "Belarus",
+        "capital": "Minsk",
+        "continent": "Europe",
+        "subregion": "Eastern Europe",
+        "image": "/capitals/by.jpg",
+        "reason": "grainy B&W of limited building complex"
+      },
+      {
+        "code": "HR",
+        "name": "Croatia",
+        "capital": "Zagreb",
+        "continent": "Europe",
+        "subregion": "Southeast Europe",
+        "image": "/capitals/hr.jpg",
+        "reason": "view between apartment buildings / window-like"
+      },
+      {
+        "code": "CY",
+        "name": "Cyprus",
+        "capital": "Nicosia",
+        "continent": "Europe",
+        "subregion": "Southern Europe",
+        "image": "/capitals/cy.jpg",
+        "reason": "few nondescript apartments; not downtown overview"
+      },
+      {
+        "code": "CZ",
+        "name": "Czechia",
+        "capital": "Prague",
+        "continent": "Europe",
+        "subregion": "Central Europe",
+        "image": "/capitals/cz.jpg",
+        "reason": "close-up of single modern building"
+      },
+      {
+        "code": "FO",
+        "name": "Faroe Islands",
+        "capital": "Tórshavn",
+        "continent": "Europe",
+        "subregion": "Northern Europe",
+        "image": "/capitals/fo.jpg",
+        "reason": "street-level night row of houses"
+      },
+      {
+        "code": "GR",
+        "name": "Greece",
+        "capital": "Athens",
+        "continent": "Europe",
+        "subregion": "Southern Europe",
+        "image": "/capitals/gr.jpg",
+        "reason": "extremely blurry night lights; unusable"
+      },
+      {
+        "code": "GG",
+        "name": "Guernsey",
+        "capital": "St. Peter Port",
+        "continent": "Europe",
+        "subregion": "Northern Europe",
+        "image": "/capitals/gg.jpg",
+        "reason": "foggy sea view; city barely visible"
+      },
+      {
+        "code": "IE",
+        "name": "Ireland",
+        "capital": "Dublin",
+        "continent": "Europe",
+        "subregion": "Northern Europe",
+        "image": "/capitals/ie.jpg",
+        "reason": "low riverbank ground shot; weak skyline"
+      },
+      {
+        "code": "IM",
+        "name": "Isle of Man",
+        "capital": "Douglas",
+        "continent": "Europe",
+        "subregion": "Northern Europe",
+        "image": "/capitals/im.jpg",
+        "reason": "high satellite coastline/fields; not Douglas downtown"
+      },
+      {
+        "code": "IT",
+        "name": "Italy",
+        "capital": "Rome",
+        "continent": "Europe",
+        "subregion": "Southern Europe",
+        "image": "/capitals/it.jpg",
+        "reason": "silhouette of a single dome; not Rome skyline"
+      },
+      {
+        "code": "XK",
+        "name": "Kosovo",
+        "capital": "Pristina",
+        "continent": "Europe",
+        "subregion": "Southeast Europe",
+        "image": "/capitals/xk.jpg",
+        "reason": "dark suburban rooftops; weak downtown"
+      },
+      {
+        "code": "MT",
+        "name": "Malta",
+        "capital": "Valletta",
+        "continent": "Europe",
+        "subregion": "Southern Europe",
+        "image": "/capitals/mt.jpg",
+        "reason": "tight cluster of streets/buildings; street-scale"
+      },
+      {
+        "code": "MD",
+        "name": "Moldova",
+        "capital": "Chișinău",
+        "continent": "Europe",
+        "subregion": "Eastern Europe",
+        "image": "/capitals/md.jpg",
+        "reason": "grassy field / trees; no city"
+      },
+      {
+        "code": "ME",
+        "name": "Montenegro",
+        "capital": "Podgorica",
+        "continent": "Europe",
+        "subregion": "Southeast Europe",
+        "image": "/capitals/me.jpg",
+        "reason": "street-level bridge tower / traffic"
+      },
+      {
+        "code": "NL",
+        "name": "Netherlands",
+        "capital": "Amsterdam",
+        "continent": "Europe",
+        "subregion": "Western Europe",
+        "image": "/capitals/nl.jpg",
+        "reason": "rooftop terrace dominates; limited city"
+      },
+      {
+        "code": "NO",
+        "name": "Norway",
+        "capital": "Oslo",
+        "continent": "Europe",
+        "subregion": "Northern Europe",
+        "image": "/capitals/no.jpg",
+        "reason": "top-down street roundabout"
+      },
+      {
+        "code": "PT",
+        "name": "Portugal",
+        "capital": "Lisbon",
+        "continent": "Europe",
+        "subregion": "Southern Europe",
+        "image": "/capitals/pt.jpg",
+        "reason": "limited rooftops toward a hill"
+      },
+      {
+        "code": "RO",
+        "name": "Romania",
+        "capital": "Bucharest",
+        "continent": "Europe",
+        "subregion": "Southeast Europe",
+        "image": "/capitals/ro.jpg",
+        "reason": "few rooftops/trees; not skyline"
+      },
+      {
+        "code": "RS",
+        "name": "Serbia",
+        "capital": "Belgrade",
+        "continent": "Europe",
+        "subregion": "Southeast Europe",
+        "image": "/capitals/rs.jpg",
+        "reason": "bridge-focused; little city"
+      },
+      {
+        "code": "SK",
+        "name": "Slovakia",
+        "capital": "Bratislava",
+        "continent": "Europe",
+        "subregion": "Central Europe",
+        "image": "/capitals/sk.jpg",
+        "reason": "empty field; city tiny on horizon"
+      },
+      {
+        "code": "ES",
+        "name": "Spain",
+        "capital": "Madrid",
+        "continent": "Europe",
+        "subregion": "Southern Europe",
+        "image": "/capitals/es.jpg",
+        "reason": "plaza/street night scene; not skyline"
+      },
+      {
+        "code": "SJ",
+        "name": "Svalbard and Jan Mayen",
+        "capital": "Longyearbyen",
+        "continent": "Europe",
+        "subregion": "Northern Europe",
+        "image": "/capitals/sj.jpg",
+        "reason": "industrial walkways; not town overview"
+      },
+      {
+        "code": "SE",
+        "name": "Sweden",
+        "capital": "Stockholm",
+        "continent": "Europe",
+        "subregion": "Northern Europe",
+        "image": "/capitals/se.jpg",
+        "reason": "single modern building across water"
+      },
+      {
+        "code": "CH",
+        "name": "Switzerland",
+        "capital": "Bern",
+        "continent": "Europe",
+        "subregion": "Western Europe",
+        "image": "/capitals/ch.jpg",
+        "reason": "clock tower silhouette; landmark not city overview"
+      },
+      {
+        "code": "UA",
+        "name": "Ukraine",
+        "capital": "Kyiv",
+        "continent": "Europe",
+        "subregion": "Eastern Europe",
+        "image": "/capitals/ua.jpg",
+        "reason": "blurry B&W single building/square"
+      },
+      {
+        "code": "VA",
+        "name": "Vatican City",
+        "capital": "Vatican City",
+        "continent": "Europe",
+        "subregion": "Southern Europe",
+        "image": "/capitals/va.jpg",
+        "reason": "framed by trees; not aerial/skyline"
+      }
+    ],
+    "North America": [
+      {
+        "code": "AI",
+        "name": "Anguilla",
+        "capital": "The Valley",
+        "continent": "North America",
+        "subregion": "Caribbean",
+        "image": "/capitals/ai.jpg",
+        "reason": "beach/turquoise coastline; no city"
+      },
+      {
+        "code": "AG",
+        "name": "Antigua and Barbuda",
+        "capital": "Saint John's",
+        "continent": "North America",
+        "subregion": "Caribbean",
+        "image": "/capitals/ag.jpg",
+        "reason": "harbor/cruise ships; water-dominated"
+      },
+      {
+        "code": "AW",
+        "name": "Aruba",
+        "capital": "Oranjestad",
+        "continent": "North America",
+        "subregion": "Caribbean",
+        "image": "/capitals/aw.jpg",
+        "reason": "very high blurry aerial; downtown not readable"
+      },
+      {
+        "code": "BS",
+        "name": "Bahamas",
+        "capital": "Nassau",
+        "continent": "North America",
+        "subregion": "Caribbean",
+        "image": "/capitals/bs.jpg",
+        "reason": "harbor/docks aerial; water-dominated"
+      },
+      {
+        "code": "BB",
+        "name": "Barbados",
+        "capital": "Bridgetown",
+        "continent": "North America",
+        "subregion": "Caribbean",
+        "image": "/capitals/bb.jpg",
+        "reason": "harbor/port aerial; not downtown skyline"
+      },
+      {
+        "code": "BZ",
+        "name": "Belize",
+        "capital": "Belmopan",
+        "continent": "North America",
+        "subregion": "Central America",
+        "image": "/capitals/bz.jpg",
+        "reason": "high-altitude low-detail aerial"
+      },
+      {
+        "code": "BM",
+        "name": "Bermuda",
+        "capital": "Hamilton",
+        "continent": "North America",
+        "subregion": "North America",
+        "image": "/capitals/bm.jpg",
+        "reason": "distant across bay; buildings secondary"
+      },
+      {
+        "code": "VG",
+        "name": "British Virgin Islands",
+        "capital": "Road Town",
+        "continent": "North America",
+        "subregion": "Caribbean",
+        "image": "/capitals/vg.jpg",
+        "reason": "mountain/harbor landscape; not downtown"
+      },
+      {
+        "code": "CA",
+        "name": "Canada",
+        "capital": "Ottawa",
+        "continent": "North America",
+        "subregion": "North America",
+        "image": "/capitals/ca.jpg",
+        "reason": "river with few buildings; dull/weak Ottawa skyline"
+      },
+      {
+        "code": "BQ",
+        "name": "Caribbean Netherlands",
+        "capital": "Kralendijk",
+        "continent": "North America",
+        "subregion": "Caribbean",
+        "image": "/capitals/bq.jpg",
+        "reason": "street-level waterfront of few buildings"
+      },
+      {
+        "code": "KY",
+        "name": "Cayman Islands",
+        "capital": "George Town",
+        "continent": "North America",
+        "subregion": "Caribbean",
+        "image": "/capitals/ky.jpg",
+        "reason": "low-angle couple of office buildings"
+      },
+      {
+        "code": "GL",
+        "name": "Greenland",
+        "capital": "Nuuk",
+        "continent": "North America",
+        "subregion": "North America",
+        "image": "/capitals/gl.jpg",
+        "reason": "northern lights night scene; not clear downtown"
+      },
+      {
+        "code": "GD",
+        "name": "Grenada",
+        "capital": "St. George's",
+        "continent": "North America",
+        "subregion": "Caribbean",
+        "image": "/capitals/gd.jpg",
+        "reason": "hillside houses; not downtown overview"
+      },
+      {
+        "code": "GP",
+        "name": "Guadeloupe",
+        "capital": "Basse-Terre",
+        "continent": "North America",
+        "subregion": "Caribbean",
+        "image": "/capitals/gp.jpg",
+        "reason": "close rooftops / few buildings"
+      },
+      {
+        "code": "JM",
+        "name": "Jamaica",
+        "capital": "Kingston",
+        "continent": "North America",
+        "subregion": "Caribbean",
+        "image": "/capitals/jm.jpg",
+        "reason": "space satellite view; no readable skyline"
+      },
+      {
+        "code": "MS",
+        "name": "Montserrat",
+        "capital": "Plymouth",
+        "continent": "North America",
+        "subregion": "Caribbean",
+        "image": "/capitals/ms.jpg",
+        "reason": "small bay/greenery; few structures"
+      },
+      {
+        "code": "KN",
+        "name": "Saint Kitts and Nevis",
+        "capital": "Basseterre",
+        "continent": "North America",
+        "subregion": "Caribbean",
+        "image": "/capitals/kn.jpg",
+        "reason": "old B&W street row of buildings"
+      },
+      {
+        "code": "LC",
+        "name": "Saint Lucia",
+        "capital": "Castries",
+        "continent": "North America",
+        "subregion": "Caribbean",
+        "image": "/capitals/lc.jpg",
+        "reason": "cruise-ship harbor dominates; weak city focus"
+      },
+      {
+        "code": "MF",
+        "name": "Saint Martin",
+        "capital": "Marigot",
+        "continent": "North America",
+        "subregion": "Caribbean",
+        "image": "/capitals/mf.jpg",
+        "reason": "street-level crosswalk / colonial street"
+      },
+      {
+        "code": "PM",
+        "name": "Saint Pierre and Miquelon",
+        "capital": "Saint-Pierre",
+        "continent": "North America",
+        "subregion": "North America",
+        "image": "/capitals/pm.jpg",
+        "reason": "satellite whole-island; town tiny"
+      },
+      {
+        "code": "SX",
+        "name": "Sint Maarten",
+        "capital": "Philipsburg",
+        "continent": "North America",
+        "subregion": "Caribbean",
+        "image": "/capitals/sx.jpg",
+        "reason": "beach / turquoise water foreground"
+      },
+      {
+        "code": "TC",
+        "name": "Turks and Caicos Islands",
+        "capital": "Cockburn Town",
+        "continent": "North America",
+        "subregion": "Caribbean",
+        "image": "/capitals/tc.jpg",
+        "reason": "seawall/pier ocean shot; little town"
+      },
+      {
+        "code": "US",
+        "name": "United States",
+        "capital": "Washington D.C.",
+        "continent": "North America",
+        "subregion": "North America",
+        "image": "/capitals/us.jpg",
+        "reason": "grainy B&W distant Capitol; poor quality"
+      },
+      {
+        "code": "VI",
+        "name": "United States Virgin Islands",
+        "capital": "Charlotte Amalie",
+        "continent": "North America",
+        "subregion": "Caribbean",
+        "image": "/capitals/vi.jpg",
+        "reason": "old B&W harbor town; poor quality"
+      }
+    ],
+    "Oceania": [
+      {
+        "code": "AS",
+        "name": "American Samoa",
+        "capital": "Pago Pago",
+        "continent": "Oceania",
+        "subregion": "Polynesia",
+        "image": "/capitals/as.jpg",
+        "reason": "bay/mountains landscape; little urban visible"
+      },
+      {
+        "code": "AU",
+        "name": "Australia",
+        "capital": "Canberra",
+        "continent": "Oceania",
+        "subregion": "Australia and New Zealand",
+        "image": "/capitals/au.jpg",
+        "reason": "airplane-wing aerial; distant/hazy Canberra"
+      },
+      {
+        "code": "CX",
+        "name": "Christmas Island",
+        "capital": "Flying Fish Cove",
+        "continent": "Oceania",
+        "subregion": "Australia and New Zealand",
+        "image": "/capitals/cx.jpg",
+        "reason": "coastal cove nature shot"
+      },
+      {
+        "code": "CC",
+        "name": "Cocos (Keeling) Islands",
+        "capital": "West Island",
+        "continent": "Oceania",
+        "subregion": "Australia and New Zealand",
+        "image": "/capitals/cc.jpg",
+        "reason": "beach/palms/turquoise water only"
+      },
+      {
+        "code": "CK",
+        "name": "Cook Islands",
+        "capital": "Avarua",
+        "continent": "Oceania",
+        "subregion": "Polynesia",
+        "image": "/capitals/ck.jpg",
+        "reason": "satellite atoll; no town detail"
+      },
+      {
+        "code": "FJ",
+        "name": "Fiji",
+        "capital": "Suva",
+        "continent": "Oceania",
+        "subregion": "Melanesia",
+        "image": "/capitals/fj.jpg",
+        "reason": "coastal sprawl aerial; no clear downtown focus"
+      },
+      {
+        "code": "GU",
+        "name": "Guam",
+        "capital": "Hagåtña",
+        "continent": "Oceania",
+        "subregion": "Micronesia",
+        "image": "/capitals/gu.jpg",
+        "reason": "grainy archival B&W; poor quality"
+      },
+      {
+        "code": "KI",
+        "name": "Kiribati",
+        "capital": "South Tarawa",
+        "continent": "Oceania",
+        "subregion": "Micronesia",
+        "image": "/capitals/ki.jpg",
+        "reason": "shallow water only; no land/city"
+      },
+      {
+        "code": "MH",
+        "name": "Marshall Islands",
+        "capital": "Majuro",
+        "continent": "Oceania",
+        "subregion": "Micronesia",
+        "image": "/capitals/mh.jpg",
+        "reason": "plane-wing shot of thin atoll strip"
+      },
+      {
+        "code": "FM",
+        "name": "Micronesia",
+        "capital": "Palikir",
+        "continent": "Oceania",
+        "subregion": "Micronesia",
+        "image": "/capitals/fm.jpg",
+        "reason": "runway / green landscape; not downtown"
+      },
+      {
+        "code": "NR",
+        "name": "Nauru",
+        "capital": "Yaren",
+        "continent": "Oceania",
+        "subregion": "Micronesia",
+        "image": "/capitals/nr.jpg",
+        "reason": "distant island speck in ocean"
+      },
+      {
+        "code": "NZ",
+        "name": "New Zealand",
+        "capital": "Wellington",
+        "continent": "Oceania",
+        "subregion": "Australia and New Zealand",
+        "image": "/capitals/nz.jpg",
+        "reason": "street-level looking up at towers"
+      },
+      {
+        "code": "NU",
+        "name": "Niue",
+        "capital": "Alofi",
+        "continent": "Oceania",
+        "subregion": "Polynesia",
+        "image": "/capitals/nu.jpg",
+        "reason": "street-level road with low buildings"
+      },
+      {
+        "code": "NF",
+        "name": "Norfolk Island",
+        "capital": "Kingston",
+        "continent": "Oceania",
+        "subregion": "Australia and New Zealand",
+        "image": "/capitals/nf.jpg",
+        "reason": "Norfolk Island FLAG — not a city photo"
+      },
+      {
+        "code": "PW",
+        "name": "Palau",
+        "capital": "Ngerulmud",
+        "continent": "Oceania",
+        "subregion": "Micronesia",
+        "image": "/capitals/pw.jpg",
+        "reason": "green island/reef aerial; capital not shown"
+      },
+      {
+        "code": "PG",
+        "name": "Papua New Guinea",
+        "capital": "Port Moresby",
+        "continent": "Oceania",
+        "subregion": "Melanesia",
+        "image": "/capitals/pg.jpg",
+        "reason": "plane-wing coastal hills; no clear downtown"
+      },
+      {
+        "code": "PN",
+        "name": "Pitcairn Islands",
+        "capital": "Adamstown",
+        "continent": "Oceania",
+        "subregion": "Polynesia",
+        "image": "/capitals/pn.jpg",
+        "reason": "steep hillside/ocean; few scattered houses"
+      },
+      {
+        "code": "WS",
+        "name": "Samoa",
+        "capital": "Apia",
+        "continent": "Oceania",
+        "subregion": "Polynesia",
+        "image": "/capitals/ws.jpg",
+        "reason": "single building with fallen tree in foreground"
+      },
+      {
+        "code": "TK",
+        "name": "Tokelau",
+        "capital": "Fakaofo",
+        "continent": "Oceania",
+        "subregion": "Polynesia",
+        "image": "/capitals/tk.jpg",
+        "reason": "high atoll ring; no town detail"
+      },
+      {
+        "code": "TO",
+        "name": "Tonga",
+        "capital": "Nuku'alofa",
+        "continent": "Oceania",
+        "subregion": "Polynesia",
+        "image": "/capitals/to.jpg",
+        "reason": "pier / shore-level waterfront"
+      },
+      {
+        "code": "TV",
+        "name": "Tuvalu",
+        "capital": "Funafuti",
+        "continent": "Oceania",
+        "subregion": "Polynesia",
+        "image": "/capitals/tv.jpg",
+        "reason": "distant thin land strip in ocean"
+      }
+    ],
+    "South America": [
+      {
+        "code": "BO",
+        "name": "Bolivia",
+        "capital": "Sucre",
+        "continent": "South America",
+        "subregion": "South America",
+        "image": "/capitals/bo.jpg",
+        "reason": "dark blurry night; unusable"
+      },
+      {
+        "code": "BR",
+        "name": "Brazil",
+        "capital": "Brasília",
+        "continent": "South America",
+        "subregion": "South America",
+        "image": "/capitals/br.jpg",
+        "reason": "National Congress complex only — single landmark"
+      },
+      {
+        "code": "EC",
+        "name": "Ecuador",
+        "capital": "Quito",
+        "continent": "South America",
+        "subregion": "South America",
+        "image": "/capitals/ec.jpg",
+        "reason": "park/trees dominate; weak downtown"
+      },
+      {
+        "code": "PY",
+        "name": "Paraguay",
+        "capital": "Asunción",
+        "continent": "South America",
+        "subregion": "South America",
+        "image": "/capitals/py.jpg",
+        "reason": "distant skyline; pier/boats clutter foreground"
+      },
+      {
+        "code": "SR",
+        "name": "Suriname",
+        "capital": "Paramaribo",
+        "continent": "South America",
+        "subregion": "South America",
+        "image": "/capitals/sr.jpg",
+        "reason": "city only a thin distant line across river"
+      },
+      {
+        "code": "UY",
+        "name": "Uruguay",
+        "capital": "Montevideo",
+        "continent": "South America",
+        "subregion": "South America",
+        "image": "/capitals/uy.jpg",
+        "reason": "rocky beach foreground; skyline far away"
+      },
+      {
+        "code": "VE",
+        "name": "Venezuela",
+        "capital": "Caracas",
+        "continent": "South America",
+        "subregion": "South America",
+        "image": "/capitals/ve.jpg",
+        "reason": "nearby rooftops toward mountain; not aerial/skyline downtown"
+      }
+    ]
+  },
+  "lookFineByContinent": {
+    "Europe": [
+      {
+        "code": "AD",
+        "name": "Andorra",
+        "capital": "Andorra la Vella",
+        "continent": "Europe",
+        "subregion": "Southern Europe",
+        "image": "/capitals/ad.jpg"
+      },
+      {
+        "code": "AT",
+        "name": "Austria",
+        "capital": "Vienna",
+        "continent": "Europe",
+        "subregion": "Central Europe",
+        "image": "/capitals/at.jpg"
+      },
+      {
+        "code": "BE",
+        "name": "Belgium",
+        "capital": "Brussels",
+        "continent": "Europe",
+        "subregion": "Western Europe",
+        "image": "/capitals/be.jpg"
+      },
+      {
+        "code": "BA",
+        "name": "Bosnia and Herzegovina",
+        "capital": "Sarajevo",
+        "continent": "Europe",
+        "subregion": "Southeast Europe",
+        "image": "/capitals/ba.jpg"
+      },
+      {
+        "code": "BG",
+        "name": "Bulgaria",
+        "capital": "Sofia",
+        "continent": "Europe",
+        "subregion": "Southeast Europe",
+        "image": "/capitals/bg.jpg"
+      },
+      {
+        "code": "DK",
+        "name": "Denmark",
+        "capital": "Copenhagen",
+        "continent": "Europe",
+        "subregion": "Northern Europe",
+        "image": "/capitals/dk.jpg"
+      },
+      {
+        "code": "EE",
+        "name": "Estonia",
+        "capital": "Tallinn",
+        "continent": "Europe",
+        "subregion": "Northern Europe",
+        "image": "/capitals/ee.jpg"
+      },
+      {
+        "code": "FI",
+        "name": "Finland",
+        "capital": "Helsinki",
+        "continent": "Europe",
+        "subregion": "Northern Europe",
+        "image": "/capitals/fi.jpg"
+      },
+      {
+        "code": "FR",
+        "name": "France",
+        "capital": "Paris",
+        "continent": "Europe",
+        "subregion": "Western Europe",
+        "image": "/capitals/fr.jpg"
+      },
+      {
+        "code": "DE",
+        "name": "Germany",
+        "capital": "Berlin",
+        "continent": "Europe",
+        "subregion": "Western Europe",
+        "image": "/capitals/de.jpg"
+      },
+      {
+        "code": "GI",
+        "name": "Gibraltar",
+        "capital": "Gibraltar",
+        "continent": "Europe",
+        "subregion": "Southern Europe",
+        "image": "/capitals/gi.jpg"
+      },
+      {
+        "code": "HU",
+        "name": "Hungary",
+        "capital": "Budapest",
+        "continent": "Europe",
+        "subregion": "Central Europe",
+        "image": "/capitals/hu.jpg"
+      },
+      {
+        "code": "IS",
+        "name": "Iceland",
+        "capital": "Reykjavik",
+        "continent": "Europe",
+        "subregion": "Northern Europe",
+        "image": "/capitals/is.jpg"
+      },
+      {
+        "code": "JE",
+        "name": "Jersey",
+        "capital": "Saint Helier",
+        "continent": "Europe",
+        "subregion": "Northern Europe",
+        "image": "/capitals/je.jpg"
+      },
+      {
+        "code": "LV",
+        "name": "Latvia",
+        "capital": "Riga",
+        "continent": "Europe",
+        "subregion": "Northern Europe",
+        "image": "/capitals/lv.jpg"
+      },
+      {
+        "code": "LI",
+        "name": "Liechtenstein",
+        "capital": "Vaduz",
+        "continent": "Europe",
+        "subregion": "Western Europe",
+        "image": "/capitals/li.jpg"
+      },
+      {
+        "code": "LT",
+        "name": "Lithuania",
+        "capital": "Vilnius",
+        "continent": "Europe",
+        "subregion": "Northern Europe",
+        "image": "/capitals/lt.jpg"
+      },
+      {
+        "code": "LU",
+        "name": "Luxembourg",
+        "capital": "Luxembourg",
+        "continent": "Europe",
+        "subregion": "Western Europe",
+        "image": "/capitals/lu.jpg"
+      },
+      {
+        "code": "MC",
+        "name": "Monaco",
+        "capital": "Monaco",
+        "continent": "Europe",
+        "subregion": "Western Europe",
+        "image": "/capitals/mc.jpg"
+      },
+      {
+        "code": "MK",
+        "name": "North Macedonia",
+        "capital": "Skopje",
+        "continent": "Europe",
+        "subregion": "Southeast Europe",
+        "image": "/capitals/mk.jpg"
+      },
+      {
+        "code": "PL",
+        "name": "Poland",
+        "capital": "Warsaw",
+        "continent": "Europe",
+        "subregion": "Central Europe",
+        "image": "/capitals/pl.jpg"
+      },
+      {
+        "code": "RU",
+        "name": "Russia",
+        "capital": "Moscow",
+        "continent": "Europe",
+        "subregion": "Eastern Europe",
+        "image": "/capitals/ru.jpg"
+      },
+      {
+        "code": "SM",
+        "name": "San Marino",
+        "capital": "City of San Marino",
+        "continent": "Europe",
+        "subregion": "Southern Europe",
+        "image": "/capitals/sm.jpg"
+      },
+      {
+        "code": "SI",
+        "name": "Slovenia",
+        "capital": "Ljubljana",
+        "continent": "Europe",
+        "subregion": "Central Europe",
+        "image": "/capitals/si.jpg"
+      },
+      {
+        "code": "GB",
+        "name": "United Kingdom",
+        "capital": "London",
+        "continent": "Europe",
+        "subregion": "Northern Europe",
+        "image": "/capitals/gb.jpg"
+      },
+      {
+        "code": "AX",
+        "name": "Åland Islands",
+        "capital": "Mariehamn",
+        "continent": "Europe",
+        "subregion": "Northern Europe",
+        "image": "/capitals/ax.jpg"
+      }
+    ],
+    "Africa": [
+      {
+        "code": "DZ",
+        "name": "Algeria",
+        "capital": "Algiers",
+        "continent": "Africa",
+        "subregion": "Northern Africa",
+        "image": "/capitals/dz.jpg"
+      },
+      {
+        "code": "AO",
+        "name": "Angola",
+        "capital": "Luanda",
+        "continent": "Africa",
+        "subregion": "Middle Africa",
+        "image": "/capitals/ao.jpg"
+      },
+      {
+        "code": "CD",
+        "name": "DR Congo",
+        "capital": "Kinshasa",
+        "continent": "Africa",
+        "subregion": "Middle Africa",
+        "image": "/capitals/cd.jpg"
+      },
+      {
+        "code": "DJ",
+        "name": "Djibouti",
+        "capital": "Djibouti",
+        "continent": "Africa",
+        "subregion": "Eastern Africa",
+        "image": "/capitals/dj.jpg"
+      },
+      {
+        "code": "ER",
+        "name": "Eritrea",
+        "capital": "Asmara",
+        "continent": "Africa",
+        "subregion": "Eastern Africa",
+        "image": "/capitals/er.jpg"
+      },
+      {
+        "code": "GM",
+        "name": "Gambia",
+        "capital": "Banjul",
+        "continent": "Africa",
+        "subregion": "Western Africa",
+        "image": "/capitals/gm.jpg"
+      },
+      {
+        "code": "GH",
+        "name": "Ghana",
+        "capital": "Accra",
+        "continent": "Africa",
+        "subregion": "Western Africa",
+        "image": "/capitals/gh.jpg"
+      },
+      {
+        "code": "GN",
+        "name": "Guinea",
+        "capital": "Conakry",
+        "continent": "Africa",
+        "subregion": "Western Africa",
+        "image": "/capitals/gn.jpg"
+      },
+      {
+        "code": "LS",
+        "name": "Lesotho",
+        "capital": "Maseru",
+        "continent": "Africa",
+        "subregion": "Southern Africa",
+        "image": "/capitals/ls.jpg"
+      },
+      {
+        "code": "LR",
+        "name": "Liberia",
+        "capital": "Monrovia",
+        "continent": "Africa",
+        "subregion": "Western Africa",
+        "image": "/capitals/lr.jpg"
+      },
+      {
+        "code": "ML",
+        "name": "Mali",
+        "capital": "Bamako",
+        "continent": "Africa",
+        "subregion": "Western Africa",
+        "image": "/capitals/ml.jpg"
+      },
+      {
+        "code": "MZ",
+        "name": "Mozambique",
+        "capital": "Maputo",
+        "continent": "Africa",
+        "subregion": "Eastern Africa",
+        "image": "/capitals/mz.jpg"
+      },
+      {
+        "code": "NA",
+        "name": "Namibia",
+        "capital": "Windhoek",
+        "continent": "Africa",
+        "subregion": "Southern Africa",
+        "image": "/capitals/na.jpg"
+      },
+      {
+        "code": "RW",
+        "name": "Rwanda",
+        "capital": "Kigali",
+        "continent": "Africa",
+        "subregion": "Eastern Africa",
+        "image": "/capitals/rw.jpg"
+      },
+      {
+        "code": "SH",
+        "name": "Saint Helena, Ascension and Tristan da Cunha",
+        "capital": "Jamestown",
+        "continent": "Africa",
+        "subregion": "Western Africa",
+        "image": "/capitals/sh.jpg"
+      },
+      {
+        "code": "SN",
+        "name": "Senegal",
+        "capital": "Dakar",
+        "continent": "Africa",
+        "subregion": "Western Africa",
+        "image": "/capitals/sn.jpg"
+      },
+      {
+        "code": "ZA",
+        "name": "South Africa",
+        "capital": "Pretoria",
+        "continent": "Africa",
+        "subregion": "Southern Africa",
+        "image": "/capitals/za.jpg"
+      },
+      {
+        "code": "SD",
+        "name": "Sudan",
+        "capital": "Khartoum",
+        "continent": "Africa",
+        "subregion": "Northern Africa",
+        "image": "/capitals/sd.jpg"
+      },
+      {
+        "code": "ZM",
+        "name": "Zambia",
+        "capital": "Lusaka",
+        "continent": "Africa",
+        "subregion": "Eastern Africa",
+        "image": "/capitals/zm.jpg"
+      },
+      {
+        "code": "ZW",
+        "name": "Zimbabwe",
+        "capital": "Harare",
+        "continent": "Africa",
+        "subregion": "Eastern Africa",
+        "image": "/capitals/zw.jpg"
+      }
+    ],
+    "South America": [
+      {
+        "code": "AR",
+        "name": "Argentina",
+        "capital": "Buenos Aires",
+        "continent": "South America",
+        "subregion": "South America",
+        "image": "/capitals/ar.jpg"
+      },
+      {
+        "code": "CL",
+        "name": "Chile",
+        "capital": "Santiago",
+        "continent": "South America",
+        "subregion": "South America",
+        "image": "/capitals/cl.jpg"
+      },
+      {
+        "code": "CO",
+        "name": "Colombia",
+        "capital": "Bogotá",
+        "continent": "South America",
+        "subregion": "South America",
+        "image": "/capitals/co.jpg"
+      },
+      {
+        "code": "FK",
+        "name": "Falkland Islands",
+        "capital": "Stanley",
+        "continent": "South America",
+        "subregion": "South America",
+        "image": "/capitals/fk.jpg"
+      },
+      {
+        "code": "GF",
+        "name": "French Guiana",
+        "capital": "Cayenne",
+        "continent": "South America",
+        "subregion": "South America",
+        "image": "/capitals/gf.jpg"
+      },
+      {
+        "code": "GY",
+        "name": "Guyana",
+        "capital": "Georgetown",
+        "continent": "South America",
+        "subregion": "South America",
+        "image": "/capitals/gy.jpg"
+      },
+      {
+        "code": "PE",
+        "name": "Peru",
+        "capital": "Lima",
+        "continent": "South America",
+        "subregion": "South America",
+        "image": "/capitals/pe.jpg"
+      }
+    ],
+    "Asia": [
+      {
+        "code": "AZ",
+        "name": "Azerbaijan",
+        "capital": "Baku",
+        "continent": "Asia",
+        "subregion": "Western Asia",
+        "image": "/capitals/az.jpg"
+      },
+      {
+        "code": "BD",
+        "name": "Bangladesh",
+        "capital": "Dhaka",
+        "continent": "Asia",
+        "subregion": "Southern Asia",
+        "image": "/capitals/bd.jpg"
+      },
+      {
+        "code": "BN",
+        "name": "Brunei",
+        "capital": "Bandar Seri Begawan",
+        "continent": "Asia",
+        "subregion": "South-Eastern Asia",
+        "image": "/capitals/bn.jpg"
+      },
+      {
+        "code": "KH",
+        "name": "Cambodia",
+        "capital": "Phnom Penh",
+        "continent": "Asia",
+        "subregion": "South-Eastern Asia",
+        "image": "/capitals/kh.jpg"
+      },
+      {
+        "code": "CN",
+        "name": "China",
+        "capital": "Beijing",
+        "continent": "Asia",
+        "subregion": "Eastern Asia",
+        "image": "/capitals/cn.jpg"
+      },
+      {
+        "code": "GE",
+        "name": "Georgia",
+        "capital": "Tbilisi",
+        "continent": "Asia",
+        "subregion": "Western Asia",
+        "image": "/capitals/ge.jpg"
+      },
+      {
+        "code": "HK",
+        "name": "Hong Kong",
+        "capital": "City of Victoria",
+        "continent": "Asia",
+        "subregion": "Eastern Asia",
+        "image": "/capitals/hk.jpg"
+      },
+      {
+        "code": "ID",
+        "name": "Indonesia",
+        "capital": "Jakarta",
+        "continent": "Asia",
+        "subregion": "South-Eastern Asia",
+        "image": "/capitals/id.jpg"
+      },
+      {
+        "code": "IL",
+        "name": "Israel",
+        "capital": "Jerusalem",
+        "continent": "Asia",
+        "subregion": "Western Asia",
+        "image": "/capitals/il.jpg"
+      },
+      {
+        "code": "JP",
+        "name": "Japan",
+        "capital": "Tokyo",
+        "continent": "Asia",
+        "subregion": "Eastern Asia",
+        "image": "/capitals/jp.jpg"
+      },
+      {
+        "code": "JO",
+        "name": "Jordan",
+        "capital": "Amman",
+        "continent": "Asia",
+        "subregion": "Western Asia",
+        "image": "/capitals/jo.jpg"
+      },
+      {
+        "code": "MY",
+        "name": "Malaysia",
+        "capital": "Kuala Lumpur",
+        "continent": "Asia",
+        "subregion": "South-Eastern Asia",
+        "image": "/capitals/my.jpg"
+      },
+      {
+        "code": "MV",
+        "name": "Maldives",
+        "capital": "Malé",
+        "continent": "Asia",
+        "subregion": "Southern Asia",
+        "image": "/capitals/mv.jpg"
+      },
+      {
+        "code": "MN",
+        "name": "Mongolia",
+        "capital": "Ulan Bator",
+        "continent": "Asia",
+        "subregion": "Eastern Asia",
+        "image": "/capitals/mn.jpg"
+      },
+      {
+        "code": "KP",
+        "name": "North Korea",
+        "capital": "Pyongyang",
+        "continent": "Asia",
+        "subregion": "Eastern Asia",
+        "image": "/capitals/kp.jpg"
+      },
+      {
+        "code": "OM",
+        "name": "Oman",
+        "capital": "Muscat",
+        "continent": "Asia",
+        "subregion": "Western Asia",
+        "image": "/capitals/om.jpg"
+      },
+      {
+        "code": "PK",
+        "name": "Pakistan",
+        "capital": "Islamabad",
+        "continent": "Asia",
+        "subregion": "Southern Asia",
+        "image": "/capitals/pk.jpg"
+      },
+      {
+        "code": "PH",
+        "name": "Philippines",
+        "capital": "Manila",
+        "continent": "Asia",
+        "subregion": "South-Eastern Asia",
+        "image": "/capitals/ph.jpg"
+      },
+      {
+        "code": "QA",
+        "name": "Qatar",
+        "capital": "Doha",
+        "continent": "Asia",
+        "subregion": "Western Asia",
+        "image": "/capitals/qa.jpg"
+      },
+      {
+        "code": "SA",
+        "name": "Saudi Arabia",
+        "capital": "Riyadh",
+        "continent": "Asia",
+        "subregion": "Western Asia",
+        "image": "/capitals/sa.jpg"
+      },
+      {
+        "code": "SG",
+        "name": "Singapore",
+        "capital": "Singapore",
+        "continent": "Asia",
+        "subregion": "South-Eastern Asia",
+        "image": "/capitals/sg.jpg"
+      },
+      {
+        "code": "KR",
+        "name": "South Korea",
+        "capital": "Seoul",
+        "continent": "Asia",
+        "subregion": "Eastern Asia",
+        "image": "/capitals/kr.jpg"
+      },
+      {
+        "code": "LK",
+        "name": "Sri Lanka",
+        "capital": "Colombo",
+        "continent": "Asia",
+        "subregion": "Southern Asia",
+        "image": "/capitals/lk.jpg"
+      },
+      {
+        "code": "TW",
+        "name": "Taiwan",
+        "capital": "Taipei",
+        "continent": "Asia",
+        "subregion": "Eastern Asia",
+        "image": "/capitals/tw.jpg"
+      },
+      {
+        "code": "TM",
+        "name": "Turkmenistan",
+        "capital": "Ashgabat",
+        "continent": "Asia",
+        "subregion": "Central Asia",
+        "image": "/capitals/tm.jpg"
+      },
+      {
+        "code": "TR",
+        "name": "Türkiye",
+        "capital": "Ankara",
+        "continent": "Asia",
+        "subregion": "Western Asia",
+        "image": "/capitals/tr.jpg"
+      },
+      {
+        "code": "AE",
+        "name": "United Arab Emirates",
+        "capital": "Abu Dhabi",
+        "continent": "Asia",
+        "subregion": "Western Asia",
+        "image": "/capitals/ae.jpg"
+      },
+      {
+        "code": "UZ",
+        "name": "Uzbekistan",
+        "capital": "Tashkent",
+        "continent": "Asia",
+        "subregion": "Central Asia",
+        "image": "/capitals/uz.jpg"
+      },
+      {
+        "code": "YE",
+        "name": "Yemen",
+        "capital": "Sana'a",
+        "continent": "Asia",
+        "subregion": "Western Asia",
+        "image": "/capitals/ye.jpg"
+      }
+    ],
+    "North America": [
+      {
+        "code": "CR",
+        "name": "Costa Rica",
+        "capital": "San José",
+        "continent": "North America",
+        "subregion": "Central America",
+        "image": "/capitals/cr.jpg"
+      },
+      {
+        "code": "CU",
+        "name": "Cuba",
+        "capital": "Havana",
+        "continent": "North America",
+        "subregion": "Caribbean",
+        "image": "/capitals/cu.jpg"
+      },
+      {
+        "code": "CW",
+        "name": "Curaçao",
+        "capital": "Willemstad",
+        "continent": "North America",
+        "subregion": "Caribbean",
+        "image": "/capitals/cw.jpg"
+      },
+      {
+        "code": "DM",
+        "name": "Dominica",
+        "capital": "Roseau",
+        "continent": "North America",
+        "subregion": "Caribbean",
+        "image": "/capitals/dm.jpg"
+      },
+      {
+        "code": "DO",
+        "name": "Dominican Republic",
+        "capital": "Santo Domingo",
+        "continent": "North America",
+        "subregion": "Caribbean",
+        "image": "/capitals/do.jpg"
+      },
+      {
+        "code": "SV",
+        "name": "El Salvador",
+        "capital": "San Salvador",
+        "continent": "North America",
+        "subregion": "Central America",
+        "image": "/capitals/sv.jpg"
+      },
+      {
+        "code": "GT",
+        "name": "Guatemala",
+        "capital": "Guatemala City",
+        "continent": "North America",
+        "subregion": "Central America",
+        "image": "/capitals/gt.jpg"
+      },
+      {
+        "code": "HT",
+        "name": "Haiti",
+        "capital": "Port-au-Prince",
+        "continent": "North America",
+        "subregion": "Caribbean",
+        "image": "/capitals/ht.jpg"
+      },
+      {
+        "code": "HN",
+        "name": "Honduras",
+        "capital": "Tegucigalpa",
+        "continent": "North America",
+        "subregion": "Central America",
+        "image": "/capitals/hn.jpg"
+      },
+      {
+        "code": "MQ",
+        "name": "Martinique",
+        "capital": "Fort-de-France",
+        "continent": "North America",
+        "subregion": "Caribbean",
+        "image": "/capitals/mq.jpg"
+      },
+      {
+        "code": "MX",
+        "name": "Mexico",
+        "capital": "Mexico City",
+        "continent": "North America",
+        "subregion": "North America",
+        "image": "/capitals/mx.jpg"
+      },
+      {
+        "code": "NI",
+        "name": "Nicaragua",
+        "capital": "Managua",
+        "continent": "North America",
+        "subregion": "Central America",
+        "image": "/capitals/ni.jpg"
+      },
+      {
+        "code": "PA",
+        "name": "Panama",
+        "capital": "Panama City",
+        "continent": "North America",
+        "subregion": "Central America",
+        "image": "/capitals/pa.jpg"
+      },
+      {
+        "code": "PR",
+        "name": "Puerto Rico",
+        "capital": "San Juan",
+        "continent": "North America",
+        "subregion": "Caribbean",
+        "image": "/capitals/pr.jpg"
+      },
+      {
+        "code": "BL",
+        "name": "Saint Barthélemy",
+        "capital": "Gustavia",
+        "continent": "North America",
+        "subregion": "Caribbean",
+        "image": "/capitals/bl.jpg"
+      },
+      {
+        "code": "VC",
+        "name": "Saint Vincent and the Grenadines",
+        "capital": "Kingstown",
+        "continent": "North America",
+        "subregion": "Caribbean",
+        "image": "/capitals/vc.jpg"
+      },
+      {
+        "code": "TT",
+        "name": "Trinidad and Tobago",
+        "capital": "Port of Spain",
+        "continent": "North America",
+        "subregion": "Caribbean",
+        "image": "/capitals/tt.jpg"
+      }
+    ],
+    "Oceania": [
+      {
+        "code": "PF",
+        "name": "French Polynesia",
+        "capital": "Papeetē",
+        "continent": "Oceania",
+        "subregion": "Polynesia",
+        "image": "/capitals/pf.jpg"
+      },
+      {
+        "code": "NC",
+        "name": "New Caledonia",
+        "capital": "Nouméa",
+        "continent": "Oceania",
+        "subregion": "Melanesia",
+        "image": "/capitals/nc.jpg"
+      },
+      {
+        "code": "MP",
+        "name": "Northern Mariana Islands",
+        "capital": "Saipan",
+        "continent": "Oceania",
+        "subregion": "Micronesia",
+        "image": "/capitals/mp.jpg"
+      },
+      {
+        "code": "SB",
+        "name": "Solomon Islands",
+        "capital": "Honiara",
+        "continent": "Oceania",
+        "subregion": "Melanesia",
+        "image": "/capitals/sb.jpg"
+      },
+      {
+        "code": "VU",
+        "name": "Vanuatu",
+        "capital": "Port Vila",
+        "continent": "Oceania",
+        "subregion": "Melanesia",
+        "image": "/capitals/vu.jpg"
+      },
+      {
+        "code": "WF",
+        "name": "Wallis and Futuna",
+        "capital": "Mata-Utu",
+        "continent": "Oceania",
+        "subregion": "Polynesia",
+        "image": "/capitals/wf.jpg"
+      }
+    ]
+  },
+  "needRedo": [
+    {
+      "code": "BJ",
+      "name": "Benin",
+      "capital": "Porto-Novo",
+      "continent": "Africa",
+      "subregion": "Western Africa",
+      "image": "/capitals/bj.jpg",
+      "reason": "satellite/map view, not a photo of the city"
+    },
+    {
+      "code": "BW",
+      "name": "Botswana",
+      "capital": "Gaborone",
+      "continent": "Africa",
+      "subregion": "Southern Africa",
+      "image": "/capitals/bw.jpg",
+      "reason": "group photo of people, not the city"
+    },
+    {
+      "code": "IO",
+      "name": "British Indian Ocean Territory",
+      "capital": "Diego Garcia",
+      "continent": "Africa",
+      "subregion": "Eastern Africa",
+      "image": "/capitals/io.jpg",
+      "reason": "satellite atoll, no city"
+    },
+    {
+      "code": "BF",
+      "name": "Burkina Faso",
+      "capital": "Ouagadougou",
+      "continent": "Africa",
+      "subregion": "Western Africa",
+      "image": "/capitals/bf.jpg",
+      "reason": "street-level dusty lot / small area"
+    },
+    {
+      "code": "BI",
+      "name": "Burundi",
+      "capital": "Gitega",
+      "continent": "Africa",
+      "subregion": "Eastern Africa",
+      "image": "/capitals/bi.jpg",
+      "reason": "single building facade"
+    },
+    {
+      "code": "CM",
+      "name": "Cameroon",
+      "capital": "Yaoundé",
+      "continent": "Africa",
+      "subregion": "Middle Africa",
+      "image": "/capitals/cm.jpg",
+      "reason": "street corridor view, not skyline/aerial downtown"
+    },
+    {
+      "code": "CV",
+      "name": "Cape Verde",
+      "capital": "Praia",
+      "continent": "Africa",
+      "subregion": "Western Africa",
+      "image": "/capitals/cv.jpg",
+      "reason": "volcano/mountain landscape, city barely visible"
+    },
+    {
+      "code": "CF",
+      "name": "Central African Republic",
+      "capital": "Bangui",
+      "continent": "Africa",
+      "subregion": "Middle Africa",
+      "image": "/capitals/cf.jpg",
+      "reason": "street / roundabout, small area"
+    },
+    {
+      "code": "TD",
+      "name": "Chad",
+      "capital": "N'Djamena",
+      "continent": "Africa",
+      "subregion": "Middle Africa",
+      "image": "/capitals/td.jpg",
+      "reason": "single large building"
+    },
+    {
+      "code": "KM",
+      "name": "Comoros",
+      "capital": "Moroni",
+      "continent": "Africa",
+      "subregion": "Eastern Africa",
+      "image": "/capitals/km.jpg",
+      "reason": "beach / palm / coastline, not downtown"
+    },
+    {
+      "code": "CG",
+      "name": "Congo",
+      "capital": "Brazzaville",
+      "continent": "Africa",
+      "subregion": "Middle Africa",
+      "image": "/capitals/cg.jpg",
+      "reason": "basket of tomatoes — completely wrong subject"
+    },
+    {
+      "code": "EG",
+      "name": "Egypt",
+      "capital": "Cairo",
+      "continent": "Africa",
+      "subregion": "Northern Africa",
+      "image": "/capitals/eg.jpg",
+      "reason": "Giza pyramids, not Cairo downtown skyline"
+    },
+    {
+      "code": "GQ",
+      "name": "Equatorial Guinea",
+      "capital": "Malabo",
+      "continent": "Africa",
+      "subregion": "Middle Africa",
+      "image": "/capitals/gq.jpg",
+      "reason": "airport runway, not downtown"
+    },
+    {
+      "code": "SZ",
+      "name": "Eswatini",
+      "capital": "Lobamba",
+      "continent": "Africa",
+      "subregion": "Southern Africa",
+      "image": "/capitals/sz.jpg",
+      "reason": "single dome building on lawn"
+    },
+    {
+      "code": "ET",
+      "name": "Ethiopia",
+      "capital": "Addis Ababa",
+      "continent": "Africa",
+      "subregion": "Eastern Africa",
+      "image": "/capitals/et.jpg",
+      "reason": "suburban residential sprawl, not downtown"
+    },
+    {
+      "code": "GA",
+      "name": "Gabon",
+      "capital": "Libreville",
+      "continent": "Africa",
+      "subregion": "Middle Africa",
+      "image": "/capitals/ga.jpg",
+      "reason": "building facade / partial person, not city overview"
+    },
+    {
+      "code": "GW",
+      "name": "Guinea-Bissau",
+      "capital": "Bissau",
+      "continent": "Africa",
+      "subregion": "Western Africa",
+      "image": "/capitals/gw.jpg",
+      "reason": "satellite/map delta view, not city photo"
+    },
+    {
+      "code": "CI",
+      "name": "Ivory Coast",
+      "capital": "Yamoussoukro",
+      "continent": "Africa",
+      "subregion": "Western Africa",
+      "image": "/capitals/ci.jpg",
+      "reason": "rural field / distant low buildings"
+    },
+    {
+      "code": "KE",
+      "name": "Kenya",
+      "capital": "Nairobi",
+      "continent": "Africa",
+      "subregion": "Eastern Africa",
+      "image": "/capitals/ke.jpg",
+      "reason": "wildlife (buffalo) foreground; skyline tiny/illegible"
+    },
+    {
+      "code": "LY",
+      "name": "Libya",
+      "capital": "Tripoli",
+      "continent": "Africa",
+      "subregion": "Northern Africa",
+      "image": "/capitals/ly.jpg",
+      "reason": "grainy unusable B&W image"
+    },
+    {
+      "code": "MG",
+      "name": "Madagascar",
+      "capital": "Antananarivo",
+      "continent": "Africa",
+      "subregion": "Eastern Africa",
+      "image": "/capitals/mg.jpg",
+      "reason": "high barren landscape; city hard to see"
+    },
+    {
+      "code": "MW",
+      "name": "Malawi",
+      "capital": "Lilongwe",
+      "continent": "Africa",
+      "subregion": "Eastern Africa",
+      "image": "/capitals/mw.jpg",
+      "reason": "landscape/river aerial; no urban center"
+    },
+    {
+      "code": "MR",
+      "name": "Mauritania",
+      "capital": "Nouakchott",
+      "continent": "Africa",
+      "subregion": "Western Africa",
+      "image": "/capitals/mr.jpg",
+      "reason": "grainy sepia rooftops; poor quality / limited scope"
+    },
+    {
+      "code": "MU",
+      "name": "Mauritius",
+      "capital": "Port Louis",
+      "continent": "Africa",
+      "subregion": "Eastern Africa",
+      "image": "/capitals/mu.jpg",
+      "reason": "airplane wing shot over water/hills"
+    },
+    {
+      "code": "YT",
+      "name": "Mayotte",
+      "capital": "Mamoudzou",
+      "continent": "Africa",
+      "subregion": "Eastern Africa",
+      "image": "/capitals/yt.jpg",
+      "reason": "harbor boats, not downtown overview"
+    },
+    {
+      "code": "MA",
+      "name": "Morocco",
+      "capital": "Rabat",
+      "continent": "Africa",
+      "subregion": "Northern Africa",
+      "image": "/capitals/ma.jpg",
+      "reason": "wall/river shoreline; little city visible"
+    },
+    {
+      "code": "NE",
+      "name": "Niger",
+      "capital": "Niamey",
+      "continent": "Africa",
+      "subregion": "Western Africa",
+      "image": "/capitals/ne.jpg",
+      "reason": "arid landscape with trees; no clear city"
+    },
+    {
+      "code": "NG",
+      "name": "Nigeria",
+      "capital": "Abuja",
+      "continent": "Africa",
+      "subregion": "Western Africa",
+      "image": "/capitals/ng.jpg",
+      "reason": "park/winding road aerial; not Abuja downtown"
+    },
+    {
+      "code": "RE",
+      "name": "Réunion",
+      "capital": "Saint-Denis",
+      "continent": "Africa",
+      "subregion": "Eastern Africa",
+      "image": "/capitals/re.jpg",
+      "reason": "old B&W shoreline; poor quality"
+    },
+    {
+      "code": "SC",
+      "name": "Seychelles",
+      "capital": "Victoria",
+      "continent": "Africa",
+      "subregion": "Eastern Africa",
+      "image": "/capitals/sc.jpg",
+      "reason": "tropical beach / island water focus"
+    },
+    {
+      "code": "SL",
+      "name": "Sierra Leone",
+      "capital": "Freetown",
+      "continent": "Africa",
+      "subregion": "Western Africa",
+      "image": "/capitals/sl.jpg",
+      "reason": "indoor portrait looking out window — not city"
+    },
+    {
+      "code": "SO",
+      "name": "Somalia",
+      "capital": "Mogadishu",
+      "continent": "Africa",
+      "subregion": "Eastern Africa",
+      "image": "/capitals/so.jpg",
+      "reason": "washed-out hazy aerial; details unusable"
+    },
+    {
+      "code": "SS",
+      "name": "South Sudan",
+      "capital": "Juba",
+      "continent": "Africa",
+      "subregion": "Middle Africa",
+      "image": "/capitals/ss.jpg",
+      "reason": "distant low-contrast landscape; city unclear"
+    },
+    {
+      "code": "ST",
+      "name": "São Tomé and Príncipe",
+      "capital": "São Tomé",
+      "continent": "Africa",
+      "subregion": "Middle Africa",
+      "image": "/capitals/st.jpg",
+      "reason": "street-level parked cars / building facades"
+    },
+    {
+      "code": "TZ",
+      "name": "Tanzania",
+      "capital": "Dodoma",
+      "continent": "Africa",
+      "subregion": "Eastern Africa",
+      "image": "/capitals/tz.jpg",
+      "reason": "mostly empty dusty landscape; not Dodoma downtown"
+    },
+    {
+      "code": "TG",
+      "name": "Togo",
+      "capital": "Lomé",
+      "continent": "Africa",
+      "subregion": "Western Africa",
+      "image": "/capitals/tg.jpg",
+      "reason": "resort pool / beach, not downtown"
+    },
+    {
+      "code": "TN",
+      "name": "Tunisia",
+      "capital": "Tunis",
+      "continent": "Africa",
+      "subregion": "Northern Africa",
+      "image": "/capitals/tn.jpg",
+      "reason": "distant water/peninsula; city not clear"
+    },
+    {
+      "code": "UG",
+      "name": "Uganda",
+      "capital": "Kampala",
+      "continent": "Africa",
+      "subregion": "Eastern Africa",
+      "image": "/capitals/ug.jpg",
+      "reason": "matatu/van parking lot street scene"
+    },
+    {
+      "code": "EH",
+      "name": "Western Sahara",
+      "capital": "El Aaiún",
+      "continent": "Africa",
+      "subregion": "Northern Africa",
+      "image": "/capitals/eh.jpg",
+      "reason": "close-up fishing boats in harbor"
+    },
+    {
+      "code": "TF",
+      "name": "French Southern and Antarctic Lands",
+      "capital": "Port-aux-Français",
+      "continent": "Antarctica",
+      "subregion": "",
+      "image": "/capitals/tf.jpg",
+      "reason": "tiny research outpost landscape; not a city skyline"
+    },
+    {
+      "code": "GS",
+      "name": "South Georgia",
+      "capital": "King Edward Point",
+      "continent": "Antarctica",
+      "subregion": "",
+      "image": "/capitals/gs.jpg",
+      "reason": "WRONG PLACE — temperate city aerial, not King Edward Point"
+    },
+    {
+      "code": "AF",
+      "name": "Afghanistan",
+      "capital": "Kabul",
+      "continent": "Asia",
+      "subregion": "Southern Asia",
+      "image": "/capitals/af.jpg",
+      "reason": "hillside overlook with people; not downtown skyline"
+    },
+    {
+      "code": "AM",
+      "name": "Armenia",
+      "capital": "Yerevan",
+      "continent": "Asia",
+      "subregion": "Western Asia",
+      "image": "/capitals/am.jpg",
+      "reason": "residential apartment blocks; not downtown skyline"
+    },
+    {
+      "code": "BH",
+      "name": "Bahrain",
+      "capital": "Manama",
+      "continent": "Asia",
+      "subregion": "Western Asia",
+      "image": "/capitals/bh.jpg",
+      "reason": "ruins/empty ground foreground; skyline distant/weak"
+    },
+    {
+      "code": "BT",
+      "name": "Bhutan",
+      "capital": "Thimphu",
+      "continent": "Asia",
+      "subregion": "Southern Asia",
+      "image": "/capitals/bt.jpg",
+      "reason": "valley landscape; not downtown skyline"
+    },
+    {
+      "code": "IN",
+      "name": "India",
+      "capital": "New Delhi",
+      "continent": "Asia",
+      "subregion": "Southern Asia",
+      "image": "/capitals/in.jpg",
+      "reason": "Republic Day helicopters + flag in sky — no city"
+    },
+    {
+      "code": "IR",
+      "name": "Iran",
+      "capital": "Tehran",
+      "continent": "Asia",
+      "subregion": "Southern Asia",
+      "image": "/capitals/ir.jpg",
+      "reason": "washed-out hazy; weak skyline quality"
+    },
+    {
+      "code": "IQ",
+      "name": "Iraq",
+      "capital": "Baghdad",
+      "continent": "Asia",
+      "subregion": "Western Asia",
+      "image": "/capitals/iq.jpg",
+      "reason": "high satellite river bend; map-like, not cityscape"
+    },
+    {
+      "code": "KZ",
+      "name": "Kazakhstan",
+      "capital": "Astana",
+      "continent": "Asia",
+      "subregion": "Central Asia",
+      "image": "/capitals/kz.jpg",
+      "reason": "blurry/unreadable; city not discernible"
+    },
+    {
+      "code": "KW",
+      "name": "Kuwait",
+      "capital": "Kuwait City",
+      "continent": "Asia",
+      "subregion": "Western Asia",
+      "image": "/capitals/kw.jpg",
+      "reason": "dark limited night crop of few towers"
+    },
+    {
+      "code": "KG",
+      "name": "Kyrgyzstan",
+      "capital": "Bishkek",
+      "continent": "Asia",
+      "subregion": "Central Asia",
+      "image": "/capitals/kg.jpg",
+      "reason": "monument/park street-level, not skyline"
+    },
+    {
+      "code": "LA",
+      "name": "Laos",
+      "capital": "Vientiane",
+      "continent": "Asia",
+      "subregion": "South-Eastern Asia",
+      "image": "/capitals/la.jpg",
+      "reason": "street with parked cars / low-rises"
+    },
+    {
+      "code": "LB",
+      "name": "Lebanon",
+      "capital": "Beirut",
+      "continent": "Asia",
+      "subregion": "Western Asia",
+      "image": "/capitals/lb.jpg",
+      "reason": "street corridor toward buildings"
+    },
+    {
+      "code": "MM",
+      "name": "Myanmar",
+      "capital": "Naypyidaw",
+      "continent": "Asia",
+      "subregion": "South-Eastern Asia",
+      "image": "/capitals/mm.jpg",
+      "reason": "empty multi-lane highway; no downtown"
+    },
+    {
+      "code": "NP",
+      "name": "Nepal",
+      "capital": "Kathmandu",
+      "continent": "Asia",
+      "subregion": "Southern Asia",
+      "image": "/capitals/np.jpg",
+      "reason": "temple square close-up; not city overview"
+    },
+    {
+      "code": "PS",
+      "name": "Palestine",
+      "capital": "Ramallah",
+      "continent": "Asia",
+      "subregion": "Western Asia",
+      "image": "/capitals/ps.jpg",
+      "reason": "green hills / scattered houses; not downtown"
+    },
+    {
+      "code": "SY",
+      "name": "Syria",
+      "capital": "Damascus",
+      "continent": "Asia",
+      "subregion": "Western Asia",
+      "image": "/capitals/sy.jpg",
+      "reason": "street-level road with traffic"
+    },
+    {
+      "code": "TJ",
+      "name": "Tajikistan",
+      "capital": "Dushanbe",
+      "continent": "Asia",
+      "subregion": "Central Asia",
+      "image": "/capitals/tj.jpg",
+      "reason": "small neighborhood / few apartments"
+    },
+    {
+      "code": "TH",
+      "name": "Thailand",
+      "capital": "Bangkok",
+      "continent": "Asia",
+      "subregion": "South-Eastern Asia",
+      "image": "/capitals/th.jpg",
+      "reason": "balcony railing obscures view; hazy"
+    },
+    {
+      "code": "TL",
+      "name": "Timor-Leste",
+      "capital": "Dili",
+      "continent": "Asia",
+      "subregion": "South-Eastern Asia",
+      "image": "/capitals/tl.jpg",
+      "reason": "city blocked by dense foreground trees"
+    },
+    {
+      "code": "VN",
+      "name": "Vietnam",
+      "capital": "Hanoi",
+      "continent": "Asia",
+      "subregion": "South-Eastern Asia",
+      "image": "/capitals/vn.jpg",
+      "reason": "messy rooftops + construction; hazy"
+    },
+    {
+      "code": "AL",
+      "name": "Albania",
+      "capital": "Tirana",
+      "continent": "Europe",
+      "subregion": "Southeast Europe",
+      "image": "/capitals/al.jpg",
+      "reason": "close-up of single architectural structure at night"
+    },
+    {
+      "code": "BY",
+      "name": "Belarus",
+      "capital": "Minsk",
+      "continent": "Europe",
+      "subregion": "Eastern Europe",
+      "image": "/capitals/by.jpg",
+      "reason": "grainy B&W of limited building complex"
+    },
+    {
+      "code": "HR",
+      "name": "Croatia",
+      "capital": "Zagreb",
+      "continent": "Europe",
+      "subregion": "Southeast Europe",
+      "image": "/capitals/hr.jpg",
+      "reason": "view between apartment buildings / window-like"
+    },
+    {
+      "code": "CY",
+      "name": "Cyprus",
+      "capital": "Nicosia",
+      "continent": "Europe",
+      "subregion": "Southern Europe",
+      "image": "/capitals/cy.jpg",
+      "reason": "few nondescript apartments; not downtown overview"
+    },
+    {
+      "code": "CZ",
+      "name": "Czechia",
+      "capital": "Prague",
+      "continent": "Europe",
+      "subregion": "Central Europe",
+      "image": "/capitals/cz.jpg",
+      "reason": "close-up of single modern building"
+    },
+    {
+      "code": "FO",
+      "name": "Faroe Islands",
+      "capital": "Tórshavn",
+      "continent": "Europe",
+      "subregion": "Northern Europe",
+      "image": "/capitals/fo.jpg",
+      "reason": "street-level night row of houses"
+    },
+    {
+      "code": "GR",
+      "name": "Greece",
+      "capital": "Athens",
+      "continent": "Europe",
+      "subregion": "Southern Europe",
+      "image": "/capitals/gr.jpg",
+      "reason": "extremely blurry night lights; unusable"
+    },
+    {
+      "code": "GG",
+      "name": "Guernsey",
+      "capital": "St. Peter Port",
+      "continent": "Europe",
+      "subregion": "Northern Europe",
+      "image": "/capitals/gg.jpg",
+      "reason": "foggy sea view; city barely visible"
+    },
+    {
+      "code": "IE",
+      "name": "Ireland",
+      "capital": "Dublin",
+      "continent": "Europe",
+      "subregion": "Northern Europe",
+      "image": "/capitals/ie.jpg",
+      "reason": "low riverbank ground shot; weak skyline"
+    },
+    {
+      "code": "IM",
+      "name": "Isle of Man",
+      "capital": "Douglas",
+      "continent": "Europe",
+      "subregion": "Northern Europe",
+      "image": "/capitals/im.jpg",
+      "reason": "high satellite coastline/fields; not Douglas downtown"
+    },
+    {
+      "code": "IT",
+      "name": "Italy",
+      "capital": "Rome",
+      "continent": "Europe",
+      "subregion": "Southern Europe",
+      "image": "/capitals/it.jpg",
+      "reason": "silhouette of a single dome; not Rome skyline"
+    },
+    {
+      "code": "XK",
+      "name": "Kosovo",
+      "capital": "Pristina",
+      "continent": "Europe",
+      "subregion": "Southeast Europe",
+      "image": "/capitals/xk.jpg",
+      "reason": "dark suburban rooftops; weak downtown"
+    },
+    {
+      "code": "MT",
+      "name": "Malta",
+      "capital": "Valletta",
+      "continent": "Europe",
+      "subregion": "Southern Europe",
+      "image": "/capitals/mt.jpg",
+      "reason": "tight cluster of streets/buildings; street-scale"
+    },
+    {
+      "code": "MD",
+      "name": "Moldova",
+      "capital": "Chișinău",
+      "continent": "Europe",
+      "subregion": "Eastern Europe",
+      "image": "/capitals/md.jpg",
+      "reason": "grassy field / trees; no city"
+    },
+    {
+      "code": "ME",
+      "name": "Montenegro",
+      "capital": "Podgorica",
+      "continent": "Europe",
+      "subregion": "Southeast Europe",
+      "image": "/capitals/me.jpg",
+      "reason": "street-level bridge tower / traffic"
+    },
+    {
+      "code": "NL",
+      "name": "Netherlands",
+      "capital": "Amsterdam",
+      "continent": "Europe",
+      "subregion": "Western Europe",
+      "image": "/capitals/nl.jpg",
+      "reason": "rooftop terrace dominates; limited city"
+    },
+    {
+      "code": "NO",
+      "name": "Norway",
+      "capital": "Oslo",
+      "continent": "Europe",
+      "subregion": "Northern Europe",
+      "image": "/capitals/no.jpg",
+      "reason": "top-down street roundabout"
+    },
+    {
+      "code": "PT",
+      "name": "Portugal",
+      "capital": "Lisbon",
+      "continent": "Europe",
+      "subregion": "Southern Europe",
+      "image": "/capitals/pt.jpg",
+      "reason": "limited rooftops toward a hill"
+    },
+    {
+      "code": "RO",
+      "name": "Romania",
+      "capital": "Bucharest",
+      "continent": "Europe",
+      "subregion": "Southeast Europe",
+      "image": "/capitals/ro.jpg",
+      "reason": "few rooftops/trees; not skyline"
+    },
+    {
+      "code": "RS",
+      "name": "Serbia",
+      "capital": "Belgrade",
+      "continent": "Europe",
+      "subregion": "Southeast Europe",
+      "image": "/capitals/rs.jpg",
+      "reason": "bridge-focused; little city"
+    },
+    {
+      "code": "SK",
+      "name": "Slovakia",
+      "capital": "Bratislava",
+      "continent": "Europe",
+      "subregion": "Central Europe",
+      "image": "/capitals/sk.jpg",
+      "reason": "empty field; city tiny on horizon"
+    },
+    {
+      "code": "ES",
+      "name": "Spain",
+      "capital": "Madrid",
+      "continent": "Europe",
+      "subregion": "Southern Europe",
+      "image": "/capitals/es.jpg",
+      "reason": "plaza/street night scene; not skyline"
+    },
+    {
+      "code": "SJ",
+      "name": "Svalbard and Jan Mayen",
+      "capital": "Longyearbyen",
+      "continent": "Europe",
+      "subregion": "Northern Europe",
+      "image": "/capitals/sj.jpg",
+      "reason": "industrial walkways; not town overview"
+    },
+    {
+      "code": "SE",
+      "name": "Sweden",
+      "capital": "Stockholm",
+      "continent": "Europe",
+      "subregion": "Northern Europe",
+      "image": "/capitals/se.jpg",
+      "reason": "single modern building across water"
+    },
+    {
+      "code": "CH",
+      "name": "Switzerland",
+      "capital": "Bern",
+      "continent": "Europe",
+      "subregion": "Western Europe",
+      "image": "/capitals/ch.jpg",
+      "reason": "clock tower silhouette; landmark not city overview"
+    },
+    {
+      "code": "UA",
+      "name": "Ukraine",
+      "capital": "Kyiv",
+      "continent": "Europe",
+      "subregion": "Eastern Europe",
+      "image": "/capitals/ua.jpg",
+      "reason": "blurry B&W single building/square"
+    },
+    {
+      "code": "VA",
+      "name": "Vatican City",
+      "capital": "Vatican City",
+      "continent": "Europe",
+      "subregion": "Southern Europe",
+      "image": "/capitals/va.jpg",
+      "reason": "framed by trees; not aerial/skyline"
+    },
+    {
+      "code": "AI",
+      "name": "Anguilla",
+      "capital": "The Valley",
+      "continent": "North America",
+      "subregion": "Caribbean",
+      "image": "/capitals/ai.jpg",
+      "reason": "beach/turquoise coastline; no city"
+    },
+    {
+      "code": "AG",
+      "name": "Antigua and Barbuda",
+      "capital": "Saint John's",
+      "continent": "North America",
+      "subregion": "Caribbean",
+      "image": "/capitals/ag.jpg",
+      "reason": "harbor/cruise ships; water-dominated"
+    },
+    {
+      "code": "AW",
+      "name": "Aruba",
+      "capital": "Oranjestad",
+      "continent": "North America",
+      "subregion": "Caribbean",
+      "image": "/capitals/aw.jpg",
+      "reason": "very high blurry aerial; downtown not readable"
+    },
+    {
+      "code": "BS",
+      "name": "Bahamas",
+      "capital": "Nassau",
+      "continent": "North America",
+      "subregion": "Caribbean",
+      "image": "/capitals/bs.jpg",
+      "reason": "harbor/docks aerial; water-dominated"
+    },
+    {
+      "code": "BB",
+      "name": "Barbados",
+      "capital": "Bridgetown",
+      "continent": "North America",
+      "subregion": "Caribbean",
+      "image": "/capitals/bb.jpg",
+      "reason": "harbor/port aerial; not downtown skyline"
+    },
+    {
+      "code": "BZ",
+      "name": "Belize",
+      "capital": "Belmopan",
+      "continent": "North America",
+      "subregion": "Central America",
+      "image": "/capitals/bz.jpg",
+      "reason": "high-altitude low-detail aerial"
+    },
+    {
+      "code": "BM",
+      "name": "Bermuda",
+      "capital": "Hamilton",
+      "continent": "North America",
+      "subregion": "North America",
+      "image": "/capitals/bm.jpg",
+      "reason": "distant across bay; buildings secondary"
+    },
+    {
+      "code": "VG",
+      "name": "British Virgin Islands",
+      "capital": "Road Town",
+      "continent": "North America",
+      "subregion": "Caribbean",
+      "image": "/capitals/vg.jpg",
+      "reason": "mountain/harbor landscape; not downtown"
+    },
+    {
+      "code": "CA",
+      "name": "Canada",
+      "capital": "Ottawa",
+      "continent": "North America",
+      "subregion": "North America",
+      "image": "/capitals/ca.jpg",
+      "reason": "river with few buildings; dull/weak Ottawa skyline"
+    },
+    {
+      "code": "BQ",
+      "name": "Caribbean Netherlands",
+      "capital": "Kralendijk",
+      "continent": "North America",
+      "subregion": "Caribbean",
+      "image": "/capitals/bq.jpg",
+      "reason": "street-level waterfront of few buildings"
+    },
+    {
+      "code": "KY",
+      "name": "Cayman Islands",
+      "capital": "George Town",
+      "continent": "North America",
+      "subregion": "Caribbean",
+      "image": "/capitals/ky.jpg",
+      "reason": "low-angle couple of office buildings"
+    },
+    {
+      "code": "GL",
+      "name": "Greenland",
+      "capital": "Nuuk",
+      "continent": "North America",
+      "subregion": "North America",
+      "image": "/capitals/gl.jpg",
+      "reason": "northern lights night scene; not clear downtown"
+    },
+    {
+      "code": "GD",
+      "name": "Grenada",
+      "capital": "St. George's",
+      "continent": "North America",
+      "subregion": "Caribbean",
+      "image": "/capitals/gd.jpg",
+      "reason": "hillside houses; not downtown overview"
+    },
+    {
+      "code": "GP",
+      "name": "Guadeloupe",
+      "capital": "Basse-Terre",
+      "continent": "North America",
+      "subregion": "Caribbean",
+      "image": "/capitals/gp.jpg",
+      "reason": "close rooftops / few buildings"
+    },
+    {
+      "code": "JM",
+      "name": "Jamaica",
+      "capital": "Kingston",
+      "continent": "North America",
+      "subregion": "Caribbean",
+      "image": "/capitals/jm.jpg",
+      "reason": "space satellite view; no readable skyline"
+    },
+    {
+      "code": "MS",
+      "name": "Montserrat",
+      "capital": "Plymouth",
+      "continent": "North America",
+      "subregion": "Caribbean",
+      "image": "/capitals/ms.jpg",
+      "reason": "small bay/greenery; few structures"
+    },
+    {
+      "code": "KN",
+      "name": "Saint Kitts and Nevis",
+      "capital": "Basseterre",
+      "continent": "North America",
+      "subregion": "Caribbean",
+      "image": "/capitals/kn.jpg",
+      "reason": "old B&W street row of buildings"
+    },
+    {
+      "code": "LC",
+      "name": "Saint Lucia",
+      "capital": "Castries",
+      "continent": "North America",
+      "subregion": "Caribbean",
+      "image": "/capitals/lc.jpg",
+      "reason": "cruise-ship harbor dominates; weak city focus"
+    },
+    {
+      "code": "MF",
+      "name": "Saint Martin",
+      "capital": "Marigot",
+      "continent": "North America",
+      "subregion": "Caribbean",
+      "image": "/capitals/mf.jpg",
+      "reason": "street-level crosswalk / colonial street"
+    },
+    {
+      "code": "PM",
+      "name": "Saint Pierre and Miquelon",
+      "capital": "Saint-Pierre",
+      "continent": "North America",
+      "subregion": "North America",
+      "image": "/capitals/pm.jpg",
+      "reason": "satellite whole-island; town tiny"
+    },
+    {
+      "code": "SX",
+      "name": "Sint Maarten",
+      "capital": "Philipsburg",
+      "continent": "North America",
+      "subregion": "Caribbean",
+      "image": "/capitals/sx.jpg",
+      "reason": "beach / turquoise water foreground"
+    },
+    {
+      "code": "TC",
+      "name": "Turks and Caicos Islands",
+      "capital": "Cockburn Town",
+      "continent": "North America",
+      "subregion": "Caribbean",
+      "image": "/capitals/tc.jpg",
+      "reason": "seawall/pier ocean shot; little town"
+    },
+    {
+      "code": "US",
+      "name": "United States",
+      "capital": "Washington D.C.",
+      "continent": "North America",
+      "subregion": "North America",
+      "image": "/capitals/us.jpg",
+      "reason": "grainy B&W distant Capitol; poor quality"
+    },
+    {
+      "code": "VI",
+      "name": "United States Virgin Islands",
+      "capital": "Charlotte Amalie",
+      "continent": "North America",
+      "subregion": "Caribbean",
+      "image": "/capitals/vi.jpg",
+      "reason": "old B&W harbor town; poor quality"
+    },
+    {
+      "code": "AS",
+      "name": "American Samoa",
+      "capital": "Pago Pago",
+      "continent": "Oceania",
+      "subregion": "Polynesia",
+      "image": "/capitals/as.jpg",
+      "reason": "bay/mountains landscape; little urban visible"
+    },
+    {
+      "code": "AU",
+      "name": "Australia",
+      "capital": "Canberra",
+      "continent": "Oceania",
+      "subregion": "Australia and New Zealand",
+      "image": "/capitals/au.jpg",
+      "reason": "airplane-wing aerial; distant/hazy Canberra"
+    },
+    {
+      "code": "CX",
+      "name": "Christmas Island",
+      "capital": "Flying Fish Cove",
+      "continent": "Oceania",
+      "subregion": "Australia and New Zealand",
+      "image": "/capitals/cx.jpg",
+      "reason": "coastal cove nature shot"
+    },
+    {
+      "code": "CC",
+      "name": "Cocos (Keeling) Islands",
+      "capital": "West Island",
+      "continent": "Oceania",
+      "subregion": "Australia and New Zealand",
+      "image": "/capitals/cc.jpg",
+      "reason": "beach/palms/turquoise water only"
+    },
+    {
+      "code": "CK",
+      "name": "Cook Islands",
+      "capital": "Avarua",
+      "continent": "Oceania",
+      "subregion": "Polynesia",
+      "image": "/capitals/ck.jpg",
+      "reason": "satellite atoll; no town detail"
+    },
+    {
+      "code": "FJ",
+      "name": "Fiji",
+      "capital": "Suva",
+      "continent": "Oceania",
+      "subregion": "Melanesia",
+      "image": "/capitals/fj.jpg",
+      "reason": "coastal sprawl aerial; no clear downtown focus"
+    },
+    {
+      "code": "GU",
+      "name": "Guam",
+      "capital": "Hagåtña",
+      "continent": "Oceania",
+      "subregion": "Micronesia",
+      "image": "/capitals/gu.jpg",
+      "reason": "grainy archival B&W; poor quality"
+    },
+    {
+      "code": "KI",
+      "name": "Kiribati",
+      "capital": "South Tarawa",
+      "continent": "Oceania",
+      "subregion": "Micronesia",
+      "image": "/capitals/ki.jpg",
+      "reason": "shallow water only; no land/city"
+    },
+    {
+      "code": "MH",
+      "name": "Marshall Islands",
+      "capital": "Majuro",
+      "continent": "Oceania",
+      "subregion": "Micronesia",
+      "image": "/capitals/mh.jpg",
+      "reason": "plane-wing shot of thin atoll strip"
+    },
+    {
+      "code": "FM",
+      "name": "Micronesia",
+      "capital": "Palikir",
+      "continent": "Oceania",
+      "subregion": "Micronesia",
+      "image": "/capitals/fm.jpg",
+      "reason": "runway / green landscape; not downtown"
+    },
+    {
+      "code": "NR",
+      "name": "Nauru",
+      "capital": "Yaren",
+      "continent": "Oceania",
+      "subregion": "Micronesia",
+      "image": "/capitals/nr.jpg",
+      "reason": "distant island speck in ocean"
+    },
+    {
+      "code": "NZ",
+      "name": "New Zealand",
+      "capital": "Wellington",
+      "continent": "Oceania",
+      "subregion": "Australia and New Zealand",
+      "image": "/capitals/nz.jpg",
+      "reason": "street-level looking up at towers"
+    },
+    {
+      "code": "NU",
+      "name": "Niue",
+      "capital": "Alofi",
+      "continent": "Oceania",
+      "subregion": "Polynesia",
+      "image": "/capitals/nu.jpg",
+      "reason": "street-level road with low buildings"
+    },
+    {
+      "code": "NF",
+      "name": "Norfolk Island",
+      "capital": "Kingston",
+      "continent": "Oceania",
+      "subregion": "Australia and New Zealand",
+      "image": "/capitals/nf.jpg",
+      "reason": "Norfolk Island FLAG — not a city photo"
+    },
+    {
+      "code": "PW",
+      "name": "Palau",
+      "capital": "Ngerulmud",
+      "continent": "Oceania",
+      "subregion": "Micronesia",
+      "image": "/capitals/pw.jpg",
+      "reason": "green island/reef aerial; capital not shown"
+    },
+    {
+      "code": "PG",
+      "name": "Papua New Guinea",
+      "capital": "Port Moresby",
+      "continent": "Oceania",
+      "subregion": "Melanesia",
+      "image": "/capitals/pg.jpg",
+      "reason": "plane-wing coastal hills; no clear downtown"
+    },
+    {
+      "code": "PN",
+      "name": "Pitcairn Islands",
+      "capital": "Adamstown",
+      "continent": "Oceania",
+      "subregion": "Polynesia",
+      "image": "/capitals/pn.jpg",
+      "reason": "steep hillside/ocean; few scattered houses"
+    },
+    {
+      "code": "WS",
+      "name": "Samoa",
+      "capital": "Apia",
+      "continent": "Oceania",
+      "subregion": "Polynesia",
+      "image": "/capitals/ws.jpg",
+      "reason": "single building with fallen tree in foreground"
+    },
+    {
+      "code": "TK",
+      "name": "Tokelau",
+      "capital": "Fakaofo",
+      "continent": "Oceania",
+      "subregion": "Polynesia",
+      "image": "/capitals/tk.jpg",
+      "reason": "high atoll ring; no town detail"
+    },
+    {
+      "code": "TO",
+      "name": "Tonga",
+      "capital": "Nuku'alofa",
+      "continent": "Oceania",
+      "subregion": "Polynesia",
+      "image": "/capitals/to.jpg",
+      "reason": "pier / shore-level waterfront"
+    },
+    {
+      "code": "TV",
+      "name": "Tuvalu",
+      "capital": "Funafuti",
+      "continent": "Oceania",
+      "subregion": "Polynesia",
+      "image": "/capitals/tv.jpg",
+      "reason": "distant thin land strip in ocean"
+    },
+    {
+      "code": "BO",
+      "name": "Bolivia",
+      "capital": "Sucre",
+      "continent": "South America",
+      "subregion": "South America",
+      "image": "/capitals/bo.jpg",
+      "reason": "dark blurry night; unusable"
+    },
+    {
+      "code": "BR",
+      "name": "Brazil",
+      "capital": "Brasília",
+      "continent": "South America",
+      "subregion": "South America",
+      "image": "/capitals/br.jpg",
+      "reason": "National Congress complex only — single landmark"
+    },
+    {
+      "code": "EC",
+      "name": "Ecuador",
+      "capital": "Quito",
+      "continent": "South America",
+      "subregion": "South America",
+      "image": "/capitals/ec.jpg",
+      "reason": "park/trees dominate; weak downtown"
+    },
+    {
+      "code": "PY",
+      "name": "Paraguay",
+      "capital": "Asunción",
+      "continent": "South America",
+      "subregion": "South America",
+      "image": "/capitals/py.jpg",
+      "reason": "distant skyline; pier/boats clutter foreground"
+    },
+    {
+      "code": "SR",
+      "name": "Suriname",
+      "capital": "Paramaribo",
+      "continent": "South America",
+      "subregion": "South America",
+      "image": "/capitals/sr.jpg",
+      "reason": "city only a thin distant line across river"
+    },
+    {
+      "code": "UY",
+      "name": "Uruguay",
+      "capital": "Montevideo",
+      "continent": "South America",
+      "subregion": "South America",
+      "image": "/capitals/uy.jpg",
+      "reason": "rocky beach foreground; skyline far away"
+    },
+    {
+      "code": "VE",
+      "name": "Venezuela",
+      "capital": "Caracas",
+      "continent": "South America",
+      "subregion": "South America",
+      "image": "/capitals/ve.jpg",
+      "reason": "nearby rooftops toward mountain; not aerial/skyline downtown"
+    }
+  ],
+  "lookFine": [
+    {
+      "code": "DZ",
+      "name": "Algeria",
+      "capital": "Algiers",
+      "continent": "Africa",
+      "subregion": "Northern Africa",
+      "image": "/capitals/dz.jpg"
+    },
+    {
+      "code": "AO",
+      "name": "Angola",
+      "capital": "Luanda",
+      "continent": "Africa",
+      "subregion": "Middle Africa",
+      "image": "/capitals/ao.jpg"
+    },
+    {
+      "code": "CD",
+      "name": "DR Congo",
+      "capital": "Kinshasa",
+      "continent": "Africa",
+      "subregion": "Middle Africa",
+      "image": "/capitals/cd.jpg"
+    },
+    {
+      "code": "DJ",
+      "name": "Djibouti",
+      "capital": "Djibouti",
+      "continent": "Africa",
+      "subregion": "Eastern Africa",
+      "image": "/capitals/dj.jpg"
+    },
+    {
+      "code": "ER",
+      "name": "Eritrea",
+      "capital": "Asmara",
+      "continent": "Africa",
+      "subregion": "Eastern Africa",
+      "image": "/capitals/er.jpg"
+    },
+    {
+      "code": "GM",
+      "name": "Gambia",
+      "capital": "Banjul",
+      "continent": "Africa",
+      "subregion": "Western Africa",
+      "image": "/capitals/gm.jpg"
+    },
+    {
+      "code": "GH",
+      "name": "Ghana",
+      "capital": "Accra",
+      "continent": "Africa",
+      "subregion": "Western Africa",
+      "image": "/capitals/gh.jpg"
+    },
+    {
+      "code": "GN",
+      "name": "Guinea",
+      "capital": "Conakry",
+      "continent": "Africa",
+      "subregion": "Western Africa",
+      "image": "/capitals/gn.jpg"
+    },
+    {
+      "code": "LS",
+      "name": "Lesotho",
+      "capital": "Maseru",
+      "continent": "Africa",
+      "subregion": "Southern Africa",
+      "image": "/capitals/ls.jpg"
+    },
+    {
+      "code": "LR",
+      "name": "Liberia",
+      "capital": "Monrovia",
+      "continent": "Africa",
+      "subregion": "Western Africa",
+      "image": "/capitals/lr.jpg"
+    },
+    {
+      "code": "ML",
+      "name": "Mali",
+      "capital": "Bamako",
+      "continent": "Africa",
+      "subregion": "Western Africa",
+      "image": "/capitals/ml.jpg"
+    },
+    {
+      "code": "MZ",
+      "name": "Mozambique",
+      "capital": "Maputo",
+      "continent": "Africa",
+      "subregion": "Eastern Africa",
+      "image": "/capitals/mz.jpg"
+    },
+    {
+      "code": "NA",
+      "name": "Namibia",
+      "capital": "Windhoek",
+      "continent": "Africa",
+      "subregion": "Southern Africa",
+      "image": "/capitals/na.jpg"
+    },
+    {
+      "code": "RW",
+      "name": "Rwanda",
+      "capital": "Kigali",
+      "continent": "Africa",
+      "subregion": "Eastern Africa",
+      "image": "/capitals/rw.jpg"
+    },
+    {
+      "code": "SH",
+      "name": "Saint Helena, Ascension and Tristan da Cunha",
+      "capital": "Jamestown",
+      "continent": "Africa",
+      "subregion": "Western Africa",
+      "image": "/capitals/sh.jpg"
+    },
+    {
+      "code": "SN",
+      "name": "Senegal",
+      "capital": "Dakar",
+      "continent": "Africa",
+      "subregion": "Western Africa",
+      "image": "/capitals/sn.jpg"
+    },
+    {
+      "code": "ZA",
+      "name": "South Africa",
+      "capital": "Pretoria",
+      "continent": "Africa",
+      "subregion": "Southern Africa",
+      "image": "/capitals/za.jpg"
+    },
+    {
+      "code": "SD",
+      "name": "Sudan",
+      "capital": "Khartoum",
+      "continent": "Africa",
+      "subregion": "Northern Africa",
+      "image": "/capitals/sd.jpg"
+    },
+    {
+      "code": "ZM",
+      "name": "Zambia",
+      "capital": "Lusaka",
+      "continent": "Africa",
+      "subregion": "Eastern Africa",
+      "image": "/capitals/zm.jpg"
+    },
+    {
+      "code": "ZW",
+      "name": "Zimbabwe",
+      "capital": "Harare",
+      "continent": "Africa",
+      "subregion": "Eastern Africa",
+      "image": "/capitals/zw.jpg"
+    },
+    {
+      "code": "AZ",
+      "name": "Azerbaijan",
+      "capital": "Baku",
+      "continent": "Asia",
+      "subregion": "Western Asia",
+      "image": "/capitals/az.jpg"
+    },
+    {
+      "code": "BD",
+      "name": "Bangladesh",
+      "capital": "Dhaka",
+      "continent": "Asia",
+      "subregion": "Southern Asia",
+      "image": "/capitals/bd.jpg"
+    },
+    {
+      "code": "BN",
+      "name": "Brunei",
+      "capital": "Bandar Seri Begawan",
+      "continent": "Asia",
+      "subregion": "South-Eastern Asia",
+      "image": "/capitals/bn.jpg"
+    },
+    {
+      "code": "KH",
+      "name": "Cambodia",
+      "capital": "Phnom Penh",
+      "continent": "Asia",
+      "subregion": "South-Eastern Asia",
+      "image": "/capitals/kh.jpg"
+    },
+    {
+      "code": "CN",
+      "name": "China",
+      "capital": "Beijing",
+      "continent": "Asia",
+      "subregion": "Eastern Asia",
+      "image": "/capitals/cn.jpg"
+    },
+    {
+      "code": "GE",
+      "name": "Georgia",
+      "capital": "Tbilisi",
+      "continent": "Asia",
+      "subregion": "Western Asia",
+      "image": "/capitals/ge.jpg"
+    },
+    {
+      "code": "HK",
+      "name": "Hong Kong",
+      "capital": "City of Victoria",
+      "continent": "Asia",
+      "subregion": "Eastern Asia",
+      "image": "/capitals/hk.jpg"
+    },
+    {
+      "code": "ID",
+      "name": "Indonesia",
+      "capital": "Jakarta",
+      "continent": "Asia",
+      "subregion": "South-Eastern Asia",
+      "image": "/capitals/id.jpg"
+    },
+    {
+      "code": "IL",
+      "name": "Israel",
+      "capital": "Jerusalem",
+      "continent": "Asia",
+      "subregion": "Western Asia",
+      "image": "/capitals/il.jpg"
+    },
+    {
+      "code": "JP",
+      "name": "Japan",
+      "capital": "Tokyo",
+      "continent": "Asia",
+      "subregion": "Eastern Asia",
+      "image": "/capitals/jp.jpg"
+    },
+    {
+      "code": "JO",
+      "name": "Jordan",
+      "capital": "Amman",
+      "continent": "Asia",
+      "subregion": "Western Asia",
+      "image": "/capitals/jo.jpg"
+    },
+    {
+      "code": "MY",
+      "name": "Malaysia",
+      "capital": "Kuala Lumpur",
+      "continent": "Asia",
+      "subregion": "South-Eastern Asia",
+      "image": "/capitals/my.jpg"
+    },
+    {
+      "code": "MV",
+      "name": "Maldives",
+      "capital": "Malé",
+      "continent": "Asia",
+      "subregion": "Southern Asia",
+      "image": "/capitals/mv.jpg"
+    },
+    {
+      "code": "MN",
+      "name": "Mongolia",
+      "capital": "Ulan Bator",
+      "continent": "Asia",
+      "subregion": "Eastern Asia",
+      "image": "/capitals/mn.jpg"
+    },
+    {
+      "code": "KP",
+      "name": "North Korea",
+      "capital": "Pyongyang",
+      "continent": "Asia",
+      "subregion": "Eastern Asia",
+      "image": "/capitals/kp.jpg"
+    },
+    {
+      "code": "OM",
+      "name": "Oman",
+      "capital": "Muscat",
+      "continent": "Asia",
+      "subregion": "Western Asia",
+      "image": "/capitals/om.jpg"
+    },
+    {
+      "code": "PK",
+      "name": "Pakistan",
+      "capital": "Islamabad",
+      "continent": "Asia",
+      "subregion": "Southern Asia",
+      "image": "/capitals/pk.jpg"
+    },
+    {
+      "code": "PH",
+      "name": "Philippines",
+      "capital": "Manila",
+      "continent": "Asia",
+      "subregion": "South-Eastern Asia",
+      "image": "/capitals/ph.jpg"
+    },
+    {
+      "code": "QA",
+      "name": "Qatar",
+      "capital": "Doha",
+      "continent": "Asia",
+      "subregion": "Western Asia",
+      "image": "/capitals/qa.jpg"
+    },
+    {
+      "code": "SA",
+      "name": "Saudi Arabia",
+      "capital": "Riyadh",
+      "continent": "Asia",
+      "subregion": "Western Asia",
+      "image": "/capitals/sa.jpg"
+    },
+    {
+      "code": "SG",
+      "name": "Singapore",
+      "capital": "Singapore",
+      "continent": "Asia",
+      "subregion": "South-Eastern Asia",
+      "image": "/capitals/sg.jpg"
+    },
+    {
+      "code": "KR",
+      "name": "South Korea",
+      "capital": "Seoul",
+      "continent": "Asia",
+      "subregion": "Eastern Asia",
+      "image": "/capitals/kr.jpg"
+    },
+    {
+      "code": "LK",
+      "name": "Sri Lanka",
+      "capital": "Colombo",
+      "continent": "Asia",
+      "subregion": "Southern Asia",
+      "image": "/capitals/lk.jpg"
+    },
+    {
+      "code": "TW",
+      "name": "Taiwan",
+      "capital": "Taipei",
+      "continent": "Asia",
+      "subregion": "Eastern Asia",
+      "image": "/capitals/tw.jpg"
+    },
+    {
+      "code": "TM",
+      "name": "Turkmenistan",
+      "capital": "Ashgabat",
+      "continent": "Asia",
+      "subregion": "Central Asia",
+      "image": "/capitals/tm.jpg"
+    },
+    {
+      "code": "TR",
+      "name": "Türkiye",
+      "capital": "Ankara",
+      "continent": "Asia",
+      "subregion": "Western Asia",
+      "image": "/capitals/tr.jpg"
+    },
+    {
+      "code": "AE",
+      "name": "United Arab Emirates",
+      "capital": "Abu Dhabi",
+      "continent": "Asia",
+      "subregion": "Western Asia",
+      "image": "/capitals/ae.jpg"
+    },
+    {
+      "code": "UZ",
+      "name": "Uzbekistan",
+      "capital": "Tashkent",
+      "continent": "Asia",
+      "subregion": "Central Asia",
+      "image": "/capitals/uz.jpg"
+    },
+    {
+      "code": "YE",
+      "name": "Yemen",
+      "capital": "Sana'a",
+      "continent": "Asia",
+      "subregion": "Western Asia",
+      "image": "/capitals/ye.jpg"
+    },
+    {
+      "code": "AD",
+      "name": "Andorra",
+      "capital": "Andorra la Vella",
+      "continent": "Europe",
+      "subregion": "Southern Europe",
+      "image": "/capitals/ad.jpg"
+    },
+    {
+      "code": "AT",
+      "name": "Austria",
+      "capital": "Vienna",
+      "continent": "Europe",
+      "subregion": "Central Europe",
+      "image": "/capitals/at.jpg"
+    },
+    {
+      "code": "BE",
+      "name": "Belgium",
+      "capital": "Brussels",
+      "continent": "Europe",
+      "subregion": "Western Europe",
+      "image": "/capitals/be.jpg"
+    },
+    {
+      "code": "BA",
+      "name": "Bosnia and Herzegovina",
+      "capital": "Sarajevo",
+      "continent": "Europe",
+      "subregion": "Southeast Europe",
+      "image": "/capitals/ba.jpg"
+    },
+    {
+      "code": "BG",
+      "name": "Bulgaria",
+      "capital": "Sofia",
+      "continent": "Europe",
+      "subregion": "Southeast Europe",
+      "image": "/capitals/bg.jpg"
+    },
+    {
+      "code": "DK",
+      "name": "Denmark",
+      "capital": "Copenhagen",
+      "continent": "Europe",
+      "subregion": "Northern Europe",
+      "image": "/capitals/dk.jpg"
+    },
+    {
+      "code": "EE",
+      "name": "Estonia",
+      "capital": "Tallinn",
+      "continent": "Europe",
+      "subregion": "Northern Europe",
+      "image": "/capitals/ee.jpg"
+    },
+    {
+      "code": "FI",
+      "name": "Finland",
+      "capital": "Helsinki",
+      "continent": "Europe",
+      "subregion": "Northern Europe",
+      "image": "/capitals/fi.jpg"
+    },
+    {
+      "code": "FR",
+      "name": "France",
+      "capital": "Paris",
+      "continent": "Europe",
+      "subregion": "Western Europe",
+      "image": "/capitals/fr.jpg"
+    },
+    {
+      "code": "DE",
+      "name": "Germany",
+      "capital": "Berlin",
+      "continent": "Europe",
+      "subregion": "Western Europe",
+      "image": "/capitals/de.jpg"
+    },
+    {
+      "code": "GI",
+      "name": "Gibraltar",
+      "capital": "Gibraltar",
+      "continent": "Europe",
+      "subregion": "Southern Europe",
+      "image": "/capitals/gi.jpg"
+    },
+    {
+      "code": "HU",
+      "name": "Hungary",
+      "capital": "Budapest",
+      "continent": "Europe",
+      "subregion": "Central Europe",
+      "image": "/capitals/hu.jpg"
+    },
+    {
+      "code": "IS",
+      "name": "Iceland",
+      "capital": "Reykjavik",
+      "continent": "Europe",
+      "subregion": "Northern Europe",
+      "image": "/capitals/is.jpg"
+    },
+    {
+      "code": "JE",
+      "name": "Jersey",
+      "capital": "Saint Helier",
+      "continent": "Europe",
+      "subregion": "Northern Europe",
+      "image": "/capitals/je.jpg"
+    },
+    {
+      "code": "LV",
+      "name": "Latvia",
+      "capital": "Riga",
+      "continent": "Europe",
+      "subregion": "Northern Europe",
+      "image": "/capitals/lv.jpg"
+    },
+    {
+      "code": "LI",
+      "name": "Liechtenstein",
+      "capital": "Vaduz",
+      "continent": "Europe",
+      "subregion": "Western Europe",
+      "image": "/capitals/li.jpg"
+    },
+    {
+      "code": "LT",
+      "name": "Lithuania",
+      "capital": "Vilnius",
+      "continent": "Europe",
+      "subregion": "Northern Europe",
+      "image": "/capitals/lt.jpg"
+    },
+    {
+      "code": "LU",
+      "name": "Luxembourg",
+      "capital": "Luxembourg",
+      "continent": "Europe",
+      "subregion": "Western Europe",
+      "image": "/capitals/lu.jpg"
+    },
+    {
+      "code": "MC",
+      "name": "Monaco",
+      "capital": "Monaco",
+      "continent": "Europe",
+      "subregion": "Western Europe",
+      "image": "/capitals/mc.jpg"
+    },
+    {
+      "code": "MK",
+      "name": "North Macedonia",
+      "capital": "Skopje",
+      "continent": "Europe",
+      "subregion": "Southeast Europe",
+      "image": "/capitals/mk.jpg"
+    },
+    {
+      "code": "PL",
+      "name": "Poland",
+      "capital": "Warsaw",
+      "continent": "Europe",
+      "subregion": "Central Europe",
+      "image": "/capitals/pl.jpg"
+    },
+    {
+      "code": "RU",
+      "name": "Russia",
+      "capital": "Moscow",
+      "continent": "Europe",
+      "subregion": "Eastern Europe",
+      "image": "/capitals/ru.jpg"
+    },
+    {
+      "code": "SM",
+      "name": "San Marino",
+      "capital": "City of San Marino",
+      "continent": "Europe",
+      "subregion": "Southern Europe",
+      "image": "/capitals/sm.jpg"
+    },
+    {
+      "code": "SI",
+      "name": "Slovenia",
+      "capital": "Ljubljana",
+      "continent": "Europe",
+      "subregion": "Central Europe",
+      "image": "/capitals/si.jpg"
+    },
+    {
+      "code": "GB",
+      "name": "United Kingdom",
+      "capital": "London",
+      "continent": "Europe",
+      "subregion": "Northern Europe",
+      "image": "/capitals/gb.jpg"
+    },
+    {
+      "code": "AX",
+      "name": "Åland Islands",
+      "capital": "Mariehamn",
+      "continent": "Europe",
+      "subregion": "Northern Europe",
+      "image": "/capitals/ax.jpg"
+    },
+    {
+      "code": "CR",
+      "name": "Costa Rica",
+      "capital": "San José",
+      "continent": "North America",
+      "subregion": "Central America",
+      "image": "/capitals/cr.jpg"
+    },
+    {
+      "code": "CU",
+      "name": "Cuba",
+      "capital": "Havana",
+      "continent": "North America",
+      "subregion": "Caribbean",
+      "image": "/capitals/cu.jpg"
+    },
+    {
+      "code": "CW",
+      "name": "Curaçao",
+      "capital": "Willemstad",
+      "continent": "North America",
+      "subregion": "Caribbean",
+      "image": "/capitals/cw.jpg"
+    },
+    {
+      "code": "DM",
+      "name": "Dominica",
+      "capital": "Roseau",
+      "continent": "North America",
+      "subregion": "Caribbean",
+      "image": "/capitals/dm.jpg"
+    },
+    {
+      "code": "DO",
+      "name": "Dominican Republic",
+      "capital": "Santo Domingo",
+      "continent": "North America",
+      "subregion": "Caribbean",
+      "image": "/capitals/do.jpg"
+    },
+    {
+      "code": "SV",
+      "name": "El Salvador",
+      "capital": "San Salvador",
+      "continent": "North America",
+      "subregion": "Central America",
+      "image": "/capitals/sv.jpg"
+    },
+    {
+      "code": "GT",
+      "name": "Guatemala",
+      "capital": "Guatemala City",
+      "continent": "North America",
+      "subregion": "Central America",
+      "image": "/capitals/gt.jpg"
+    },
+    {
+      "code": "HT",
+      "name": "Haiti",
+      "capital": "Port-au-Prince",
+      "continent": "North America",
+      "subregion": "Caribbean",
+      "image": "/capitals/ht.jpg"
+    },
+    {
+      "code": "HN",
+      "name": "Honduras",
+      "capital": "Tegucigalpa",
+      "continent": "North America",
+      "subregion": "Central America",
+      "image": "/capitals/hn.jpg"
+    },
+    {
+      "code": "MQ",
+      "name": "Martinique",
+      "capital": "Fort-de-France",
+      "continent": "North America",
+      "subregion": "Caribbean",
+      "image": "/capitals/mq.jpg"
+    },
+    {
+      "code": "MX",
+      "name": "Mexico",
+      "capital": "Mexico City",
+      "continent": "North America",
+      "subregion": "North America",
+      "image": "/capitals/mx.jpg"
+    },
+    {
+      "code": "NI",
+      "name": "Nicaragua",
+      "capital": "Managua",
+      "continent": "North America",
+      "subregion": "Central America",
+      "image": "/capitals/ni.jpg"
+    },
+    {
+      "code": "PA",
+      "name": "Panama",
+      "capital": "Panama City",
+      "continent": "North America",
+      "subregion": "Central America",
+      "image": "/capitals/pa.jpg"
+    },
+    {
+      "code": "PR",
+      "name": "Puerto Rico",
+      "capital": "San Juan",
+      "continent": "North America",
+      "subregion": "Caribbean",
+      "image": "/capitals/pr.jpg"
+    },
+    {
+      "code": "BL",
+      "name": "Saint Barthélemy",
+      "capital": "Gustavia",
+      "continent": "North America",
+      "subregion": "Caribbean",
+      "image": "/capitals/bl.jpg"
+    },
+    {
+      "code": "VC",
+      "name": "Saint Vincent and the Grenadines",
+      "capital": "Kingstown",
+      "continent": "North America",
+      "subregion": "Caribbean",
+      "image": "/capitals/vc.jpg"
+    },
+    {
+      "code": "TT",
+      "name": "Trinidad and Tobago",
+      "capital": "Port of Spain",
+      "continent": "North America",
+      "subregion": "Caribbean",
+      "image": "/capitals/tt.jpg"
+    },
+    {
+      "code": "PF",
+      "name": "French Polynesia",
+      "capital": "Papeetē",
+      "continent": "Oceania",
+      "subregion": "Polynesia",
+      "image": "/capitals/pf.jpg"
+    },
+    {
+      "code": "NC",
+      "name": "New Caledonia",
+      "capital": "Nouméa",
+      "continent": "Oceania",
+      "subregion": "Melanesia",
+      "image": "/capitals/nc.jpg"
+    },
+    {
+      "code": "MP",
+      "name": "Northern Mariana Islands",
+      "capital": "Saipan",
+      "continent": "Oceania",
+      "subregion": "Micronesia",
+      "image": "/capitals/mp.jpg"
+    },
+    {
+      "code": "SB",
+      "name": "Solomon Islands",
+      "capital": "Honiara",
+      "continent": "Oceania",
+      "subregion": "Melanesia",
+      "image": "/capitals/sb.jpg"
+    },
+    {
+      "code": "VU",
+      "name": "Vanuatu",
+      "capital": "Port Vila",
+      "continent": "Oceania",
+      "subregion": "Melanesia",
+      "image": "/capitals/vu.jpg"
+    },
+    {
+      "code": "WF",
+      "name": "Wallis and Futuna",
+      "capital": "Mata-Utu",
+      "continent": "Oceania",
+      "subregion": "Polynesia",
+      "image": "/capitals/wf.jpg"
+    },
+    {
+      "code": "AR",
+      "name": "Argentina",
+      "capital": "Buenos Aires",
+      "continent": "South America",
+      "subregion": "South America",
+      "image": "/capitals/ar.jpg"
+    },
+    {
+      "code": "CL",
+      "name": "Chile",
+      "capital": "Santiago",
+      "continent": "South America",
+      "subregion": "South America",
+      "image": "/capitals/cl.jpg"
+    },
+    {
+      "code": "CO",
+      "name": "Colombia",
+      "capital": "Bogotá",
+      "continent": "South America",
+      "subregion": "South America",
+      "image": "/capitals/co.jpg"
+    },
+    {
+      "code": "FK",
+      "name": "Falkland Islands",
+      "capital": "Stanley",
+      "continent": "South America",
+      "subregion": "South America",
+      "image": "/capitals/fk.jpg"
+    },
+    {
+      "code": "GF",
+      "name": "French Guiana",
+      "capital": "Cayenne",
+      "continent": "South America",
+      "subregion": "South America",
+      "image": "/capitals/gf.jpg"
+    },
+    {
+      "code": "GY",
+      "name": "Guyana",
+      "capital": "Georgetown",
+      "continent": "South America",
+      "subregion": "South America",
+      "image": "/capitals/gy.jpg"
+    },
+    {
+      "code": "PE",
+      "name": "Peru",
+      "capital": "Lima",
+      "continent": "South America",
+      "subregion": "South America",
+      "image": "/capitals/pe.jpg"
+    }
+  ]
+}

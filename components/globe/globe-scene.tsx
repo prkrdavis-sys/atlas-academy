@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
+import { Billboard, useTexture } from "@react-three/drei";
 import * as THREE from "three";
 import {
   buildGlobeTextureCanvas,
@@ -119,9 +120,10 @@ export function GlobeAtmosphere({ isDark }: { isDark: boolean }) {
 }
 
 /**
- * Scene fill lights for the globe. When day/night is on, a dim ambient keeps
- * mastery colors readable and the real-time sun (mounted on the mesh) adds the
- * terminator. When off, studio lighting lights the whole planet evenly.
+ * Scene fill lights for the globe. When day/night is on, ambient + real-time
+ * sun create a clear terminator. When off, lighting stays nearly even with only
+ * a soft key so the sphere still reads in 3D — especially important in dark
+ * mode, where a hard shade would swallow the navy ocean.
  */
 export function GlobeFillLights({
   isDark,
@@ -136,8 +138,9 @@ export function GlobeFillLights({
   }
   return (
     <>
-      <ambientLight intensity={1.15} />
-      <directionalLight position={[3, 2, 4]} intensity={1.7} />
+      <ambientLight intensity={isDark ? 1.35 : 1.2} />
+      {/* Soft key only — enough roundness, not a dark shaded hemisphere. */}
+      <directionalLight position={[3, 2, 4]} intensity={isDark ? 0.28 : 0.4} />
     </>
   );
 }
@@ -176,6 +179,75 @@ export function EarthSunLight({ isDark }: { isDark: boolean }) {
       intensity={isDark ? 1.95 : 1.75}
       color="#fff4e0"
     />
+  );
+}
+
+/** How far the visible sun sits from Earth's center (mesh-local units). */
+const DISTANT_SUN_DISTANCE = 56;
+
+/** NASA SDO / AIA 304 Å disk — public domain (see public/globe/SUN_ATTRIBUTION.txt). */
+const SUN_TEXTURE_URL = "/globe/sun.jpg";
+
+/** Skip picking so the sun never steals globe taps. */
+function ignoreRaycast() {}
+
+function DistantSunVisual({ isDark }: { isDark: boolean }) {
+  const groupRef = useRef<THREE.Group>(null);
+  const texture = useTexture(SUN_TEXTURE_URL);
+
+  useLayoutEffect(() => {
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.anisotropy = Math.min(8, texture.anisotropy || 1);
+  }, [texture]);
+
+  useFrame(() => {
+    const group = groupRef.current;
+    if (!group) return;
+    const sun = subsolarDirection();
+    group.position.set(sun.x, sun.y, sun.z).multiplyScalar(DISTANT_SUN_DISTANCE);
+  });
+
+  return (
+    <group ref={groupRef} frustumCulled={false}>
+      <Billboard follow>
+        {/* Soft corona so the NASA disk blooms a little in space / pale sky. */}
+        <mesh scale={5.2} raycast={ignoreRaycast} frustumCulled={false}>
+          <circleGeometry args={[1, 48]} />
+          <meshBasicMaterial
+            color="#ff7a3c"
+            transparent
+            opacity={isDark ? 0.18 : 0.22}
+            depthWrite={false}
+            blending={THREE.AdditiveBlending}
+            toneMapped={false}
+          />
+        </mesh>
+        <mesh scale={2.35} raycast={ignoreRaycast} frustumCulled={false}>
+          <planeGeometry args={[2, 2]} />
+          <meshBasicMaterial
+            map={texture}
+            transparent
+            depthWrite={false}
+            blending={THREE.AdditiveBlending}
+            toneMapped={false}
+          />
+        </mesh>
+      </Billboard>
+    </group>
+  );
+}
+
+/**
+ * Bright distant sun in outer space, locked to the real subsolar direction.
+ * Always mounted (independent of the day/night lighting toggle) as a child of
+ * the earth mesh so it stays aligned with geography while the globe spins.
+ * Uses a NASA SDO AIA image (public domain).
+ */
+export function DistantSun({ isDark }: { isDark: boolean }) {
+  return (
+    <Suspense fallback={null}>
+      <DistantSunVisual isDark={isDark} />
+    </Suspense>
   );
 }
 

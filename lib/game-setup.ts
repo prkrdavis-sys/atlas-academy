@@ -112,7 +112,7 @@ export function createSetupDraftFromProfile(
       ? profile.settings.lastRegionFilter ?? [...US_REGIONS]
       : profile.settings.lastContinentFilter ?? [...CONTINENTS],
     includeTerritories: profile.settings.includeTerritories ?? false,
-    difficulty: profile.settings.difficulty ?? "easy",
+    difficulty: profile.settings.difficulty ?? "medium",
     roundQuestionCount: normalizeRoundQuestionSetting(profile.settings.roundQuestionCount),
   };
 }
