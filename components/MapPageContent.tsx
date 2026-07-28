@@ -48,13 +48,13 @@ function getStoredMapView(): MapView {
   return normalizeMapView(localStorage.getItem(MAP_VIEW_STORAGE_KEY)) ?? "globe";
 }
 
-/** Explicit ?view= wins; a state ?place= implies the USA map; otherwise null (use stored). */
+/** Explicit ?view= wins; ?place= opens the 3D globe focused on that place. */
 function resolveMapViewFromParams(searchParams: URLSearchParams): MapView | null {
   const fromParam = normalizeMapView(searchParams.get("view"));
   if (fromParam) return fromParam;
 
   const place = resolvePlaceCodeFromParam(searchParams.get("place"));
-  if (place && isStateCode(place)) return "usa";
+  if (place) return "globe";
 
   return null;
 }
@@ -108,6 +108,10 @@ export function MapPageContent() {
   const { activeProfile, hydrated } = useProfiles();
   const profile = hydrated ? activeProfile : null;
   const initialPlaceCode = searchParams.get("place");
+  const resolvedInitialPlace = useMemo(
+    () => resolvePlaceCodeFromParam(initialPlaceCode) ?? null,
+    [initialPlaceCode],
+  );
   const paramView = useMemo(() => resolveMapViewFromParams(searchParams), [searchParams]);
   const [storedView, setStoredView] = useState<MapView | null>(null);
   const [mapDifficulty, setMapDifficulty] = useState<MapProgressDifficulty>("medium");
@@ -150,6 +154,8 @@ export function MapPageContent() {
     }
   }, [requestedView, globeUnavailable]);
 
+  const activeGlobeSelection = selectedGlobePlace ?? resolvedInitialPlace;
+
   const setView = useCallback(
     (nextView: MapView) => {
       localStorage.setItem(MAP_VIEW_STORAGE_KEY, nextView);
@@ -176,7 +182,7 @@ export function MapPageContent() {
   // default, USA regions while a state is selected.
   const panelScope: GameScope =
     view === "globe"
-      ? selectedGlobePlace && isStateCode(selectedGlobePlace)
+      ? activeGlobeSelection && isStateCode(activeGlobeSelection)
         ? "usa"
         : "world"
       : view ?? "world";
@@ -236,10 +242,12 @@ export function MapPageContent() {
               enough for the globe + atmosphere halo without clipping. */}
           <div className="h-[max(20rem,calc(100dvh-22rem))]">
             <InteractiveGlobe
+              key={resolvedInitialPlace ?? "default"}
               profile={profile}
               difficulty={mapDifficulty}
               usMode={usMode}
-              selectedCode={selectedGlobePlace}
+              selectedCode={activeGlobeSelection}
+              initialPlaceCode={resolvedInitialPlace}
               onSelectPlace={setSelectedGlobePlace}
               statsScrollTargetId={MAP_STATS_PANEL_ID}
               className="h-full w-full"

@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 const PLAY_MODE_ITEMS = [
   { href: "/map", label: "Map", icon: "🗺️" },
   { href: "/", label: "Play", icon: "🌎" },
-  { href: "/library", label: "Explore", icon: "🧭" },
+  { href: "/library", label: "Library", icon: "📚" },
 ] as const;
 
 export function PlayModeSwitcher() {

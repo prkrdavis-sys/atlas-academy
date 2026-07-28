@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState, type RefObject } from "react";
+import { useCallback, useLayoutEffect, useRef, useState, type RefObject } from "react";
 import { Canvas, useFrame, type ThreeEvent } from "@react-three/fiber";
 import { OrbitControls, Stars } from "@react-three/drei";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
@@ -23,6 +23,13 @@ import { MapZoomControls } from "@/components/MapZoomControls";
 import { ProgressMapContainer } from "@/components/ProgressMapOverlays";
 import { MapProgressFillLegend } from "@/components/PlaceMapProgressPanel";
 import { pickGlobePlaceAtUv } from "@/lib/globe-picking";
+import {
+  GLOBE_DEFAULT_POLAR,
+  GLOBE_MESH_Y_ROTATION,
+  getGlobeFocusTarget,
+  lerpAngle,
+  type GlobeFocusTarget,
+} from "@/lib/globe-focus";
 import type { GlobeUsMode } from "@/lib/globe-texture";
 import { isStateCode } from "@/lib/scope";
 import type { MapProgressDifficulty, Profile } from "@/lib/types";
@@ -41,6 +48,10 @@ const INITIAL_CAMERA_DISTANCE = MAX_CAMERA_DISTANCE;
 const CINEMATIC_REST_DISTANCE = 3.25;
 /** Seconds for the open-tab camera ease from {@link INITIAL_CAMERA_DISTANCE}. */
 const CINEMATIC_ZOOM_DURATION_S = 3.2;
+/** Seconds to spin and zoom toward a linked place from the library. */
+const PLACE_FOCUS_DURATION_S = 2.8;
+/** Camera distance after framing a linked country or state. */
+const PLACE_FOCUS_DISTANCE = 2.3;
 /** Camera-distance multiplier for one zoom button press. */
 const ZOOM_BUTTON_FACTOR = 0.75;
 /** Orbit drag speed at {@link INITIAL_CAMERA_DISTANCE}; scaled by zoom so close-ups stay controllable. */
@@ -113,6 +124,91 @@ function CinematicIntroZoom({
   return null;
 }
 
+/**
+ * Spins the globe toward a linked place, tilts for latitude, and zooms in.
+ * Runs after OrbitControls each frame so the animation is not overwritten.
+ */
+function PlaceFocusIntro({
+  controlsRef,
+  meshRotationYRef,
+  focusTarget,
+  enabled,
+  cancelled,
+  onComplete,
+}: {
+  controlsRef: RefObject<OrbitControlsImpl | null>;
+  meshRotationYRef: RefObject<number>;
+  focusTarget: GlobeFocusTarget;
+  enabled: boolean;
+  cancelled: boolean;
+  onComplete: () => void;
+}) {
+  const elapsedRef = useRef(0);
+  const finishedRef = useRef(false);
+  const offsetRef = useRef(new THREE.Vector3());
+
+  useFrame((_, delta) => {
+    if (finishedRef.current) return;
+    const controls = controlsRef.current;
+    if (!controls) return;
+
+    if (cancelled) {
+      controls.enabled = true;
+      return;
+    }
+
+    const applyFocus = (progress: number) => {
+      meshRotationYRef.current = lerpAngle(
+        GLOBE_MESH_Y_ROTATION,
+        focusTarget.meshRotationY,
+        progress,
+      );
+
+      controls.setAzimuthalAngle(0);
+      controls.setPolarAngle(
+        THREE.MathUtils.lerp(GLOBE_DEFAULT_POLAR, focusTarget.polarAngle, progress),
+      );
+
+      const distance = THREE.MathUtils.lerp(
+        INITIAL_CAMERA_DISTANCE,
+        PLACE_FOCUS_DISTANCE,
+        progress,
+      );
+      const camera = controls.object;
+      const offset = offsetRef.current;
+      offset.copy(camera.position).sub(controls.target);
+      offset.setLength(distance);
+      camera.position.copy(controls.target).add(offset);
+      controls.update();
+    };
+
+    if (!enabled) {
+      applyFocus(1);
+      finishedRef.current = true;
+      controls.enabled = true;
+      controls.saveState();
+      onComplete();
+      return;
+    }
+
+    controls.enabled = false;
+
+    elapsedRef.current += delta;
+    const t = Math.min(1, elapsedRef.current / PLACE_FOCUS_DURATION_S);
+    const eased = 1 - (1 - t) ** 3;
+    applyFocus(eased);
+
+    if (t >= 1) {
+      finishedRef.current = true;
+      controls.enabled = true;
+      controls.saveState();
+      onComplete();
+    }
+  }, 1);
+
+  return null;
+}
+
 type TapState = { pointerId: number; lastX: number; lastY: number; traveled: number };
 
 type GlobeSceneProps = {
@@ -122,6 +218,7 @@ type GlobeSceneProps = {
   isDark: boolean;
   dayNight: boolean;
   selectedCode: string | null;
+  meshRotationYRef: RefObject<number>;
   onPickPlace: (code: string | null) => void;
 };
 
@@ -133,10 +230,23 @@ function PickableGlobe({
   isDark,
   dayNight,
   selectedCode,
+  meshRotationYRef,
   onPickPlace,
 }: GlobeSceneProps) {
   const texture = useGlobeTexture(profile, { difficulty, usMode, isDark, selectedCode });
   const tapRef = useRef<TapState | null>(null);
+  const meshRef = useRef<THREE.Mesh>(null);
+
+  useLayoutEffect(() => {
+    const mesh = meshRef.current;
+    if (mesh) mesh.rotation.set(0, meshRotationYRef.current, 0);
+  }, [meshRotationYRef]);
+
+  useFrame(() => {
+    const mesh = meshRef.current;
+    if (!mesh) return;
+    mesh.rotation.set(0, meshRotationYRef.current, 0);
+  }, 2);
 
   const onPointerDown = (event: ThreeEvent<PointerEvent>) => {
     tapRef.current = {
@@ -168,8 +278,7 @@ function PickableGlobe({
   return (
     <group>
       <mesh
-        // Start on the Atlantic so land is visible right away.
-        rotation={[0, -1.1, 0]}
+        ref={meshRef}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
@@ -193,6 +302,8 @@ type InteractiveGlobeProps = {
   difficulty: MapProgressDifficulty;
   usMode: GlobeUsMode;
   selectedCode: string | null;
+  /** Place code from ?place= — highlights immediately and triggers fly-to. */
+  initialPlaceCode?: string | null;
   onSelectPlace: (code: string | null) => void;
   className?: string;
   /** When set, shows a scroll-down control beside the fill legend. */
@@ -210,6 +321,7 @@ export default function InteractiveGlobe({
   difficulty,
   usMode,
   selectedCode,
+  initialPlaceCode = null,
   onSelectPlace,
   className,
   statsScrollTargetId,
@@ -219,8 +331,13 @@ export default function InteractiveGlobe({
   const { enabled: dayNight } = useGlobeDayNight();
   const containerRef = useRef<HTMLDivElement>(null);
   const controlsRef = useRef<OrbitControlsImpl | null>(null);
+  const meshRotationYRef = useRef(GLOBE_MESH_Y_ROTATION);
   const [autoSpin, setAutoSpin] = useState(true);
   const [introCancelled, setIntroCancelled] = useState(false);
+  const [focusIntroComplete, setFocusIntroComplete] = useState(false);
+  const placeFocusTarget = initialPlaceCode ? getGlobeFocusTarget(initialPlaceCode) : null;
+  const usePlaceFocus = placeFocusTarget !== null;
+  const highlightedCode = selectedCode ?? initialPlaceCode;
 
   const onOrbitStart = useCallback(() => {
     setIntroCancelled(true);
@@ -246,10 +363,11 @@ export default function InteractiveGlobe({
   const resetView = useCallback(() => {
     setIntroCancelled(true);
     onSelectPlace(null);
+    meshRotationYRef.current = GLOBE_MESH_Y_ROTATION;
     controlsRef.current?.reset();
   }, [onSelectPlace]);
 
-  const panelScope = selectedCode && isStateCode(selectedCode) ? "usa" : "world";
+  const panelScope = highlightedCode && isStateCode(highlightedCode) ? "usa" : "world";
 
   const globeBottomPanelClass =
     "flex items-center rounded-xl border border-slate-200/60 bg-white/85 shadow-sm backdrop-blur dark:border-slate-700/60 dark:bg-slate-900/75";
@@ -265,7 +383,7 @@ export default function InteractiveGlobe({
         wrapperClassName="absolute inset-0"
         className="relative h-full w-full touch-none"
         hoverLabel={null}
-        selectedCode={selectedCode}
+        selectedCode={highlightedCode}
         profile={profile}
         difficulty={difficulty}
         scope={panelScope}
@@ -298,25 +416,37 @@ export default function InteractiveGlobe({
               usMode={usMode}
               isDark={isDark}
               dayNight={dayNight}
-              selectedCode={selectedCode}
+              selectedCode={highlightedCode}
+              meshRotationYRef={meshRotationYRef}
               onPickPlace={onSelectPlace}
             />
             <SyncOrbitRotateSpeed controlsRef={controlsRef} />
-            <CinematicIntroZoom
-              controlsRef={controlsRef}
-              enabled={!reducedMotion}
-              cancelled={introCancelled}
-            />
+            {usePlaceFocus && placeFocusTarget ? (
+              <PlaceFocusIntro
+                controlsRef={controlsRef}
+                meshRotationYRef={meshRotationYRef}
+                focusTarget={placeFocusTarget}
+                enabled={!reducedMotion}
+                cancelled={introCancelled}
+                onComplete={() => setFocusIntroComplete(true)}
+              />
+            ) : (
+              <CinematicIntroZoom
+                controlsRef={controlsRef}
+                enabled={!reducedMotion}
+                cancelled={introCancelled}
+              />
+            )}
             <OrbitControls
               ref={controlsRef}
               enablePan={false}
-              enableDamping
+              enableDamping={!(usePlaceFocus && !focusIntroComplete && !introCancelled)}
               dampingFactor={0.08}
               rotateSpeed={BASE_ROTATE_SPEED}
               zoomSpeed={0.7}
               minDistance={MIN_CAMERA_DISTANCE}
               maxDistance={MAX_CAMERA_DISTANCE}
-              autoRotate={autoSpin && !reducedMotion}
+              autoRotate={autoSpin && !reducedMotion && (!usePlaceFocus || focusIntroComplete)}
               // OrbitControls speed 1.0 ≈ 0.1 rad/s; match the home globe's gentle spin.
               autoRotateSpeed={GLOBE_ROTATION_SPEED * 10}
               onStart={onOrbitStart}

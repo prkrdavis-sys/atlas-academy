@@ -152,7 +152,7 @@ export function getUsaMapPathIds(country: Country): string[] {
 }
 
 export function buildUsaMapHref(code: string): string {
-  return `/map?view=usa&place=${encodeURIComponent(code.toLowerCase())}`;
+  return `/map?place=${encodeURIComponent(code.toLowerCase())}`;
 }
 
 export function buildPlaceMapHref(code: string): string {

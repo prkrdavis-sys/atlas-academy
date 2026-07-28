@@ -68,9 +68,9 @@ function buildUxProTips(scope: GameScope): string[] {
     "The flame in the header tracks your login streak — tap it for this week's calendar.",
     "Login streak and answer streak are different — the flame is about showing up daily.",
 
-    `In Explore, change Sort to Commonly missed to browse ${scopeInfo.nounPlural} you've gotten wrong.`,
-    "The search bar on Explore finds any place by name — jump straight to a country or state.",
-    "Region filters on Explore are remembered — pick a continent and come back later.",
+    `In Library, change Sort to Commonly missed to browse ${scopeInfo.nounPlural} you've gotten wrong.`,
+    "The search bar on Library finds any place by name — jump straight to a country or state.",
+    "Region filters on Library are remembered — pick a continent and come back later.",
     "Going back from a Library page restores your scroll position in the list.",
     "Each Library page includes a context map showing where the place sits geographically.",
     "Library pages link to neighboring places — follow them to explore borders.",
@@ -107,7 +107,7 @@ function buildUxProTips(scope: GameScope): string[] {
     "Use Backup & restore on Profiles to save your progress to a file on this device.",
     "Multiple profiles can live on one device — switch between them in the profile menu.",
 
-    "Use Map, Play, and Explore in the bottom nav (mobile) or header tabs (desktop) to jump around.",
+    "Use Map, Play, and Library in the bottom nav (mobile) or header tabs (desktop) to jump around.",
   ];
 }
 
@@ -119,8 +119,8 @@ function buildGuestUxProTips(scope: GameScope): string[] {
   return [
     "Create a profile to unlock Stats, commonly missed sorting, and saved progress.",
     "Tap this pro tip anytime to shuffle to another hidden feature.",
-    `In Explore, sort by Commonly missed once you have a profile — it surfaces ${scopeInfo.nounPlural} you miss most.`,
-    "The search bar on Explore finds any place by name.",
+    `In Library, sort by Commonly missed once you have a profile — it surfaces ${scopeInfo.nounPlural} you miss most.`,
+    "The search bar on Library finds any place by name.",
     "Each Library page includes a context map and links to neighboring places.",
     "The Map tab switches between Globe, World, and USA views.",
     "Pan and zoom the map, then click any place to open its Library page.",
@@ -129,7 +129,7 @@ function buildGuestUxProTips(scope: GameScope): string[] {
     "Hard difficulty makes you type answers — no multiple-choice safety net.",
     `World and ${otherScopeInfo.shortLabel} are separate scopes with their own content.`,
     "Your profile menu (once signed in) holds Stats, sound, theme, and globe toggles.",
-    "Use Map, Play, and Explore in the bottom nav (mobile) or header tabs (desktop) to jump around.",
+    "Use Map, Play, and Library in the bottom nav (mobile) or header tabs (desktop) to jump around.",
   ];
 }
 
@@ -199,7 +199,7 @@ function buildPersonalizedTaglines({
   if (weakSpotCount > 0) {
     candidates.push(
       `${practiceWeakSpots} is ready with ${weakSpotCount} commonly missed ${weakSpotCount === 1 ? scopeInfo.noun : scopeInfo.nounPlural}.`,
-      `You have ${weakSpotCount} weak spots — sort Explore by Commonly missed to study them.`,
+      `You have ${weakSpotCount} weak spots — sort Library by Commonly missed to study them.`,
     );
   }
 
