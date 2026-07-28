@@ -1,6 +1,13 @@
 "use client";
 
-import { useCallback, useRef, useState, type RefObject } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type RefObject,
+} from "react";
 import { Canvas, useFrame, type ThreeEvent } from "@react-three/fiber";
 import { OrbitControls, Stars } from "@react-three/drei";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
@@ -126,19 +133,20 @@ function CinematicIntroZoom({
 
 /**
  * Spins the globe toward a linked place, tilts for latitude, and zooms in.
- * Mesh yaw is driven through React state (not imperative mesh.rotation) so the
- * declarative rotation prop keeps the first paint visible.
+ *
+ * Yaw is written on a parent spin group (not the mesh). Mounted after
+ * OrbitControls so this default-priority frame runs after controls.update().
  */
 function PlaceFocusIntro({
   controlsRef,
-  onMeshRotationY,
+  spinGroupRef,
   focusTarget,
   enabled,
   cancelled,
   onComplete,
 }: {
   controlsRef: RefObject<OrbitControlsImpl | null>;
-  onMeshRotationY: (rotationY: number) => void;
+  spinGroupRef: RefObject<THREE.Group | null>;
   focusTarget: GlobeFocusTarget;
   enabled: boolean;
   cancelled: boolean;
@@ -147,6 +155,7 @@ function PlaceFocusIntro({
   const elapsedRef = useRef(0);
   const finishedRef = useRef(false);
   const offsetRef = useRef(new THREE.Vector3());
+  const sphericalRef = useRef(new THREE.Spherical());
 
   useFrame((_, delta) => {
     if (finishedRef.current) return;
@@ -159,26 +168,34 @@ function PlaceFocusIntro({
     }
 
     const applyFocus = (progress: number) => {
-      onMeshRotationY(
-        lerpAngle(GLOBE_MESH_Y_ROTATION, focusTarget.meshRotationY, progress),
+      const rotationY = lerpAngle(
+        GLOBE_MESH_Y_ROTATION,
+        focusTarget.meshRotationY,
+        progress,
       );
+      const spinGroup = spinGroupRef.current;
+      if (spinGroup) spinGroup.rotation.set(0, rotationY, 0);
 
-      controls.setAzimuthalAngle(0);
-      controls.setPolarAngle(
-        THREE.MathUtils.lerp(GLOBE_DEFAULT_POLAR, focusTarget.polarAngle, progress),
+      const offset = offsetRef.current;
+      const spherical = sphericalRef.current;
+      offset.copy(controls.object.position).sub(controls.target);
+      spherical.setFromVector3(offset);
+      // Keep the camera on the +Z meridian; the spin group brings the place forward.
+      spherical.theta = 0;
+      spherical.phi = THREE.MathUtils.lerp(
+        GLOBE_DEFAULT_POLAR,
+        focusTarget.polarAngle,
+        progress,
       );
-
-      const distance = THREE.MathUtils.lerp(
+      spherical.radius = THREE.MathUtils.lerp(
         INITIAL_CAMERA_DISTANCE,
         PLACE_FOCUS_DISTANCE,
         progress,
       );
-      const camera = controls.object;
-      const offset = offsetRef.current;
-      offset.copy(camera.position).sub(controls.target);
-      offset.setLength(distance);
-      camera.position.copy(controls.target).add(offset);
-      controls.update();
+      spherical.makeSafe();
+      offset.setFromSpherical(spherical);
+      controls.object.position.copy(controls.target).add(offset);
+      controls.object.lookAt(controls.target);
     };
 
     if (!enabled) {
@@ -203,7 +220,7 @@ function PlaceFocusIntro({
       controls.saveState();
       onComplete();
     }
-  }, 1);
+  });
 
   return null;
 }
@@ -217,7 +234,7 @@ type GlobeSceneProps = {
   isDark: boolean;
   dayNight: boolean;
   selectedCode: string | null;
-  meshRotationY: number;
+  spinGroupRef: RefObject<THREE.Group | null>;
   onPickPlace: (code: string | null) => void;
 };
 
@@ -229,11 +246,18 @@ function PickableGlobe({
   isDark,
   dayNight,
   selectedCode,
-  meshRotationY,
+  spinGroupRef,
   onPickPlace,
 }: GlobeSceneProps) {
   const texture = useGlobeTexture(profile, { difficulty, usMode, isDark, selectedCode });
   const tapRef = useRef<TapState | null>(null);
+
+  // No declarative rotation on the spin group — R3F prop updates fight place-focus.
+  // Seed the default Atlantic-facing yaw once the group exists.
+  useLayoutEffect(() => {
+    const group = spinGroupRef.current;
+    if (group) group.rotation.set(0, GLOBE_MESH_Y_ROTATION, 0);
+  }, [spinGroupRef]);
 
   const onPointerDown = (event: ThreeEvent<PointerEvent>) => {
     tapRef.current = {
@@ -263,11 +287,8 @@ function PickableGlobe({
   };
 
   return (
-    <group>
+    <group ref={spinGroupRef}>
       <mesh
-        // Declarative Y rotation — required for first paint. Place-focus updates
-        // this via React state rather than imperative mesh.rotation writes.
-        rotation={[0, meshRotationY, 0]}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
@@ -320,13 +341,25 @@ export default function InteractiveGlobe({
   const { enabled: dayNight } = useGlobeDayNight();
   const containerRef = useRef<HTMLDivElement>(null);
   const controlsRef = useRef<OrbitControlsImpl | null>(null);
-  const [meshRotationY, setMeshRotationY] = useState(GLOBE_MESH_Y_ROTATION);
+  const spinGroupRef = useRef<THREE.Group | null>(null);
   const [autoSpin, setAutoSpin] = useState(true);
   const [introCancelled, setIntroCancelled] = useState(false);
   const [focusIntroComplete, setFocusIntroComplete] = useState(false);
   const placeFocusTarget = initialPlaceCode ? getGlobeFocusTarget(initialPlaceCode) : null;
   const usePlaceFocus = placeFocusTarget !== null;
   const highlightedCode = selectedCode ?? initialPlaceCode;
+
+  useEffect(() => {
+    if (!initialPlaceCode) return;
+    if (spinGroupRef.current) {
+      spinGroupRef.current.rotation.set(0, GLOBE_MESH_Y_ROTATION, 0);
+    }
+    // Keep the framed place on-screen — don't resume idle auto-spin after fly-to.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setAutoSpin(false);
+    setFocusIntroComplete(false);
+    setIntroCancelled(false);
+  }, [initialPlaceCode]);
 
   const onOrbitStart = useCallback(() => {
     setIntroCancelled(true);
@@ -352,7 +385,9 @@ export default function InteractiveGlobe({
   const resetView = useCallback(() => {
     setIntroCancelled(true);
     onSelectPlace(null);
-    setMeshRotationY(GLOBE_MESH_Y_ROTATION);
+    if (spinGroupRef.current) {
+      spinGroupRef.current.rotation.set(0, GLOBE_MESH_Y_ROTATION, 0);
+    }
     controlsRef.current?.reset();
   }, [onSelectPlace]);
 
@@ -406,14 +441,29 @@ export default function InteractiveGlobe({
               isDark={isDark}
               dayNight={dayNight}
               selectedCode={highlightedCode}
-              meshRotationY={meshRotationY}
+              spinGroupRef={spinGroupRef}
               onPickPlace={onSelectPlace}
             />
             <SyncOrbitRotateSpeed controlsRef={controlsRef} />
+            <OrbitControls
+              ref={controlsRef}
+              enablePan={false}
+              enableDamping={!(usePlaceFocus && !focusIntroComplete && !introCancelled)}
+              dampingFactor={0.08}
+              rotateSpeed={BASE_ROTATE_SPEED}
+              zoomSpeed={0.7}
+              minDistance={MIN_CAMERA_DISTANCE}
+              maxDistance={MAX_CAMERA_DISTANCE}
+              autoRotate={autoSpin && !reducedMotion && !usePlaceFocus}
+              // OrbitControls speed 1.0 ≈ 0.1 rad/s; match the home globe's gentle spin.
+              autoRotateSpeed={GLOBE_ROTATION_SPEED * 10}
+              onStart={onOrbitStart}
+            />
             {usePlaceFocus && placeFocusTarget ? (
               <PlaceFocusIntro
+                key={initialPlaceCode ?? "none"}
                 controlsRef={controlsRef}
-                onMeshRotationY={setMeshRotationY}
+                spinGroupRef={spinGroupRef}
                 focusTarget={placeFocusTarget}
                 enabled={!reducedMotion}
                 cancelled={introCancelled}
@@ -426,20 +476,6 @@ export default function InteractiveGlobe({
                 cancelled={introCancelled}
               />
             )}
-            <OrbitControls
-              ref={controlsRef}
-              enablePan={false}
-              enableDamping={!(usePlaceFocus && !focusIntroComplete && !introCancelled)}
-              dampingFactor={0.08}
-              rotateSpeed={BASE_ROTATE_SPEED}
-              zoomSpeed={0.7}
-              minDistance={MIN_CAMERA_DISTANCE}
-              maxDistance={MAX_CAMERA_DISTANCE}
-              autoRotate={autoSpin && !reducedMotion && (!usePlaceFocus || focusIntroComplete)}
-              // OrbitControls speed 1.0 ≈ 0.1 rad/s; match the home globe's gentle spin.
-              autoRotateSpeed={GLOBE_ROTATION_SPEED * 10}
-              onStart={onOrbitStart}
-            />
           </Canvas>
         ) : webglOk === false && isDark ? (
           <StaticStarfield isDark />

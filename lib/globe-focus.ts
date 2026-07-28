@@ -32,20 +32,28 @@ function findShapeCentroid(code: string): [number, number] | null {
     ? GLOBE_TEXTURE_DATA.usStates
     : GLOBE_TEXTURE_DATA.countries;
   const shape = shapes.find((entry) => entry.code === normalized);
+  // Use the largest ring (mainland) so overseas scraps don't steal the focus.
   if (!shape || shape.rings.length === 0) return null;
-  return ringCentroid(shape.rings[0]);
+  let bestRing = shape.rings[0];
+  for (const ring of shape.rings) {
+    if (ring.length > bestRing.length) bestRing = ring;
+  }
+  return ringCentroid(bestRing);
 }
 
-/** Normalized equirectangular (0..1) → unit direction in mesh-local space. */
+/** Normalized equirectangular (0..1) → unit direction in mesh-local space.
+ * Matches three.js SphereGeometry UV layout (u=0 at -X, u=0.25 at +Z). */
 function normalizedToLocalDirection(nx: number, ny: number): THREE.Vector3 {
-  const lng = nx * 360 - 180;
   const lat = 90 - ny * 180;
   const latRad = THREE.MathUtils.degToRad(lat);
-  const lngRad = THREE.MathUtils.degToRad(lng);
+  // SphereGeometry: theta = u * 2π, x = -cos(θ)sin(φ), z = sin(θ)sin(φ).
+  const theta = nx * Math.PI * 2;
+  const phi = Math.PI / 2 - latRad;
+  const sinPhi = Math.sin(phi);
   return new THREE.Vector3(
-    Math.cos(latRad) * Math.sin(lngRad),
-    Math.sin(latRad),
-    Math.cos(latRad) * Math.cos(lngRad),
+    -Math.cos(theta) * sinPhi,
+    Math.cos(phi),
+    Math.sin(theta) * sinPhi,
   );
 }
 

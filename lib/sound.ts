@@ -1,4 +1,5 @@
 import type { Profile } from "@/lib/types";
+import { STREAK_SNUFF_MIN } from "@/lib/streak-tier";
 
 /**
  * Tiny Web Audio synth for game feedback — no audio files needed. All sounds
@@ -13,6 +14,8 @@ export type SoundKind = "tap" | "play" | "correct" | "incorrect" | "streak" | "c
 export type PlaySoundOptions = {
   /** Live answer streak after a correct response (1 = first correct in a row). */
   streak?: number;
+  /** Prior streak length when a miss ends a run — adds a soft extinguish tail. */
+  lostStreak?: number;
 };
 
 let audioContext: AudioContext | null = null;
@@ -290,6 +293,15 @@ const SOUNDS: Record<SoundKind, Note[]> = {
   ],
 };
 
+/** Incorrect cue plus a low “snuff” when a meaningful streak ends. */
+export function getIncorrectLostStreakNotes(): Note[] {
+  return [
+    ...SOUNDS.incorrect,
+    { at: 0.28, frequency: 185, duration: 0.2, type: "sine", gain: 0.06 },
+    { at: 0.34, frequency: 120, duration: 0.32, type: "triangle", gain: 0.05 },
+  ];
+}
+
 /** Pitch rises with streak; timbre and length improve as the run builds. */
 export function getCorrectSoundNotes(streak: number): Note[] {
   const level = Math.max(1, Math.min(streak, 50));
@@ -387,7 +399,9 @@ function scheduleNotes(ctx: AudioContext, kind: SoundKind, options?: PlaySoundOp
   const notes =
     kind === "correct" && options?.streak !== undefined
       ? getCorrectSoundNotes(options.streak)
-      : SOUNDS[kind];
+      : kind === "incorrect" && options?.lostStreak !== undefined && options.lostStreak >= STREAK_SNUFF_MIN
+        ? getIncorrectLostStreakNotes()
+        : SOUNDS[kind];
 
   // Tiny lead-in so the first envelope event is never scheduled in the past.
   const start = ctx.currentTime + 0.01;

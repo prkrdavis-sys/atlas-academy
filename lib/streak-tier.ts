@@ -123,3 +123,14 @@ export function getStreakTier(streak: number): StreakTier {
   const level = Math.min(Math.floor(streak / 5), STREAK_TIERS.length - 1);
   return STREAK_TIERS[level] ?? STREAK_TIERS[0];
 }
+
+/** Minimum run length before a miss shows the snuff signifier / sound tail. */
+export const STREAK_SNUFF_MIN = 2;
+
+export function streakSnuffCopy(streak: number): string {
+  if (streak >= 50) return "Legendary run ended";
+  if (streak >= 25) return "Blazing run snuffed";
+  if (streak >= 10) return "Hot streak snuffed";
+  if (streak >= 5) return "Streak snuffed";
+  return "Streak broken";
+}
