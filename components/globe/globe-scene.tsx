@@ -20,6 +20,17 @@ import {
   resolveGlobeTextureSize,
   type GlobeUsMode,
 } from "@/lib/globe-texture";
+import {
+  getGlobePerfTier,
+  GLOBE_ATMOSPHERE_SEGMENTS_BY_TIER,
+  GLOBE_DPR_CAP_BY_TIER,
+  GLOBE_FRAMELOOP_IDLE_MS,
+  GLOBE_MASTERY4_FRAME_MS_BY_TIER,
+  GLOBE_SPHERE_SEGMENTS_BY_TIER,
+  GLOBE_STAR_COUNT_BY_TIER,
+  isGlobeFxConstrained,
+  type GlobePerfTier,
+} from "@/lib/globe-performance";
 import { masteryFxPhaseFromTime } from "@/lib/map-mastery-fx";
 import { subsolarDirection } from "@/lib/sun-position";
 import { supportsWebGL } from "@/lib/webgl";
@@ -42,6 +53,7 @@ export type GlobeSceneEnvironment = {
   webglOk: boolean | null;
   reducedMotion: boolean;
   pageVisible: boolean;
+  perfTier: GlobePerfTier;
 };
 
 /** Client-side WebGL support, reduced-motion preference, and tab visibility. */
@@ -49,10 +61,12 @@ export function useGlobeSceneEnvironment(): GlobeSceneEnvironment {
   const [webglOk, setWebglOk] = useState<boolean | null>(null);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [pageVisible, setPageVisible] = useState(true);
+  const [perfTier, setPerfTier] = useState<GlobePerfTier>("desktop");
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setWebglOk(supportsWebGL());
+    setPerfTier(getGlobePerfTier());
     const query = window.matchMedia("(prefers-reduced-motion: reduce)");
     setReducedMotion(query.matches);
     const onMotionChange = (event: MediaQueryListEvent) => setReducedMotion(event.matches);
@@ -66,7 +80,64 @@ export function useGlobeSceneEnvironment(): GlobeSceneEnvironment {
     };
   }, []);
 
-  return { webglOk, reducedMotion, pageVisible };
+  return { webglOk, reducedMotion, pageVisible, perfTier };
+}
+
+/**
+ * Keeps the R3F canvas in `always` while interacting / animating, then drops
+ * to `demand` after idle so phones aren't burning GPU when the globe sits still.
+ */
+export function useGlobeFrameloop(
+  pageVisible: boolean,
+  { forceAlways = false }: { forceAlways?: boolean } = {},
+): {
+  frameloop: "always" | "demand" | "never";
+  bumpActivity: () => void;
+} {
+  const [active, setActive] = useState(true);
+  const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const bumpActivity = useCallback(() => {
+    setActive(true);
+    if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+    idleTimerRef.current = setTimeout(() => {
+      setActive(false);
+      idleTimerRef.current = null;
+    }, GLOBE_FRAMELOOP_IDLE_MS);
+  }, []);
+
+  useEffect(() => {
+    bumpActivity();
+    return () => {
+      if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+    };
+  }, [bumpActivity]);
+
+  if (!pageVisible) return { frameloop: "never", bumpActivity };
+  if (forceAlways || active) return { frameloop: "always", bumpActivity };
+  return { frameloop: "demand", bumpActivity };
+}
+
+/** DPR range and antialias settings for the current performance tier. */
+export function getGlobeCanvasGlSettings(tier: GlobePerfTier) {
+  const dprCap = GLOBE_DPR_CAP_BY_TIER[tier];
+  return {
+    dpr: [1, dprCap] as [number, number],
+    antialias: tier !== "phone",
+    powerPreference: "high-performance" as const,
+  };
+}
+
+export function getGlobeSphereSegments(tier: GlobePerfTier): number {
+  return GLOBE_SPHERE_SEGMENTS_BY_TIER[tier];
+}
+
+export function getGlobeAtmosphereSegments(tier: GlobePerfTier): number {
+  return GLOBE_ATMOSPHERE_SEGMENTS_BY_TIER[tier];
+}
+
+export function getGlobeStarCount(tier: GlobePerfTier): number {
+  return GLOBE_STAR_COUNT_BY_TIER[tier];
 }
 
 const MAX_CANVAS_RECOVERY_ATTEMPTS = 5;
@@ -130,22 +201,31 @@ export type GlobeTextureConfig = {
   isDark: boolean;
   /** Place currently selected on the interactive map globe. */
   selectedCode?: string | null;
+  perfTier?: GlobePerfTier;
 };
 
 /**
  * Builds the progress-painted planet texture at the highest resolution the
- * device's GPU comfortably supports, rebuilding when inputs change. When any
- * places are mastery 4, a throttled rAF loop drifts the gold/legendary fill.
+ * device's GPU comfortably supports, rebuilding when inputs change. Hard
+ * mastery-4 places get a gentle holographic drift; Normal gold stays static.
+ * Selection highlight updates without rebuilding the base layer.
  */
 export function useGlobeTexture(
   profile: Profile | null,
-  { difficulty, usMode, isDark, selectedCode = null }: GlobeTextureConfig,
+  {
+    difficulty,
+    usMode,
+    isDark,
+    selectedCode = null,
+    perfTier = getGlobePerfTier(),
+  }: GlobeTextureConfig,
 ): THREE.CanvasTexture {
   const gl = useThree((state) => state.gl);
   const invalidate = useThree((state) => state.invalidate);
+  const fxConstrained = isGlobeFxConstrained(perfTier);
   const size = useMemo(
-    () => resolveGlobeTextureSize(gl.capabilities.maxTextureSize),
-    [gl.capabilities.maxTextureSize],
+    () => resolveGlobeTextureSize(gl.capabilities.maxTextureSize, perfTier),
+    [gl.capabilities.maxTextureSize, perfTier],
   );
 
   const paint = useMemo(
@@ -155,28 +235,45 @@ export function useGlobeTexture(
         usMode,
         isDark,
         size,
-        selectedCode,
+        selectedCode: null,
         phase: MASTERY_FX_STATIC_PHASE,
+        allowCanvasGlow: !fxConstrained,
+        allowMastery4Animation: !fxConstrained,
       }),
-    [profile, difficulty, usMode, isDark, size, selectedCode],
+    [profile, difficulty, usMode, isDark, size, fxConstrained],
   );
 
   const texture = useMemo(() => {
     const canvasTexture = new THREE.CanvasTexture(paint.canvas);
     canvasTexture.colorSpace = THREE.SRGBColorSpace;
-    canvasTexture.anisotropy = Math.min(8, gl.capabilities.getMaxAnisotropy());
+    canvasTexture.anisotropy = Math.min(
+      fxConstrained ? 2 : 8,
+      gl.capabilities.getMaxAnisotropy(),
+    );
     return canvasTexture;
-  }, [paint, gl]);
+  }, [paint, gl, fxConstrained]);
 
   useEffect(() => () => texture.dispose(), [texture]);
 
+  // Selection is an overlay layer — update without rebuilding the base canvas.
   useEffect(() => {
-    if (!paint.hasMastery4) return;
+    paint.setSelectedCode(selectedCode);
+    if (!paint.animateMastery4) {
+      paint.paintFrame(MASTERY_FX_STATIC_PHASE);
+    } else {
+      paint.paintFrame(masteryFxPhaseFromTime(performance.now(), 5500));
+    }
+    texture.needsUpdate = true;
+    invalidate();
+  }, [paint, selectedCode, texture, invalidate]);
+
+  useEffect(() => {
+    if (!paint.animateMastery4) return;
 
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     let raf = 0;
     let lastPaint = 0;
-    const frameIntervalMs = 40; // ~25fps — enough shimmer without thrashing GPU
+    const frameIntervalMs = GLOBE_MASTERY4_FRAME_MS_BY_TIER[perfTier];
 
     const stop = () => {
       cancelAnimationFrame(raf);
@@ -186,7 +283,7 @@ export function useGlobeTexture(
     const tick = (now: number) => {
       if (now - lastPaint >= frameIntervalMs) {
         lastPaint = now;
-        paint.paintFrame(masteryFxPhaseFromTime(now));
+        paint.paintFrame(masteryFxPhaseFromTime(now, 5500));
         texture.needsUpdate = true;
         invalidate();
       }
@@ -216,16 +313,23 @@ export function useGlobeTexture(
       stop();
       motionQuery.removeEventListener("change", syncMotion);
     };
-  }, [paint, texture, invalidate]);
+  }, [paint, texture, invalidate, perfTier]);
 
   return texture;
 }
 
 /** Cheap additive atmosphere halo around the planet's rim. */
-export function GlobeAtmosphere({ isDark }: { isDark: boolean }) {
+export function GlobeAtmosphere({
+  isDark,
+  perfTier = "desktop",
+}: {
+  isDark: boolean;
+  perfTier?: GlobePerfTier;
+}) {
+  const segments = getGlobeAtmosphereSegments(perfTier);
   return (
     <mesh scale={1.07}>
-      <sphereGeometry args={[1, 48, 48]} />
+      <sphereGeometry args={[1, segments, segments]} />
       <meshBasicMaterial
         color={isDark ? "#2dd4bf" : "#38bdf8"}
         transparent
@@ -240,24 +344,30 @@ export function GlobeAtmosphere({ isDark }: { isDark: boolean }) {
 
 /**
  * Planet surface material: enough gloss for a polished 3D globe, still matte
- * enough that mastery colors and borders stay readable. Slightly shinier when
- * day/night is off so the soft realtime sun reads as a gentle highlight.
+ * enough that mastery colors and borders stay readable. Phones use Lambert
+ * (no specular/emissiveMap double-sample) to cut fill-rate.
  */
 export function GlobeSurfaceMaterial({
   map,
   dayNight,
   isDark,
+  perfTier = "desktop",
 }: {
   map: THREE.Texture;
   dayNight: boolean;
   isDark: boolean;
+  perfTier?: GlobePerfTier;
 }) {
+  if (perfTier === "phone") {
+    return <meshLambertMaterial map={map} />;
+  }
+
   return (
     <meshStandardMaterial
       map={map}
-      emissiveMap={isDark ? map : undefined}
-      emissive={isDark ? "#ffffff" : "#000000"}
-      emissiveIntensity={isDark ? (dayNight ? 0.18 : 0.1) : 0}
+      emissiveMap={isDark && dayNight ? map : undefined}
+      emissive={isDark && dayNight ? "#ffffff" : "#000000"}
+      emissiveIntensity={isDark && dayNight ? 0.18 : 0}
       roughness={dayNight ? 0.72 : 0.52}
       metalness={dayNight ? 0.04 : 0.08}
     />
@@ -390,11 +500,18 @@ export function GlobeAssetPreloader() {
 }
 
 /** Ocean-colored placeholder shown while the painted globe texture loads. */
-export function GlobeLoadingSphere({ isDark }: { isDark: boolean }) {
+export function GlobeLoadingSphere({
+  isDark,
+  perfTier = "desktop",
+}: {
+  isDark: boolean;
+  perfTier?: GlobePerfTier;
+}) {
   const ocean = getGlobePalette(isDark).ocean;
+  const segments = getGlobeSphereSegments(perfTier);
   return (
     <mesh>
-      <sphereGeometry args={[1, 64, 64]} />
+      <sphereGeometry args={[1, segments, segments]} />
       <meshBasicMaterial color={ocean} />
     </mesh>
   );
@@ -425,18 +542,25 @@ const sunAdditive = {
   toneMapped: false,
 } as const;
 
-function DistantSunVisual({ isDark }: { isDark: boolean }) {
+function DistantSunVisual({
+  isDark,
+  perfTier = "desktop",
+}: {
+  isDark: boolean;
+  perfTier?: GlobePerfTier;
+}) {
   const groupRef = useRef<THREE.Group>(null);
   const pulseRef = useRef<THREE.Group>(null);
   const [plateMap, glowMap] = useTexture([SUN_TEXTURE_URL, SUN_GLOW_TEXTURE_URL]);
+  const simplified = perfTier === "phone";
 
   useLayoutEffect(() => {
     for (const texture of [plateMap, glowMap]) {
       texture.colorSpace = THREE.SRGBColorSpace;
-      texture.anisotropy = Math.min(8, texture.anisotropy || 1);
+      texture.anisotropy = Math.min(simplified ? 1 : 8, texture.anisotropy || 1);
       texture.premultiplyAlpha = true;
     }
-  }, [plateMap, glowMap]);
+  }, [plateMap, glowMap, simplified]);
 
   useFrame(({ clock }) => {
     const group = groupRef.current;
@@ -445,7 +569,7 @@ function DistantSunVisual({ isDark }: { isDark: boolean }) {
     group.position.set(sun.x, sun.y, sun.z).multiplyScalar(DISTANT_SUN_DISTANCE);
 
     const pulse = pulseRef.current;
-    if (pulse) {
+    if (pulse && !simplified) {
       const breathe = 1 + Math.sin(clock.elapsedTime * 0.55) * 0.03;
       pulse.scale.setScalar(breathe);
     }
@@ -462,59 +586,67 @@ function DistantSunVisual({ isDark }: { isDark: boolean }) {
     <group ref={groupRef} frustumCulled={false}>
       <Billboard follow>
         <group ref={pulseRef}>
-          <mesh scale={14} raycast={ignoreRaycast} frustumCulled={false}>
-            <planeGeometry args={[2, 2]} />
-            <meshBasicMaterial
-              map={glowMap}
-              color="#fff1c2"
-              opacity={wash * 0.35}
-              {...sunAdditive}
-            />
-          </mesh>
-          <mesh scale={9} raycast={ignoreRaycast} frustumCulled={false}>
-            <planeGeometry args={[2, 2]} />
-            <meshBasicMaterial
-              map={glowMap}
-              color="#ffc15a"
-              opacity={bloom * 0.45}
-              {...sunAdditive}
-            />
-          </mesh>
-          <mesh scale={5.6} raycast={ignoreRaycast} frustumCulled={false}>
+          {!simplified ? (
+            <>
+              <mesh scale={14} raycast={ignoreRaycast} frustumCulled={false}>
+                <planeGeometry args={[2, 2]} />
+                <meshBasicMaterial
+                  map={glowMap}
+                  color="#fff1c2"
+                  opacity={wash * 0.35}
+                  {...sunAdditive}
+                />
+              </mesh>
+              <mesh scale={9} raycast={ignoreRaycast} frustumCulled={false}>
+                <planeGeometry args={[2, 2]} />
+                <meshBasicMaterial
+                  map={glowMap}
+                  color="#ffc15a"
+                  opacity={bloom * 0.45}
+                  {...sunAdditive}
+                />
+              </mesh>
+            </>
+          ) : null}
+          <mesh scale={simplified ? 7 : 5.6} raycast={ignoreRaycast} frustumCulled={false}>
             <planeGeometry args={[2, 2]} />
             <meshBasicMaterial
               map={glowMap}
               color="#ffe08a"
-              opacity={bloom * 0.55}
+              opacity={bloom * (simplified ? 0.4 : 0.55)}
               {...sunAdditive}
             />
           </mesh>
 
           {/* Textured disk + baked corona (circular alpha). */}
-          <mesh scale={5.4} raycast={ignoreRaycast} frustumCulled={false}>
+          <mesh scale={simplified ? 4.2 : 5.4} raycast={ignoreRaycast} frustumCulled={false}>
             <planeGeometry args={[2, 2]} />
             <meshBasicMaterial map={plateMap} opacity={plate} {...sunAdditive} />
           </mesh>
 
           {/* Soft white-hot core (same glow sprite, small). */}
-          <mesh scale={2.1} raycast={ignoreRaycast} frustumCulled={false}>
-            <planeGeometry args={[2, 2]} />
-            <meshBasicMaterial
-              map={glowMap}
-              color="#fffaf0"
-              opacity={core * 0.55}
-              {...sunAdditive}
-            />
-          </mesh>
-          <mesh scale={0.95} raycast={ignoreRaycast} frustumCulled={false}>
-            <planeGeometry args={[2, 2]} />
-            <meshBasicMaterial
-              map={glowMap}
-              color="#ffffff"
-              opacity={core * 0.75}
-              {...sunAdditive}
-            />
-          </mesh>
+          {!simplified ? (
+            <>
+              <mesh scale={2.1} raycast={ignoreRaycast} frustumCulled={false}>
+                <planeGeometry args={[2, 2]} />
+                <meshBasicMaterial
+                  map={glowMap}
+                  color="#fffaf0"
+                  opacity={core * 0.55}
+                  {...sunAdditive}
+                />
+              </mesh>
+              <mesh scale={0.95} raycast={ignoreRaycast} frustumCulled={false}>
+                <planeGeometry args={[2, 2]} />
+                <meshBasicMaterial
+                  map={glowMap}
+                  color="#ffffff"
+                  opacity={core * 0.75}
+                  {...sunAdditive}
+                />
+              </mesh>
+            </>
+          ) : null}
         </group>
       </Billboard>
     </group>
@@ -527,10 +659,16 @@ function DistantSunVisual({ isDark }: { isDark: boolean }) {
  * the earth mesh so it stays aligned with geography while the globe spins.
  * Uses a designed plate built from NASA SDO AIA 171 (public domain).
  */
-export function DistantSun({ isDark }: { isDark: boolean }) {
+export function DistantSun({
+  isDark,
+  perfTier = "desktop",
+}: {
+  isDark: boolean;
+  perfTier?: GlobePerfTier;
+}) {
   return (
     <Suspense fallback={null}>
-      <DistantSunVisual isDark={isDark} />
+      <DistantSunVisual isDark={isDark} perfTier={perfTier} />
     </Suspense>
   );
 }

@@ -1,9 +1,16 @@
 import globeData from "@/data/globe-countries.json";
+import {
+  getGlobePerfTier,
+  GLOBE_TEXTURE_SIZE_BY_TIER,
+  isGlobeFxConstrained,
+  type GlobePerfTier,
+} from "@/lib/globe-performance";
 import { getMapPalette, getProgressFillColor } from "@/lib/map-colors";
 import {
   getMasteryGradientStops,
   getMasterySolidColor,
   MASTERY_GLOW_BY_LEVEL,
+  mastery4ShouldAnimate,
   masteryFxPhaseFromTime,
   sampleGradientColor,
 } from "@/lib/map-mastery-fx";
@@ -23,37 +30,27 @@ export type GlobeUsMode = "country" | "states";
 
 export const GLOBE_TEXTURE_DATA = globeData as GlobeTextureData;
 
-/** Base texture width (equirectangular, so height = width / 2). */
+/** Reference texture width for stroke/glow scaling (equirectangular height = width / 2). */
 export const GLOBE_BASE_TEXTURE_SIZE = 2048;
 /** Hard upper bound; a 4096x2048 RGBA texture is already ~32 MB of GPU memory. */
 export const GLOBE_MAX_TEXTURE_SIZE = 4096;
+/** Phone / low-memory floor — detail overlays cover close-up fidelity. */
+export const GLOBE_MOBILE_TEXTURE_SIZE = GLOBE_TEXTURE_SIZE_BY_TIER.phone;
 
 /**
- * Picks the largest globe texture width the device can comfortably handle:
- * capped by the GPU's max texture size, and stepped down on low-memory or
- * small-screen devices where a giant canvas raster would hurt more than help.
+ * Picks a globe texture width for the device: phone 1024, tablet 2048,
+ * desktop up to 4096 — always capped by the GPU's max texture size.
  */
-export function resolveGlobeTextureSize(maxGpuTextureSize: number): number {
+export function resolveGlobeTextureSize(
+  maxGpuTextureSize: number,
+  tier: GlobePerfTier = getGlobePerfTier(),
+): number {
   const gpuMax =
     Number.isFinite(maxGpuTextureSize) && maxGpuTextureSize > 0
       ? maxGpuTextureSize
       : GLOBE_BASE_TEXTURE_SIZE;
-  let size = Math.min(GLOBE_MAX_TEXTURE_SIZE, gpuMax);
-
-  if (typeof navigator !== "undefined") {
-    const deviceMemory = (navigator as { deviceMemory?: number }).deviceMemory;
-    if (deviceMemory !== undefined && deviceMemory < 8) {
-      size = Math.min(size, 4096);
-    }
-  }
-  if (typeof window !== "undefined") {
-    const smallestSide = Math.min(window.screen.width, window.screen.height);
-    if (smallestSide < 768) {
-      size = Math.min(size, 4096);
-    }
-  }
-
-  return Math.max(GLOBE_BASE_TEXTURE_SIZE, size);
+  const tierSize = GLOBE_TEXTURE_SIZE_BY_TIER[tier];
+  return Math.min(GLOBE_MAX_TEXTURE_SIZE, gpuMax, tierSize);
 }
 
 type GlobePalette = {
@@ -173,13 +170,23 @@ function createMastery4Gradient(
   phase: number,
 ): CanvasGradient {
   const stops = getMasteryGradientStops(difficulty);
-  // Drift the gradient origin so the holographic band crawls across the map.
-  const ox = ((phase * 1.4) % 1) * width;
-  const oy = ((phase * 0.7) % 1) * height;
-  const grad = ctx.createLinearGradient(ox, oy, ox + width * 0.65, oy + height * 0.55);
+
+  if (difficulty === "medium") {
+    // Static brushed-metal diagonal — texture only, no phase drift.
+    const grad = ctx.createLinearGradient(0, 0, width * 0.85, height * 0.75);
+    for (const stop of stops) {
+      grad.addColorStop(Math.min(0.999, Math.max(0, stop.offset)), stop.color);
+    }
+    return grad;
+  }
+
+  // Hard legendary: gentle holographic crawl across the map.
+  const ox = ((phase * 0.55) % 1) * width * 0.35;
+  const oy = ((phase * 0.3) % 1) * height * 0.25;
+  const grad = ctx.createLinearGradient(ox, oy, ox + width * 0.7, oy + height * 0.55);
   for (const stop of stops) {
     const t = Math.min(0.999, Math.max(0, stop.offset));
-    grad.addColorStop(t, sampleGradientColor(stops, stop.offset + phase));
+    grad.addColorStop(t, sampleGradientColor(stops, stop.offset + phase * 0.35));
   }
   return grad;
 }
@@ -195,6 +202,7 @@ function drawShapeFill(
     width,
     height,
     phase,
+    allowCanvasGlow,
   }: {
     isDark: boolean;
     difficulty: MapProgressDifficulty;
@@ -202,13 +210,18 @@ function drawShapeFill(
     width: number;
     height: number;
     phase: number;
+    allowCanvasGlow: boolean;
   },
 ) {
   const glow = MASTERY_GLOW_BY_LEVEL[level];
   const solid = getProgressFillColor(level, isDark, difficulty);
 
   ctx.save();
-  if (glow.blur > 0) {
+  // Skip canvas glow for Normal gold — metallic texture should stay crisp.
+  // Phones skip shadowBlur entirely (very expensive on large canvases).
+  const allowGlow =
+    allowCanvasGlow && glow.blur > 0 && !(difficulty === "medium" && level === 4);
+  if (allowGlow) {
     const glowColor =
       level === 4
         ? sampleGradientColor(getMasteryGradientStops(difficulty), phase)
@@ -248,20 +261,32 @@ export type GlobeTextureOptions = {
   selectedCode?: string | null;
   /** 0–1 animation phase for mastery-4 holographic / gold drift. */
   phase?: number;
+  /** When false, skip canvas shadowBlur (phones). Default: not constrained. */
+  allowCanvasGlow?: boolean;
+  /** When false, mastery-4 paints a static mid-phase sample. */
+  allowMastery4Animation?: boolean;
 };
 
 export type GlobeTexturePaintHandle = {
   canvas: HTMLCanvasElement;
-  /** True when any mastery-4 places need per-frame repaints. */
+  /** True when any mastery-4 places exist. */
   hasMastery4: boolean;
-  /** Recompose the visible canvas from the cached base + animated mastery-4 layer. */
+  /** True when mastery-4 fills should animate (Hard legendary only, non-constrained). */
+  animateMastery4: boolean;
+  /** Recompose the visible canvas from the cached base + mastery-4 layer. */
   paintFrame: (phase: number) => void;
+  /**
+   * Updates the selection highlight without rebuilding the base texture.
+   * Call `paintFrame` afterward to refresh the visible canvas.
+   */
+  setSelectedCode: (code: string | null) => void;
 };
 
 /**
  * Builds a layered globe texture: a static base (ocean + mastery 0–3) cached
  * once, plus a mastery-4 overlay that can be redrawn cheaply each animation
- * frame. Selected highlight is part of the animated layer so it stays on top.
+ * frame. Selected highlight is part of the animated layer so it stays on top
+ * without rebuilding the base.
  */
 export function createGlobeTexturePaint(
   profile: Profile | null,
@@ -272,6 +297,8 @@ export function createGlobeTexturePaint(
     size = GLOBE_BASE_TEXTURE_SIZE,
     selectedCode = null,
     phase = masteryFxPhaseFromTime(0),
+    allowCanvasGlow = !isGlobeFxConstrained(),
+    allowMastery4Animation = !isGlobeFxConstrained(),
   }: GlobeTextureOptions = {},
 ): GlobeTexturePaintHandle {
   const width = size;
@@ -282,6 +309,18 @@ export function createGlobeTexturePaint(
   const shapes = collectShapes(profile, difficulty, usMode);
   const mastery4Shapes = shapes.filter((shape) => shape.level === 4);
   const hasMastery4 = mastery4Shapes.length > 0;
+  let activeSelectedCode = selectedCode;
+
+  // Cache Path2Ds so shimmer frames don't re-walk every ring.
+  const pathByCode = new Map<string, Path2D>();
+  const pathFor = (code: string, rings: number[][]) => {
+    let path = pathByCode.get(code);
+    if (!path) {
+      path = buildPath(rings, width, height);
+      pathByCode.set(code, path);
+    }
+    return path;
+  };
 
   const base = document.createElement("canvas");
   base.width = width;
@@ -298,6 +337,7 @@ export function createGlobeTexturePaint(
     width,
     height,
     phase: 0.35,
+    allowCanvasGlow,
   };
 
   {
@@ -309,13 +349,13 @@ export function createGlobeTexturePaint(
   for (const shape of shapes) {
     if (shape.level === 4) {
       // Leave a neutral underlay so borders still read when the overlay animates.
-      const path = buildPath(shape.rings, width, height);
+      const path = pathFor(shape.code, shape.rings);
       baseCtx.fillStyle = getProgressFillColor(0, isDark, difficulty);
       baseCtx.fill(path, "evenodd");
       strokeShape(baseCtx, path, shape.isState, palette, pixelScale);
       continue;
     }
-    const path = buildPath(shape.rings, width, height);
+    const path = pathFor(shape.code, shape.rings);
     drawShapeFill(baseCtx, path, shape.level, drawOpts);
     strokeShape(baseCtx, path, shape.isState, palette, pixelScale);
   }
@@ -331,15 +371,15 @@ export function createGlobeTexturePaint(
 
     const frameOpts = { ...drawOpts, phase: nextPhase };
     for (const shape of mastery4Shapes) {
-      const path = buildPath(shape.rings, width, height);
+      const path = pathFor(shape.code, shape.rings);
       drawShapeFill(ctx, path, 4, frameOpts);
       strokeShape(ctx, path, shape.isState, palette, pixelScale);
     }
 
-    if (selectedCode) {
-      const selected = shapes.find((shape) => shape.code === selectedCode);
+    if (activeSelectedCode) {
+      const selected = shapes.find((shape) => shape.code === activeSelectedCode);
       if (selected) {
-        const path = buildPath(selected.rings, width, height);
+        const path = pathFor(selected.code, selected.rings);
         const highlight = mapPalette.highlight;
         ctx.fillStyle = highlight.fill;
         ctx.fill(path, "evenodd");
@@ -352,7 +392,16 @@ export function createGlobeTexturePaint(
 
   paintFrame(phase);
 
-  return { canvas, hasMastery4, paintFrame };
+  return {
+    canvas,
+    hasMastery4,
+    animateMastery4:
+      hasMastery4 && allowMastery4Animation && mastery4ShouldAnimate(difficulty),
+    paintFrame,
+    setSelectedCode: (code) => {
+      activeSelectedCode = code;
+    },
+  };
 }
 
 /**

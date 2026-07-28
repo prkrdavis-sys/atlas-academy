@@ -126,11 +126,13 @@ export function GameBoard({
   const [sessionComplete, setSessionComplete] = useState(false);
   const [exitedEarly, setExitedEarly] = useState(false);
   const [newAchievements, setNewAchievements] = useState<string[]>([]);
-  const [initialMapProgress] = useState(() =>
-    mapProgressDifficulty
-      ? getMapProgressSummary(scope, activeProfile, mapProgressDifficulty)
-      : null,
-  );
+  const [initialMapProgress] = useState(() => {
+    if (!mapProgressDifficulty) return null;
+    return {
+      area: getMapProgressSummary(scope, activeProfile, mapProgressDifficulty, continents),
+      overall: getMapProgressSummary(scope, activeProfile, mapProgressDifficulty),
+    };
+  });
   const speedSessionCheckedRef = useRef(false);
   const dailyCompletionRecordedRef = useRef(false);
   const summaryAchievementsCheckedRef = useRef(false);
@@ -432,7 +434,15 @@ export function GameBoard({
       : 0;
     const currentMapProgress =
       tracksMapProgress && mapProgressDifficulty
-        ? getMapProgressSummary(scope, activeProfile, mapProgressDifficulty)
+        ? {
+            area: getMapProgressSummary(
+              scope,
+              activeProfile,
+              mapProgressDifficulty,
+              continents,
+            ),
+            overall: getMapProgressSummary(scope, activeProfile, mapProgressDifficulty),
+          }
         : null;
     const mapHref = scope === "usa" ? "/map?view=usa" : "/map";
     const challengeComplete =
@@ -499,9 +509,12 @@ export function GameBoard({
             currentMapProgress && (
             <GameMapProgressSummary
               scope={scope}
+              continents={continents}
               difficulty={mapProgressDifficulty}
-              initialSummary={initialMapProgress}
-              currentSummary={currentMapProgress}
+              initialSummary={initialMapProgress.area}
+              currentSummary={currentMapProgress.area}
+              initialOverallSummary={initialMapProgress.overall}
+              currentOverallSummary={currentMapProgress.overall}
             />
           )}
           <div className="mt-6 flex flex-col gap-3">

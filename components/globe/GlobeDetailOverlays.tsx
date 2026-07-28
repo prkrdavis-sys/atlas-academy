@@ -15,6 +15,11 @@ import {
   selectDetailOverlays,
   type DetailOverlayCandidate,
 } from "@/lib/globe-detail";
+import {
+  GLOBE_DETAIL_MAX_OVERLAYS_BY_TIER,
+  isGlobeDetailFocusOnly,
+  type GlobePerfTier,
+} from "@/lib/globe-performance";
 import type { MapProgressDifficulty, Profile } from "@/lib/types";
 
 type GlobeDetailOverlaysProps = {
@@ -24,6 +29,7 @@ type GlobeDetailOverlaysProps = {
   selectedCode: string | null;
   /** When true, force overlays on even before the camera finishes zooming in. */
   forceActive?: boolean;
+  perfTier?: GlobePerfTier;
   controlsRef: RefObject<OrbitControlsImpl | null>;
   spinGroupRef: RefObject<THREE.Group | null>;
 };
@@ -52,6 +58,7 @@ export function GlobeDetailOverlays({
   isDark,
   selectedCode,
   forceActive = false,
+  perfTier = "desktop",
   controlsRef,
   spinGroupRef,
 }: GlobeDetailOverlaysProps) {
@@ -63,6 +70,8 @@ export function GlobeDetailOverlays({
   const activeCodesRef = useRef<string[]>([]);
   const lookDirRef = useRef(new THREE.Vector3());
   const localCameraRef = useRef(new THREE.Vector3());
+  const maxOverlays = GLOBE_DETAIL_MAX_OVERLAYS_BY_TIER[perfTier];
+  const focusOnly = isGlobeDetailFocusOnly(perfTier);
 
   // Kick off lazy load once we need detail (close zoom or place focus).
   useEffect(() => {
@@ -93,13 +102,18 @@ export function GlobeDetailOverlays({
       candidates[0];
     if (!anchor) return;
 
-    const selected = selectDetailOverlays(candidates, anchor.centroid, selectedCode);
+    const selected = selectDetailOverlays(
+      candidates,
+      anchor.centroid,
+      selectedCode,
+      maxOverlays,
+    );
     applyActiveCodes(
       selected.map((entry) => entry.code),
       activeCodesRef,
       setActiveCodes,
     );
-  }, [candidates, forceActive, selectedCode]);
+  }, [candidates, forceActive, selectedCode, maxOverlays]);
 
   useFrame(() => {
     const controls = controlsRef.current;
@@ -107,7 +121,11 @@ export function GlobeDetailOverlays({
     if (!controls || !spinGroup) return;
 
     const distance = controls.getDistance();
-    const active = forceActive || selectedCode !== null || distance < GLOBE_DETAIL_ACTIVATE_DISTANCE;
+    // Phones: detail overlays only for place-focus / selection, not free zoom.
+    const active =
+      forceActive ||
+      selectedCode !== null ||
+      (!focusOnly && distance < GLOBE_DETAIL_ACTIVATE_DISTANCE);
 
     if (!active) {
       if (activeCodesRef.current.length > 0) {
@@ -131,7 +149,12 @@ export function GlobeDetailOverlays({
     spinGroup.worldToLocal(localCameraRef.current);
     lookDirRef.current.copy(localCameraRef.current).normalize();
 
-    const selected = selectDetailOverlays(candidates, lookDirRef.current, selectedCode);
+    const selected = selectDetailOverlays(
+      candidates,
+      lookDirRef.current,
+      selectedCode,
+      maxOverlays,
+    );
     applyActiveCodes(
       selected.map((entry) => entry.code),
       activeCodesRef,

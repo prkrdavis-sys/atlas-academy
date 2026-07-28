@@ -30,35 +30,28 @@ function MasteryGradientDef({
         />
       ))}
       {animate ? (
-        <>
-          <animateTransform
-            attributeName="gradientTransform"
-            type="translate"
-            values="-0.4 0; 0.4 0.08; -0.4 0"
-            dur={`${durationSec}s`}
-            repeatCount="indefinite"
-          />
-          <animateTransform
-            attributeName="gradientTransform"
-            type="rotate"
-            values="0 0.5 0.5; 18 0.5 0.5; 0 0.5 0.5"
-            dur={`${durationSec * 1.15}s`}
-            repeatCount="indefinite"
-            additive="sum"
-          />
-        </>
+        <animateTransform
+          attributeName="gradientTransform"
+          type="translate"
+          values="-0.12 0; 0.12 0.04; -0.12 0"
+          dur={`${durationSec}s`}
+          repeatCount="indefinite"
+        />
       ) : null}
     </linearGradient>
   );
 }
 
-/** Shared animated gold + legendary fills for progress-map paths. */
+/**
+ * Shared mastery-4 fills for progress-map paths.
+ * Gold is a static metallic gradient; legendary gets a gentle holographic drift.
+ */
 export function MapMasteryFxDefs() {
-  const [animate, setAnimate] = useState(true);
+  const [animateLegendary, setAnimateLegendary] = useState(true);
 
   useEffect(() => {
     const query = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const sync = () => setAnimate(!query.matches);
+    const sync = () => setAnimateLegendary(!query.matches);
     sync();
     query.addEventListener("change", sync);
     return () => query.removeEventListener("change", sync);
@@ -70,13 +63,13 @@ export function MapMasteryFxDefs() {
         id={MASTERY_GOLD_GRADIENT_ID}
         stops={MASTERY_GOLD_STOPS}
         durationSec={3.2}
-        animate={animate}
+        animate={false}
       />
       <MasteryGradientDef
         id={MASTERY_LEGENDARY_GRADIENT_ID}
         stops={MASTERY_LEGENDARY_STOPS}
-        durationSec={2.6}
-        animate={animate}
+        durationSec={5.5}
+        animate={animateLegendary}
       />
     </defs>
   );

@@ -550,93 +550,58 @@ input:focus-visible {
   animation: achievement-toast-dismiss 0.35s cubic-bezier(0.4, 0, 1, 1) both;
 }
 
-/* Map mastery glow + legendary/gold texture FX */
-.mastery-glow-1,
+/* Map mastery edge tint + metallic/legendary texture FX (no heavy pulse). */
 .mastery-glow-2,
 .mastery-glow-3,
 .mastery-glow-4 {
-  --mastery-glow-color: rgb(45 212 191 / 0.55);
+  --mastery-glow-color: rgb(45 212 191 / 0.28);
   transform-box: fill-box;
   transform-origin: center;
 }
 
 .mastery-glow-normal {
-  --mastery-glow-color: rgb(45 212 191 / 0.55);
+  --mastery-glow-color: rgb(45 212 191 / 0.25);
 }
 
 .mastery-glow-hard {
-  --mastery-glow-color: rgb(232 121 249 / 0.6);
-}
-
-.mastery-glow-gold {
-  --mastery-glow-color: rgb(251 191 36 / 0.75);
+  --mastery-glow-color: rgb(232 121 249 / 0.28);
 }
 
 .mastery-glow-legendary {
-  --mastery-glow-color: rgb(34 211 238 / 0.7);
-}
-
-.mastery-glow-1 {
-  filter: drop-shadow(0 0 1.5px var(--mastery-glow-color));
-  animation: mastery-glow-pulse 2.8s ease-in-out infinite;
-  --mastery-glow-scale: 1.04;
-  --mastery-glow-blur: 2px;
-  --mastery-glow-alpha: 0.35;
+  --mastery-glow-color: rgb(34 211 238 / 0.32);
 }
 
 .mastery-glow-2 {
-  filter: drop-shadow(0 0 2.5px var(--mastery-glow-color));
-  animation: mastery-glow-pulse 2.5s ease-in-out infinite;
-  --mastery-glow-scale: 1.06;
-  --mastery-glow-blur: 3.5px;
-  --mastery-glow-alpha: 0.45;
+  filter: drop-shadow(0 0 0.6px var(--mastery-glow-color));
 }
 
 .mastery-glow-3 {
-  filter: drop-shadow(0 0 5px var(--mastery-glow-color));
-  animation: mastery-glow-pulse 2.2s ease-in-out infinite;
-  --mastery-glow-scale: 1.1;
-  --mastery-glow-blur: 7px;
-  --mastery-glow-alpha: 0.6;
+  filter: drop-shadow(0 0 1.2px var(--mastery-glow-color));
 }
 
 .mastery-glow-4 {
-  filter: drop-shadow(0 0 8px var(--mastery-glow-color))
-    drop-shadow(0 0 16px var(--mastery-glow-color));
-  animation: mastery-glow-pulse 1.9s ease-in-out infinite;
-  --mastery-glow-scale: 1.14;
-  --mastery-glow-blur: 12px;
-  --mastery-glow-alpha: 0.85;
+  filter: drop-shadow(0 0 1.6px var(--mastery-glow-color));
 }
 
-@keyframes mastery-glow-pulse {
-  0%,
-  100% {
-    filter: drop-shadow(0 0 calc(var(--mastery-glow-blur) * 0.75) var(--mastery-glow-color));
-  }
-  50% {
-    filter: drop-shadow(0 0 var(--mastery-glow-blur) var(--mastery-glow-color))
-      drop-shadow(0 0 calc(var(--mastery-glow-blur) * 1.6) var(--mastery-glow-color));
-  }
-}
-
-.mastery-texture-gold,
-.mastery-texture-legendary {
-  background-size: 220% 220%;
-  animation: mastery-texture-shift 3.2s linear infinite;
+/* Normal mastery 4 — static brushed-metal look, no glow pulse. */
+.mastery-metal-gold {
+  filter: none;
 }
 
 .mastery-texture-gold {
   background-image: linear-gradient(
     125deg,
-    #92400e 0%,
-    #d97706 18%,
-    #fbbf24 36%,
-    #fef3c7 50%,
-    #f59e0b 64%,
-    #b45309 82%,
-    #fcd34d 100%
+    #713f12 0%,
+    #a16207 14%,
+    #ca8a04 28%,
+    #fbbf24 42%,
+    #fff7ed 50%,
+    #f59e0b 58%,
+    #b45309 74%,
+    #92400e 88%,
+    #eab308 100%
   );
+  background-size: 100% 100%;
 }
 
 .mastery-texture-legendary {
@@ -650,22 +615,23 @@ input:focus-visible {
     #c084fc 80%,
     #22d3ee 100%
   );
+  background-size: 180% 180%;
+  animation: mastery-texture-shift 5.5s linear infinite;
 }
 
 @keyframes mastery-texture-shift {
   0% {
-    background-position: 0% 40%;
+    background-position: 0% 45%;
   }
   50% {
-    background-position: 100% 60%;
+    background-position: 100% 55%;
   }
   100% {
-    background-position: 0% 40%;
+    background-position: 0% 45%;
   }
 }
 
-/* Animated SVG gradient motion is driven by SMIL inside the map defs. */
-#map-mastery-gold stop,
+/* Animated SVG gradient motion is driven by SMIL inside the map defs (Hard only). */
 #map-mastery-legendary stop {
   transition: stop-color 0.2s linear;
 }
@@ -723,8 +689,23 @@ input:focus-visible {
   .mastery-glow-2,
   .mastery-glow-3,
   .mastery-glow-4,
-  .mastery-texture-gold,
   .mastery-texture-legendary {
     animation: none;
+  }
+}
+
+/* Phones: skip per-path SVG drop-shadow filters (expensive over hundreds of paths). */
+@media (max-width: 767px) {
+  .mastery-glow-2,
+  .mastery-glow-3,
+  .mastery-glow-4,
+  .mastery-glow-legendary,
+  .mastery-metal-gold {
+    filter: none;
+  }
+
+  .mastery-texture-legendary {
+    animation: none;
+    background-size: 100% 100%;
   }
 }

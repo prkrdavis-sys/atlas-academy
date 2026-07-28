@@ -55,19 +55,34 @@ export function getSubsolarPoint(date: Date = new Date()): SubsolarPoint {
  * Unit direction from Earth's center toward the Sun, in the globe mesh's local
  * frame. Matches the equirectangular texture mapping used by the globe:
  * lon 0° → +X, lon 90°E → −Z, lat 90° → +Y.
+ *
+ * Cached for {@link SUBSOLAR_CACHE_MS} so multiple lights/sprites per frame
+ * share one `Date` + trig pass.
  */
+const SUBSOLAR_CACHE_MS = 1000;
+
+let cachedSubsolarAt = 0;
+let cachedSubsolar: { x: number; y: number; z: number } | null = null;
+
 export function subsolarDirection(date: Date = new Date()): {
   x: number;
   y: number;
   z: number;
 } {
+  const now = date.getTime();
+  if (cachedSubsolar && now - cachedSubsolarAt < SUBSOLAR_CACHE_MS) {
+    return cachedSubsolar;
+  }
+
   const { latitude, longitude } = getSubsolarPoint(date);
   const lat = latitude * (Math.PI / 180);
   const lon = longitude * (Math.PI / 180);
   const cosLat = Math.cos(lat);
-  return {
+  cachedSubsolar = {
     x: Math.cos(lon) * cosLat,
     y: Math.sin(lat),
     z: -Math.sin(lon) * cosLat,
   };
+  cachedSubsolarAt = now;
+  return cachedSubsolar;
 }

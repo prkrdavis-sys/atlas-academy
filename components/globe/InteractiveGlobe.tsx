@@ -8,7 +8,7 @@ import {
   useState,
   type RefObject,
 } from "react";
-import { Canvas, useFrame, type ThreeEvent } from "@react-three/fiber";
+import { Canvas, useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
 import { OrbitControls, Stars } from "@react-three/drei";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
@@ -18,9 +18,17 @@ import {
   EarthSunLight,
   GLOBE_ROTATION_SPEED,
   GLOBE_TAP_TRAVEL_THRESHOLD,
+  getGlobeCanvasGlSettings,
+  getGlobeSphereSegments,
+  getGlobeStarCount,
   GlobeAtmosphere,
+  GlobeContextRecovery,
   GlobeFillLights,
+  GlobeInitialInvalidate,
+  GlobeRecoveryReset,
   GlobeSurfaceMaterial,
+  useGlobeCanvasKey,
+  useGlobeFrameloop,
   useGlobeSceneEnvironment,
   useGlobeTexture,
 } from "@/components/globe/globe-scene";
@@ -41,6 +49,7 @@ import {
   type GlobeFocusTarget,
 } from "@/lib/globe-focus";
 import type { GlobeUsMode } from "@/lib/globe-texture";
+import type { GlobePerfTier } from "@/lib/globe-performance";
 import { isStateCode } from "@/lib/scope";
 import type { MapProgressDifficulty, Profile } from "@/lib/types";
 import { useGlobeDayNight } from "@/lib/use-globe-day-night";
@@ -93,20 +102,35 @@ function CinematicIntroZoom({
   controlsRef,
   enabled,
   cancelled,
+  onComplete,
+  onActivity,
 }: {
   controlsRef: RefObject<OrbitControlsImpl | null>;
   enabled: boolean;
   cancelled: boolean;
+  onComplete: () => void;
+  onActivity?: () => void;
 }) {
   const elapsedRef = useRef(0);
   const finishedRef = useRef(false);
   const offsetRef = useRef(new THREE.Vector3());
 
   useFrame((_, delta) => {
-    if (!enabled || cancelled || finishedRef.current) return;
+    if (finishedRef.current) return;
+    if (cancelled) {
+      finishedRef.current = true;
+      onComplete();
+      return;
+    }
+    if (!enabled) {
+      finishedRef.current = true;
+      onComplete();
+      return;
+    }
     const controls = controlsRef.current;
     if (!controls) return;
 
+    onActivity?.();
     elapsedRef.current += delta;
     const t = Math.min(1, elapsedRef.current / CINEMATIC_ZOOM_DURATION_S);
     // Ease-out cubic: quick enough to notice, soft settle at the end.
@@ -127,6 +151,7 @@ function CinematicIntroZoom({
       finishedRef.current = true;
       // Reset view lands on the cinematic rest framing, not the wide start.
       controls.saveState();
+      onComplete();
     }
   });
 
@@ -146,6 +171,7 @@ function PlaceFocusIntro({
   enabled,
   cancelled,
   onComplete,
+  onActivity,
 }: {
   controlsRef: RefObject<OrbitControlsImpl | null>;
   spinGroupRef: RefObject<THREE.Group | null>;
@@ -153,6 +179,7 @@ function PlaceFocusIntro({
   enabled: boolean;
   cancelled: boolean;
   onComplete: () => void;
+  onActivity?: () => void;
 }) {
   const elapsedRef = useRef(0);
   const finishedRef = useRef(false);
@@ -168,6 +195,8 @@ function PlaceFocusIntro({
       controls.enabled = true;
       return;
     }
+
+    onActivity?.();
 
     const applyFocus = (progress: number) => {
       const rotationY = lerpAngle(
@@ -227,6 +256,31 @@ function PlaceFocusIntro({
   return null;
 }
 
+/** Keeps demand-mode frameloop alive while OrbitControls damping/autoRotate run. */
+function KeepFrameloopAlive({
+  controlsRef,
+  autoSpin,
+  onActivity,
+}: {
+  controlsRef: RefObject<OrbitControlsImpl | null>;
+  autoSpin: boolean;
+  onActivity: () => void;
+}) {
+  const invalidate = useThree((state) => state.invalidate);
+  useFrame(() => {
+    if (autoSpin) {
+      onActivity();
+      invalidate();
+      return;
+    }
+    const controls = controlsRef.current;
+    if (controls?.enableDamping) {
+      invalidate();
+    }
+  });
+  return null;
+}
+
 type TapState = { pointerId: number; lastX: number; lastY: number; traveled: number };
 
 type GlobeSceneProps = {
@@ -236,6 +290,7 @@ type GlobeSceneProps = {
   isDark: boolean;
   dayNight: boolean;
   selectedCode: string | null;
+  perfTier: GlobePerfTier;
   /** Prefetch / force detail overlays during library place-focus fly-to. */
   forceDetailOverlays?: boolean;
   spinGroupRef: RefObject<THREE.Group | null>;
@@ -251,13 +306,21 @@ function PickableGlobe({
   isDark,
   dayNight,
   selectedCode,
+  perfTier,
   forceDetailOverlays = false,
   spinGroupRef,
   controlsRef,
   onPickPlace,
 }: GlobeSceneProps) {
-  const texture = useGlobeTexture(profile, { difficulty, usMode, isDark, selectedCode });
+  const texture = useGlobeTexture(profile, {
+    difficulty,
+    usMode,
+    isDark,
+    selectedCode,
+    perfTier,
+  });
   const tapRef = useRef<TapState | null>(null);
+  const segments = getGlobeSphereSegments(perfTier);
 
   // No declarative rotation on the spin group — R3F prop updates fight place-focus.
   // Seed the default Atlantic-facing yaw once the group exists.
@@ -303,9 +366,14 @@ function PickableGlobe({
           tapRef.current = null;
         }}
       >
-        <sphereGeometry args={[1, 96, 96]} />
-        <GlobeSurfaceMaterial map={texture} dayNight={dayNight} isDark={isDark} />
-        <DistantSun isDark={isDark} />
+        <sphereGeometry args={[1, segments, segments]} />
+        <GlobeSurfaceMaterial
+          map={texture}
+          dayNight={dayNight}
+          isDark={isDark}
+          perfTier={perfTier}
+        />
+        <DistantSun isDark={isDark} perfTier={perfTier} />
         <EarthSunLight isDark={isDark} dayNight={dayNight} />
         <EarthshineLight isDark={isDark} dayNight={dayNight} />
       </mesh>
@@ -315,10 +383,11 @@ function PickableGlobe({
         isDark={isDark}
         selectedCode={selectedCode}
         forceActive={forceDetailOverlays}
+        perfTier={perfTier}
         controlsRef={controlsRef}
         spinGroupRef={spinGroupRef}
       />
-      <GlobeAtmosphere isDark={isDark} />
+      <GlobeAtmosphere isDark={isDark} perfTier={perfTier} />
     </group>
   );
 }
@@ -352,7 +421,8 @@ export default function InteractiveGlobe({
   className,
   statsScrollTargetId,
 }: InteractiveGlobeProps) {
-  const { webglOk, reducedMotion, pageVisible } = useGlobeSceneEnvironment();
+  const { webglOk, reducedMotion, pageVisible, perfTier } = useGlobeSceneEnvironment();
+  const { canvasKey, remountCanvas, resetRecoveryAttempts } = useGlobeCanvasKey();
   const { isDark, ready } = useIsDark();
   const { enabled: dayNight } = useGlobeDayNight();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -361,9 +431,18 @@ export default function InteractiveGlobe({
   const [autoSpin, setAutoSpin] = useState(true);
   const [introCancelled, setIntroCancelled] = useState(false);
   const [focusIntroComplete, setFocusIntroComplete] = useState(false);
+  const [cinematicIntroComplete, setCinematicIntroComplete] = useState(false);
   const placeFocusTarget = initialPlaceCode ? getGlobeFocusTarget(initialPlaceCode) : null;
   const usePlaceFocus = placeFocusTarget !== null;
   const highlightedCode = selectedCode ?? initialPlaceCode;
+  const introRunning = usePlaceFocus
+    ? !introCancelled && !focusIntroComplete
+    : !introCancelled && !cinematicIntroComplete;
+  const { frameloop, bumpActivity } = useGlobeFrameloop(pageVisible, {
+    forceAlways: (autoSpin && !reducedMotion && !usePlaceFocus) || introRunning,
+  });
+  const canvasGl = getGlobeCanvasGlSettings(perfTier);
+  const starCount = getGlobeStarCount(perfTier);
 
   useEffect(() => {
     if (!initialPlaceCode) return;
@@ -375,37 +454,44 @@ export default function InteractiveGlobe({
     setAutoSpin(false);
     setFocusIntroComplete(false);
     setIntroCancelled(false);
-  }, [initialPlaceCode]);
+    bumpActivity();
+  }, [initialPlaceCode, bumpActivity]);
 
   const onOrbitStart = useCallback(() => {
     setIntroCancelled(true);
     setAutoSpin(false);
-  }, []);
+    bumpActivity();
+  }, [bumpActivity]);
 
-  const zoomBy = useCallback((factor: number) => {
-    setIntroCancelled(true);
-    const controls = controlsRef.current;
-    if (!controls) return;
-    const camera = controls.object;
-    const offset = camera.position.clone().sub(controls.target);
-    const distance = THREE.MathUtils.clamp(
-      offset.length() * factor,
-      MIN_CAMERA_DISTANCE,
-      MAX_CAMERA_DISTANCE,
-    );
-    offset.setLength(distance);
-    camera.position.copy(controls.target).add(offset);
-    controls.update();
-  }, []);
+  const zoomBy = useCallback(
+    (factor: number) => {
+      setIntroCancelled(true);
+      bumpActivity();
+      const controls = controlsRef.current;
+      if (!controls) return;
+      const camera = controls.object;
+      const offset = camera.position.clone().sub(controls.target);
+      const distance = THREE.MathUtils.clamp(
+        offset.length() * factor,
+        MIN_CAMERA_DISTANCE,
+        MAX_CAMERA_DISTANCE,
+      );
+      offset.setLength(distance);
+      camera.position.copy(controls.target).add(offset);
+      controls.update();
+    },
+    [bumpActivity],
+  );
 
   const resetView = useCallback(() => {
     setIntroCancelled(true);
+    bumpActivity();
     onSelectPlace(null);
     if (spinGroupRef.current) {
       spinGroupRef.current.rotation.set(0, GLOBE_MESH_Y_ROTATION, 0);
     }
     controlsRef.current?.reset();
-  }, [onSelectPlace]);
+  }, [onSelectPlace, bumpActivity]);
 
   const panelScope = highlightedCode && isStateCode(highlightedCode) ? "usa" : "world";
 
@@ -431,6 +517,7 @@ export default function InteractiveGlobe({
       >
         {webglOk && ready ? (
           <Canvas
+            key={canvasKey}
             camera={{
               position: [0, 0, INITIAL_CAMERA_DISTANCE],
               fov: 45,
@@ -438,21 +525,31 @@ export default function InteractiveGlobe({
               near: 0.001,
               far: 200,
             }}
-            dpr={[1, 2]}
-            frameloop={pageVisible ? "always" : "never"}
-            gl={{ antialias: true, alpha: true }}
+            dpr={canvasGl.dpr}
+            frameloop={frameloop}
+            gl={{
+              antialias: canvasGl.antialias,
+              alpha: true,
+              powerPreference: canvasGl.powerPreference,
+            }}
             style={{ touchAction: "none" }}
             onPointerMissed={() => onSelectPlace(null)}
+            onCreated={(state) => {
+              state.invalidate();
+            }}
           >
+            <GlobeContextRecovery onContextLost={remountCanvas} />
+            <GlobeRecoveryReset onStable={resetRecoveryAttempts} />
+            <GlobeInitialInvalidate />
             <GlobeFillLights isDark={isDark} dayNight={dayNight} />
             {isDark ? (
               <Stars
                 radius={60}
                 depth={40}
-                count={1600}
+                count={starCount}
                 factor={3}
                 saturation={0}
-                fade
+                fade={perfTier !== "phone"}
                 speed={reducedMotion ? 0 : 0.6}
               />
             ) : null}
@@ -463,12 +560,21 @@ export default function InteractiveGlobe({
               isDark={isDark}
               dayNight={dayNight}
               selectedCode={highlightedCode}
+              perfTier={perfTier}
               forceDetailOverlays={usePlaceFocus}
               spinGroupRef={spinGroupRef}
               controlsRef={controlsRef}
-              onPickPlace={onSelectPlace}
+              onPickPlace={(code) => {
+                bumpActivity();
+                onSelectPlace(code);
+              }}
             />
             <SyncOrbitRotateSpeed controlsRef={controlsRef} />
+            <KeepFrameloopAlive
+              controlsRef={controlsRef}
+              autoSpin={autoSpin && !reducedMotion && !usePlaceFocus}
+              onActivity={bumpActivity}
+            />
             <OrbitControls
               ref={controlsRef}
               enablePan={false}
@@ -482,6 +588,7 @@ export default function InteractiveGlobe({
               // OrbitControls speed 1.0 ≈ 0.1 rad/s; match the home globe's gentle spin.
               autoRotateSpeed={GLOBE_ROTATION_SPEED * 10}
               onStart={onOrbitStart}
+              onChange={bumpActivity}
             />
             {usePlaceFocus && placeFocusTarget ? (
               <PlaceFocusIntro
@@ -492,12 +599,15 @@ export default function InteractiveGlobe({
                 enabled={!reducedMotion}
                 cancelled={introCancelled}
                 onComplete={() => setFocusIntroComplete(true)}
+                onActivity={bumpActivity}
               />
             ) : (
               <CinematicIntroZoom
                 controlsRef={controlsRef}
                 enabled={!reducedMotion}
                 cancelled={introCancelled}
+                onComplete={() => setCinematicIntroComplete(true)}
+                onActivity={bumpActivity}
               />
             )}
           </Canvas>

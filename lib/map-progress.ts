@@ -310,8 +310,50 @@ export function getMapProgressSummary(
   scope: GameScope,
   profile: Profile,
   difficulty: MapProgressDifficulty,
+  continents?: readonly Region[],
 ): MapProgressSummary {
-  return summarizePlacesProgress(getPlayablePlacesForScope(scope), profile, difficulty);
+  const selected =
+    continents && continents.length > 0 ? continents : getRegionsForScope(scope);
+  return summarizePlacesProgress(
+    filterCountries({ scope, continents: [...selected] }),
+    profile,
+    difficulty,
+  );
+}
+
+/** Short label for what a progress percentage covers (e.g. "Europe", "World"). */
+export function formatMapProgressAreaLabel(
+  scope: GameScope,
+  continents: readonly Region[],
+): string {
+  const allRegions = getRegionsForScope(scope);
+  const selected =
+    continents.length > 0 ? continents : allRegions;
+  const isFullScope =
+    selected.length >= allRegions.length && allRegions.every((region) => selected.includes(region));
+
+  if (isFullScope) {
+    return scope === "world" ? "World" : "USA";
+  }
+  if (selected.length === 1) {
+    return selected[0]!;
+  }
+  if (selected.length === 2) {
+    return `${selected[0]} · ${selected[1]}`;
+  }
+  const regionWord = scope === "world" ? "continents" : "regions";
+  return `${selected.length} ${regionWord}`;
+}
+
+export function isFullMapProgressSelection(
+  scope: GameScope,
+  continents: readonly Region[],
+): boolean {
+  const allRegions = getRegionsForScope(scope);
+  const selected = continents.length > 0 ? continents : allRegions;
+  return (
+    selected.length >= allRegions.length && allRegions.every((region) => selected.includes(region))
+  );
 }
 
 export function buildProgressFillMap(

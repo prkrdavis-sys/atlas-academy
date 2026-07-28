@@ -6,15 +6,17 @@ export const MASTERY_LEGENDARY_GRADIENT_ID = "map-mastery-legendary";
 
 export type MasteryGradientStop = { offset: number; color: string };
 
-/** Classic metallic gold — warm yellow → amber → bright specular. */
+/** Classic metallic gold — bronze → amber with a sharp specular highlight band. */
 export const MASTERY_GOLD_STOPS: readonly MasteryGradientStop[] = [
-  { offset: 0, color: "#92400e" },
-  { offset: 0.18, color: "#d97706" },
-  { offset: 0.36, color: "#fbbf24" },
-  { offset: 0.5, color: "#fef3c7" },
-  { offset: 0.64, color: "#f59e0b" },
-  { offset: 0.82, color: "#b45309" },
-  { offset: 1, color: "#fcd34d" },
+  { offset: 0, color: "#713f12" },
+  { offset: 0.14, color: "#a16207" },
+  { offset: 0.28, color: "#ca8a04" },
+  { offset: 0.42, color: "#fbbf24" },
+  { offset: 0.5, color: "#fff7ed" },
+  { offset: 0.58, color: "#f59e0b" },
+  { offset: 0.74, color: "#b45309" },
+  { offset: 0.88, color: "#92400e" },
+  { offset: 1, color: "#eab308" },
 ];
 
 /**
@@ -32,7 +34,7 @@ export const MASTERY_LEGENDARY_STOPS: readonly MasteryGradientStop[] = [
 ];
 
 /** Representative solid for consumers that cannot paint a gradient. */
-export const MASTERY_GOLD_SOLID = "#fbbf24";
+export const MASTERY_GOLD_SOLID = "#eab308";
 export const MASTERY_LEGENDARY_SOLID = "#e879f9";
 
 export type MasteryGlowIntensity = {
@@ -40,20 +42,18 @@ export type MasteryGlowIntensity = {
   blur: number;
   /** Glow opacity 0–1 for CSS drop-shadow / canvas shadow. */
   opacity: number;
-  /** Pulse amplitude scale for CSS animation (1 = none). */
-  pulse: number;
 };
 
 /**
- * Shared across Normal and Hard — same glow/pulse strength per mastery level;
- * only the color language differs.
+ * Soft edge presence only — no pulse. Kept low so fills stay sharp and
+ * metallic texture reads first.
  */
 export const MASTERY_GLOW_BY_LEVEL: Record<PlaceMasteryLevel, MasteryGlowIntensity> = {
-  0: { blur: 0, opacity: 0, pulse: 1 },
-  1: { blur: 2, opacity: 0.28, pulse: 1.08 },
-  2: { blur: 3.5, opacity: 0.36, pulse: 1.12 },
-  3: { blur: 7, opacity: 0.55, pulse: 1.22 },
-  4: { blur: 12, opacity: 0.78, pulse: 1.38 },
+  0: { blur: 0, opacity: 0 },
+  1: { blur: 0, opacity: 0 },
+  2: { blur: 0.8, opacity: 0.18 },
+  3: { blur: 1.6, opacity: 0.22 },
+  4: { blur: 2.2, opacity: 0.28 },
 };
 
 export type MapProgressChrome = {
@@ -65,7 +65,10 @@ export type MapProgressChrome = {
   gamePanelClass: string;
   gameLabelClass: string;
   gamePercentClass: string;
-  gameBarClass: string;
+  /** Solid fill for progress that existed before this round. */
+  gameBarBaseClass: string;
+  /** Gradient fill for progress gained this round (ends in the accent/yellow). */
+  gameBarGainClass: string;
 };
 
 const NORMAL_CHROME: MapProgressChrome = {
@@ -80,7 +83,8 @@ const NORMAL_CHROME: MapProgressChrome = {
     "mx-auto mt-4 max-w-sm rounded-xl border border-teal-200/70 bg-gradient-to-br from-teal-50/50 to-amber-50/40 px-3 py-2.5 dark:border-teal-800/70 dark:from-teal-950/25 dark:to-amber-950/15",
   gameLabelClass: "text-teal-800 dark:text-teal-300",
   gamePercentClass: "text-amber-700 dark:text-amber-300",
-  gameBarClass: "bg-gradient-to-r from-teal-400 via-amber-300 to-yellow-400",
+  gameBarBaseClass: "bg-teal-400",
+  gameBarGainClass: "bg-gradient-to-r from-teal-400 via-amber-300 to-yellow-400",
 };
 
 const HARD_CHROME: MapProgressChrome = {
@@ -95,7 +99,8 @@ const HARD_CHROME: MapProgressChrome = {
     "mx-auto mt-4 max-w-sm rounded-xl border border-fuchsia-200/70 bg-gradient-to-br from-violet-50/50 via-fuchsia-50/40 to-cyan-50/40 px-3 py-2.5 dark:border-fuchsia-800/70 dark:from-violet-950/25 dark:via-fuchsia-950/20 dark:to-cyan-950/15",
   gameLabelClass: "text-fuchsia-800 dark:text-fuchsia-300",
   gamePercentClass: "text-fuchsia-700 dark:text-fuchsia-300",
-  gameBarClass: "bg-gradient-to-r from-violet-500 via-fuchsia-400 to-cyan-400",
+  gameBarBaseClass: "bg-violet-500",
+  gameBarGainClass: "bg-gradient-to-r from-violet-500 via-fuchsia-400 to-cyan-400",
 };
 
 export function getMapProgressChrome(difficulty: MapProgressDifficulty): MapProgressChrome {
@@ -114,25 +119,29 @@ export function getMasterySolidColor(difficulty: MapProgressDifficulty): string 
   return difficulty === "hard" ? MASTERY_LEGENDARY_SOLID : MASTERY_GOLD_SOLID;
 }
 
-/** CSS class for SVG path / legend glow+pulse at a mastery level. */
+/** CSS class for SVG path edge presence at a mastery level (no pulse). */
 export function getMasteryGlowClass(
   level: PlaceMasteryLevel,
   difficulty: MapProgressDifficulty = "medium",
 ): string | undefined {
-  if (level <= 0) return undefined;
+  if (level <= 1) return undefined;
   const accent = difficulty === "hard" ? "mastery-glow-hard" : "mastery-glow-normal";
-  const top =
-    level === 4
-      ? difficulty === "hard"
-        ? "mastery-glow-legendary"
-        : "mastery-glow-gold"
-      : "";
-  return ["mastery-glow-" + level, accent, top].filter(Boolean).join(" ");
+  if (level === 4) {
+    // Normal gold is texture-only; Hard keeps a faint legendary edge tint.
+    if (difficulty === "medium") return "mastery-metal-gold";
+    return ["mastery-glow-4", accent, "mastery-glow-legendary"].join(" ");
+  }
+  return [`mastery-glow-${level}`, accent].join(" ");
 }
 
-/** CSS class for animated swatch / chrome fills at mastery 4. */
+/** CSS class for mastery-4 swatch fills (static gold / drifting legendary). */
 export function getMasteryTextureClass(difficulty: MapProgressDifficulty): string {
   return difficulty === "hard" ? "mastery-texture-legendary" : "mastery-texture-gold";
+}
+
+/** Whether mastery-4 fills should animate (Hard legendary only). */
+export function mastery4ShouldAnimate(difficulty: MapProgressDifficulty): boolean {
+  return difficulty === "hard";
 }
 
 /**

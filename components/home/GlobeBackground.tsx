@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Canvas, useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
 import { Stars } from "@react-three/drei";
 import * as THREE from "three";
@@ -15,6 +15,9 @@ import {
   GLOBE_ROTATION_SPEED,
   GLOBE_TAP_TRAVEL_THRESHOLD,
   GLOBE_TILT_RETURN_DAMP,
+  getGlobeCanvasGlSettings,
+  getGlobeSphereSegments,
+  getGlobeStarCount,
   GlobeAtmosphere,
   GlobeAssetPreloader,
   GlobeContextRecovery,
@@ -25,10 +28,12 @@ import {
   tryReleasePointerCapture,
   trySetPointerCapture,
   useGlobeCanvasKey,
+  useGlobeFrameloop,
   useGlobeSceneEnvironment,
   useGlobeTexture,
 } from "@/components/globe/globe-scene";
 import { SpaceBackdrop, StaticStarfield } from "@/components/globe/SpaceBackdrop";
+import type { GlobePerfTier } from "@/lib/globe-performance";
 import type { Profile } from "@/lib/types";
 import { useGlobeDayNight } from "@/lib/use-globe-day-night";
 import { useGlobeUsMode } from "@/lib/use-globe-us-mode";
@@ -51,6 +56,8 @@ type GlobeProps = {
   isDark: boolean;
   usMode: "country" | "states";
   dayNight: boolean;
+  perfTier: GlobePerfTier;
+  onActivity: () => void;
   handleRef?: React.RefObject<GlobeHandle | null>;
 };
 
@@ -65,13 +72,24 @@ function applyGlobeSpin(mesh: THREE.Mesh, deltaX: number, deltaY: number) {
   );
 }
 
-function ProgressGlobe({ profile, reducedMotion, isDark, usMode, dayNight, handleRef }: GlobeProps) {
+function ProgressGlobe({
+  profile,
+  reducedMotion,
+  isDark,
+  usMode,
+  dayNight,
+  perfTier,
+  onActivity,
+  handleRef,
+}: GlobeProps) {
   const router = useRouter();
+  const invalidate = useThree((state) => state.invalidate);
   const globeRef = useRef<THREE.Mesh>(null);
   const dragRef = useRef<DragState | null>(null);
   const externallyDraggingRef = useRef(false);
   /** 0 means "never interacted" so auto-spin starts immediately on mount. */
   const lastInteractAtRef = useRef(0);
+  const segments = getGlobeSphereSegments(perfTier);
 
   useEffect(() => {
     if (!handleRef) return;
@@ -80,16 +98,19 @@ function ProgressGlobe({ profile, reducedMotion, isDark, usMode, dayNight, handl
         if (!globeRef.current) return;
         applyGlobeSpin(globeRef.current, deltaX, deltaY);
         lastInteractAtRef.current = performance.now();
+        onActivity();
+        invalidate();
       },
       setDragging: (dragging) => {
         externallyDraggingRef.current = dragging;
         lastInteractAtRef.current = performance.now();
+        onActivity();
       },
     };
     return () => {
       handleRef.current = null;
     };
-  }, [handleRef]);
+  }, [handleRef, onActivity, invalidate]);
   const viewport = useThree((state) => state.viewport);
   // Keep the planet in the upper-middle of the screen and never wider than
   // ~84% of the viewport, so it fits phones and desktops alike.
@@ -97,7 +118,12 @@ function ProgressGlobe({ profile, reducedMotion, isDark, usMode, dayNight, handl
 
   // The home globe mirrors Normal map progress; the map page globe follows
   // its own difficulty toggle.
-  const texture = useGlobeTexture(profile, { difficulty: "medium", usMode, isDark });
+  const texture = useGlobeTexture(profile, {
+    difficulty: "medium",
+    usMode,
+    isDark,
+    perfTier,
+  });
 
   useFrame((_, delta) => {
     if (reducedMotion || !globeRef.current) return;
@@ -118,9 +144,11 @@ function ProgressGlobe({ profile, reducedMotion, isDark, usMode, dayNight, handl
       mesh.rotation.z = THREE.MathUtils.damp(mesh.rotation.z, 0, GLOBE_TILT_RETURN_DAMP, delta);
       if (Math.abs(mesh.rotation.x) <= 0.0005) mesh.rotation.x = 0;
       if (Math.abs(mesh.rotation.z) <= 0.0005) mesh.rotation.z = 0;
+      onActivity();
     }
 
     mesh.rotation.y += delta * GLOBE_ROTATION_SPEED;
+    onActivity();
   });
 
   function endDrag(event: ThreeEvent<PointerEvent>, { navigateOnTap }: { navigateOnTap: boolean }) {
@@ -128,6 +156,7 @@ function ProgressGlobe({ profile, reducedMotion, isDark, usMode, dayNight, handl
     if (!drag || drag.pointerId !== event.pointerId) return;
     dragRef.current = null;
     lastInteractAtRef.current = performance.now();
+    onActivity();
     tryReleasePointerCapture(event.target as Element, event.pointerId);
     document.body.style.cursor = "grab";
     if (navigateOnTap && drag.traveled < GLOBE_TAP_TRAVEL_THRESHOLD) {
@@ -151,6 +180,7 @@ function ProgressGlobe({ profile, reducedMotion, isDark, usMode, dayNight, handl
             traveled: 0,
           };
           lastInteractAtRef.current = performance.now();
+          onActivity();
           trySetPointerCapture(event.target as Element, event.pointerId);
           document.body.style.cursor = "grabbing";
         }}
@@ -164,6 +194,7 @@ function ProgressGlobe({ profile, reducedMotion, isDark, usMode, dayNight, handl
           drag.traveled += Math.hypot(deltaX, deltaY);
           applyGlobeSpin(globeRef.current, deltaX, deltaY);
           lastInteractAtRef.current = performance.now();
+          onActivity();
         }}
         onPointerUp={(event) => endDrag(event, { navigateOnTap: true })}
         onPointerCancel={(event) => endDrag(event, { navigateOnTap: false })}
@@ -174,13 +205,18 @@ function ProgressGlobe({ profile, reducedMotion, isDark, usMode, dayNight, handl
           if (!dragRef.current) document.body.style.cursor = "";
         }}
       >
-        <sphereGeometry args={[1, 64, 64]} />
-        <GlobeSurfaceMaterial map={texture} dayNight={dayNight} isDark={isDark} />
-        <DistantSun isDark={isDark} />
+        <sphereGeometry args={[1, segments, segments]} />
+        <GlobeSurfaceMaterial
+          map={texture}
+          dayNight={dayNight}
+          isDark={isDark}
+          perfTier={perfTier}
+        />
+        <DistantSun isDark={isDark} perfTier={perfTier} />
         <EarthSunLight isDark={isDark} dayNight={dayNight} />
         <EarthshineLight isDark={isDark} dayNight={dayNight} />
       </mesh>
-      <GlobeAtmosphere isDark={isDark} />
+      <GlobeAtmosphere isDark={isDark} perfTier={perfTier} />
     </group>
   );
 }
@@ -199,14 +235,35 @@ export default function GlobeBackground({
   profile: Profile | null;
   handleRef?: React.RefObject<GlobeHandle | null>;
 }) {
-  const { webglOk, reducedMotion } = useGlobeSceneEnvironment();
+  const { webglOk, reducedMotion, pageVisible, perfTier } = useGlobeSceneEnvironment();
   const { canvasKey, remountCanvas, resetRecoveryAttempts } = useGlobeCanvasKey();
   const { isDark } = useIsDark();
   const { usMode } = useGlobeUsMode();
   const { enabled: dayNight } = useGlobeDayNight();
+  const rootRef = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(true);
+  const { frameloop, bumpActivity } = useGlobeFrameloop(pageVisible && inView, {
+    forceAlways: !reducedMotion,
+  });
+  const canvasGl = getGlobeCanvasGlSettings(perfTier);
+  const starCount = getGlobeStarCount(perfTier);
+
+  useEffect(() => {
+    const node = rootRef.current;
+    if (!node || typeof IntersectionObserver === "undefined") return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setInView(entry.isIntersecting && entry.intersectionRatio > 0.05);
+      },
+      { threshold: [0, 0.05, 0.2] },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <SpaceBackdrop
+      ref={rootRef}
       isDark={isDark}
       reducedMotion={reducedMotion}
       fadeBottom
@@ -217,9 +274,13 @@ export default function GlobeBackground({
           key={canvasKey}
           aria-hidden
           camera={{ position: [0, 0, 2.6], fov: 45 }}
-          dpr={[1, 1.75]}
-          frameloop="always"
-          gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+          dpr={canvasGl.dpr}
+          frameloop={frameloop}
+          gl={{
+            antialias: canvasGl.antialias,
+            alpha: true,
+            powerPreference: canvasGl.powerPreference,
+          }}
           style={{ touchAction: "none" }}
           onCreated={(state) => {
             state.invalidate();
@@ -234,10 +295,10 @@ export default function GlobeBackground({
             <Stars
               radius={60}
               depth={40}
-              count={1600}
+              count={starCount}
               factor={3}
               saturation={0}
-              fade
+              fade={perfTier !== "phone"}
               speed={reducedMotion ? 0 : 0.6}
             />
           ) : null}
@@ -247,6 +308,8 @@ export default function GlobeBackground({
             isDark={isDark}
             usMode={usMode}
             dayNight={dayNight}
+            perfTier={perfTier}
+            onActivity={bumpActivity}
             handleRef={handleRef}
           />
         </Canvas>

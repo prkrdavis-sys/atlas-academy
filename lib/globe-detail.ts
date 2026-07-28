@@ -74,8 +74,8 @@ export function indexDetailCountries(data: GlobeDetailData): DetailOverlayCandid
 }
 
 /**
- * Picks up to {@link GLOBE_DETAIL_MAX_OVERLAYS} detail countries near the
- * camera-facing side of the globe, always including `selectedCode` when present.
+ * Picks up to `maxOverlays` detail countries near the camera-facing side of
+ * the globe, always including `selectedCode` when present.
  * `lookDirection` must be the mesh-local direction from the globe origin toward
  * the camera (the surface point in the middle of the view).
  *
@@ -86,6 +86,7 @@ export function selectDetailOverlays(
   candidates: DetailOverlayCandidate[],
   lookDirection: THREE.Vector3,
   selectedCode: string | null,
+  maxOverlays: number = GLOBE_DETAIL_MAX_OVERLAYS,
 ): DetailOverlayCandidate[] {
   if (selectedCode) {
     const focused = candidates.find((entry) => entry.code === selectedCode);
@@ -103,7 +104,7 @@ export function selectDetailOverlays(
   }
 
   scored.sort((a, b) => a.angle - b.angle);
-  return scored.slice(0, GLOBE_DETAIL_MAX_OVERLAYS).map((entry) => entry.candidate);
+  return scored.slice(0, maxOverlays).map((entry) => entry.candidate);
 }
 
 export function resolveDetailFillColor(

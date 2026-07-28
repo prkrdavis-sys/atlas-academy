@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { forwardRef, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 /** Deep-space base color shared by the dark backdrop and its bottom fade. */
@@ -69,53 +69,62 @@ type SpaceBackdropProps = {
  * dark mode, a pale daytime-sky wash with subtle darker stars in light mode.
  * The 3D canvas (planet + GPU starfield) renders as children on top of it.
  */
-export function SpaceBackdrop({
-  isDark,
-  reducedMotion,
-  canvasNebulae = false,
-  fadeBottom = false,
-  className,
-  children,
-}: SpaceBackdropProps) {
-  return (
-    <div
-      className={cn("overflow-hidden", className)}
-      style={{ background: isDark ? SPACE_DARK_BASE : undefined, backgroundImage: isDark ? undefined : LIGHT_SKY_GRADIENT }}
-    >
-      {!canvasNebulae ? (
-        <div
-          aria-hidden
-          className="absolute inset-0"
-          style={{ backgroundImage: isDark ? DARK_NEBULA : LIGHT_NEBULA }}
-        />
-      ) : null}
-
-      {!isDark ? <StaticStarfield isDark={false} /> : null}
-
-      {children}
-
-      {!reducedMotion && (
-        <>
-          <span aria-hidden className="shooting-star" style={{ top: "12%", right: "4%" }} />
-          <span
+export const SpaceBackdrop = forwardRef<HTMLDivElement, SpaceBackdropProps>(
+  function SpaceBackdrop(
+    {
+      isDark,
+      reducedMotion,
+      canvasNebulae = false,
+      fadeBottom = false,
+      className,
+      children,
+    },
+    ref,
+  ) {
+    return (
+      <div
+        ref={ref}
+        className={cn("overflow-hidden", className)}
+        style={{
+          background: isDark ? SPACE_DARK_BASE : undefined,
+          backgroundImage: isDark ? undefined : LIGHT_SKY_GRADIENT,
+        }}
+      >
+        {!canvasNebulae ? (
+          <div
             aria-hidden
-            className="shooting-star"
-            style={{ top: "32%", right: "-6%", animationDelay: "5.5s" }}
+            className="absolute inset-0"
+            style={{ backgroundImage: isDark ? DARK_NEBULA : LIGHT_NEBULA }}
           />
-        </>
-      )}
+        ) : null}
 
-      {fadeBottom ? (
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-2/5"
-          style={{
-            backgroundImage: isDark
-              ? `linear-gradient(to top, ${SPACE_DARK_BASE}d9, transparent)`
-              : "linear-gradient(to top, rgb(248 250 252 / 0.85), transparent)",
-          }}
-        />
-      ) : null}
-    </div>
-  );
-}
+        {!isDark ? <StaticStarfield isDark={false} /> : null}
+
+        {children}
+
+        {!reducedMotion && (
+          <>
+            <span aria-hidden className="shooting-star" style={{ top: "12%", right: "4%" }} />
+            <span
+              aria-hidden
+              className="shooting-star"
+              style={{ top: "32%", right: "-6%", animationDelay: "5.5s" }}
+            />
+          </>
+        )}
+
+        {fadeBottom ? (
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-2/5"
+            style={{
+              backgroundImage: isDark
+                ? `linear-gradient(to top, ${SPACE_DARK_BASE}d9, transparent)`
+                : "linear-gradient(to top, rgb(248 250 252 / 0.85), transparent)",
+            }}
+          />
+        ) : null}
+      </div>
+    );
+  },
+);
