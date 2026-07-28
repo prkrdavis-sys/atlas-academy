@@ -7,6 +7,7 @@ import { Stars } from "@react-three/drei";
 import * as THREE from "three";
 import {
   DistantSun,
+  EarthshineLight,
   EarthSunLight,
   GLOBE_DRAG_SPIN_FACTOR,
   GLOBE_IDLE_RETURN_DELAY_MS,
@@ -16,6 +17,7 @@ import {
   GLOBE_TILT_RETURN_DAMP,
   GlobeAtmosphere,
   GlobeFillLights,
+  GlobeSurfaceMaterial,
   tryReleasePointerCapture,
   trySetPointerCapture,
   useGlobeSceneEnvironment,
@@ -168,9 +170,10 @@ function ProgressGlobe({ profile, reducedMotion, isDark, usMode, dayNight, handl
         }}
       >
         <sphereGeometry args={[1, 64, 64]} />
-        <meshStandardMaterial map={texture} roughness={0.9} metalness={0} />
+        <GlobeSurfaceMaterial map={texture} dayNight={dayNight} isDark={isDark} />
         <DistantSun isDark={isDark} />
-        {dayNight ? <EarthSunLight isDark={isDark} /> : null}
+        <EarthSunLight isDark={isDark} dayNight={dayNight} />
+        <EarthshineLight isDark={isDark} dayNight={dayNight} />
       </mesh>
       <GlobeAtmosphere isDark={isDark} />
     </group>

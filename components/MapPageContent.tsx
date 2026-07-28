@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 type MapView = "globe" | GameScope;
 
 const MAP_VIEW_STORAGE_KEY = "atlas-academy-map-view";
+const MAP_STATS_PANEL_ID = "map-page-stats";
 
 const MAP_VIEW_INFO: Record<MapView, { icon: string; label: string }> = {
   globe: { icon: "🌐", label: "Globe" },
@@ -236,6 +237,7 @@ export function MapPageContent() {
               usMode={usMode}
               selectedCode={selectedGlobePlace}
               onSelectPlace={setSelectedGlobePlace}
+              statsScrollTargetId={MAP_STATS_PANEL_ID}
               className="h-full w-full"
             />
           </div>
@@ -255,13 +257,15 @@ export function MapPageContent() {
         <div className="aspect-[2/1] animate-pulse rounded-[1.75rem] border-2 border-slate-200 bg-slate-200/60 dark:border-slate-700 dark:bg-slate-700/60" />
       )}
 
-      {profile ? (
-        <MapPageProgressPanel
-          scope={panelScope}
-          profile={profile}
-          difficulty={mapDifficulty}
-        />
-      ) : null}
+      <div id={MAP_STATS_PANEL_ID} className="scroll-mt-4">
+        {profile ? (
+          <MapPageProgressPanel
+            scope={panelScope}
+            profile={profile}
+            difficulty={mapDifficulty}
+          />
+        ) : null}
+      </div>
     </div>
   );
 }

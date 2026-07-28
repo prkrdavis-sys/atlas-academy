@@ -130,7 +130,7 @@ function progressPathStyle(fill: string, isDark: boolean): MapPathStyle {
 /** Normal (medium) progress — teal mastery scale. */
 const LIGHT_PROGRESS_FILL_COLORS: Record<0 | 1 | 2 | 3 | 4, string> = {
   0: LIGHT_MAP_PALETTE.default.fill,
-  1: "#134e4a",
+  1: "#115e59",
   2: "#0f766e",
   3: "#14b8a6",
   4: "#2dd4bf",
@@ -138,8 +138,8 @@ const LIGHT_PROGRESS_FILL_COLORS: Record<0 | 1 | 2 | 3 | 4, string> = {
 
 const DARK_PROGRESS_FILL_COLORS: Record<0 | 1 | 2 | 3 | 4, string> = {
   0: DARK_MAP_PALETTE.default.fill,
-  1: "#042f2e",
-  2: "#0f5e56",
+  1: "#0f5e56",
+  2: "#0f766e",
   3: "#119e90",
   4: "#2dd4bf",
 };

@@ -51,18 +51,18 @@ type GlobePalette = {
   stateBorder: string;
 };
 
-/** Deep navy ocean — blue enough to read as water against black space, not ink-black. */
+/** Deep slate ocean — muted navy that reads as water in space, not neon cyan. */
 const DARK_GLOBE_PALETTE: GlobePalette = {
-  ocean: "#0c4a6e",
-  border: "rgba(2, 6, 23, 0.55)",
-  stateBorder: "rgba(2, 6, 23, 0.45)",
+  ocean: "#2d6888",
+  border: "rgba(90, 120, 150, 0.5)",
+  stateBorder: "rgba(90, 120, 150, 0.42)",
 };
 
-/** Soft sky-blue ocean — clearly water in light mode, without a loud saturation. */
+/** Soft Atlantic blue — globe-like in light mode without looking washed out. */
 const LIGHT_GLOBE_PALETTE: GlobePalette = {
-  ocean: "#6aa5c2",
-  border: "rgba(51, 65, 85, 0.5)",
-  stateBorder: "rgba(51, 65, 85, 0.4)",
+  ocean: "#5a96b5",
+  border: "rgba(30, 41, 59, 0.45)",
+  stateBorder: "rgba(30, 41, 59, 0.35)",
 };
 
 export function getGlobePalette(isDark: boolean): GlobePalette {

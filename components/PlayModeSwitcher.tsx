@@ -6,8 +6,8 @@ import { getPrimaryNavHref } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 
 const PLAY_MODE_ITEMS = [
-  { href: "/", label: "Play", icon: "🌎" },
   { href: "/map", label: "Map", icon: "🗺️" },
+  { href: "/", label: "Play", icon: "🌎" },
   { href: "/extras", label: "Explore", icon: "🧭" },
 ] as const;
 

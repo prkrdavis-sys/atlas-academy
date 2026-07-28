@@ -120,10 +120,35 @@ export function GlobeAtmosphere({ isDark }: { isDark: boolean }) {
 }
 
 /**
- * Scene fill lights for the globe. When day/night is on, ambient + real-time
- * sun create a clear terminator. When off, lighting stays nearly even with only
- * a soft key so the sphere still reads in 3D — especially important in dark
- * mode, where a hard shade would swallow the navy ocean.
+ * Planet surface material: enough gloss for a polished 3D globe, still matte
+ * enough that mastery colors and borders stay readable. Slightly shinier when
+ * day/night is off so the soft realtime sun reads as a gentle highlight.
+ */
+export function GlobeSurfaceMaterial({
+  map,
+  dayNight,
+  isDark,
+}: {
+  map: THREE.Texture;
+  dayNight: boolean;
+  isDark: boolean;
+}) {
+  return (
+    <meshStandardMaterial
+      map={map}
+      emissiveMap={isDark ? map : undefined}
+      emissive={isDark ? "#ffffff" : "#000000"}
+      emissiveIntensity={isDark ? (dayNight ? 0.18 : 0.1) : 0}
+      roughness={dayNight ? 0.72 : 0.52}
+      metalness={dayNight ? 0.04 : 0.08}
+    />
+  );
+}
+
+/**
+ * Scene fill lights for the globe. Day/night on: dim ambient so the real-time
+ * sun casts a clear terminator. Day/night off: bright ambient so the planet
+ * stays vivid, while a weak realtime sun still adds a subtle shade.
  */
 export function GlobeFillLights({
   isDark,
@@ -133,24 +158,26 @@ export function GlobeFillLights({
   dayNight: boolean;
 }) {
   if (dayNight) {
-    // Dark mode needs more fill so navy oceans stay visible; light stays a bit dimmer.
-    return <ambientLight intensity={isDark ? 0.78 : 0.62} />;
+    // Raised floor so oceans and mastery stay readable on the night hemisphere.
+    return <ambientLight intensity={isDark ? 0.7 : 0.4} />;
   }
-  return (
-    <>
-      <ambientLight intensity={isDark ? 1.35 : 1.2} />
-      {/* Soft key only — enough roundness, not a dark shaded hemisphere. */}
-      <directionalLight position={[3, 2, 4]} intensity={isDark ? 0.28 : 0.4} />
-    </>
-  );
+  // Bright enough that the soft sun shade never swallows oceans or land.
+  return <ambientLight intensity={isDark ? 1.85 : 1.35} />;
 }
 
 /**
  * Real-time sunlight for the planet mesh. Mount as a child of the earth mesh
  * so the day/night terminator stays locked to geographic longitude while the
- * globe spins or the camera orbits.
+ * globe spins or the camera orbits. Always on: strong when day/night is
+ * enabled, a minimal shade when it is not.
  */
-export function EarthSunLight({ isDark }: { isDark: boolean }) {
+export function EarthSunLight({
+  isDark,
+  dayNight,
+}: {
+  isDark: boolean;
+  dayNight: boolean;
+}) {
   const lightRef = useRef<THREE.DirectionalLight>(null);
 
   useLayoutEffect(() => {
@@ -172,66 +199,169 @@ export function EarthSunLight({ isDark }: { isDark: boolean }) {
     light.position.set(sun.x, sun.y, sun.z).multiplyScalar(5);
   });
 
-  // Slightly stronger in dark mode so the day side pops against space.
-  return (
-    <directionalLight
-      ref={lightRef}
-      intensity={isDark ? 1.95 : 1.75}
-      color="#fff4e0"
-    />
-  );
+  // Full day/night: strong terminator. Off: just enough realtime shade to read.
+  const intensity = dayNight
+    ? isDark
+      ? 1.9
+      : 1.85
+    : isDark
+      ? 0.62
+      : 0.45;
+
+  return <directionalLight ref={lightRef} intensity={intensity} color="#fff4e0" />;
+}
+
+/**
+ * Cool anti-solar fill (earthshine) for the night hemisphere. Mount as a child
+ * of the earth mesh so the moonlit wash stays locked to geography.
+ */
+export function EarthshineLight({
+  isDark,
+  dayNight,
+}: {
+  isDark: boolean;
+  dayNight: boolean;
+}) {
+  const lightRef = useRef<THREE.DirectionalLight>(null);
+
+  useLayoutEffect(() => {
+    const light = lightRef.current;
+    if (!light?.parent) return;
+    light.target.position.set(0, 0, 0);
+    light.parent.add(light.target);
+    return () => {
+      light.target.removeFromParent();
+    };
+  }, []);
+
+  useFrame(() => {
+    const light = lightRef.current;
+    if (!light) return;
+    const sun = subsolarDirection();
+    light.position.set(-sun.x, -sun.y, -sun.z).multiplyScalar(5);
+  });
+
+  if (!dayNight) return null;
+
+  const intensity = isDark ? 0.58 : 0.32;
+  const color = isDark ? "#8eb4d4" : "#9ec0dc";
+
+  return <directionalLight ref={lightRef} intensity={intensity} color={color} />;
 }
 
 /** How far the visible sun sits from Earth's center (mesh-local units). */
 const DISTANT_SUN_DISTANCE = 56;
 
-/** NASA SDO / AIA 304 Å disk — public domain (see public/globe/SUN_ATTRIBUTION.txt). */
-const SUN_TEXTURE_URL = "/globe/sun.jpg";
+/**
+ * Designed luminous plate (AIA 171 disk + soft circular corona).
+ * Public domain NASA source — see public/globe/SUN_ATTRIBUTION.txt.
+ * PNG alpha falls to zero before the frame edge so no square outline shows.
+ */
+const SUN_TEXTURE_URL = "/globe/sun.png";
+/** Soft radial falloff sprite for wash / bloom (no hard circle edge). */
+const SUN_GLOW_TEXTURE_URL = "/globe/sun-glow.png";
 
 /** Skip picking so the sun never steals globe taps. */
 function ignoreRaycast() {}
 
+const sunAdditive = {
+  transparent: true,
+  depthWrite: false,
+  blending: THREE.AdditiveBlending,
+  toneMapped: false,
+} as const;
+
 function DistantSunVisual({ isDark }: { isDark: boolean }) {
   const groupRef = useRef<THREE.Group>(null);
-  const texture = useTexture(SUN_TEXTURE_URL);
+  const pulseRef = useRef<THREE.Group>(null);
+  const [plateMap, glowMap] = useTexture([SUN_TEXTURE_URL, SUN_GLOW_TEXTURE_URL]);
 
   useLayoutEffect(() => {
-    texture.colorSpace = THREE.SRGBColorSpace;
-    texture.anisotropy = Math.min(8, texture.anisotropy || 1);
-  }, [texture]);
+    for (const texture of [plateMap, glowMap]) {
+      texture.colorSpace = THREE.SRGBColorSpace;
+      texture.anisotropy = Math.min(8, texture.anisotropy || 1);
+      texture.premultiplyAlpha = true;
+    }
+  }, [plateMap, glowMap]);
 
-  useFrame(() => {
+  useFrame(({ clock }) => {
     const group = groupRef.current;
     if (!group) return;
     const sun = subsolarDirection();
     group.position.set(sun.x, sun.y, sun.z).multiplyScalar(DISTANT_SUN_DISTANCE);
+
+    const pulse = pulseRef.current;
+    if (pulse) {
+      const breathe = 1 + Math.sin(clock.elapsedTime * 0.55) * 0.03;
+      pulse.scale.setScalar(breathe);
+    }
   });
+
+  // Soft radial sprites only — glow map alpha dies before the quad edge, so
+  // nothing reads as a square or hard ring in additive space.
+  const wash = isDark ? 0.55 : 0.7;
+  const bloom = isDark ? 0.65 : 0.8;
+  const plate = isDark ? 0.92 : 1;
+  const core = isDark ? 0.55 : 0.7;
 
   return (
     <group ref={groupRef} frustumCulled={false}>
       <Billboard follow>
-        {/* Soft corona so the NASA disk blooms a little in space / pale sky. */}
-        <mesh scale={5.2} raycast={ignoreRaycast} frustumCulled={false}>
-          <circleGeometry args={[1, 48]} />
-          <meshBasicMaterial
-            color="#ff7a3c"
-            transparent
-            opacity={isDark ? 0.18 : 0.22}
-            depthWrite={false}
-            blending={THREE.AdditiveBlending}
-            toneMapped={false}
-          />
-        </mesh>
-        <mesh scale={2.35} raycast={ignoreRaycast} frustumCulled={false}>
-          <planeGeometry args={[2, 2]} />
-          <meshBasicMaterial
-            map={texture}
-            transparent
-            depthWrite={false}
-            blending={THREE.AdditiveBlending}
-            toneMapped={false}
-          />
-        </mesh>
+        <group ref={pulseRef}>
+          <mesh scale={14} raycast={ignoreRaycast} frustumCulled={false}>
+            <planeGeometry args={[2, 2]} />
+            <meshBasicMaterial
+              map={glowMap}
+              color="#fff1c2"
+              opacity={wash * 0.35}
+              {...sunAdditive}
+            />
+          </mesh>
+          <mesh scale={9} raycast={ignoreRaycast} frustumCulled={false}>
+            <planeGeometry args={[2, 2]} />
+            <meshBasicMaterial
+              map={glowMap}
+              color="#ffc15a"
+              opacity={bloom * 0.45}
+              {...sunAdditive}
+            />
+          </mesh>
+          <mesh scale={5.6} raycast={ignoreRaycast} frustumCulled={false}>
+            <planeGeometry args={[2, 2]} />
+            <meshBasicMaterial
+              map={glowMap}
+              color="#ffe08a"
+              opacity={bloom * 0.55}
+              {...sunAdditive}
+            />
+          </mesh>
+
+          {/* Textured disk + baked corona (circular alpha). */}
+          <mesh scale={5.4} raycast={ignoreRaycast} frustumCulled={false}>
+            <planeGeometry args={[2, 2]} />
+            <meshBasicMaterial map={plateMap} opacity={plate} {...sunAdditive} />
+          </mesh>
+
+          {/* Soft white-hot core (same glow sprite, small). */}
+          <mesh scale={2.1} raycast={ignoreRaycast} frustumCulled={false}>
+            <planeGeometry args={[2, 2]} />
+            <meshBasicMaterial
+              map={glowMap}
+              color="#fffaf0"
+              opacity={core * 0.55}
+              {...sunAdditive}
+            />
+          </mesh>
+          <mesh scale={0.95} raycast={ignoreRaycast} frustumCulled={false}>
+            <planeGeometry args={[2, 2]} />
+            <meshBasicMaterial
+              map={glowMap}
+              color="#ffffff"
+              opacity={core * 0.75}
+              {...sunAdditive}
+            />
+          </mesh>
+        </group>
       </Billboard>
     </group>
   );
@@ -241,7 +371,7 @@ function DistantSunVisual({ isDark }: { isDark: boolean }) {
  * Bright distant sun in outer space, locked to the real subsolar direction.
  * Always mounted (independent of the day/night lighting toggle) as a child of
  * the earth mesh so it stays aligned with geography while the globe spins.
- * Uses a NASA SDO AIA image (public domain).
+ * Uses a designed plate built from NASA SDO AIA 171 (public domain).
  */
 export function DistantSun({ isDark }: { isDark: boolean }) {
   return (

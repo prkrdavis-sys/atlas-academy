@@ -1,4 +1,11 @@
-sun.jpg — NASA Solar Dynamics Observatory (SDO) / AIA 304 Å
-Source: https://sdo.gsfc.nasa.gov/assets/img/latest/latest_1024_0304.jpg
+sun.png — designed luminous plate for the globe distant-sun.
+sun-glow.png — soft radial falloff used for corona wash layers.
+
+Source imagery: NASA Solar Dynamics Observatory (SDO) / AIA 171 Å
+Latest feed example: https://sdo.gsfc.nasa.gov/assets/img/latest/latest_1024_0171.jpg
 License: Public domain (U.S. government work / NASA imagery)
 NASA media use: https://www.nasa.gov/nasa-brand-center/images-and-media/
+
+The disk is color-graded and composited with an original soft circular corona
+for the Atlas Academy globe; NASA owns the source plate. Alpha is forced to
+zero before the frame edge so no square outline appears in additive blending.

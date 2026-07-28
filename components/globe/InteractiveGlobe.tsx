@@ -7,15 +7,18 @@ import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
 import {
   DistantSun,
+  EarthshineLight,
   EarthSunLight,
   GLOBE_ROTATION_SPEED,
   GLOBE_TAP_TRAVEL_THRESHOLD,
   GlobeAtmosphere,
   GlobeFillLights,
+  GlobeSurfaceMaterial,
   useGlobeSceneEnvironment,
   useGlobeTexture,
 } from "@/components/globe/globe-scene";
 import { SpaceBackdrop, StaticStarfield } from "@/components/globe/SpaceBackdrop";
+import { MapScrollDownButton } from "@/components/MapScrollDownButton";
 import { MapZoomControls } from "@/components/MapZoomControls";
 import { ProgressMapContainer } from "@/components/ProgressMapOverlays";
 import { MapProgressFillLegend } from "@/components/PlaceMapProgressPanel";
@@ -31,6 +34,13 @@ const MIN_CAMERA_DISTANCE = 1.3;
 const MAX_CAMERA_DISTANCE = 4;
 /** Start fully zoomed out so the whole planet + atmosphere fit with margin. */
 const INITIAL_CAMERA_DISTANCE = MAX_CAMERA_DISTANCE;
+/**
+ * Subtle resting distance after the map-tab intro zoom. Close enough to read as
+ * a gentle push-in, far enough that the whole planet still feels spacious.
+ */
+const CINEMATIC_REST_DISTANCE = 3.25;
+/** Seconds for the open-tab camera ease from {@link INITIAL_CAMERA_DISTANCE}. */
+const CINEMATIC_ZOOM_DURATION_S = 3.2;
 /** Camera-distance multiplier for one zoom button press. */
 const ZOOM_BUTTON_FACTOR = 0.75;
 /** Orbit drag speed at {@link INITIAL_CAMERA_DISTANCE}; scaled by zoom so close-ups stay controllable. */
@@ -51,6 +61,55 @@ function SyncOrbitRotateSpeed({
     controls.rotateSpeed =
       BASE_ROTATE_SPEED * (controls.getDistance() / INITIAL_CAMERA_DISTANCE);
   });
+  return null;
+}
+
+/**
+ * On map-tab open: ease the camera in from the default wide framing to a
+ * slightly closer rest distance. Skipped for reduced motion; cancelled as soon
+ * as the player orbits or zooms so it never fights their input.
+ */
+function CinematicIntroZoom({
+  controlsRef,
+  enabled,
+  cancelled,
+}: {
+  controlsRef: RefObject<OrbitControlsImpl | null>;
+  enabled: boolean;
+  cancelled: boolean;
+}) {
+  const elapsedRef = useRef(0);
+  const finishedRef = useRef(false);
+  const offsetRef = useRef(new THREE.Vector3());
+
+  useFrame((_, delta) => {
+    if (!enabled || cancelled || finishedRef.current) return;
+    const controls = controlsRef.current;
+    if (!controls) return;
+
+    elapsedRef.current += delta;
+    const t = Math.min(1, elapsedRef.current / CINEMATIC_ZOOM_DURATION_S);
+    // Ease-out cubic: quick enough to notice, soft settle at the end.
+    const eased = 1 - (1 - t) ** 3;
+    const distance = THREE.MathUtils.lerp(
+      INITIAL_CAMERA_DISTANCE,
+      CINEMATIC_REST_DISTANCE,
+      eased,
+    );
+
+    const camera = controls.object;
+    const offset = offsetRef.current;
+    offset.copy(camera.position).sub(controls.target);
+    offset.setLength(distance);
+    camera.position.copy(controls.target).add(offset);
+
+    if (t >= 1) {
+      finishedRef.current = true;
+      // Reset view lands on the cinematic rest framing, not the wide start.
+      controls.saveState();
+    }
+  });
+
   return null;
 }
 
@@ -119,9 +178,10 @@ function PickableGlobe({
         }}
       >
         <sphereGeometry args={[1, 96, 96]} />
-        <meshStandardMaterial map={texture} roughness={0.9} metalness={0} />
+        <GlobeSurfaceMaterial map={texture} dayNight={dayNight} isDark={isDark} />
         <DistantSun isDark={isDark} />
-        {dayNight ? <EarthSunLight isDark={isDark} /> : null}
+        <EarthSunLight isDark={isDark} dayNight={dayNight} />
+        <EarthshineLight isDark={isDark} dayNight={dayNight} />
       </mesh>
       <GlobeAtmosphere isDark={isDark} />
     </group>
@@ -135,6 +195,8 @@ type InteractiveGlobeProps = {
   selectedCode: string | null;
   onSelectPlace: (code: string | null) => void;
   className?: string;
+  /** When set, shows a scroll-down control beside the fill legend. */
+  statsScrollTargetId?: string;
 };
 
 /**
@@ -150,6 +212,7 @@ export default function InteractiveGlobe({
   selectedCode,
   onSelectPlace,
   className,
+  statsScrollTargetId,
 }: InteractiveGlobeProps) {
   const { webglOk, reducedMotion, pageVisible } = useGlobeSceneEnvironment();
   const { isDark, ready } = useIsDark();
@@ -157,10 +220,15 @@ export default function InteractiveGlobe({
   const containerRef = useRef<HTMLDivElement>(null);
   const controlsRef = useRef<OrbitControlsImpl | null>(null);
   const [autoSpin, setAutoSpin] = useState(true);
+  const [introCancelled, setIntroCancelled] = useState(false);
 
-  const stopAutoSpin = useCallback(() => setAutoSpin(false), []);
+  const onOrbitStart = useCallback(() => {
+    setIntroCancelled(true);
+    setAutoSpin(false);
+  }, []);
 
   const zoomBy = useCallback((factor: number) => {
+    setIntroCancelled(true);
     const controls = controlsRef.current;
     if (!controls) return;
     const camera = controls.object;
@@ -176,10 +244,14 @@ export default function InteractiveGlobe({
   }, []);
 
   const resetView = useCallback(() => {
+    setIntroCancelled(true);
     controlsRef.current?.reset();
   }, []);
 
   const panelScope = selectedCode && isStateCode(selectedCode) ? "usa" : "world";
+
+  const globeBottomPanelClass =
+    "flex items-center rounded-xl border border-slate-200/60 bg-white/85 shadow-sm backdrop-blur dark:border-slate-700/60 dark:bg-slate-900/75";
 
   return (
     <SpaceBackdrop
@@ -229,6 +301,11 @@ export default function InteractiveGlobe({
               onPickPlace={onSelectPlace}
             />
             <SyncOrbitRotateSpeed controlsRef={controlsRef} />
+            <CinematicIntroZoom
+              controlsRef={controlsRef}
+              enabled={!reducedMotion}
+              cancelled={introCancelled}
+            />
             <OrbitControls
               ref={controlsRef}
               enablePan={false}
@@ -241,7 +318,7 @@ export default function InteractiveGlobe({
               autoRotate={autoSpin && !reducedMotion}
               // OrbitControls speed 1.0 ≈ 0.1 rad/s; match the home globe's gentle spin.
               autoRotateSpeed={GLOBE_ROTATION_SPEED * 10}
-              onStart={stopAutoSpin}
+              onStart={onOrbitStart}
             />
           </Canvas>
         ) : webglOk === false && isDark ? (
@@ -257,10 +334,19 @@ export default function InteractiveGlobe({
         />
 
         {ready ? (
-          <div className="pointer-events-none absolute inset-x-0 bottom-3 z-10 flex justify-center px-4">
-            <div className="rounded-xl border border-slate-200/60 bg-white/85 px-3 py-2 shadow-sm backdrop-blur dark:border-slate-700/60 dark:bg-slate-900/75">
+          <div className="pointer-events-none absolute inset-x-0 bottom-3 z-20 flex items-stretch justify-center gap-2 px-4">
+            <div className={cn(globeBottomPanelClass, "px-3 py-2")}>
               <MapProgressFillLegend isDark={isDark} difficulty={difficulty} />
             </div>
+            {statsScrollTargetId ? (
+              <div className={cn(globeBottomPanelClass, "pointer-events-auto p-0")}>
+                <MapScrollDownButton
+                  targetId={statsScrollTargetId}
+                  reducedMotion={reducedMotion}
+                  className="h-full w-10 rounded-xl"
+                />
+              </div>
+            ) : null}
           </div>
         ) : null}
       </ProgressMapContainer>
