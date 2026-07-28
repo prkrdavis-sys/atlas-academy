@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { getCountryName } from "@/lib/countries";
-import { buildLibraryDetailHref } from "@/lib/library";
+import { buildLibraryDetailHref, LIBRARY_ICON } from "@/lib/library";
 import {
   getPlaceCategoryCompletion,
   getPlaceMasteryLevel,
@@ -180,8 +180,9 @@ export function PlaceMapProgressPanel({
       </ul>
       <Link
         href={libraryHref}
-        className="pointer-events-auto mt-2 inline-flex w-full items-center justify-center rounded-lg border border-teal-200 bg-teal-50 px-3 py-1.5 text-xs font-bold text-teal-800 transition-colors hover:border-teal-400 hover:bg-teal-100 dark:border-teal-800 dark:bg-teal-950/50 dark:text-teal-200 dark:hover:border-teal-500 dark:hover:bg-teal-950"
+        className="pointer-events-auto mt-2 inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-teal-200 bg-teal-50 px-3 py-1.5 text-xs font-bold text-teal-800 transition-colors hover:border-teal-400 hover:bg-teal-100 dark:border-teal-800 dark:bg-teal-950/50 dark:text-teal-200 dark:hover:border-teal-500 dark:hover:bg-teal-950"
       >
+        <span aria-hidden>{LIBRARY_ICON}</span>
         Open in Library →
       </Link>
     </div>

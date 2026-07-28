@@ -3,7 +3,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { AnswerFeedbackLayer, type FeedbackBurst } from "@/components/AnswerFeedback";
+import {
+  AnswerFeedbackLayer,
+  type FeedbackBurst,
+} from "@/components/AnswerFeedback";
 import { AnswerAtlasle } from "@/components/AnswerAtlasle";
 import { AnswerMultipleChoice } from "@/components/AnswerMultipleChoice";
 import { AnswerTypeIn } from "@/components/AnswerTypeIn";
@@ -30,11 +33,12 @@ import {
 } from "@/lib/storage";
 import { playSound } from "@/lib/sound";
 import { getGlobalStreakOrZero } from "@/lib/stats-helpers";
+import { STREAK_SNUFF_MIN } from "@/lib/streak-tier";
 import {
   getMapProgressSummary,
   toMapProgressDifficulty,
 } from "@/lib/map-progress";
-import { buildLibraryDetailHref } from "@/lib/library";
+import { buildLibraryDetailHref, LIBRARY_ICON } from "@/lib/library";
 import { getQuestionTaskLabel, getTypeInPlacePlaceholder, isStateCode, scopeText, SCOPE_INFO } from "@/lib/scope";
 import { getStatsMode } from "@/lib/game-setup";
 import type { ChallengeModifier, Difficulty, GameMode, GameScope, Question, Region, RoundQuestionSetting } from "@/lib/types";
@@ -103,6 +107,8 @@ export function GameBoard({
       ? 0
       : getGlobalStreakOrZero(activeProfile, difficulty, scope).currentStreak,
   );
+  /** Streak length captured when a miss ends the round (marathon / stop-on-wrong). */
+  const [endedStreak, setEndedStreak] = useState(0);
   const [showLearnCard, setShowLearnCard] = useState(false);
   const [lastCorrect, setLastCorrect] = useState(true);
   const [lastSelectedAnswer, setLastSelectedAnswer] = useState<string | null>(null);
@@ -160,9 +166,16 @@ export function GameBoard({
   const [bursts, setBursts] = useState<FeedbackBurst[]>([]);
   const burstIdRef = useRef(0);
 
-  const spawnBurst = useCallback((correct: boolean) => {
+  const spawnBurst = useCallback((correct: boolean, lostStreak?: number) => {
     burstIdRef.current += 1;
-    setBursts((prev) => [...prev, { id: burstIdRef.current, correct }]);
+    setBursts((prev) => [
+      ...prev,
+      {
+        id: burstIdRef.current,
+        correct,
+        ...(lostStreak !== undefined ? { lostStreak } : {}),
+      },
+    ]);
   }, []);
 
   const removeBurst = useCallback((id: number) => {
@@ -269,12 +282,14 @@ export function GameBoard({
 
     const isCodeSelection = code !== undefined;
     const correct = engine.checkAnswer(question, code ?? answer, isCodeSelection);
+    const lostStreak = !correct && streak >= STREAK_SNUFF_MIN ? streak : undefined;
     setLastCorrect(correct);
     setLastSelectedAnswer(answer);
     setLastSelectedCode(code ?? null);
-    spawnBurst(correct);
+    spawnBurst(correct, lostStreak);
     playSound(correct ? "correct" : "incorrect", activeProfile, {
       streak: correct ? streak + 1 : undefined,
+      lostStreak,
     });
 
     if (countStats) {
@@ -317,6 +332,7 @@ export function GameBoard({
       setStreak((s) => s + 1);
       setCorrectAnswers((count) => count + 1);
     } else {
+      setEndedStreak(streak);
       setStreak(0);
       if (stopOnWrong) setGameOver(true);
     }
@@ -442,7 +458,7 @@ export function GameBoard({
           : `You completed all ${questionCount} questions.`
         : timed
           ? `Time's up after ${questionCount} questions.`
-          : `Your streak ended at ${streak}.`;
+          : `Your streak ended at ${endedStreak}.`;
 
     return (
       <>
@@ -452,7 +468,7 @@ export function GameBoard({
           onDismiss={dismissAchievements}
         />
         <div className="animate-card-pop-in my-auto rounded-[1.75rem] border-2 border-slate-200 bg-white/90 p-5 text-center shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90 sm:p-8">
-          <p className="text-4xl">{challengeComplete || exitedEarly ? "🎉" : "🧭"}</p>
+          <p className="text-4xl">{challengeComplete || exitedEarly ? "🎉" : "🏁"}</p>
           <h2 className="mt-2 font-display text-3xl font-extrabold">{title}</h2>
           <p className="mt-2 text-slate-600 dark:text-slate-400">{description}</p>
           <div className={`mx-auto mt-6 grid max-w-sm gap-3 ${difficulty === "easy" ? "grid-cols-3" : "grid-cols-2"}`}>
@@ -640,7 +656,7 @@ export function GameBoard({
                   "inline-flex min-h-10 items-center justify-center gap-1.5 rounded-2xl border-2 border-slate-200 bg-white px-3 py-2 text-sm font-extrabold text-slate-700 shadow-[0_3px_0_var(--color-slate-200)] transition-all duration-100 hover:border-sky-300 hover:text-sky-700 active:translate-y-[3px] active:shadow-none dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:shadow-[0_3px_0_var(--color-slate-700)] dark:hover:border-sky-500 dark:hover:text-sky-300 sm:px-4",
                 )}
               >
-                <span aria-hidden>🧭</span>
+                <span aria-hidden>{LIBRARY_ICON}</span>
                 <span className="hidden sm:inline">Library</span>
               </Link>
             )}

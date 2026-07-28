@@ -3,7 +3,8 @@
 import dynamic from "next/dynamic";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { supportsWebGL } from "@/components/globe/globe-scene";
+import { ExplorerRankBadge } from "@/components/ExplorerRankBadge";
+import { supportsWebGL } from "@/lib/webgl";
 import { MapPageProgressPanel } from "@/components/MapPageProgressPanel";
 import { MapProgressDifficultySelector } from "@/components/PlaceMapProgressPanel";
 import { useProfiles } from "@/components/ProfileProvider";
@@ -191,9 +192,12 @@ export function MapPageContent() {
     <div className="space-y-5 sm:space-y-6">
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
-          <h1 className="font-display text-2xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 sm:text-3xl">
-            🗺️ Map
-          </h1>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+            <h1 className="font-display text-2xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 sm:text-3xl">
+              🗺️ Map
+            </h1>
+            {profile ? <ExplorerRankBadge profile={profile} scope={panelScope} /> : null}
+          </div>
           <p className="mt-1 max-w-2xl text-sm text-slate-600 dark:text-slate-400">
             Click a country or U.S. state to see your progress and open its Library page.
           </p>
@@ -245,7 +249,7 @@ export function MapPageContent() {
               profile={profile}
               difficulty={mapDifficulty}
               usMode={usMode}
-              selectedCode={selectedGlobePlace}
+              selectedCode={activeGlobeSelection}
               initialPlaceCode={resolvedInitialPlace}
               onSelectPlace={setSelectedGlobePlace}
               statsScrollTargetId={MAP_STATS_PANEL_ID}
@@ -268,7 +272,10 @@ export function MapPageContent() {
         <div className="aspect-[2/1] animate-pulse rounded-[1.75rem] border-2 border-slate-200 bg-slate-200/60 dark:border-slate-700 dark:bg-slate-700/60" />
       )}
 
-      <div id={MAP_STATS_PANEL_ID} className="scroll-mt-4">
+      <div
+        id={MAP_STATS_PANEL_ID}
+        className="scroll-mt-[calc(var(--app-header-offset)+1rem)]"
+      >
         {profile ? (
           <MapPageProgressPanel
             scope={panelScope}

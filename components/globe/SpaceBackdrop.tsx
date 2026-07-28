@@ -56,6 +56,8 @@ export function StaticStarfield({ isDark }: { isDark: boolean }) {
 type SpaceBackdropProps = {
   isDark: boolean;
   reducedMotion: boolean;
+  /** When true, nebula color is rendered in the WebGL canvas instead of CSS. */
+  canvasNebulae?: boolean;
   /** Fade the lower area into the base color so foreground cards stay readable. */
   fadeBottom?: boolean;
   className?: string;
@@ -70,6 +72,7 @@ type SpaceBackdropProps = {
 export function SpaceBackdrop({
   isDark,
   reducedMotion,
+  canvasNebulae = false,
   fadeBottom = false,
   className,
   children,
@@ -79,11 +82,13 @@ export function SpaceBackdrop({
       className={cn("overflow-hidden", className)}
       style={{ background: isDark ? SPACE_DARK_BASE : undefined, backgroundImage: isDark ? undefined : LIGHT_SKY_GRADIENT }}
     >
-      <div
-        aria-hidden
-        className="absolute inset-0"
-        style={{ backgroundImage: isDark ? DARK_NEBULA : LIGHT_NEBULA }}
-      />
+      {!canvasNebulae ? (
+        <div
+          aria-hidden
+          className="absolute inset-0"
+          style={{ backgroundImage: isDark ? DARK_NEBULA : LIGHT_NEBULA }}
+        />
+      ) : null}
 
       {!isDark ? <StaticStarfield isDark={false} /> : null}
 

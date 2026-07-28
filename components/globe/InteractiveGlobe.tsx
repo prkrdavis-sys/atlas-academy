@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useLayoutEffect, useRef, useState, Suspense, type RefObject } from "react";
+import { useCallback, useRef, useState, type RefObject } from "react";
 import { Canvas, useFrame, type ThreeEvent } from "@react-three/fiber";
 import { OrbitControls, Stars } from "@react-three/drei";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
@@ -14,10 +14,6 @@ import {
   GlobeAtmosphere,
   GlobeFillLights,
   GlobeSurfaceMaterial,
-  GlobeContextRecovery,
-  GlobeInitialInvalidate,
-  GlobeLoadingSphere,
-  useGlobeCanvasKey,
   useGlobeSceneEnvironment,
   useGlobeTexture,
 } from "@/components/globe/globe-scene";
@@ -130,18 +126,19 @@ function CinematicIntroZoom({
 
 /**
  * Spins the globe toward a linked place, tilts for latitude, and zooms in.
- * Runs after OrbitControls each frame so the animation is not overwritten.
+ * Mesh yaw is driven through React state (not imperative mesh.rotation) so the
+ * declarative rotation prop keeps the first paint visible.
  */
 function PlaceFocusIntro({
   controlsRef,
-  meshRotationYRef,
+  onMeshRotationY,
   focusTarget,
   enabled,
   cancelled,
   onComplete,
 }: {
   controlsRef: RefObject<OrbitControlsImpl | null>;
-  meshRotationYRef: RefObject<number>;
+  onMeshRotationY: (rotationY: number) => void;
   focusTarget: GlobeFocusTarget;
   enabled: boolean;
   cancelled: boolean;
@@ -162,10 +159,8 @@ function PlaceFocusIntro({
     }
 
     const applyFocus = (progress: number) => {
-      meshRotationYRef.current = lerpAngle(
-        GLOBE_MESH_Y_ROTATION,
-        focusTarget.meshRotationY,
-        progress,
+      onMeshRotationY(
+        lerpAngle(GLOBE_MESH_Y_ROTATION, focusTarget.meshRotationY, progress),
       );
 
       controls.setAzimuthalAngle(0);
@@ -222,7 +217,7 @@ type GlobeSceneProps = {
   isDark: boolean;
   dayNight: boolean;
   selectedCode: string | null;
-  meshRotationYRef: RefObject<number>;
+  meshRotationY: number;
   onPickPlace: (code: string | null) => void;
 };
 
@@ -234,23 +229,11 @@ function PickableGlobe({
   isDark,
   dayNight,
   selectedCode,
-  meshRotationYRef,
+  meshRotationY,
   onPickPlace,
 }: GlobeSceneProps) {
   const texture = useGlobeTexture(profile, { difficulty, usMode, isDark, selectedCode });
   const tapRef = useRef<TapState | null>(null);
-  const meshRef = useRef<THREE.Mesh>(null);
-
-  useLayoutEffect(() => {
-    const mesh = meshRef.current;
-    if (mesh) mesh.rotation.set(0, meshRotationYRef.current, 0);
-  }, [meshRotationYRef]);
-
-  useFrame(() => {
-    const mesh = meshRef.current;
-    if (!mesh) return;
-    mesh.rotation.set(0, meshRotationYRef.current, 0);
-  }, 2);
 
   const onPointerDown = (event: ThreeEvent<PointerEvent>) => {
     tapRef.current = {
@@ -282,7 +265,9 @@ function PickableGlobe({
   return (
     <group>
       <mesh
-        ref={meshRef}
+        // Declarative Y rotation — required for first paint. Place-focus updates
+        // this via React state rather than imperative mesh.rotation writes.
+        rotation={[0, meshRotationY, 0]}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
@@ -331,25 +316,17 @@ export default function InteractiveGlobe({
   statsScrollTargetId,
 }: InteractiveGlobeProps) {
   const { webglOk, reducedMotion, pageVisible } = useGlobeSceneEnvironment();
-  const { canvasKey, remountCanvas } = useGlobeCanvasKey();
   const { isDark, ready } = useIsDark();
   const { enabled: dayNight } = useGlobeDayNight();
   const containerRef = useRef<HTMLDivElement>(null);
   const controlsRef = useRef<OrbitControlsImpl | null>(null);
-  const meshRotationYRef = useRef(GLOBE_MESH_Y_ROTATION);
+  const [meshRotationY, setMeshRotationY] = useState(GLOBE_MESH_Y_ROTATION);
   const [autoSpin, setAutoSpin] = useState(true);
   const [introCancelled, setIntroCancelled] = useState(false);
   const [focusIntroComplete, setFocusIntroComplete] = useState(false);
   const placeFocusTarget = initialPlaceCode ? getGlobeFocusTarget(initialPlaceCode) : null;
   const usePlaceFocus = placeFocusTarget !== null;
   const highlightedCode = selectedCode ?? initialPlaceCode;
-
-  useEffect(() => {
-    if (!initialPlaceCode) return;
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setFocusIntroComplete(false);
-    setIntroCancelled(false);
-  }, [initialPlaceCode]);
 
   const onOrbitStart = useCallback(() => {
     setIntroCancelled(true);
@@ -375,7 +352,7 @@ export default function InteractiveGlobe({
   const resetView = useCallback(() => {
     setIntroCancelled(true);
     onSelectPlace(null);
-    meshRotationYRef.current = GLOBE_MESH_Y_ROTATION;
+    setMeshRotationY(GLOBE_MESH_Y_ROTATION);
     controlsRef.current?.reset();
   }, [onSelectPlace]);
 
@@ -403,16 +380,13 @@ export default function InteractiveGlobe({
       >
         {webglOk && ready ? (
           <Canvas
-            key={canvasKey}
             camera={{ position: [0, 0, INITIAL_CAMERA_DISTANCE], fov: 45 }}
             dpr={[1, 2]}
             frameloop={pageVisible ? "always" : "never"}
-            gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+            gl={{ antialias: true, alpha: true }}
             style={{ touchAction: "none" }}
             onPointerMissed={() => onSelectPlace(null)}
           >
-            <GlobeContextRecovery onContextLost={remountCanvas} />
-            <GlobeInitialInvalidate />
             <GlobeFillLights isDark={isDark} dayNight={dayNight} />
             {isDark ? (
               <Stars
@@ -425,24 +399,21 @@ export default function InteractiveGlobe({
                 speed={reducedMotion ? 0 : 0.6}
               />
             ) : null}
-            <Suspense fallback={<GlobeLoadingSphere isDark={isDark} />}>
-              <PickableGlobe
-                profile={profile}
-                difficulty={difficulty}
-                usMode={usMode}
-                isDark={isDark}
-                dayNight={dayNight}
-                selectedCode={highlightedCode}
-                meshRotationYRef={meshRotationYRef}
-                onPickPlace={onSelectPlace}
-              />
-            </Suspense>
+            <PickableGlobe
+              profile={profile}
+              difficulty={difficulty}
+              usMode={usMode}
+              isDark={isDark}
+              dayNight={dayNight}
+              selectedCode={highlightedCode}
+              meshRotationY={meshRotationY}
+              onPickPlace={onSelectPlace}
+            />
             <SyncOrbitRotateSpeed controlsRef={controlsRef} />
             {usePlaceFocus && placeFocusTarget ? (
               <PlaceFocusIntro
-                key={initialPlaceCode ?? "none"}
                 controlsRef={controlsRef}
-                meshRotationYRef={meshRotationYRef}
+                onMeshRotationY={setMeshRotationY}
                 focusTarget={placeFocusTarget}
                 enabled={!reducedMotion}
                 cancelled={introCancelled}

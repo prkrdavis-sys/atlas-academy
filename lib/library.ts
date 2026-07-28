@@ -6,6 +6,8 @@ export type LibraryFilter = "All" | Region;
 
 export type LibrarySort = "alphabetical" | "commonly-missed";
 
+export const LIBRARY_ICON = "📚";
+
 export const LIBRARY_FILTER_STORAGE_KEY = "atlas-academy-library-filters";
 export const LIBRARY_SORT_STORAGE_KEY = "atlas-academy-library-sort";
 

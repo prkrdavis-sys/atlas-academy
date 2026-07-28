@@ -1,6 +1,15 @@
 "use client";
 
-import { Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  type RefObject,
+} from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Billboard, useTexture } from "@react-three/drei";
 import * as THREE from "three";
@@ -11,6 +20,7 @@ import {
   type GlobeUsMode,
 } from "@/lib/globe-texture";
 import { subsolarDirection } from "@/lib/sun-position";
+import { supportsWebGL } from "@/lib/webgl";
 import type { MapProgressDifficulty, Profile } from "@/lib/types";
 
 export const GLOBE_ROTATION_SPEED = 0.045;
@@ -24,15 +34,6 @@ export const GLOBE_MAX_TILT = Math.PI * 0.45;
 export const GLOBE_IDLE_RETURN_DELAY_MS = 2000;
 /** Damping factor for easing tilt back to the default axis (higher = snappier). */
 export const GLOBE_TILT_RETURN_DAMP = 2.4;
-
-export function supportsWebGL(): boolean {
-  try {
-    const canvas = document.createElement("canvas");
-    return Boolean(canvas.getContext("webgl2") ?? canvas.getContext("webgl"));
-  } catch {
-    return false;
-  }
-}
 
 export type GlobeSceneEnvironment = {
   /** null until detection runs on the client. */
@@ -68,10 +69,7 @@ export function useGlobeSceneEnvironment(): GlobeSceneEnvironment {
 
 const MAX_CANVAS_RECOVERY_ATTEMPTS = 5;
 
-/**
- * Remount key for a globe Canvas. Incrementing the key recreates the WebGL
- * context after loss (common during dev HMR or GPU memory pressure).
- */
+/** Remount key for a globe Canvas after WebGL context loss. */
 export function useGlobeCanvasKey() {
   const [canvasKey, setCanvasKey] = useState(0);
   const attemptsRef = useRef(0);
@@ -84,7 +82,11 @@ export function useGlobeCanvasKey() {
     });
   }, []);
 
-  return { canvasKey, remountCanvas };
+  const resetRecoveryAttempts = useCallback(() => {
+    attemptsRef.current = 0;
+  }, []);
+
+  return { canvasKey, remountCanvas, resetRecoveryAttempts };
 }
 
 /** Detects a lost WebGL context and triggers a Canvas remount. */
@@ -110,6 +112,16 @@ export function GlobeContextRecovery({ onContextLost }: { onContextLost: () => v
   return null;
 }
 
+/** Resets context-loss recovery once the renderer has mounted. */
+export function GlobeRecoveryReset({ onStable }: { onStable: () => void }) {
+  useEffect(() => {
+    const id = requestAnimationFrame(onStable);
+    return () => cancelAnimationFrame(id);
+  }, [onStable]);
+
+  return null;
+}
+
 export type GlobeTextureConfig = {
   difficulty: MapProgressDifficulty;
   usMode: GlobeUsMode;
@@ -120,8 +132,7 @@ export type GlobeTextureConfig = {
 
 /**
  * Builds the progress-painted planet texture at the highest resolution the
- * device's GPU comfortably supports, rebuilding when the profile, difficulty,
- * US rendering mode, theme, or selected place changes.
+ * device's GPU comfortably supports, rebuilding when inputs change.
  */
 export function useGlobeTexture(
   profile: Profile | null,
@@ -130,7 +141,7 @@ export function useGlobeTexture(
   const gl = useThree((state) => state.gl);
   const size = useMemo(
     () => resolveGlobeTextureSize(gl.capabilities.maxTextureSize),
-    [gl],
+    [gl.capabilities.maxTextureSize],
   );
 
   const texture = useMemo(() => {
@@ -306,8 +317,14 @@ const SUN_TEXTURE_URL = "/globe/sun.png";
 /** Soft radial falloff sprite for wash / bloom (no hard circle edge). */
 const SUN_GLOW_TEXTURE_URL = "/globe/sun-glow.png";
 
-useTexture.preload(SUN_TEXTURE_URL);
-useTexture.preload(SUN_GLOW_TEXTURE_URL);
+/** Preloads sun textures on the client after the Canvas mounts. */
+export function GlobeAssetPreloader() {
+  useEffect(() => {
+    useTexture.preload(SUN_TEXTURE_URL);
+    useTexture.preload(SUN_GLOW_TEXTURE_URL);
+  }, []);
+  return null;
+}
 
 /** Ocean-colored placeholder shown while the painted globe texture loads. */
 export function GlobeLoadingSphere({ isDark }: { isDark: boolean }) {
@@ -320,11 +337,17 @@ export function GlobeLoadingSphere({ isDark }: { isDark: boolean }) {
   );
 }
 
-/** Forces an initial draw after Canvas mount (avoids a blank first frame). */
+/** Forces initial draws after Canvas mount (avoids a blank first frame). */
 export function GlobeInitialInvalidate() {
   const invalidate = useThree((state) => state.invalidate);
   useEffect(() => {
     invalidate();
+    const id = requestAnimationFrame(() => invalidate());
+    const id2 = requestAnimationFrame(() => invalidate());
+    return () => {
+      cancelAnimationFrame(id);
+      cancelAnimationFrame(id2);
+    };
   }, [invalidate]);
   return null;
 }
@@ -446,6 +469,163 @@ export function DistantSun({ isDark }: { isDark: boolean }) {
     <Suspense fallback={null}>
       <DistantSunVisual isDark={isDark} />
     </Suspense>
+  );
+}
+
+/** Shell radius aligned with the drei Stars field so nebulas parallax the same way. */
+const CELESTIAL_NEBULA_RADIUS = 68;
+
+type CelestialNebulaSpec = {
+  azimuthDeg: number;
+  elevationDeg: number;
+  color: string;
+  scale: number;
+  widthStretch: number;
+  opacity: number;
+};
+
+const DARK_CELESTIAL_NEBULA_SPECS: CelestialNebulaSpec[] = [
+  { azimuthDeg: -138, elevationDeg: 24, color: "#2dd4bf", scale: 44, widthStretch: 1.5, opacity: 0.2 },
+  { azimuthDeg: 38, elevationDeg: 20, color: "#6366f1", scale: 40, widthStretch: 1.4, opacity: 0.18 },
+  { azimuthDeg: 0, elevationDeg: -34, color: "#0e7490", scale: 50, widthStretch: 1.65, opacity: 0.24 },
+];
+
+const LIGHT_CELESTIAL_NEBULA_SPECS: CelestialNebulaSpec[] = [
+  { azimuthDeg: -138, elevationDeg: 24, color: "#0d9488", scale: 44, widthStretch: 1.5, opacity: 0.16 },
+  { azimuthDeg: 38, elevationDeg: 20, color: "#6366f1", scale: 40, widthStretch: 1.4, opacity: 0.15 },
+  { azimuthDeg: 0, elevationDeg: -34, color: "#38bdf8", scale: 50, widthStretch: 1.65, opacity: 0.2 },
+];
+
+function celestialNebulaPosition(
+  radius: number,
+  azimuthDeg: number,
+  elevationDeg: number,
+): [number, number, number] {
+  const azimuth = THREE.MathUtils.degToRad(azimuthDeg);
+  const elevation = THREE.MathUtils.degToRad(elevationDeg);
+  const cosElevation = Math.cos(elevation);
+  return [
+    radius * cosElevation * Math.sin(azimuth),
+    radius * Math.sin(elevation),
+    radius * cosElevation * Math.cos(azimuth),
+  ];
+}
+
+let nebulaGlowTexture: THREE.CanvasTexture | null = null;
+
+function getNebulaGlowTexture(): THREE.CanvasTexture {
+  if (nebulaGlowTexture) return nebulaGlowTexture;
+
+  const size = 256;
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("Failed to create nebula glow canvas");
+
+  const center = size / 2;
+  const gradient = ctx.createRadialGradient(center, center, 0, center, center, center);
+  gradient.addColorStop(0, "rgba(255, 255, 255, 0.95)");
+  gradient.addColorStop(0.28, "rgba(255, 255, 255, 0.38)");
+  gradient.addColorStop(0.58, "rgba(255, 255, 255, 0.07)");
+  gradient.addColorStop(1, "rgba(255, 255, 255, 0)");
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, size, size);
+
+  nebulaGlowTexture = new THREE.CanvasTexture(canvas);
+  nebulaGlowTexture.colorSpace = THREE.SRGBColorSpace;
+  return nebulaGlowTexture;
+}
+
+const nebulaAdditive = {
+  transparent: true,
+  depthWrite: false,
+  blending: THREE.AdditiveBlending,
+  toneMapped: false,
+} as const;
+
+function CelestialNebulaPatch({
+  position,
+  color,
+  scale,
+  widthStretch,
+  opacity,
+  map,
+}: CelestialNebulaSpec & { position: [number, number, number]; map: THREE.Texture }) {
+  const groupRef = useRef<THREE.Group>(null);
+
+  useLayoutEffect(() => {
+    groupRef.current?.lookAt(0, 0, 0);
+  }, [position]);
+
+  return (
+    <group ref={groupRef} position={position} frustumCulled={false}>
+      <mesh
+        scale={[scale * widthStretch, scale, 1]}
+        raycast={ignoreRaycast}
+        frustumCulled={false}
+      >
+        <planeGeometry args={[2, 2]} />
+        <meshBasicMaterial
+          map={map}
+          color={color}
+          opacity={opacity * 0.6}
+          side={THREE.BackSide}
+          {...nebulaAdditive}
+        />
+      </mesh>
+      <mesh scale={[scale * widthStretch * 0.72, scale * 0.72, 1]} raycast={ignoreRaycast} frustumCulled={false}>
+        <planeGeometry args={[2, 2]} />
+        <meshBasicMaterial
+          map={map}
+          color={color}
+          opacity={opacity}
+          side={THREE.BackSide}
+          {...nebulaAdditive}
+        />
+      </mesh>
+    </group>
+  );
+}
+
+type CelestialNebulaeProps = {
+  isDark: boolean;
+  /** When set, nebulas rotate with the globe mesh (home page drag / auto-spin). */
+  spinRef?: RefObject<THREE.Object3D | null>;
+};
+
+/**
+ * Faint nebula washes pinned to the inner surface of the celestial sphere.
+ * Camera orbit parallax matches drei Stars; optional spinRef keeps them aligned
+ * when the home globe is dragged.
+ */
+export function CelestialNebulae({ isDark, spinRef }: CelestialNebulaeProps) {
+  const groupRef = useRef<THREE.Group>(null);
+  const map = useMemo(() => getNebulaGlowTexture(), []);
+  const specs = isDark ? DARK_CELESTIAL_NEBULA_SPECS : LIGHT_CELESTIAL_NEBULA_SPECS;
+
+  useFrame(() => {
+    const group = groupRef.current;
+    const spin = spinRef?.current;
+    if (!group || !spin) return;
+    group.rotation.copy(spin.rotation);
+  });
+
+  return (
+    <group ref={groupRef} frustumCulled={false}>
+      {specs.map((spec) => (
+        <CelestialNebulaPatch
+          key={`${spec.color}-${spec.azimuthDeg}-${spec.elevationDeg}`}
+          {...spec}
+          map={map}
+          position={celestialNebulaPosition(
+            CELESTIAL_NEBULA_RADIUS,
+            spec.azimuthDeg,
+            spec.elevationDeg,
+          )}
+        />
+      ))}
+    </group>
   );
 }
 

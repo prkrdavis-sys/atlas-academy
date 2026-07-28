@@ -4,12 +4,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { getPrimaryNavHref } from "@/lib/navigation";
 import { useLibraryNavHref } from "@/lib/use-library-nav-href";
+import { LIBRARY_ICON } from "@/lib/library";
 import { cn } from "@/lib/utils";
 
 const PLAY_MODE_ITEMS = [
   { href: "/map" as const, label: "Map", icon: "🗺️" },
   { href: "/" as const, label: "Play", icon: "🌎" },
-  { href: "library" as const, label: "Explore", icon: "🧭" },
+  { href: "library" as const, label: "Library", icon: LIBRARY_ICON },
 ] as const;
 
 export function PlayModeSwitcher() {

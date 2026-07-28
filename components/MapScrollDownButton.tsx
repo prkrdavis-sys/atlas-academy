@@ -27,6 +27,14 @@ type MapScrollDownButtonProps = {
   className?: string;
 };
 
+/** Breathing room below the sticky app header when pinning the stats panel. */
+const SCROLL_GAP_PX = 16;
+
+function getStickyAppHeaderHeight(): number {
+  const header = document.querySelector<HTMLElement>("header.sticky");
+  return header?.getBoundingClientRect().height ?? 0;
+}
+
 export function MapScrollDownButton({
   targetId,
   reducedMotion = false,
@@ -35,9 +43,22 @@ export function MapScrollDownButton({
   const scrollToTarget = () => {
     const target = document.getElementById(targetId);
     if (!target) return;
-    target.scrollIntoView({
+
+    // Pin the Map Progress panel just under the sticky header — scrollIntoView
+    // alone lands it under the chrome because the header is sticky, not in flow.
+    const top =
+      target.getBoundingClientRect().top +
+      window.scrollY -
+      getStickyAppHeaderHeight() -
+      SCROLL_GAP_PX;
+    const maxScrollY = Math.max(
+      0,
+      document.documentElement.scrollHeight - window.innerHeight,
+    );
+
+    window.scrollTo({
+      top: Math.min(Math.max(0, top), maxScrollY),
       behavior: reducedMotion ? "auto" : "smooth",
-      block: "start",
     });
   };
 

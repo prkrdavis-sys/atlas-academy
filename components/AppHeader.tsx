@@ -9,12 +9,13 @@ import { PlayModeSwitcher } from "@/components/PlayModeSwitcher";
 import { ProfileSwitcher } from "@/components/ProfileSwitcher";
 import { getPrimaryNavHref } from "@/lib/navigation";
 import { useLibraryNavHref } from "@/lib/use-library-nav-href";
+import { LIBRARY_ICON } from "@/lib/library";
 import { cn } from "@/lib/utils";
 
 const MOBILE_NAV_ITEMS = [
   { href: "/map" as const, label: "Map", icon: "🗺️" },
   { href: "/" as const, label: "Play", icon: "🌎" },
-  { href: "library" as const, label: "Explore", icon: "🧭" },
+  { href: "library" as const, label: "Library", icon: LIBRARY_ICON },
 ] as const;
 
 function isMobileNavItemActive(

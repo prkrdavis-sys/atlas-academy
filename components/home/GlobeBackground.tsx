@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Suspense, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Canvas, useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
 import { Stars } from "@react-three/drei";
 import * as THREE from "three";
@@ -16,11 +16,12 @@ import {
   GLOBE_TAP_TRAVEL_THRESHOLD,
   GLOBE_TILT_RETURN_DAMP,
   GlobeAtmosphere,
-  GlobeFillLights,
-  GlobeSurfaceMaterial,
+  GlobeAssetPreloader,
   GlobeContextRecovery,
+  GlobeFillLights,
   GlobeInitialInvalidate,
-  GlobeLoadingSphere,
+  GlobeRecoveryReset,
+  GlobeSurfaceMaterial,
   tryReleasePointerCapture,
   trySetPointerCapture,
   useGlobeCanvasKey,
@@ -28,7 +29,6 @@ import {
   useGlobeTexture,
 } from "@/components/globe/globe-scene";
 import { SpaceBackdrop, StaticStarfield } from "@/components/globe/SpaceBackdrop";
-import { GLOBE_MAP_HREF } from "@/lib/navigation";
 import type { Profile } from "@/lib/types";
 import { useGlobeDayNight } from "@/lib/use-globe-day-night";
 import { useGlobeUsMode } from "@/lib/use-globe-us-mode";
@@ -132,7 +132,7 @@ function ProgressGlobe({ profile, reducedMotion, isDark, usMode, dayNight, handl
     document.body.style.cursor = "grab";
     if (navigateOnTap && drag.traveled < GLOBE_TAP_TRAVEL_THRESHOLD) {
       document.body.style.cursor = "";
-      router.push(GLOBE_MAP_HREF);
+      router.push("/map");
     }
   }
 
@@ -199,8 +199,8 @@ export default function GlobeBackground({
   profile: Profile | null;
   handleRef?: React.RefObject<GlobeHandle | null>;
 }) {
-  const { webglOk, reducedMotion, pageVisible } = useGlobeSceneEnvironment();
-  const { canvasKey, remountCanvas } = useGlobeCanvasKey();
+  const { webglOk, reducedMotion } = useGlobeSceneEnvironment();
+  const { canvasKey, remountCanvas, resetRecoveryAttempts } = useGlobeCanvasKey();
   const { isDark } = useIsDark();
   const { usMode } = useGlobeUsMode();
   const { enabled: dayNight } = useGlobeDayNight();
@@ -218,11 +218,16 @@ export default function GlobeBackground({
           aria-hidden
           camera={{ position: [0, 0, 2.6], fov: 45 }}
           dpr={[1, 1.75]}
-          frameloop={pageVisible ? "always" : "never"}
+          frameloop="always"
           gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
           style={{ touchAction: "none" }}
+          onCreated={(state) => {
+            state.invalidate();
+          }}
         >
           <GlobeContextRecovery onContextLost={remountCanvas} />
+          <GlobeRecoveryReset onStable={resetRecoveryAttempts} />
+          <GlobeAssetPreloader />
           <GlobeInitialInvalidate />
           <GlobeFillLights isDark={isDark} dayNight={dayNight} />
           {isDark ? (
@@ -236,16 +241,14 @@ export default function GlobeBackground({
               speed={reducedMotion ? 0 : 0.6}
             />
           ) : null}
-          <Suspense fallback={<GlobeLoadingSphere isDark={isDark} />}>
-            <ProgressGlobe
-              profile={profile}
-              reducedMotion={reducedMotion}
-              isDark={isDark}
-              usMode={usMode}
-              dayNight={dayNight}
-              handleRef={handleRef}
-            />
-          </Suspense>
+          <ProgressGlobe
+            profile={profile}
+            reducedMotion={reducedMotion}
+            isDark={isDark}
+            usMode={usMode}
+            dayNight={dayNight}
+            handleRef={handleRef}
+          />
         </Canvas>
       ) : webglOk === false && isDark ? (
         <StaticStarfield isDark />

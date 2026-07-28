@@ -47,18 +47,29 @@ export function GameMapProgressSummary({
       className="mx-auto mt-4 max-w-sm rounded-xl border border-teal-200/70 bg-teal-50/40 px-3 py-2.5 dark:border-teal-800/70 dark:bg-teal-950/20"
       aria-label="Map progress this round"
     >
-      <div className="flex items-center justify-between gap-3">
-        <p className="text-xs font-bold text-teal-800 dark:text-teal-300">Map progress</p>
-        <div className="flex min-w-0 items-baseline gap-2">
-          {roundDelta ? (
-            <p className="truncate text-xs font-bold text-emerald-700 dark:text-emerald-400">
-              {roundDelta}
-            </p>
-          ) : null}
-          <p className="shrink-0 font-display text-lg font-extrabold tabular-nums text-emerald-700 dark:text-emerald-400">
+      <div className="flex items-baseline justify-between gap-3">
+        <div className="flex items-baseline gap-1.5">
+          <span className="text-xs font-bold text-teal-800 dark:text-teal-300">
+            Map progress
+          </span>
+          <span
+            className="select-none text-xs text-teal-500/70 dark:text-teal-400/50"
+            aria-hidden
+          >
+            –
+          </span>
+          <span className="font-display text-base font-extrabold tabular-nums leading-none text-emerald-700 dark:text-emerald-400">
             {currentSummary.percentComplete}%
-          </p>
+          </span>
         </div>
+        {roundDelta ? (
+          <p className="min-w-0 truncate text-right text-xs leading-tight text-teal-600 dark:text-teal-400">
+            <span className="font-bold text-emerald-700 dark:text-emerald-400">
+              {roundDelta}
+            </span>{" "}
+            this round
+          </p>
+        ) : null}
       </div>
 
       <div

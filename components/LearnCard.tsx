@@ -239,8 +239,8 @@ function InlineLearnCard({
       <div className="hidden shrink-0 flex-col gap-3 p-4 sm:flex lg:px-6 lg:py-4">
         <div
           className={cn(
-            "grid items-start gap-4",
-            country.hasFlag ? "grid-cols-[4.5rem_minmax(0,1fr)] lg:grid-cols-[5rem_minmax(0,1fr)]" : "grid-cols-1",
+            "grid items-start gap-5 lg:gap-6",
+            country.hasFlag ? "grid-cols-[5.5rem_minmax(0,1fr)] lg:grid-cols-[6.25rem_minmax(0,1fr)]" : "grid-cols-1",
           )}
         >
           {country.hasFlag && (
@@ -248,14 +248,14 @@ function InlineLearnCard({
               <FlagImage
                 code={country.code}
                 alt={country.name}
-                width={96}
+                width={112}
                 frame="md"
-                className="w-[4.5rem] lg:w-20"
+                className="w-[5.5rem] lg:w-24"
               />
             </div>
           )}
 
-          <div className="min-w-0">
+          <div className="min-w-0 pl-0.5 lg:pl-1">
             {compareCountryCode && (
               <PopulationComparison
                 countryCode={countryCode}
