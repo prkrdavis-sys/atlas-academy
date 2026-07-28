@@ -10,10 +10,18 @@ import type { Profile } from "@/lib/types";
  */
 export type SoundKind = "tap" | "play" | "correct" | "incorrect" | "streak" | "complete";
 
+export type PlaySoundOptions = {
+  /** Live answer streak after a correct response (1 = first correct in a row). */
+  streak?: number;
+};
+
 let audioContext: AudioContext | null = null;
 let resumePromise: Promise<boolean> | null = null;
 let gesturesInstalled = false;
 let keepAliveInstalled = false;
+/** Set when the tab backgrounds or the context suspends — iOS can report "running" but stay silent until re-primed on a gesture. */
+let needsGestureUnlock = false;
+let sessionKeepAlive: OscillatorNode | null = null;
 
 function getAudioContextConstructor(): typeof AudioContext | null {
   if (typeof window === "undefined") return null;
@@ -29,8 +37,7 @@ function getAudioContext(): AudioContext | null {
   if (!AudioContextClass) return null;
 
   if (audioContext?.state === "closed") {
-    audioContext = null;
-    resumePromise = null;
+    resetAudioContext();
   }
 
   try {
@@ -38,12 +45,17 @@ function getAudioContext(): AudioContext | null {
       audioContext = new AudioContextClass();
       installKeepAlive();
       audioContext.addEventListener("statechange", () => {
+        if (!audioContext || audioContext.state === "closed") return;
+
+        if (audioContext.state === "suspended" || audioContext.state === "interrupted") {
+          markNeedsGestureUnlock();
+        }
+
         if (
-          audioContext &&
           audioContext.state !== "running" &&
-          audioContext.state !== "closed" &&
           document.visibilityState === "visible"
         ) {
+          primeAudioGraph(audioContext);
           void resumeContext(audioContext);
         }
       });
@@ -54,21 +66,76 @@ function getAudioContext(): AudioContext | null {
   }
 }
 
+function markNeedsGestureUnlock(): void {
+  needsGestureUnlock = true;
+  stopSessionKeepAlive();
+}
+
+function resetAudioContext(): void {
+  stopSessionKeepAlive();
+  audioContext = null;
+  resumePromise = null;
+}
+
+function needsAudioRecovery(ctx: AudioContext): boolean {
+  return needsGestureUnlock || ctx.state !== "running";
+}
+
+/** Near-silent oscillator keeps the media session warm so mobile OSes suspend less often. */
+function startSessionKeepAlive(ctx: AudioContext): void {
+  if (sessionKeepAlive) return;
+
+  try {
+    const gain = ctx.createGain();
+    gain.gain.value = 0.0001;
+    const osc = ctx.createOscillator();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    sessionKeepAlive = osc;
+  } catch {
+    // Best-effort; foreground unlock still recovers playback.
+  }
+}
+
+function stopSessionKeepAlive(): void {
+  if (!sessionKeepAlive) return;
+
+  try {
+    sessionKeepAlive.stop();
+    sessionKeepAlive.disconnect();
+  } catch {
+    // Ignore teardown errors on suspended/closed contexts.
+  }
+  sessionKeepAlive = null;
+}
+
 /** Re-resume after tab focus; browsers often suspend the context while hidden. */
 function installKeepAlive() {
   if (keepAliveInstalled || typeof document === "undefined") return;
   keepAliveInstalled = true;
 
-  const tryResume = () => {
+  const tryResumeOnForeground = () => {
     const ctx = audioContext;
-    if (!ctx || ctx.state === "closed" || ctx.state === "running") return;
-    void resumeContext(ctx);
+    if (!ctx || ctx.state === "closed") return;
+
+    if (needsGestureUnlock || ctx.state !== "running") {
+      primeAudioGraph(ctx);
+    }
+    if (ctx.state !== "running") {
+      void resumeContext(ctx);
+    }
   };
 
   document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible") tryResume();
+    if (document.visibilityState === "hidden") {
+      markNeedsGestureUnlock();
+      return;
+    }
+    tryResumeOnForeground();
   });
-  window.addEventListener("pageshow", tryResume);
+  window.addEventListener("pageshow", tryResumeOnForeground);
+  window.addEventListener("focus", tryResumeOnForeground);
 }
 
 /**
@@ -110,6 +177,46 @@ function resumeContext(ctx: AudioContext): Promise<boolean> {
   return resumePromise;
 }
 
+/** Prime, resume, and recreate the context if the browser left it in a bad state. */
+async function ensureAudioReady(ctx: AudioContext): Promise<AudioContext | null> {
+  if (!needsAudioRecovery(ctx)) {
+    startSessionKeepAlive(ctx);
+    return ctx;
+  }
+
+  primeAudioGraph(ctx);
+  let running = await resumeContext(ctx);
+
+  if (running) {
+    needsGestureUnlock = false;
+    startSessionKeepAlive(ctx);
+    return ctx;
+  }
+
+  // Resume failed — recreate (common after long background on mobile Safari).
+  try {
+    if (ctx.state !== "closed") {
+      await ctx.close();
+    }
+  } catch {
+    // Ignore close errors on already-dead contexts.
+  }
+  resetAudioContext();
+
+  const fresh = getAudioContext();
+  if (!fresh) return null;
+
+  primeAudioGraph(fresh);
+  running = await resumeContext(fresh);
+  if (running) {
+    needsGestureUnlock = false;
+    startSessionKeepAlive(fresh);
+    return fresh;
+  }
+
+  return null;
+}
+
 /**
  * Prime the audio graph during a user gesture. Safari/iOS often stay silent
  * after resume() alone; starting a near-silent buffer is what actually unlocks
@@ -138,10 +245,9 @@ export function isSoundEnabled(profile: Profile | null | undefined): boolean {
 export function unlockAudio(): void {
   installAudioGestures();
   const ctx = getAudioContext();
-  if (!ctx || ctx.state === "closed" || ctx.state === "running") return;
+  if (!ctx || ctx.state === "closed" || !needsAudioRecovery(ctx)) return;
 
-  primeAudioGraph(ctx);
-  void resumeContext(ctx);
+  void ensureAudioReady(ctx);
 }
 
 type Note = {
@@ -184,43 +290,108 @@ const SOUNDS: Record<SoundKind, Note[]> = {
   ],
 };
 
+/** Pitch rises with streak; timbre and length improve as the run builds. */
+export function getCorrectSoundNotes(streak: number): Note[] {
+  const level = Math.max(1, Math.min(streak, 50));
+  const pitch = Math.pow(2, (level - 1) / 22);
+  const gain = Math.min(0.15 + (level - 1) * 0.0012, 0.21);
+  const secondDuration = Math.min(0.16 + (level - 1) * 0.002, 0.24);
+  const wave: OscillatorType = level >= 15 ? "sine" : "triangle";
+
+  const root = 659 * pitch;
+  const third = 880 * pitch;
+
+  const notes: Note[] = [
+    { at: 0, frequency: root, duration: 0.08, type: wave, gain },
+    {
+      at: 0.08,
+      frequency: third,
+      duration: secondDuration,
+      type: wave,
+      gain,
+      ...(level >= 10 ? { frequencyEnd: third * 1.06 } : {}),
+    },
+  ];
+
+  if (level >= 5) {
+    notes.push({
+      at: 0.08 + secondDuration * 0.55,
+      frequency: third * 1.25,
+      duration: 0.1,
+      type: level >= 20 ? "sine" : "triangle",
+      gain: gain * 0.72,
+    });
+  }
+
+  if (level >= 15) {
+    notes.push({
+      at: 0.08 + secondDuration,
+      frequency: third * 2,
+      duration: 0.14,
+      type: "sine",
+      gain: gain * 0.55,
+    });
+  }
+
+  if (level >= 30) {
+    notes.push({
+      at: 0.08 + secondDuration + 0.1,
+      frequency: third * 2.5,
+      frequencyEnd: third * 2.8,
+      duration: 0.18,
+      type: "sine",
+      gain: gain * 0.45,
+    });
+  }
+
+  return notes;
+}
+
 /**
  * Plays a synthesized sound effect. Pass the profile so the player's sound
  * setting is respected; a null/undefined profile plays (guest actions).
  */
-export function playSound(kind: SoundKind, profile?: Profile | null) {
+export function playSound(
+  kind: SoundKind,
+  profile?: Profile | null,
+  options?: PlaySoundOptions,
+) {
   if (profile !== undefined && !isSoundEnabled(profile)) return;
 
   installAudioGestures();
   const ctx = getAudioContext();
   if (!ctx) return;
 
-  const play = () => {
+  if (!needsAudioRecovery(ctx)) {
     try {
-      scheduleNotes(ctx, kind);
+      scheduleNotes(ctx, kind, options);
     } catch {
       // Ignore scheduling errors so one bad note doesn't break future sounds.
     }
-  };
-
-  if (ctx.state === "running") {
-    play();
     return;
   }
 
   // Still inside a user-gesture call stack in normal game flows: prime + resume
   // so Safari unlocks, then schedule only once the clock is running.
-  primeAudioGraph(ctx);
-
-  void resumeContext(ctx).then((running) => {
-    if (running) play();
+  void ensureAudioReady(ctx).then((ready) => {
+    if (!ready) return;
+    try {
+      scheduleNotes(ready, kind, options);
+    } catch {
+      // Ignore scheduling errors so one bad note doesn't break future sounds.
+    }
   });
 }
 
-function scheduleNotes(ctx: AudioContext, kind: SoundKind) {
+function scheduleNotes(ctx: AudioContext, kind: SoundKind, options?: PlaySoundOptions) {
+  const notes =
+    kind === "correct" && options?.streak !== undefined
+      ? getCorrectSoundNotes(options.streak)
+      : SOUNDS[kind];
+
   // Tiny lead-in so the first envelope event is never scheduled in the past.
   const start = ctx.currentTime + 0.01;
-  for (const note of SOUNDS[kind]) {
+  for (const note of notes) {
     const oscillator = ctx.createOscillator();
     const gainNode = ctx.createGain();
     const noteStart = start + note.at;

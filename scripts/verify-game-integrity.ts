@@ -5,7 +5,7 @@
  * and (d) typing every other country's name is rejected (except legitimately
  * ambiguous cases like shared borders). Also validates flag/shape assets.
  */
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { GameEngine } from "../lib/game-engine";
 import { resolveMapProgressCategory, wouldCountTowardMapProgress } from "../lib/map-progress";
@@ -34,6 +34,12 @@ for (const c of [...countries, ...usStates]) {
   }
   if (c.hasShape && !existsSync(join("public", "shapes", `${c.code3.toLowerCase()}.svg`))) {
     fail(`${c.name}: hasShape but shape file missing`);
+  }
+  if (c.hasShape) {
+    const shapeSvg = readFileSync(join("public", "shapes", `${c.code3.toLowerCase()}.svg`), "utf8");
+    if (shapeSvg.includes("potrace")) {
+      fail(`${c.name}: shape still uses outdated mapsicon asset`);
+    }
   }
   if (c.hasCapitalImage && !existsSync(join("public", "capitals", `${c.code.toLowerCase()}.jpg`))) {
     fail(`${c.name}: hasCapitalImage but capital image missing`);

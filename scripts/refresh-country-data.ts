@@ -1,4 +1,4 @@
-import { copyFileSync, existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { getCountryFact, getCountryFactQuestion } from "./place-facts";
 import {
@@ -6,7 +6,7 @@ import {
   fetchUsdExchangeRates,
   pickPrimaryCurrency,
 } from "./currency-data";
-import { isSupplementalShapeCode, isCustomShapeCode, writeCustomShape, writeSupplementalShape } from "./supplemental-shapes";
+import { generateCountryShapes } from "./generate-country-shapes";
 import { fetchSourceCountries, pickPrimaryTimezone } from "./timezone-data";
 
 type RawCountry = {
@@ -199,42 +199,17 @@ async function fetchPopulationByCode3(): Promise<Map<string, number>> {
   return population;
 }
 
-async function downloadShape(code: string, code3: string): Promise<boolean> {
-  const url = `https://raw.githubusercontent.com/djaiss/mapsicon/master/all/${code.toLowerCase()}/vector.svg`;
-  const destination = join(PUBLIC_SHAPES, `${code3.toLowerCase()}.svg`);
-  rmSync(destination, { force: true });
-
-  try {
-    const response = await fetch(url);
-    if (!response.ok) return false;
-    const svg = await response.text();
-    if (!svg.includes("<svg")) return false;
-    writeFileSync(destination, svg);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-/** Tries mapsicon, then custom silhouettes, then @svg-maps/world fallbacks. */
-async function resolveCountryShape(code: string, code3: string): Promise<boolean> {
-  if (isCustomShapeCode(code)) {
-    return writeCustomShape(code, code3, PUBLIC_SHAPES);
-  }
-
-  if (await downloadShape(code, code3)) return true;
-
-  if (isSupplementalShapeCode(code)) {
-    return writeSupplementalShape(code, code3, PUBLIC_SHAPES);
-  }
-
-  return false;
-}
-
 async function main() {
   mkdirSync(DATA_DIR, { recursive: true });
   mkdirSync(PUBLIC_FLAGS, { recursive: true });
   mkdirSync(PUBLIC_SHAPES, { recursive: true });
+
+  console.log("Generating country shapes from Natural Earth...");
+  const { written: shapesGenerated, missing: shapeMissing } = await generateCountryShapes(PUBLIC_SHAPES);
+  if (shapeMissing.length > 0) {
+    throw new Error(`Shape generation failed:\n${shapeMissing.join("\n")}`);
+  }
+  console.log(`Generated ${shapesGenerated} country shape SVGs`);
 
   const response = await fetch(
     "https://raw.githubusercontent.com/mledoze/countries/master/countries.json",
@@ -267,7 +242,7 @@ async function main() {
       flagCount += 1;
     }
 
-    const hasShape = await resolveCountryShape(code, code3);
+    const hasShape = existsSync(join(PUBLIC_SHAPES, `${code3.toLowerCase()}.svg`));
     if (hasShape) shapeCount += 1;
 
     const hasCapitalImage = existsSync(join(PUBLIC_CAPITALS, `${code.toLowerCase()}.jpg`));
@@ -319,7 +294,7 @@ async function main() {
 
   console.log(`Generated ${countries.length} countries`);
   console.log(`Flags copied: ${flagCount}`);
-  console.log(`Shapes downloaded: ${shapeCount}`);
+  console.log(`Shapes available: ${shapeCount}`);
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {

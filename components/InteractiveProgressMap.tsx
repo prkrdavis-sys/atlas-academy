@@ -244,7 +244,10 @@ export function InteractiveProgressMap({
         <MapZoomControls
           onZoomOut={() => panzoomRef.current?.zoomOut({ step: MAP_ZOOM_BUTTON_STEP })}
           onZoomIn={() => panzoomRef.current?.zoomIn({ step: MAP_ZOOM_BUTTON_STEP })}
-          onReset={() => panzoomRef.current?.reset()}
+          onReset={() => {
+            setSelectedPlace(null);
+            panzoomRef.current?.reset();
+          }}
         />
       </div>
 

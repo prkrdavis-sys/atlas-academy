@@ -18,6 +18,7 @@ type LibrarySearchProps = {
   sort?: LibrarySort;
   isState?: boolean;
   className?: string;
+  onNavigateToDetail?: () => void;
 };
 
 function SearchIcon({ className }: { className?: string }) {
@@ -44,6 +45,7 @@ export function LibrarySearch({
   sort = "alphabetical",
   isState = false,
   className,
+  onNavigateToDetail,
 }: LibrarySearchProps) {
   const router = useRouter();
   const listboxId = useId();
@@ -78,6 +80,7 @@ export function LibrarySearch({
   }, [showDropdown]);
 
   const navigateTo = (code: string) => {
+    onNavigateToDetail?.();
     setQuery("");
     setIsOpen(false);
     setHighlightedIndex(-1);

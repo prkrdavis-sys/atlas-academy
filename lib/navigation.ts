@@ -1,18 +1,14 @@
-const EXPLORE_ROUTE_PREFIXES = ["/extras", "/library"] as const;
-
 export function isMapRoute(pathname: string): boolean {
   return pathname === "/map" || pathname.startsWith("/map/");
 }
 
 export function isExploreRoute(pathname: string): boolean {
-  return EXPLORE_ROUTE_PREFIXES.some(
-    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
-  );
+  return pathname === "/library" || pathname.startsWith("/library/");
 }
 
-export function getPrimaryNavHref(pathname: string): "/" | "/extras" | "/map" {
+export function getPrimaryNavHref(pathname: string): "/" | "/library" | "/map" {
   if (pathname === "/" || pathname.startsWith("/play/")) return "/";
   if (isMapRoute(pathname)) return "/map";
-  if (isExploreRoute(pathname)) return "/extras";
+  if (isExploreRoute(pathname)) return "/library";
   return "/";
 }

@@ -78,7 +78,7 @@ export function MapProgressFillLegend({
 
   return (
     <div className="flex flex-wrap items-center gap-3 text-xs text-slate-600 dark:text-slate-400">
-      <span className="font-semibold text-slate-700 dark:text-slate-300">Fill levels:</span>
+      <span className="font-semibold text-slate-700 dark:text-slate-300">Mastery level:</span>
       {MAP_PROGRESS_FILL_LEVELS.map((level) => {
         const fill = getProgressFillColor(level, isDark, difficulty);
 

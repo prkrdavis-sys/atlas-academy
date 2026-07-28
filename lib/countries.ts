@@ -1,3 +1,4 @@
+import closestMainlandData from "@/data/closest-mainland.json";
 import countriesData from "@/data/countries.json";
 import statesData from "@/data/states.json";
 import {
@@ -265,6 +266,47 @@ const ISLAND_SUBREGIONS = new Set([
 ]);
 
 const REGIONS_WITH_THE = new Set(["Caribbean", "Middle East", "Pacific"]);
+
+const closestMainlandByCode = closestMainlandData as Record<string, string>;
+
+const CONTINENTAL_LANDMASSES = new Set(["AU", "GL"]);
+const ISLAND_AREA_THRESHOLD = 100_000;
+
+function formatLearnSubregionLabel(country: Country): string {
+  const subregion = country.subregion.trim();
+  if (subregion) return subregion;
+  return country.continent;
+}
+
+function shouldShowClosestMainland(country: Country): boolean {
+  if (CONTINENTAL_LANDMASSES.has(country.code)) return false;
+  if (country.borders.length > 0) return false;
+  if (country.area >= ISLAND_AREA_THRESHOLD) return false;
+  return true;
+}
+
+/** Region line for learn cards: UN subregion when available; islands add closest mainland. */
+export function formatLearnRegionLabel(country: Country, scope: GameScope = "world"): string {
+  if (scope === "usa") {
+    return country.continent;
+  }
+
+  const subregion = country.subregion.trim();
+  const subregionLabel = formatLearnSubregionLabel(country);
+
+  if (shouldShowClosestMainland(country)) {
+    const closestCode = closestMainlandByCode[country.code];
+    const closestName = closestCode ? getCountryName(closestCode) : undefined;
+    if (closestName) {
+      if (subregion && subregion !== country.continent) {
+        return `${subregion} · Closest to ${closestName}`;
+      }
+      return `Closest to ${closestName}`;
+    }
+  }
+
+  return subregionLabel;
+}
 
 function getRegionLabel(country: Country): string {
   const label = country.subregion || country.continent;

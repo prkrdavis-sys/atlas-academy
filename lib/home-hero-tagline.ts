@@ -47,7 +47,93 @@ export function pickHomeHeroTaglineExcluding(
   return pickRandomExcluding(candidates, exclude);
 }
 
-export function buildHomeHeroTaglineCandidates({
+/** Hidden UX features and navigation tips — the main pro-tip pool. */
+function buildUxProTips(scope: GameScope): string[] {
+  const scopeInfo = SCOPE_INFO[scope];
+  const otherScope = scope === "world" ? "usa" : "world";
+  const otherScopeInfo = SCOPE_INFO[otherScope];
+  const practiceWeakSpots = modeRef("weak-spots");
+  const dailyChallenge = modeRef("daily-challenge");
+  const atlasle = modeRef("atlasle");
+
+  return [
+    "Tap this pro tip anytime to shuffle to another hidden feature.",
+
+    "Open your profile menu (top right) to find Stats — streaks, accuracy, and achievements live there.",
+    "Stats has an Achievements tab — see what's unlocked and what's left to earn.",
+    "Advanced stats (from the Stats page) shows full mode tables and your commonly missed list.",
+    "The Stats chart switches between accuracy, questions played, and best streak per mode.",
+    "Your Explorer rank on Stats reflects how many places you've mastered on the map.",
+
+    "The flame in the header tracks your login streak — tap it for this week's calendar.",
+    "Login streak and answer streak are different — the flame is about showing up daily.",
+
+    `In Explore, change Sort to Commonly missed to browse ${scopeInfo.nounPlural} you've gotten wrong.`,
+    "The search bar on Explore finds any place by name — jump straight to a country or state.",
+    "Region filters on Explore are remembered — pick a continent and come back later.",
+    "Going back from a Library page restores your scroll position in the list.",
+    "Each Library page includes a context map showing where the place sits geographically.",
+    "Library pages link to neighboring places — follow them to explore borders.",
+    "Library pages show live local time for each place's primary timezone.",
+
+    "The Map tab switches between Globe, World, and USA views — your choice is remembered.",
+    "On the flat map, colors show mastery progress — greener means more categories complete.",
+    "The map has Normal and Hard progress tiers — toggle them to see different mastery levels.",
+    "Easy difficulty doesn't count toward map progress — great for learning without pressure.",
+    "Pan and zoom the map, then click any place to see its progress and open the Library.",
+    "Scroll down on the Map page for a progress summary and explorer rank.",
+    "Drag the globe on the home screen to spin it — tap to open your progress map.",
+
+    "Tap Change under Play to adjust mode, difficulty, round length, and region filters.",
+    "Choose a mode from the setup page to focus on flags, capitals, shapes, or trivia.",
+    "Filter by continent in game setup to drill a single region at a time.",
+    "Toggle Include territories in setup when you want smaller places in the question pool.",
+    "Hard difficulty makes you type answers — no multiple-choice safety net.",
+    "Advanced options in mode setup add Speed Round (60 seconds) or Marathon (until you miss).",
+
+    "After a wrong answer, the learn card shows facts, a flag, and a mini context map.",
+    `${practiceWeakSpots} drills your commonly missed list — find it under More ways to play.`,
+    `${atlasle} gives you up to six guesses with clues that unlock as you miss.`,
+    `${dailyChallenge} resets at midnight Eastern — replaying after finishing won't change stats.`,
+    "After finishing today's Daily Challenge, tap Review to walk through every answer again.",
+
+    `World and ${otherScopeInfo.shortLabel} have separate streaks, stats, and daily runs.`,
+    `Switch between World and ${otherScopeInfo.shortLabel} from game setup or the scope toggle.`,
+
+    "Your profile menu has sound, dark mode, and globe appearance toggles.",
+    "Turn on Globe day/night in the profile menu for real-time sunlight on the 3D globe.",
+    "Switch USA on the globe between 50 states or one country from the profile menu.",
+
+    "Use Backup & restore on Profiles to save your progress to a file on this device.",
+    "Multiple profiles can live on one device — switch between them in the profile menu.",
+
+    "Use Map, Play, and Explore in the bottom nav (mobile) or header tabs (desktop) to jump around.",
+  ];
+}
+
+function buildGuestUxProTips(scope: GameScope): string[] {
+  const scopeInfo = SCOPE_INFO[scope];
+  const otherScope = scope === "world" ? "usa" : "world";
+  const otherScopeInfo = SCOPE_INFO[otherScope];
+
+  return [
+    "Create a profile to unlock Stats, commonly missed sorting, and saved progress.",
+    "Tap this pro tip anytime to shuffle to another hidden feature.",
+    `In Explore, sort by Commonly missed once you have a profile — it surfaces ${scopeInfo.nounPlural} you miss most.`,
+    "The search bar on Explore finds any place by name.",
+    "Each Library page includes a context map and links to neighboring places.",
+    "The Map tab switches between Globe, World, and USA views.",
+    "Pan and zoom the map, then click any place to open its Library page.",
+    "Drag the globe on the home screen to spin it — tap to open the map.",
+    "Tap Change under Play to pick mode, difficulty, and region filters.",
+    "Hard difficulty makes you type answers — no multiple-choice safety net.",
+    `World and ${otherScopeInfo.shortLabel} are separate scopes with their own content.`,
+    "Your profile menu (once signed in) holds Stats, sound, theme, and globe toggles.",
+    "Use Map, Play, and Explore in the bottom nav (mobile) or header tabs (desktop) to jump around.",
+  ];
+}
+
+function buildPersonalizedTaglines({
   profile,
   scope,
   streak,
@@ -64,15 +150,14 @@ export function buildHomeHeroTaglineCandidates({
   const beatTodayBest = storedTodayBest > 0 && currentStreak > storedTodayBest;
   const weakSpotCount = getCommonlyMissedCountries(profile, scope).length;
   const totalPlayed = sumStatAcrossDifficulties(profile, "totalPlayed", scope);
-  const totalCorrect = sumStatAcrossDifficulties(profile, "totalCorrect", scope);
   const achievementCount = profile.achievements.length;
   const modesTried = modesWithMinPlayed(profile, 1, scope);
   const allTimeBest = maxGlobalBestStreak(profile, scope);
   const lastMode = getScopedModeInfo(getMainPlayMode(profile), scope);
-  const otherScope = scope === "world" ? "usa" : "world";
-  const otherScopeInfo = SCOPE_INFO[otherScope];
 
   const candidates: string[] = [];
+  const dailyChallenge = modeRef("daily-challenge");
+  const practiceWeakSpots = modeRef("weak-spots");
 
   if (currentStreak >= 10) {
     candidates.push(
@@ -84,8 +169,6 @@ export function buildHomeHeroTaglineCandidates({
       `${currentStreak} correct in a row — nice rhythm. One more round?`,
       `A ${currentStreak}-answer streak is building. Stay sharp.`,
     );
-  } else if (currentStreak > 0) {
-    candidates.push("Every correct answer builds your streak — keep stacking them.");
   }
 
   if (beatTodayBest) {
@@ -101,9 +184,6 @@ export function buildHomeHeroTaglineCandidates({
     );
   }
 
-  const dailyChallenge = modeRef("daily-challenge");
-  const practiceWeakSpots = modeRef("weak-spots");
-
   if (dailyRun > 0 && !dailyCompletedToday) {
     candidates.push(
       `${dailyRun}-day daily run on the line — finish today's ${dailyChallenge} to keep the chain alive.`,
@@ -114,51 +194,30 @@ export function buildHomeHeroTaglineCandidates({
       `${dailyRun}-day daily run secured. Can you beat today's best of ${todayBest}?`,
       `Daily run intact at ${dailyRun} days — now chase a new best for today.`,
     );
-  } else if (!dailyCompletedToday) {
-    candidates.push(
-      `Finish today's ${dailyChallenge} to start your daily run streak.`,
-      `${dailyChallenge} is 10 mixed questions — including trivia — a quick way to warm up every day.`,
-    );
   }
 
   if (weakSpotCount > 0) {
     candidates.push(
       `${practiceWeakSpots} is ready with ${weakSpotCount} commonly missed ${weakSpotCount === 1 ? scopeInfo.noun : scopeInfo.nounPlural}.`,
-      `You have ${weakSpotCount} weak spots saved — ${practiceWeakSpots} drills the places you miss most.`,
-      `Try ${practiceWeakSpots} to review ${weakSpotCount} ${weakSpotCount === 1 ? "place" : "places"} you commonly miss.`,
-    );
-  } else {
-    candidates.push(
-      `${practiceWeakSpots} builds a personalized review list from the places you miss.`,
-      `Miss a few answers and ${practiceWeakSpots} will start collecting weak spots for you.`,
+      `You have ${weakSpotCount} weak spots — sort Explore by Commonly missed to study them.`,
     );
   }
 
-  if (totalPlayed >= 50) {
+  if (totalPlayed === 0) {
     candidates.push(
-      `${totalCorrect} correct out of ${totalPlayed} ${scopeInfo.nounPlural} answered — real progress.`,
-      `${totalPlayed} questions played in ${scopeInfo.shortLabel}. Keep exploring.`,
-    );
-  } else if (totalPlayed === 0) {
-    candidates.push(
-      `Jump in and set the bar for today in ${scopeInfo.label}.`,
       `Your first ${scopeInfo.noun} is waiting — tap Play to start.`,
     );
-  } else {
-    candidates.push("A few rounds today and you'll feel the map start to stick.");
   }
 
-  if (bestStreak > 0 && bestStreak > currentStreak) {
+  if (bestStreak > 0 && bestStreak > currentStreak && allTimeBest > 0) {
     candidates.push(
       `Your all-time best is ${allTimeBest}. Today is a good day to chase it.`,
-      `Best streak so far: ${bestStreak}. You have done it before — go again.`,
     );
   }
 
   if (achievementCount > 0) {
     candidates.push(
-      `${achievementCount} of ${ACHIEVEMENTS.length} achievements unlocked — check Stats for the next target.`,
-      `You have ${achievementCount} achievement${achievementCount === 1 ? "" : "s"}. Stats shows what to chase next.`,
+      `${achievementCount} of ${ACHIEVEMENTS.length} achievements unlocked — open Stats → Achievements for the next target.`,
     );
   }
 
@@ -166,45 +225,14 @@ export function buildHomeHeroTaglineCandidates({
     const lastModeRef = modeRef(lastMode.id);
     candidates.push(
       `${modesTried} modes tried — last up was ${lastModeRef}.`,
-      `You've explored ${modesTried} different modes. ${lastModeRef} is queued up if you want more.`,
     );
   }
-
-  candidates.push(
-    `${modeRef("mixed")} shuffles flags, capitals, shapes, trivia, and more — great when you want variety.`,
-    `${modeRef("speed-round")} gives you 60 seconds — how many can you get?`,
-    `${modeRef("marathon")} keeps going until your first mistake. How far can you run?`,
-    `${modeRef("neighbor-quiz")} is perfect for learning which countries share borders.`,
-    `${modeRef("population-showdown")} asks a simple question: which place has more people?`,
-    `${modeRef("fact-to-country")} draws on curated geographic details from the Library.`,
-    `${modeRef("atlasle")} is Wordle for geography — guess the place, unlock clues as you miss.`,
-    `${modeRef("shape-to-country")} is a signature challenge — identify places from silhouettes alone.`,
-    `Browse the ${scopeInfo.libraryTitle} for flags, capitals, shapes, neighbors, and geographic profiles.`,
-    "Pan and zoom the World Map, then click any country to open its Library page.",
-    "The USA Map covers all 50 states with the same click-to-explore flow.",
-    `Switch to ${otherScopeInfo.shortLabel} anytime — separate streaks and daily runs for each scope.`,
-    "Hard difficulty makes you type your answer — the real challenge tier.",
-    "Tap Choose your Journey to pick your mode, difficulty, and region filters.",
-    `${dailyChallenge} resets at midnight Eastern — one fresh set every day.`,
-    "Review today's daily answers after you finish to see what you missed.",
-    "Stats tracks streaks, mode breakdowns, and achievements in one place.",
-    "Library pages include context maps so you can see where each place sits.",
-    "Use Quick swap below Play to jump between your recently played modes.",
-  );
 
   return candidates;
 }
 
-function buildGuestHomeHeroTaglineCandidates(scope: GameScope): string[] {
-  const scopeInfo = SCOPE_INFO[scope];
-  return [
-    scopeInfo.tagline,
-    "Create a profile to save streaks, stats, and daily progress on this device.",
-    `${modeRef("weak-spots")} reviews the places you miss most once you start playing.`,
-    "Pan and zoom the World Map or USA Map, then click any place to open the Library.",
-    `${modeRef("mixed")} shuffles flags, capitals, shapes, trivia, and more.`,
-    `${modeRef("daily-challenge")} is 10 mixed questions — including trivia — a fresh set every day.`,
-  ];
+export function buildHomeHeroTaglineCandidates(context: HomeHeroTaglineContext): string[] {
+  return [...buildPersonalizedTaglines(context), ...buildUxProTips(context.scope)];
 }
 
 export function getGuestHomeHeroTagline(scope: GameScope): string {
@@ -213,4 +241,12 @@ export function getGuestHomeHeroTagline(scope: GameScope): string {
 
 export function getGuestHomeHeroTaglineExcluding(scope: GameScope, exclude?: string): string {
   return pickRandomExcluding(buildGuestHomeHeroTaglineCandidates(scope), exclude);
+}
+
+function buildGuestHomeHeroTaglineCandidates(scope: GameScope): string[] {
+  const scopeInfo = SCOPE_INFO[scope];
+  return [
+    scopeInfo.tagline,
+    ...buildGuestUxProTips(scope),
+  ];
 }

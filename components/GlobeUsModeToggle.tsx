@@ -15,7 +15,7 @@ const OPTIONS: { mode: GlobeUsMode; icon: string; label: string }[] = [
  * ThemeToggle's menu variant.
  */
 export function GlobeUsModeToggle() {
-  const { usMode, setUsMode, ready } = useGlobeUsMode();
+  const { usMode, setUsMode } = useGlobeUsMode();
 
   return (
     <div className="px-3 py-2" suppressHydrationWarning>
@@ -28,7 +28,7 @@ export function GlobeUsModeToggle() {
         aria-label="USA rendering on the globe"
       >
         {OPTIONS.map(({ mode, icon, label }) => {
-          const selected = ready && usMode === mode;
+          const selected = usMode === mode;
           return (
             <button
               key={mode}

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { FlagImage } from "@/components/FlagDisplay";
+import { LibraryListScrollRestore } from "@/components/LibraryListScrollRestore";
 import { LibraryPlaceVisual } from "@/components/LibraryPlaceVisual";
 import { LibrarySearch } from "@/components/LibrarySearch";
 import { useProfiles } from "@/components/ProfileProvider";
@@ -21,6 +22,7 @@ import {
   type LibraryFilter,
   type LibrarySort,
 } from "@/lib/library";
+import { captureLibraryListScrollState } from "@/lib/library-scroll";
 import { SCOPE_INFO, setStoredLibraryScope } from "@/lib/scope";
 import { getCommonlyMissedCountries } from "@/lib/stats-helpers";
 import { GAME_SCOPES, type GameScope } from "@/lib/types";
@@ -100,8 +102,11 @@ export function LibraryBrowser({ scope = "world" }: LibraryBrowserProps) {
     [filteredCountries, commonlyMissedSet],
   );
 
+  const saveListScroll = () => captureLibraryListScrollState(scope, filter, sort);
+
   return (
     <div className="space-y-5 sm:space-y-7">
+      <LibraryListScrollRestore scope={scope} filter={filter} sort={sort} />
       <header className="rounded-[1.75rem] border-2 border-teal-100 bg-white/80 p-5 shadow-sm backdrop-blur dark:border-teal-900/70 dark:bg-slate-900/80 sm:p-8">
         <h1 className="font-display text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 sm:text-4xl">
           {scopeInfo.libraryTitle}
@@ -143,6 +148,7 @@ export function LibraryBrowser({ scope = "world" }: LibraryBrowserProps) {
         sort={sort}
         isState={isUsa}
         className="w-full max-w-xl"
+        onNavigateToDetail={saveListScroll}
       />
 
       <section aria-labelledby="library-filter-heading">
@@ -212,6 +218,7 @@ export function LibraryBrowser({ scope = "world" }: LibraryBrowserProps) {
               <li key={country.code}>
                 <Link
                   href={buildLibraryDetailHref(country.code, scope, filter, sort)}
+                  onClick={saveListScroll}
                   className="group relative flex h-full min-h-48 flex-col overflow-hidden rounded-2xl border-2 border-slate-200 bg-white/85 p-3 shadow-sm transition-all hover:-translate-y-0.5 hover:border-teal-400 hover:shadow-md active:translate-y-0 dark:border-slate-700 dark:bg-slate-900/85 dark:hover:border-teal-500 sm:min-h-56 sm:p-4"
                 >
                   {isCommonlyMissed ? (

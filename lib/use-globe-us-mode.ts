@@ -15,7 +15,12 @@ function normalizeUsMode(value: string | null): GlobeUsMode {
 
 export function getStoredGlobeUsMode(): GlobeUsMode {
   if (typeof window === "undefined") return DEFAULT_US_MODE;
-  return normalizeUsMode(localStorage.getItem(STORAGE_KEY));
+  const stored = localStorage.getItem(STORAGE_KEY);
+  if (stored === null) {
+    localStorage.setItem(STORAGE_KEY, DEFAULT_US_MODE);
+    return DEFAULT_US_MODE;
+  }
+  return normalizeUsMode(stored);
 }
 
 /**
@@ -26,15 +31,12 @@ export function getStoredGlobeUsMode(): GlobeUsMode {
 export function useGlobeUsMode(): {
   usMode: GlobeUsMode;
   setUsMode: (mode: GlobeUsMode) => void;
-  ready: boolean;
 } {
   const [usMode, setUsModeState] = useState<GlobeUsMode>(DEFAULT_US_MODE);
-  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setUsModeState(getStoredGlobeUsMode());
-    setReady(true);
 
     const onChange = () => setUsModeState(getStoredGlobeUsMode());
     const onStorage = (event: StorageEvent) => {
@@ -54,5 +56,5 @@ export function useGlobeUsMode(): {
     window.dispatchEvent(new Event(CHANGE_EVENT));
   }, []);
 
-  return { usMode, setUsMode, ready };
+  return { usMode, setUsMode };
 }

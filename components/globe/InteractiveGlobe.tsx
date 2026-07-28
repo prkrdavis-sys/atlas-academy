@@ -245,8 +245,9 @@ export default function InteractiveGlobe({
 
   const resetView = useCallback(() => {
     setIntroCancelled(true);
+    onSelectPlace(null);
     controlsRef.current?.reset();
-  }, []);
+  }, [onSelectPlace]);
 
   const panelScope = selectedCode && isStateCode(selectedCode) ? "usa" : "world";
 

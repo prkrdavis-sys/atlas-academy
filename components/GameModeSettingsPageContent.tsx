@@ -17,7 +17,7 @@ import { getCommonlyMissedCountries } from "@/lib/stats-helpers";
 import { recordModeSelection, updateProfileSettings } from "@/lib/storage";
 import { useResolvedGameScope } from "@/lib/use-game-scope";
 import { clampRoundQuestionSetting, type ChallengeModifier, type GameMode } from "@/lib/types";
-import { subtleBackLinkClass } from "@/lib/utils";
+import { cn, subtleBackLinkClass } from "@/lib/utils";
 
 type GameModeSettingsPageContentProps = {
   mode: GameMode;
@@ -35,9 +35,7 @@ export function GameModeSettingsPageContent({ mode }: GameModeSettingsPageConten
   const [draft, setDraft] = useState<GameSetupDraft | null>(null);
   const draftRef = useRef<GameSetupDraft | null>(null);
   const [startBarPinned, setStartBarPinned] = useState(false);
-  const [startBarHeight, setStartBarHeight] = useState(0);
-  const startBarRef = useRef<HTMLDivElement>(null);
-  const pageHeaderRef = useRef<HTMLDivElement>(null);
+  const startBarSentinelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!scope) return;
@@ -56,33 +54,19 @@ export function GameModeSettingsPageContent({ mode }: GameModeSettingsPageConten
   }, [draft]);
 
   useEffect(() => {
-    const main = document.getElementById("main-content");
-    const header = pageHeaderRef.current;
-    if (!main || !header) return;
+    const sentinel = startBarSentinelRef.current;
+    if (!sentinel) return;
 
-    const updatePinned = () => {
-      setStartBarPinned(header.getBoundingClientRect().bottom <= 0);
-    };
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setStartBarPinned(!entry.isIntersecting);
+      },
+      { threshold: 0 },
+    );
 
-    updatePinned();
-    main.addEventListener("scroll", updatePinned, { passive: true });
-    window.addEventListener("resize", updatePinned);
-    return () => {
-      main.removeEventListener("scroll", updatePinned);
-      window.removeEventListener("resize", updatePinned);
-    };
-  }, [mode]);
-
-  useEffect(() => {
-    const bar = startBarRef.current;
-    if (!bar) return;
-
-    const updateHeight = () => setStartBarHeight(bar.offsetHeight);
-    updateHeight();
-    const observer = new ResizeObserver(updateHeight);
-    observer.observe(bar);
+    observer.observe(sentinel);
     return () => observer.disconnect();
-  }, [startBarPinned, mode]);
+  }, [mode, draft]);
 
   const persistCurrentDraft = () => {
     const current = draftRef.current;
@@ -158,45 +142,9 @@ export function GameModeSettingsPageContent({ mode }: GameModeSettingsPageConten
     );
   }
 
-  const startGameButton = (
-    <div className="relative z-40">
-      {startBarPinned ? <div style={{ height: startBarHeight }} aria-hidden /> : null}
-      <div
-        ref={startBarRef}
-        className={
-          startBarPinned
-            ? "fixed inset-x-0 top-[calc(3.5rem+env(safe-area-inset-top,0px))] z-40 sm:top-[calc(4rem+env(safe-area-inset-top,0px))]"
-            : undefined
-        }
-      >
-        <div
-          className={
-            startBarPinned
-              ? "mx-auto w-full max-w-5xl px-[max(0.75rem,env(safe-area-inset-left,0px))] sm:px-4"
-              : undefined
-          }
-        >
-          <div
-            className={
-              startBarPinned
-                ? "border-x-2 border-b-2 border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900"
-                : undefined
-            }
-          >
-            <div className="px-1 pb-1">
-              <GameActionButton onClick={handlePlay} disabled={startDisabled} icon={scopeInfo.icon}>
-                Start Game
-              </GameActionButton>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
   return (
     <div className="space-y-5 pb-24 sm:space-y-6">
-      <header ref={pageHeaderRef}>
+      <header>
         <Link
           href={setupBackHref}
           className={subtleBackLinkClass}
@@ -218,7 +166,18 @@ export function GameModeSettingsPageContent({ mode }: GameModeSettingsPageConten
         </div>
       </header>
 
-      {startGameButton}
+      <div ref={startBarSentinelRef} className="pointer-events-none -mb-2 h-px" aria-hidden />
+      <div
+        className={cn(
+          "sticky top-[var(--app-header-offset)] z-40 -mx-4 px-4 pb-1 pt-1 transition-[background-color,border-color,box-shadow] duration-200 sm:mx-0 sm:px-0",
+          startBarPinned &&
+            "border-b border-slate-200 bg-white/85 backdrop-blur-xl dark:border-slate-700 dark:bg-slate-900/85",
+        )}
+      >
+        <GameActionButton onClick={handlePlay} disabled={startDisabled} icon={scopeInfo.icon}>
+          Start Game
+        </GameActionButton>
+      </div>
 
       <GameSetupPanel
           mode={normalizedDraft.mode}

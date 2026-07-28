@@ -273,7 +273,9 @@ export function GameBoard({
     setLastSelectedAnswer(answer);
     setLastSelectedCode(code ?? null);
     spawnBurst(correct);
-    playSound(correct ? "correct" : "incorrect", activeProfile);
+    playSound(correct ? "correct" : "incorrect", activeProfile, {
+      streak: correct ? streak + 1 : undefined,
+    });
 
     if (countStats) {
       recordAnswer(

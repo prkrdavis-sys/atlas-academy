@@ -182,6 +182,19 @@ export function GameSetupPanel({
 
         <div className="mt-4 space-y-6 border-t border-slate-200 pt-4 dark:border-slate-700">
           <div>
+            <h3 className={fieldLabelClass()}>{scopeInfo.regionLabel}</h3>
+            <div className="mt-2">
+              <ContinentFilter
+                selected={continents}
+                includeTerritories={includeTerritories}
+                onContinentsChange={onContinentsChange}
+                onIncludeTerritoriesChange={onIncludeTerritoriesChange}
+                scope={scope}
+              />
+            </div>
+          </div>
+
+          <div>
             <h3 className={fieldLabelClass()}>Challenge modifier</h3>
             <div role="radiogroup" aria-label="Challenge modifier" className="mt-2 space-y-2">
               {CHALLENGE_MODIFIER_OPTIONS.map((option) => {
@@ -224,19 +237,6 @@ export function GameSetupPanel({
                   </button>
                 );
               })}
-            </div>
-          </div>
-
-          <div>
-            <h3 className={fieldLabelClass()}>{scopeInfo.regionLabel}</h3>
-            <div className="mt-2">
-              <ContinentFilter
-                selected={continents}
-                includeTerritories={includeTerritories}
-                onContinentsChange={onContinentsChange}
-                onIncludeTerritoriesChange={onIncludeTerritoriesChange}
-                scope={scope}
-              />
             </div>
           </div>
         </div>

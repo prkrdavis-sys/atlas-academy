@@ -30,15 +30,13 @@ export function PopulationMatchupDisplay({ codes }: PopulationMatchupDisplayProp
                   />
                 </div>
               )}
-              <div className="w-full min-w-0 shrink-0 overflow-hidden rounded-xl border-2 border-slate-200 bg-white shadow-md dark:border-slate-700 dark:bg-slate-800">
-                <FlagImage
-                  code={country.code}
-                  alt=""
-                  width={160}
-                  frame="none"
-                  fit="cover"
-                />
-              </div>
+              <FlagImage
+                code={country.code}
+                alt=""
+                width={160}
+                frame="md"
+                className="w-full"
+              />
             </div>
           </div>
         );

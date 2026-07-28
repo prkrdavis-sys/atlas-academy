@@ -5,6 +5,8 @@ import { notFound } from "next/navigation";
 import { ExpandableFlagImage } from "@/components/ExpandableFlagImage";
 import { FlagImage } from "@/components/FlagDisplay";
 import { LibraryDetailNav } from "@/components/LibraryDetailNav";
+import { LibraryDetailBackListener } from "@/components/LibraryDetailBackListener";
+import { LibraryScrollRestore } from "@/components/LibraryScrollRestore";
 import { LibraryPlaceMapSection } from "@/components/LibraryPlaceMapSection";
 import { LibraryPlaceVisual } from "@/components/LibraryPlaceVisual";
 import { LocalTimeChip } from "@/components/LocalTimeChip";
@@ -99,6 +101,8 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
 
   return (
     <article className="space-y-5 sm:space-y-7">
+      <LibraryScrollRestore />
+      <LibraryDetailBackListener />
       <Suspense
         fallback={
           <div className="-mx-4 h-[3.75rem] animate-pulse px-4 py-2 sm:mx-0 sm:px-0">
@@ -114,7 +118,10 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
         />
       </Suspense>
 
-      <header className="overflow-hidden rounded-[1.75rem] border-2 border-teal-100 bg-white/85 shadow-sm backdrop-blur dark:border-teal-900/70 dark:bg-slate-900/85">
+      <header
+        id="library-place-header"
+        className="overflow-hidden rounded-[1.75rem] border-2 border-teal-100 bg-white/85 shadow-sm backdrop-blur dark:border-teal-900/70 dark:bg-slate-900/85"
+      >
         <div className="grid gap-6 p-5 sm:grid-cols-[minmax(0,1fr)_minmax(16rem,0.8fr)] sm:items-center sm:p-8">
           <div className="min-w-0">
             <p className="text-sm font-bold text-teal-700 dark:text-teal-300">

@@ -15,11 +15,15 @@
     "fetch-state-flags": "bash scripts/fetch-state-flags.sh",
     "generate-state-shapes": "tsx scripts/generate-state-shapes.ts",
     "generate-supplemental-shapes": "tsx scripts/generate-supplemental-shapes.ts",
+    "generate-country-shapes": "tsx scripts/generate-country-shapes.ts",
+    "audit-geography": "tsx scripts/audit-geography-assets.ts",
     "generate-context-maps": "tsx scripts/generate-context-maps.ts",
     "generate-globe-data": "tsx scripts/generate-globe-texture-data.ts",
+    "generate-closest-mainland": "tsx scripts/generate-closest-mainland.ts",
+    "generate-flag-display-data": "tsx scripts/generate-flag-display-data.ts",
     "fetch-capital-images": "tsx scripts/fetch-capital-images.ts",
     "refresh-capital-images": "tsx scripts/fetch-capital-images.ts --refresh",
-    "verify-integrity": "tsx scripts/verify-game-integrity.ts"
+    "verify-integrity": "tsx scripts/verify-game-integrity.ts && tsx scripts/audit-geography-assets.ts"
   },
   "dependencies": {
     "@panzoom/panzoom": "^4.6.2",

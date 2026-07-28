@@ -5,6 +5,7 @@ import { FlagImage } from "@/components/FlagDisplay";
 import { PlaceContextMap } from "@/components/PlaceContextMap";
 import {
   getCountryByCode,
+  formatLearnRegionLabel,
   formatPopulation,
 } from "@/lib/countries";
 import { isStateCode } from "@/lib/scope";
@@ -51,15 +52,11 @@ function LanguageOrNeighbors({
   );
 }
 
-function ContinentValue({ country, isState }: { country: Country; isState: boolean }) {
-  if (isState) {
-    return country.continent;
-  }
-
+function RegionValue({ country, isState }: { country: Country; isState: boolean }) {
   return (
     <span className="inline-flex flex-wrap items-center gap-1.5">
-      {country.continent}
-      {country.isTerritory ? (
+      {formatLearnRegionLabel(country, isState ? "usa" : "world")}
+      {!isState && country.isTerritory ? (
         <span className="rounded-full bg-teal-100 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-teal-800 dark:bg-teal-950/60 dark:text-teal-300">
           Territory
         </span>
@@ -217,9 +214,9 @@ function InlineLearnCard({
             <dd className="mt-1 text-base font-semibold text-slate-800 dark:text-slate-200">{country.capital || "N/A"}</dd>
           </div>
           <div>
-            <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{isState ? "Region" : "Continent"}</dt>
+            <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Region</dt>
             <dd className="mt-1 text-base font-semibold text-slate-800 dark:text-slate-200">
-              <ContinentValue country={country} isState={isState} />
+              <RegionValue country={country} isState={isState} />
             </dd>
           </div>
           {!compareCountryCode && (
@@ -277,9 +274,9 @@ function InlineLearnCard({
                 <dd className="font-medium text-slate-800 dark:text-slate-200">{country.capital || "N/A"}</dd>
               </div>
               <div>
-                <dt className="font-semibold text-slate-500 dark:text-slate-400">{isState ? "Region" : "Continent"}</dt>
+                <dt className="font-semibold text-slate-500 dark:text-slate-400">Region</dt>
                 <dd className="font-medium text-slate-800 dark:text-slate-200">
-                  <ContinentValue country={country} isState={isState} />
+                  <RegionValue country={country} isState={isState} />
                 </dd>
               </div>
               {!compareCountryCode && (
@@ -383,8 +380,8 @@ export function LearnCard({
           <div className="min-w-0 space-y-1 text-xs leading-relaxed sm:text-sm">
             <p><span className="font-semibold">Capital:</span> {country.capital || "N/A"}</p>
             <p>
-              <span className="font-semibold">{isState ? "Region" : "Continent"}:</span>{" "}
-              <ContinentValue country={country} isState={isState} />
+              <span className="font-semibold">Region:</span>{" "}
+              <RegionValue country={country} isState={isState} />
             </p>
             {!compareCountryCode && (
               <p><span className="font-semibold">Population:</span> {formatPopulation(country.population)}</p>
