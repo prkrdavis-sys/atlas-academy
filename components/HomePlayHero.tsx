@@ -17,6 +17,7 @@ import { GLOBE_TAP_TRAVEL_THRESHOLD } from "@/components/globe/globe-scene";
 import type { GlobeHandle } from "@/components/home/GlobeBackground";
 import { getActiveGameSummaryParts, getMainPlayMode, resolvePlayMode } from "@/lib/game-setup";
 import { hasPlayedDailyToday } from "@/lib/game-engine";
+import { GLOBE_MAP_HREF } from "@/lib/navigation";
 import { getStoredScope, scopedHref, scopeQuery, SCOPE_INFO } from "@/lib/scope";
 import { playSound } from "@/lib/sound";
 import { recordModeSelection, updateProfileSettings } from "@/lib/storage";
@@ -120,8 +121,6 @@ export function HomePlayHero({
     router.push(scopedHref(`/play/${resolved.mode}`, activeScope, { autostart: "1" }));
   }, [profile, scope, onRefresh, router]);
 
-  const mapHref = scope === "usa" ? "/map?view=usa" : "/map";
-
   return (
     <>
       <ProfileRequiredDialog open={showProfileDialog} onClose={hideProfileDialog} />
@@ -145,7 +144,7 @@ export function HomePlayHero({
             </header>
 
             {/* Grows to fill leftover viewport height so the stack below sits at the bottom. */}
-            <GlobeDragZone href={mapHref} globeHandleRef={globeHandleRef} />
+            <GlobeDragZone href={GLOBE_MAP_HREF} globeHandleRef={globeHandleRef} />
 
             <div className="mx-auto flex w-full max-w-xl shrink-0 flex-col gap-3 sm:gap-4">
               <button
@@ -205,7 +204,7 @@ export function HomePlayHero({
               </p>
             </header>
 
-            <GlobeDragZone href="/map" globeHandleRef={globeHandleRef} />
+            <GlobeDragZone href={GLOBE_MAP_HREF} globeHandleRef={globeHandleRef} />
 
             <div className="mx-auto w-full max-w-xl shrink-0">
               <Link

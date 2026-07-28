@@ -24,6 +24,7 @@ import {
   useGlobeTexture,
 } from "@/components/globe/globe-scene";
 import { SpaceBackdrop, StaticStarfield } from "@/components/globe/SpaceBackdrop";
+import { GLOBE_MAP_HREF } from "@/lib/navigation";
 import type { Profile } from "@/lib/types";
 import { useGlobeDayNight } from "@/lib/use-globe-day-night";
 import { useGlobeUsMode } from "@/lib/use-globe-us-mode";
@@ -127,7 +128,7 @@ function ProgressGlobe({ profile, reducedMotion, isDark, usMode, dayNight, handl
     document.body.style.cursor = "grab";
     if (navigateOnTap && drag.traveled < GLOBE_TAP_TRAVEL_THRESHOLD) {
       document.body.style.cursor = "";
-      router.push("/map");
+      router.push(GLOBE_MAP_HREF);
     }
   }
 

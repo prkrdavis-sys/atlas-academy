@@ -3,7 +3,6 @@
 import dynamic from "next/dynamic";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ExplorerRankBadge } from "@/components/ExplorerRankBadge";
 import { supportsWebGL } from "@/components/globe/globe-scene";
 import { MapPageProgressPanel } from "@/components/MapPageProgressPanel";
 import { MapProgressDifficultySelector } from "@/components/PlaceMapProgressPanel";
@@ -124,6 +123,14 @@ export function MapPageContent() {
   }, []);
 
   useEffect(() => {
+    if (paramView === "globe") {
+      localStorage.setItem(MAP_VIEW_STORAGE_KEY, "globe");
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setStoredView("globe");
+    }
+  }, [paramView]);
+
+  useEffect(() => {
     if (profile) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setMapDifficulty(profile.settings.difficulty === "hard" ? "hard" : "medium");
@@ -178,12 +185,9 @@ export function MapPageContent() {
     <div className="space-y-5 sm:space-y-6">
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-            <h1 className="font-display text-2xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 sm:text-3xl">
-              🗺️ Map
-            </h1>
-            {profile ? <ExplorerRankBadge profile={profile} scope={panelScope} /> : null}
-          </div>
+          <h1 className="font-display text-2xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 sm:text-3xl">
+            🗺️ Map
+          </h1>
           <p className="mt-1 max-w-2xl text-sm text-slate-600 dark:text-slate-400">
             Click a country or U.S. state to see your progress and open its Library page.
           </p>

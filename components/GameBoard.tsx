@@ -32,7 +32,6 @@ import { getGlobalStreakOrZero } from "@/lib/stats-helpers";
 import {
   getMapProgressSummary,
   toMapProgressDifficulty,
-  wouldCountTowardMapProgress,
 } from "@/lib/map-progress";
 import { getQuestionTaskLabel, getTypeInPlacePlaceholder, scopeText, SCOPE_INFO } from "@/lib/scope";
 import { getStatsMode } from "@/lib/game-setup";
@@ -119,7 +118,6 @@ export function GameBoard({
   const [sessionComplete, setSessionComplete] = useState(false);
   const [exitedEarly, setExitedEarly] = useState(false);
   const [newAchievements, setNewAchievements] = useState<string[]>([]);
-  const [mapProgressQuestionsCounted, setMapProgressQuestionsCounted] = useState(0);
   const [initialMapProgress] = useState(() =>
     mapProgressDifficulty
       ? getMapProgressSummary(scope, activeProfile, mapProgressDifficulty)
@@ -289,17 +287,6 @@ export function GameBoard({
         mode === "weak-spots",
         question,
       );
-      if (
-        wouldCountTowardMapProgress({
-          question,
-          statsMode,
-          difficulty,
-          correct,
-          isPracticeMode: mode === "weak-spots",
-        })
-      ) {
-        setMapProgressQuestionsCounted((count) => count + 1);
-      }
       if (mode === "daily-challenge") {
         markDailyChallengePlayed(activeProfile.id, scope);
       }
@@ -491,10 +478,8 @@ export function GameBoard({
           {tracksMapProgress && initialMapProgress && currentMapProgress && (
             <GameMapProgressSummary
               scope={scope}
-              difficulty={mapProgressDifficulty!}
               initialSummary={initialMapProgress}
               currentSummary={currentMapProgress}
-              questionsCounted={mapProgressQuestionsCounted}
             />
           )}
           <div className="mt-6 flex flex-col gap-3">
