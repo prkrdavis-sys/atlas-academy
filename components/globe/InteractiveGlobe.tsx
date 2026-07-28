@@ -24,6 +24,7 @@ import {
   useGlobeSceneEnvironment,
   useGlobeTexture,
 } from "@/components/globe/globe-scene";
+import { GlobeDetailOverlays } from "@/components/globe/GlobeDetailOverlays";
 import { SpaceBackdrop, StaticStarfield } from "@/components/globe/SpaceBackdrop";
 import { MapScrollDownButton } from "@/components/MapScrollDownButton";
 import { MapZoomControls } from "@/components/MapZoomControls";
@@ -33,6 +34,8 @@ import { pickGlobePlaceAtUv } from "@/lib/globe-picking";
 import {
   GLOBE_DEFAULT_POLAR,
   GLOBE_MESH_Y_ROTATION,
+  PLACE_FOCUS_MAX_DISTANCE,
+  PLACE_FOCUS_MIN_DISTANCE,
   getGlobeFocusTarget,
   lerpAngle,
   type GlobeFocusTarget,
@@ -44,8 +47,9 @@ import { useGlobeDayNight } from "@/lib/use-globe-day-night";
 import { useIsDark } from "@/lib/use-is-dark";
 import { cn } from "@/lib/utils";
 
-const MIN_CAMERA_DISTANCE = 1.3;
-const MAX_CAMERA_DISTANCE = 4;
+/** Floor matches place-focus so microstate zooms aren't yanked back out. */
+const MIN_CAMERA_DISTANCE = PLACE_FOCUS_MIN_DISTANCE;
+const MAX_CAMERA_DISTANCE = PLACE_FOCUS_MAX_DISTANCE;
 /** Start fully zoomed out so the whole planet + atmosphere fit with margin. */
 const INITIAL_CAMERA_DISTANCE = MAX_CAMERA_DISTANCE;
 /**
@@ -57,8 +61,6 @@ const CINEMATIC_REST_DISTANCE = 3.25;
 const CINEMATIC_ZOOM_DURATION_S = 3.2;
 /** Seconds to spin and zoom toward a linked place from the library. */
 const PLACE_FOCUS_DURATION_S = 2.8;
-/** Camera distance after framing a linked country or state. */
-const PLACE_FOCUS_DISTANCE = 2.3;
 /** Camera-distance multiplier for one zoom button press. */
 const ZOOM_BUTTON_FACTOR = 0.75;
 /** Orbit drag speed at {@link INITIAL_CAMERA_DISTANCE}; scaled by zoom so close-ups stay controllable. */
@@ -189,7 +191,7 @@ function PlaceFocusIntro({
       );
       spherical.radius = THREE.MathUtils.lerp(
         INITIAL_CAMERA_DISTANCE,
-        PLACE_FOCUS_DISTANCE,
+        focusTarget.cameraDistance,
         progress,
       );
       spherical.makeSafe();
@@ -234,7 +236,10 @@ type GlobeSceneProps = {
   isDark: boolean;
   dayNight: boolean;
   selectedCode: string | null;
+  /** Prefetch / force detail overlays during library place-focus fly-to. */
+  forceDetailOverlays?: boolean;
   spinGroupRef: RefObject<THREE.Group | null>;
+  controlsRef: RefObject<OrbitControlsImpl | null>;
   onPickPlace: (code: string | null) => void;
 };
 
@@ -246,7 +251,9 @@ function PickableGlobe({
   isDark,
   dayNight,
   selectedCode,
+  forceDetailOverlays = false,
   spinGroupRef,
+  controlsRef,
   onPickPlace,
 }: GlobeSceneProps) {
   const texture = useGlobeTexture(profile, { difficulty, usMode, isDark, selectedCode });
@@ -302,6 +309,15 @@ function PickableGlobe({
         <EarthSunLight isDark={isDark} dayNight={dayNight} />
         <EarthshineLight isDark={isDark} dayNight={dayNight} />
       </mesh>
+      <GlobeDetailOverlays
+        profile={profile}
+        difficulty={difficulty}
+        isDark={isDark}
+        selectedCode={selectedCode}
+        forceActive={forceDetailOverlays}
+        controlsRef={controlsRef}
+        spinGroupRef={spinGroupRef}
+      />
       <GlobeAtmosphere isDark={isDark} />
     </group>
   );
@@ -415,7 +431,13 @@ export default function InteractiveGlobe({
       >
         {webglOk && ready ? (
           <Canvas
-            camera={{ position: [0, 0, INITIAL_CAMERA_DISTANCE], fov: 45 }}
+            camera={{
+              position: [0, 0, INITIAL_CAMERA_DISTANCE],
+              fov: 45,
+              // Tight near plane so microstate place-focus can sit close to the surface.
+              near: 0.001,
+              far: 200,
+            }}
             dpr={[1, 2]}
             frameloop={pageVisible ? "always" : "never"}
             gl={{ antialias: true, alpha: true }}
@@ -441,7 +463,9 @@ export default function InteractiveGlobe({
               isDark={isDark}
               dayNight={dayNight}
               selectedCode={highlightedCode}
+              forceDetailOverlays={usePlaceFocus}
               spinGroupRef={spinGroupRef}
+              controlsRef={controlsRef}
               onPickPlace={onSelectPlace}
             />
             <SyncOrbitRotateSpeed controlsRef={controlsRef} />

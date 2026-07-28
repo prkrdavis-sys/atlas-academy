@@ -281,6 +281,7 @@ export function InteractiveProgressMap({
               ariaLabel={copy.ariaLabel}
               isDark={isDark}
               interactive
+              includeMasteryFxDefs
               pathStyleResolver={pathStyleResolver}
               onPathClick={handlePathClick}
               onPathHover={setHoveredPathId}

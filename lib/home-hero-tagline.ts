@@ -77,7 +77,7 @@ function buildUxProTips(scope: GameScope): string[] {
     "Library pages show live local time for each place's primary timezone.",
 
     "The Map tab switches between Globe, World, and USA views — your choice is remembered.",
-    "On the flat map, colors show mastery progress — greener means more categories complete.",
+    "On the flat map, colors show mastery progress — Normal climbs teal to gold, Hard goes violet to legendary rainbow.",
     "The map has Normal and Hard progress tiers — toggle them to see different mastery levels.",
     "Easy difficulty doesn't count toward map progress — great for learning without pressure.",
     "Pan and zoom the map, then click any place to see its progress and open the Library.",

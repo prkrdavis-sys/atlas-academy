@@ -4,9 +4,11 @@ import Link from "next/link";
 import { useState } from "react";
 import { MapProgressInfoButton, MapProgressInfoDialog } from "@/components/MapProgressInfoDialog";
 import { getMapProgressSummary } from "@/lib/map-progress";
+import { getMapProgressChrome } from "@/lib/map-mastery-fx";
 import { SCOPE_INFO } from "@/lib/scope";
 import type { MapProgressDifficulty, Profile } from "@/lib/types";
 import { DIFFICULTY_LABELS, type GameScope } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 type MapProgressSummaryCardProps = {
   scope: GameScope;
@@ -27,6 +29,7 @@ export function MapProgressSummaryCard({
   const info = SCOPE_INFO[scope];
   const summary = getMapProgressSummary(scope, profile, difficulty);
   const mapHref = scope === "usa" ? "/map?view=usa" : "/map";
+  const chrome = getMapProgressChrome(difficulty);
 
   return (
     <>
@@ -37,7 +40,7 @@ export function MapProgressSummaryCard({
           scope={scope}
         />
       ) : null}
-      <div className="rounded-2xl border-2 border-teal-400 bg-gradient-to-br from-teal-50 to-emerald-50 p-4 shadow-sm dark:border-teal-600 dark:from-teal-950/40 dark:to-emerald-950/40">
+      <div className={chrome.cardClass}>
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
             <p className="font-display text-sm font-extrabold text-slate-900 dark:text-slate-100">
@@ -51,7 +54,12 @@ export function MapProgressSummaryCard({
             {showInfoDialog ? (
               <MapProgressInfoButton onClick={() => setShowProgressInfo(true)} />
             ) : null}
-            <p className="font-display text-2xl font-extrabold tabular-nums text-emerald-700 dark:text-emerald-400 sm:text-3xl">
+            <p
+              className={cn(
+                "font-display text-2xl font-extrabold tabular-nums sm:text-3xl",
+                chrome.percentClass,
+              )}
+            >
               {summary.percentComplete}%
             </p>
           </div>
@@ -73,7 +81,7 @@ export function MapProgressSummaryCard({
           aria-label={`${info.shortLabel} map progress`}
         >
           <div
-            className="h-full rounded-full bg-gradient-to-r from-teal-400 to-emerald-500 transition-all duration-300"
+            className={cn("h-full rounded-full transition-all duration-300", chrome.barClass)}
             style={{ width: `${summary.percentComplete}%` }}
           />
         </div>
@@ -83,10 +91,7 @@ export function MapProgressSummaryCard({
         </p>
 
         {showMapLink ? (
-          <Link
-            href={mapHref}
-            className="mt-4 inline-flex min-h-10 items-center justify-center rounded-xl border-2 border-teal-600 bg-teal-600 px-4 py-2 font-display text-sm font-extrabold text-white shadow-[0_3px_0_var(--color-teal-800)] transition-all hover:bg-teal-500 active:translate-y-[3px] active:shadow-none dark:border-teal-500 dark:bg-teal-600 dark:shadow-[0_3px_0_var(--color-teal-900)]"
-          >
+          <Link href={mapHref} className={chrome.linkClass}>
             Open Map →
           </Link>
         ) : null}

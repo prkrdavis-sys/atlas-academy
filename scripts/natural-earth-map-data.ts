@@ -53,7 +53,7 @@ function normalizeCode(value: string | undefined): string | undefined {
   return value.toUpperCase();
 }
 
-function countCoordinates(geometry: Geometry | null | undefined): number {
+export function countCoordinates(geometry: Geometry | null | undefined): number {
   if (!geometry || geometry.type === "GeometryCollection") return 0;
 
   let count = 0;
@@ -93,7 +93,7 @@ function featureMatchesCountry(feature: NaturalEarthFeature, country: Country): 
   return iso3Candidates.some((candidate) => candidate === code3);
 }
 
-function findFeatureForCountry(
+export function findFeatureForCountry(
   features: NaturalEarthFeature[],
   country: Country,
 ): NaturalEarthFeature | undefined {
@@ -198,7 +198,7 @@ type GeoBoundariesApiResponse = {
  * Natural Earth 10m heavily simplifies microstates (Monaco ≈ 12 verts).
  * Prefer geoBoundaries ADM0 when it offers a clearly more detailed outline.
  */
-async function loadDetailedGeometry(
+export async function loadDetailedGeometry(
   country: Country,
   naturalEarthGeometry: Geometry,
 ): Promise<Geometry> {

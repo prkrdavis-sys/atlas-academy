@@ -83,6 +83,7 @@ export function MapProgressInfoDialog({ open, onClose, scope }: MapProgressInfoD
           <strong className="font-semibold text-slate-800 dark:text-slate-100">Capital</strong>, and{" "}
           <strong className="font-semibold text-slate-800 dark:text-slate-100">Trivia</strong> — to fully complete a{" "}
           {placeNoun}. Mixed, Daily Challenge, Marathon, and Speed Round count when the question matches a category.
+          Full mastery shines gold on Normal and a legendary rainbow shimmer on Hard.
         </p>
         <Button size="lg" className="mt-6 w-full" onClick={onClose}>
           Got it

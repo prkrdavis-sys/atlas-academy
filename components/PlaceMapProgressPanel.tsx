@@ -10,6 +10,11 @@ import {
 } from "@/lib/map-progress";
 import { getProgressBorder, getProgressFillColor } from "@/lib/map-colors";
 import {
+  getMapProgressChrome,
+  getMasteryGlowClass,
+  getMasteryTextureClass,
+} from "@/lib/map-mastery-fx";
+import {
   DIFFICULTY_LABELS,
   MAP_PROGRESS_CATEGORIES,
   MAP_PROGRESS_DIFFICULTIES,
@@ -41,6 +46,7 @@ export function MapProgressDifficultySelector({
     >
       {MAP_PROGRESS_DIFFICULTIES.map((level) => {
         const selected = value === level;
+        const chrome = getMapProgressChrome(level);
         return (
           <button
             key={level}
@@ -53,9 +59,7 @@ export function MapProgressDifficultySelector({
             className={cn(
               "min-h-9 rounded-xl px-3 py-1.5 font-display text-sm font-extrabold transition-all",
               selected
-                ? level === "hard"
-                  ? "bg-white text-rose-800 shadow-sm dark:bg-slate-900 dark:text-rose-300"
-                  : "bg-white text-teal-800 shadow-sm dark:bg-slate-900 dark:text-teal-300"
+                ? chrome.selectedLabelClass
                 : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100",
             )}
           >
@@ -81,19 +85,25 @@ export function MapProgressFillLegend({
       <span className="font-semibold text-slate-700 dark:text-slate-300">Mastery level:</span>
       {MAP_PROGRESS_FILL_LEVELS.map((level) => {
         const fill = getProgressFillColor(level, isDark, difficulty);
+        const glowClass = getMasteryGlowClass(level, difficulty);
+        const isTop = level === 4;
 
         return (
           <span key={level} className="inline-flex items-center gap-1.5">
             <span
               aria-hidden
-              className="shrink-0 rounded-[3px]"
+              className={cn(
+                "shrink-0 rounded-[3px]",
+                glowClass,
+                isTop && getMasteryTextureClass(difficulty),
+              )}
               style={{
                 display: "inline-block",
                 width: 16,
                 height: 16,
                 minWidth: 16,
                 minHeight: 16,
-                backgroundColor: fill,
+                backgroundColor: isTop ? undefined : fill,
                 border: `1px solid ${border.stroke}`,
                 boxShadow: isDark ? "inset 0 0 0 1px rgb(255 255 255 / 0.08)" : undefined,
               }}

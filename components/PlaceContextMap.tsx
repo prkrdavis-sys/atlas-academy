@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { MapMasteryFxDefs } from "@/components/MapMasteryFxDefs";
 import {
   countryHasContextMap,
   getContextMapAriaLabel,
@@ -111,6 +112,8 @@ type ContextMapSvgProps = {
   /** Scale borders with geography (better for static zoomed crops). */
   scaleStrokesWithMap?: boolean;
   pathStyleResolver?: (pathId: string) => MapPathStyle | null;
+  /** Include animated gold/legendary gradient defs for progress-map fills. */
+  includeMasteryFxDefs?: boolean;
   onPathClick?: (pathId: string) => void;
   onPathHover?: (pathId: string | null) => void;
   onBackgroundClick?: () => void;
@@ -139,6 +142,7 @@ export function ContextMapSvg({
   viewBox,
   scaleStrokesWithMap = false,
   pathStyleResolver,
+  includeMasteryFxDefs = false,
   onPathClick,
   onPathHover,
   onBackgroundClick,
@@ -181,6 +185,7 @@ export function ContextMapSvg({
       aria-label={ariaLabel}
       shapeRendering="geometricPrecision"
     >
+      {includeMasteryFxDefs ? <MapMasteryFxDefs /> : null}
       <rect
         x={viewBoxX}
         y={viewBoxY}
@@ -211,11 +216,10 @@ export function ContextMapSvg({
             vectorEffect={scaleStrokesWithMap ? undefined : "non-scaling-stroke"}
             strokeLinejoin="round"
             strokeLinecap="round"
-            className={
-              interactive
-                ? "cursor-pointer transition-[fill,stroke] duration-150"
-                : undefined
-            }
+            className={cn(
+              interactive && "cursor-pointer transition-[fill,stroke] duration-150",
+              style.className,
+            )}
             onMouseEnter={interactive && onPathHover ? () => onPathHover(path.id) : undefined}
             onMouseLeave={interactive && onPathHover ? () => onPathHover(null) : undefined}
           />

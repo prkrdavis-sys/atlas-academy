@@ -1,13 +1,12 @@
 /**
- * Generates data/globe-countries.json: country and U.S. state outlines
- * projected onto normalized equirectangular coordinates (x, y in 0..1),
- * keyed by the same codes as profile.placeMapProgress (ISO alpha-2 for
- * countries, "US-XX" for states). The globe rasterizes these onto a canvas
- * at whatever resolution the device supports, so coordinates are stored as
- * floats rather than pixels.
+ * Generates:
+ * - data/globe-countries.json — NE 50m country/state outlines for the base
+ *   equirectangular globe texture (distant viewing).
+ * - data/globe-detail-countries.json — NE 10m (+ geoBoundaries upgrades) rings
+ *   for small / under-tessellated places, used as vector overlays when zoomed in.
  *
- * Uses Natural Earth 50m data for crisp borders when zoomed in, matching the
- * fetch-at-generate-time approach of the other map scripts.
+ * Coordinates are normalized equirectangular floats (x, y in 0..1), keyed by the
+ * same codes as profile.placeMapProgress.
  */
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -15,14 +14,40 @@ import type { Feature, FeatureCollection, MultiPolygon, Polygon, Position } from
 import countriesData from "../data/countries.json";
 import statesData from "../data/states.json";
 import type { Country } from "../lib/types";
+import {
+  countCoordinates,
+  findFeatureForCountry,
+  loadDetailedGeometry,
+  loadNaturalEarthFeatures,
+  type NaturalEarthFeature,
+} from "./natural-earth-map-data";
 
 const NATURAL_EARTH_50M_COUNTRIES_URL =
   "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_admin_0_countries.geojson";
 const NATURAL_EARTH_50M_STATES_URL =
   "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_admin_1_states_provinces.geojson";
 
-/** Decimal places kept for normalized coordinates (~0.6px at an 8192-wide texture). */
+/** Decimal places for the base texture rings (~0.6px at an 8192-wide texture). */
 const COORD_PRECISION = 5;
+
+/**
+ * Detail overlays need finer quantization: microstates span ≪ 1e-4 in
+ * normalized space, so 5 decimals stair-step their coastlines.
+ */
+const DETAIL_COORD_PRECISION = 7;
+
+/**
+ * Include a place in the detail overlay set when its largest ring is small on
+ * the globe. Vertex count alone is a bad proxy — Switzerland/Tunisia are
+ * low-vert at 50m but huge on screen if drawn as vector overlays.
+ */
+const DETAIL_MAX_NORMALIZED_SPAN = 0.008;
+
+/** Also keep extremely under-tessellated scraps even if slightly larger. */
+const DETAIL_MAX_COARSE_VERTICES = 40;
+
+/** Soft cap on total vertices stored per detail country (matches map pipeline). */
+const DETAIL_MAX_PREFERRED_COORDINATES = 3500;
 
 type NaturalEarthCountryProperties = {
   ISO_A2?: string;
@@ -56,6 +81,10 @@ export type GlobeTextureData = {
   usStates: GlobeCountryShape[];
   /** Land that has no playable country (e.g. Antarctica), drawn as base land. */
   extras: number[][];
+};
+
+export type GlobeDetailData = {
+  countries: GlobeCountryShape[];
 };
 
 const countries = countriesData as Country[];
@@ -107,8 +136,8 @@ function projectY(lat: number): number {
   return (90 - lat) / 180;
 }
 
-function round(value: number): number {
-  return Number(value.toFixed(COORD_PRECISION));
+function round(value: number, precision = COORD_PRECISION): number {
+  return Number(value.toFixed(precision));
 }
 
 /**
@@ -116,7 +145,7 @@ function round(value: number): number {
  * jumps so rings that straddle ±180° stay contiguous (the renderer draws
  * shifted copies to cover both sides of the seam).
  */
-function projectRing(ring: Position[]): number[] | null {
+function projectRing(ring: Position[], precision = COORD_PRECISION): number[] | null {
   const flat: number[] = [];
   let previousX: number | null = null;
   let shift = 0;
@@ -134,8 +163,8 @@ function projectRing(ring: Position[]): number[] | null {
     }
     previousX = x;
 
-    const px = round(x);
-    const py = round(projectY(lat));
+    const px = round(x, precision);
+    const py = round(projectY(lat), precision);
     const length = flat.length;
     if (length >= 2 && flat[length - 2] === px && flat[length - 1] === py) continue;
     flat.push(px, py);
@@ -144,13 +173,16 @@ function projectRing(ring: Position[]): number[] | null {
   return flat.length >= 6 ? flat : null;
 }
 
-function projectGeometryRings(geometry: Polygon | MultiPolygon): number[][] {
+function projectGeometryRings(
+  geometry: Polygon | MultiPolygon,
+  precision = COORD_PRECISION,
+): number[][] {
   const polygons: Position[][][] =
     geometry.type === "Polygon" ? [geometry.coordinates] : geometry.coordinates;
   const rings: number[][] = [];
   for (const polygon of polygons) {
     for (const ring of polygon) {
-      const projected = projectRing(ring);
+      const projected = projectRing(ring, precision);
       if (projected) rings.push(projected);
     }
   }
@@ -169,6 +201,132 @@ function isAreaGeometry(
   geometry: Feature["geometry"] | null | undefined,
 ): geometry is Polygon | MultiPolygon {
   return geometry?.type === "Polygon" || geometry?.type === "MultiPolygon";
+}
+
+function countRingVertices(rings: number[][]): number {
+  let count = 0;
+  for (const ring of rings) count += ring.length / 2;
+  return count;
+}
+
+/** Axis-aligned span of the largest ring in normalized equirectangular space. */
+function largestRingNormalizedSpan(rings: number[][]): number {
+  let best = 0;
+  for (const ring of rings) {
+    let minX = Infinity;
+    let maxX = -Infinity;
+    let minY = Infinity;
+    let maxY = -Infinity;
+    for (let i = 0; i < ring.length; i += 2) {
+      const x = ring[i];
+      const y = ring[i + 1];
+      if (x < minX) minX = x;
+      if (x > maxX) maxX = x;
+      if (y < minY) minY = y;
+      if (y > maxY) maxY = y;
+    }
+    const span = Math.max(maxX - minX, maxY - minY);
+    if (span > best) best = span;
+  }
+  return best;
+}
+
+function needsDetailOverlay(rings: number[][] | undefined): boolean {
+  if (!rings || rings.length === 0) return true;
+  const normalizedSpan = largestRingNormalizedSpan(rings);
+  if (normalizedSpan < DETAIL_MAX_NORMALIZED_SPAN) return true;
+  const verts = countRingVertices(rings);
+  // Crude scraps that are still relatively small (not continental outlines).
+  if (verts < DETAIL_MAX_COARSE_VERTICES && normalizedSpan < 0.03) return true;
+  return false;
+}
+
+/**
+ * Drop every Nth vertex on oversized rings while keeping endpoints, so detail
+ * overlays stay within a memory budget without losing overall shape.
+ */
+function simplifyRings(rings: number[][], maxVertices: number): number[][] {
+  const total = countRingVertices(rings);
+  if (total <= maxVertices) return rings;
+
+  const keepRatio = maxVertices / total;
+  return rings.map((ring) => {
+    const pointCount = ring.length / 2;
+    if (pointCount <= 4) return ring;
+    const stride = Math.max(1, Math.ceil(1 / keepRatio));
+    const simplified: number[] = [];
+    for (let i = 0; i < pointCount; i += 1) {
+      if (i === 0 || i === pointCount - 1 || i % stride === 0) {
+        simplified.push(ring[i * 2], ring[i * 2 + 1]);
+      }
+    }
+    // Ensure a closed triangle at minimum.
+    if (simplified.length < 6) return ring;
+    return simplified;
+  });
+}
+
+async function mapPool<T, R>(
+  items: T[],
+  concurrency: number,
+  mapper: (item: T, index: number) => Promise<R>,
+): Promise<R[]> {
+  const results = new Array<R>(items.length);
+  let nextIndex = 0;
+
+  async function worker(): Promise<void> {
+    while (nextIndex < items.length) {
+      const index = nextIndex;
+      nextIndex += 1;
+      results[index] = await mapper(items[index], index);
+    }
+  }
+
+  const workers = Array.from({ length: Math.min(concurrency, items.length) }, () => worker());
+  await Promise.all(workers);
+  return results;
+}
+
+async function buildDetailCountries(
+  coarseByCode: Map<string, number[][]>,
+  missingCodes: string[],
+): Promise<GlobeCountryShape[]> {
+  const candidates = countries.filter(
+    (country) => needsDetailOverlay(coarseByCode.get(country.code)) || missingCodes.includes(country.code),
+  );
+
+  console.log(
+    `Building high-detail overlays for ${candidates.length} small/low-detail places...`,
+  );
+
+  const features = await loadNaturalEarthFeatures();
+  const featureByCode = new Map<string, NaturalEarthFeature>();
+  for (const country of candidates) {
+    const feature = findFeatureForCountry(features, country);
+    if (feature) featureByCode.set(country.code, feature);
+  }
+
+  const resolved = await mapPool(candidates, 3, async (country) => {
+    const baseFeature = featureByCode.get(country.code);
+    if (!baseFeature?.geometry || !isAreaGeometry(baseFeature.geometry)) {
+      return null;
+    }
+
+    const detailed = await loadDetailedGeometry(country, baseFeature.geometry);
+    if (!isAreaGeometry(detailed)) return null;
+
+    const rings = simplifyRings(
+      projectGeometryRings(detailed, DETAIL_COORD_PRECISION),
+      DETAIL_MAX_PREFERRED_COORDINATES,
+    );
+    if (rings.length === 0) return null;
+
+    return { code: country.code, rings } satisfies GlobeCountryShape;
+  });
+
+  return resolved
+    .filter((entry): entry is GlobeCountryShape => entry !== null)
+    .sort((a, b) => a.code.localeCompare(b.code));
 }
 
 async function main() {
@@ -235,6 +393,22 @@ async function main() {
   if (missingStates.length > 0) {
     console.log(`Missing state outlines: ${missingStates.map((s) => s.code).join(", ")}`);
   }
+
+  const detailCountries = await buildDetailCountries(
+    byCode,
+    missingCountries.map((c) => c.code),
+  );
+  const detailData: GlobeDetailData = { countries: detailCountries };
+  const detailPath = path.join(process.cwd(), "data", "globe-detail-countries.json");
+  await writeFile(detailPath, JSON.stringify(detailData));
+
+  const detailVerts = detailCountries.reduce(
+    (sum, country) => sum + countRingVertices(country.rings),
+    0,
+  );
+  console.log(
+    `Wrote ${detailCountries.length} detail overlays (${detailVerts} verts) to data/globe-detail-countries.json`,
+  );
 }
 
 main().catch((error) => {

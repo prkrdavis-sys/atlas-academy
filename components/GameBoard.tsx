@@ -493,9 +493,13 @@ export function GameBoard({
               </div>
             )}
           </div>
-          {tracksMapProgress && initialMapProgress && currentMapProgress && (
+          {tracksMapProgress &&
+            mapProgressDifficulty &&
+            initialMapProgress &&
+            currentMapProgress && (
             <GameMapProgressSummary
               scope={scope}
+              difficulty={mapProgressDifficulty}
               initialSummary={initialMapProgress}
               currentSummary={currentMapProgress}
             />

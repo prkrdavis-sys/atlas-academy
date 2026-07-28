@@ -4,11 +4,14 @@ import {
   getMapProgressDelta,
   type MapProgressSummary,
 } from "@/lib/map-progress";
+import { getMapProgressChrome } from "@/lib/map-mastery-fx";
 import { SCOPE_INFO } from "@/lib/scope";
-import type { GameScope } from "@/lib/types";
+import type { GameScope, MapProgressDifficulty } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 type GameMapProgressSummaryProps = {
   scope: GameScope;
+  difficulty: MapProgressDifficulty;
   initialSummary: MapProgressSummary;
   currentSummary: MapProgressSummary;
 };
@@ -36,38 +39,37 @@ function formatRoundDelta(
 
 export function GameMapProgressSummary({
   scope,
+  difficulty,
   initialSummary,
   currentSummary,
 }: GameMapProgressSummaryProps) {
   const delta = getMapProgressDelta(initialSummary, currentSummary);
   const roundDelta = formatRoundDelta(scope, delta);
+  const chrome = getMapProgressChrome(difficulty);
 
   return (
-    <div
-      className="mx-auto mt-4 max-w-sm rounded-xl border border-teal-200/70 bg-teal-50/40 px-3 py-2.5 dark:border-teal-800/70 dark:bg-teal-950/20"
-      aria-label="Map progress this round"
-    >
+    <div className={chrome.gamePanelClass} aria-label="Map progress this round">
       <div className="flex items-baseline justify-between gap-3">
         <div className="flex items-baseline gap-1.5">
-          <span className="text-xs font-bold text-teal-800 dark:text-teal-300">
-            Map progress
-          </span>
+          <span className={cn("text-xs font-bold", chrome.gameLabelClass)}>Map progress</span>
           <span
-            className="select-none text-xs text-teal-500/70 dark:text-teal-400/50"
+            className={cn("select-none text-xs opacity-60", chrome.gameLabelClass)}
             aria-hidden
           >
             –
           </span>
-          <span className="font-display text-base font-extrabold tabular-nums leading-none text-emerald-700 dark:text-emerald-400">
+          <span
+            className={cn(
+              "font-display text-base font-extrabold tabular-nums leading-none",
+              chrome.gamePercentClass,
+            )}
+          >
             {currentSummary.percentComplete}%
           </span>
         </div>
         {roundDelta ? (
-          <p className="min-w-0 truncate text-right text-xs leading-tight text-teal-600 dark:text-teal-400">
-            <span className="font-bold text-emerald-700 dark:text-emerald-400">
-              {roundDelta}
-            </span>{" "}
-            this round
+          <p className={cn("min-w-0 truncate text-right text-xs leading-tight", chrome.gameLabelClass)}>
+            <span className={cn("font-bold", chrome.gamePercentClass)}>{roundDelta}</span> this round
           </p>
         ) : null}
       </div>
@@ -81,7 +83,7 @@ export function GameMapProgressSummary({
         aria-label={`${SCOPE_INFO[scope].shortLabel} map progress`}
       >
         <div
-          className="h-full rounded-full bg-gradient-to-r from-teal-400 to-emerald-500 transition-all duration-300"
+          className={cn("h-full rounded-full transition-all duration-300", chrome.gameBarClass)}
           style={{ width: `${currentSummary.percentComplete}%` }}
         />
       </div>

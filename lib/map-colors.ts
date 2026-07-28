@@ -1,4 +1,9 @@
-import type { MapProgressDifficulty } from "@/lib/types";
+import {
+  getMasteryGlowClass,
+  getMasteryGradientId,
+  getMasterySolidColor,
+} from "@/lib/map-mastery-fx";
+import type { MapProgressDifficulty, PlaceMasteryLevel } from "@/lib/types";
 
 /** Panzoom skips pointer handling on elements with this class (and their descendants). */
 export const PANZOOM_EXCLUDE_CLASS = "panzoom-exclude";
@@ -9,6 +14,8 @@ export type MapPathStyle = {
   fill: string;
   stroke: string;
   strokeWidth: number;
+  /** Optional CSS class (e.g. mastery glow pulse). */
+  className?: string;
 };
 
 type MapPalette = Record<MapPathRole, MapPathStyle> & { ocean: string };
@@ -122,91 +129,96 @@ export function getProgressBorder(isDark: boolean): Pick<MapPathStyle, "stroke" 
   return isDark ? DARK_PROGRESS_BORDER : LIGHT_PROGRESS_BORDER;
 }
 
-function progressPathStyle(fill: string, isDark: boolean): MapPathStyle {
-  const border = getProgressBorder(isDark);
-  return { fill, ...border };
-}
-
-/** Normal (medium) progress — teal mastery scale. */
-const LIGHT_PROGRESS_FILL_COLORS: Record<0 | 1 | 2 | 3 | 4, string> = {
+/**
+ * Normal (medium) progress — teal ladder warming toward gold at level 3,
+ * with level 4 represented by a metallic gold solid (animated texture applied
+ * separately on the map / globe).
+ */
+const LIGHT_PROGRESS_FILL_COLORS: Record<PlaceMasteryLevel, string> = {
   0: LIGHT_MAP_PALETTE.default.fill,
   1: "#115e59",
   2: "#0f766e",
-  3: "#14b8a6",
-  4: "#2dd4bf",
+  3: "#0d9488",
+  4: getMasterySolidColor("medium"),
 };
 
-const DARK_PROGRESS_FILL_COLORS: Record<0 | 1 | 2 | 3 | 4, string> = {
+const DARK_PROGRESS_FILL_COLORS: Record<PlaceMasteryLevel, string> = {
   0: DARK_MAP_PALETTE.default.fill,
   1: "#0f5e56",
   2: "#0f766e",
-  3: "#119e90",
-  4: "#2dd4bf",
+  3: "#14b8a6",
+  4: getMasterySolidColor("medium"),
 };
 
-/** Hard progress — burgundy → red mastery scale. */
-const LIGHT_HARD_PROGRESS_FILL_COLORS: Record<0 | 1 | 2 | 3 | 4, string> = {
+/**
+ * Hard progress — deep violet → magenta → hot pink/cyan accents, with level 4
+ * as a Clash Royale–style legendary solid (animated holographic texture on map/globe).
+ */
+const LIGHT_HARD_PROGRESS_FILL_COLORS: Record<PlaceMasteryLevel, string> = {
   0: LIGHT_MAP_PALETTE.default.fill,
-  1: "#4c0519",
-  2: "#9f1239",
-  3: "#e11d48",
-  4: "#fb7185",
+  1: "#2e1065",
+  2: "#86198f",
+  3: "#e879f9",
+  4: getMasterySolidColor("hard"),
 };
 
-const DARK_HARD_PROGRESS_FILL_COLORS: Record<0 | 1 | 2 | 3 | 4, string> = {
+const DARK_HARD_PROGRESS_FILL_COLORS: Record<PlaceMasteryLevel, string> = {
   0: DARK_MAP_PALETTE.default.fill,
-  1: "#2a0610",
-  2: "#7f1d1d",
-  3: "#be123c",
-  4: "#fb7185",
+  1: "#1e0b3d",
+  2: "#6b21a8",
+  3: "#d946ef",
+  4: getMasterySolidColor("hard"),
 };
 
 function progressFillColors(
   difficulty: MapProgressDifficulty,
   isDark: boolean,
-): Record<0 | 1 | 2 | 3 | 4, string> {
+): Record<PlaceMasteryLevel, string> {
   if (difficulty === "hard") {
     return isDark ? DARK_HARD_PROGRESS_FILL_COLORS : LIGHT_HARD_PROGRESS_FILL_COLORS;
   }
   return isDark ? DARK_PROGRESS_FILL_COLORS : LIGHT_PROGRESS_FILL_COLORS;
 }
 
-const LIGHT_PROGRESS_FILLS: Record<0 | 1 | 2 | 3 | 4, MapPathStyle> = {
-  0: progressPathStyle(LIGHT_PROGRESS_FILL_COLORS[0], false),
-  1: progressPathStyle(LIGHT_PROGRESS_FILL_COLORS[1], false),
-  2: progressPathStyle(LIGHT_PROGRESS_FILL_COLORS[2], false),
-  3: progressPathStyle(LIGHT_PROGRESS_FILL_COLORS[3], false),
-  4: progressPathStyle(LIGHT_PROGRESS_FILL_COLORS[4], false),
-};
+function progressPathStyleForLevel(
+  level: PlaceMasteryLevel,
+  fill: string,
+  isDark: boolean,
+  difficulty: MapProgressDifficulty,
+): MapPathStyle {
+  const border = getProgressBorder(isDark);
+  const paint =
+    level === 4 ? `url(#${getMasteryGradientId(difficulty)})` : fill;
+  return {
+    fill: paint,
+    ...border,
+    className: getMasteryGlowClass(level, difficulty),
+  };
+}
 
-const DARK_PROGRESS_FILLS: Record<0 | 1 | 2 | 3 | 4, MapPathStyle> = {
-  0: progressPathStyle(DARK_PROGRESS_FILL_COLORS[0], true),
-  1: progressPathStyle(DARK_PROGRESS_FILL_COLORS[1], true),
-  2: progressPathStyle(DARK_PROGRESS_FILL_COLORS[2], true),
-  3: progressPathStyle(DARK_PROGRESS_FILL_COLORS[3], true),
-  4: progressPathStyle(DARK_PROGRESS_FILL_COLORS[4], true),
-};
+function buildProgressFills(
+  colors: Record<PlaceMasteryLevel, string>,
+  isDark: boolean,
+  difficulty: MapProgressDifficulty,
+): Record<PlaceMasteryLevel, MapPathStyle> {
+  return {
+    0: progressPathStyleForLevel(0, colors[0], isDark, difficulty),
+    1: progressPathStyleForLevel(1, colors[1], isDark, difficulty),
+    2: progressPathStyleForLevel(2, colors[2], isDark, difficulty),
+    3: progressPathStyleForLevel(3, colors[3], isDark, difficulty),
+    4: progressPathStyleForLevel(4, colors[4], isDark, difficulty),
+  };
+}
 
-const LIGHT_HARD_PROGRESS_FILLS: Record<0 | 1 | 2 | 3 | 4, MapPathStyle> = {
-  0: progressPathStyle(LIGHT_HARD_PROGRESS_FILL_COLORS[0], false),
-  1: progressPathStyle(LIGHT_HARD_PROGRESS_FILL_COLORS[1], false),
-  2: progressPathStyle(LIGHT_HARD_PROGRESS_FILL_COLORS[2], false),
-  3: progressPathStyle(LIGHT_HARD_PROGRESS_FILL_COLORS[3], false),
-  4: progressPathStyle(LIGHT_HARD_PROGRESS_FILL_COLORS[4], false),
-};
-
-const DARK_HARD_PROGRESS_FILLS: Record<0 | 1 | 2 | 3 | 4, MapPathStyle> = {
-  0: progressPathStyle(DARK_HARD_PROGRESS_FILL_COLORS[0], true),
-  1: progressPathStyle(DARK_HARD_PROGRESS_FILL_COLORS[1], true),
-  2: progressPathStyle(DARK_HARD_PROGRESS_FILL_COLORS[2], true),
-  3: progressPathStyle(DARK_HARD_PROGRESS_FILL_COLORS[3], true),
-  4: progressPathStyle(DARK_HARD_PROGRESS_FILL_COLORS[4], true),
-};
+const LIGHT_PROGRESS_FILLS = buildProgressFills(LIGHT_PROGRESS_FILL_COLORS, false, "medium");
+const DARK_PROGRESS_FILLS = buildProgressFills(DARK_PROGRESS_FILL_COLORS, true, "medium");
+const LIGHT_HARD_PROGRESS_FILLS = buildProgressFills(LIGHT_HARD_PROGRESS_FILL_COLORS, false, "hard");
+const DARK_HARD_PROGRESS_FILLS = buildProgressFills(DARK_HARD_PROGRESS_FILL_COLORS, true, "hard");
 
 function progressFills(
   difficulty: MapProgressDifficulty,
   isDark: boolean,
-): Record<0 | 1 | 2 | 3 | 4, MapPathStyle> {
+): Record<PlaceMasteryLevel, MapPathStyle> {
   if (difficulty === "hard") {
     return isDark ? DARK_HARD_PROGRESS_FILLS : LIGHT_HARD_PROGRESS_FILLS;
   }
@@ -214,7 +226,7 @@ function progressFills(
 }
 
 export function getProgressPathStyle(
-  level: 0 | 1 | 2 | 3 | 4,
+  level: PlaceMasteryLevel,
   isDark: boolean,
   difficulty: MapProgressDifficulty = "medium",
 ): MapPathStyle {
@@ -222,7 +234,7 @@ export function getProgressPathStyle(
 }
 
 export function getProgressFillColor(
-  level: 0 | 1 | 2 | 3 | 4,
+  level: PlaceMasteryLevel,
   isDark: boolean,
   difficulty: MapProgressDifficulty = "medium",
 ): string {
@@ -236,6 +248,7 @@ export function getProgressPathHoverStyle(style: MapPathStyle, isDark: boolean):
     fill: style.fill,
     stroke: border.stroke,
     strokeWidth: Math.min(border.strokeWidth + 0.2, 0.75),
+    className: style.className,
   };
 }
 

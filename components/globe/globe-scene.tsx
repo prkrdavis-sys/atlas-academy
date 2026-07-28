@@ -14,11 +14,13 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { Billboard, useTexture } from "@react-three/drei";
 import * as THREE from "three";
 import {
-  buildGlobeTextureCanvas,
+  createGlobeTexturePaint,
   getGlobePalette,
+  MASTERY_FX_STATIC_PHASE,
   resolveGlobeTextureSize,
   type GlobeUsMode,
 } from "@/lib/globe-texture";
+import { masteryFxPhaseFromTime } from "@/lib/map-mastery-fx";
 import { subsolarDirection } from "@/lib/sun-position";
 import { supportsWebGL } from "@/lib/webgl";
 import type { MapProgressDifficulty, Profile } from "@/lib/types";
@@ -132,28 +134,89 @@ export type GlobeTextureConfig = {
 
 /**
  * Builds the progress-painted planet texture at the highest resolution the
- * device's GPU comfortably supports, rebuilding when inputs change.
+ * device's GPU comfortably supports, rebuilding when inputs change. When any
+ * places are mastery 4, a throttled rAF loop drifts the gold/legendary fill.
  */
 export function useGlobeTexture(
   profile: Profile | null,
   { difficulty, usMode, isDark, selectedCode = null }: GlobeTextureConfig,
 ): THREE.CanvasTexture {
   const gl = useThree((state) => state.gl);
+  const invalidate = useThree((state) => state.invalidate);
   const size = useMemo(
     () => resolveGlobeTextureSize(gl.capabilities.maxTextureSize),
     [gl.capabilities.maxTextureSize],
   );
 
+  const paint = useMemo(
+    () =>
+      createGlobeTexturePaint(profile, {
+        difficulty,
+        usMode,
+        isDark,
+        size,
+        selectedCode,
+        phase: MASTERY_FX_STATIC_PHASE,
+      }),
+    [profile, difficulty, usMode, isDark, size, selectedCode],
+  );
+
   const texture = useMemo(() => {
-    const canvasTexture = new THREE.CanvasTexture(
-      buildGlobeTextureCanvas(profile, { difficulty, usMode, isDark, size, selectedCode }),
-    );
+    const canvasTexture = new THREE.CanvasTexture(paint.canvas);
     canvasTexture.colorSpace = THREE.SRGBColorSpace;
     canvasTexture.anisotropy = Math.min(8, gl.capabilities.getMaxAnisotropy());
     return canvasTexture;
-  }, [profile, difficulty, usMode, isDark, size, selectedCode, gl]);
+  }, [paint, gl]);
 
   useEffect(() => () => texture.dispose(), [texture]);
+
+  useEffect(() => {
+    if (!paint.hasMastery4) return;
+
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let raf = 0;
+    let lastPaint = 0;
+    const frameIntervalMs = 40; // ~25fps — enough shimmer without thrashing GPU
+
+    const stop = () => {
+      cancelAnimationFrame(raf);
+      raf = 0;
+    };
+
+    const tick = (now: number) => {
+      if (now - lastPaint >= frameIntervalMs) {
+        lastPaint = now;
+        paint.paintFrame(masteryFxPhaseFromTime(now));
+        texture.needsUpdate = true;
+        invalidate();
+      }
+      raf = requestAnimationFrame(tick);
+    };
+
+    const start = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(tick);
+    };
+
+    const syncMotion = () => {
+      if (motionQuery.matches) {
+        stop();
+        paint.paintFrame(MASTERY_FX_STATIC_PHASE);
+        texture.needsUpdate = true;
+        invalidate();
+        return;
+      }
+      start();
+    };
+
+    syncMotion();
+    motionQuery.addEventListener("change", syncMotion);
+
+    return () => {
+      stop();
+      motionQuery.removeEventListener("change", syncMotion);
+    };
+  }, [paint, texture, invalidate]);
 
   return texture;
 }
