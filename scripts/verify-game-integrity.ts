@@ -12,6 +12,7 @@ import { resolveMapProgressCategory, wouldCountTowardMapProgress } from "../lib/
 import { normalizeAnswerText } from "../lib/answer-matcher";
 import { countries, getCountryByCode, usStates } from "../lib/countries";
 import { CONTEXT_MAP_TEMPLATES } from "../lib/context-maps";
+import { MIN_SHAPE_VIEWBOX, shapeViewBoxTooSmall } from "./map-path-utils";
 import {
   CONTINENTS,
   US_REGIONS,
@@ -39,6 +40,9 @@ for (const c of [...countries, ...usStates]) {
     const shapeSvg = readFileSync(join("public", "shapes", `${c.code3.toLowerCase()}.svg`), "utf8");
     if (shapeSvg.includes("potrace")) {
       fail(`${c.name}: shape still uses outdated mapsicon asset`);
+    }
+    if (shapeViewBoxTooSmall(shapeSvg)) {
+      fail(`${c.name}: shape viewBox too small to render (min edge ${MIN_SHAPE_VIEWBOX})`);
     }
   }
   if (c.hasCapitalImage && !existsSync(join("public", "capitals", `${c.code.toLowerCase()}.jpg`))) {

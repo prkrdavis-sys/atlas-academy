@@ -33,7 +33,7 @@ export function MapProgressDifficultySelector({
   return (
     <div
       className={cn(
-        "inline-flex shrink-0 rounded-2xl bg-slate-100 p-1 dark:bg-slate-800",
+        "inline-flex w-fit shrink-0 rounded-2xl bg-slate-100 p-1 dark:bg-slate-800",
         className,
       )}
       role="group"

@@ -14,7 +14,6 @@
     "refresh-place-facts": "tsx scripts/refresh-place-facts.ts",
     "fetch-state-flags": "bash scripts/fetch-state-flags.sh",
     "generate-state-shapes": "tsx scripts/generate-state-shapes.ts",
-    "generate-supplemental-shapes": "tsx scripts/generate-supplemental-shapes.ts",
     "generate-country-shapes": "tsx scripts/generate-country-shapes.ts",
     "audit-geography": "tsx scripts/audit-geography-assets.ts",
     "generate-context-maps": "tsx scripts/generate-context-maps.ts",
@@ -23,7 +22,8 @@
     "generate-flag-display-data": "tsx scripts/generate-flag-display-data.ts",
     "fetch-capital-images": "tsx scripts/fetch-capital-images.ts",
     "refresh-capital-images": "tsx scripts/fetch-capital-images.ts --refresh",
-    "verify-integrity": "tsx scripts/verify-game-integrity.ts && tsx scripts/audit-geography-assets.ts"
+    "verify-integrity": "tsx scripts/verify-game-integrity.ts && tsx scripts/audit-geography-assets.ts",
+    "generate-icons": "node scripts/generate-icons.mjs"
   },
   "dependencies": {
     "@panzoom/panzoom": "^4.6.2",
@@ -42,7 +42,6 @@
   },
   "devDependencies": {
     "@svg-maps/usa": "^2.0.0",
-    "@svg-maps/world": "^2.0.0",
     "@tailwindcss/postcss": "^4",
     "@types/d3-geo": "^3.1.0",
     "@types/geojson": "^7946.0.16",

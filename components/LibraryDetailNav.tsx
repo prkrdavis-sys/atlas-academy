@@ -12,7 +12,10 @@ import {
   normalizeLibrarySort,
   type LibraryFilter,
 } from "@/lib/library";
-import { captureLibraryScrollState, markLibraryListScrollRestore } from "@/lib/library-scroll";
+import {
+  captureLibraryScrollState,
+  markLibraryScrollRestore,
+} from "@/lib/library-scroll";
 import { getCommonlyMissedCountries } from "@/lib/stats-helpers";
 import type { GameScope } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -78,7 +81,7 @@ export function LibraryDetailNav({
         <div className="flex items-center gap-2 sm:gap-3">
           <Link
             href={buildLibraryListHref(scope, resolvedFilter, sort)}
-            onClick={markLibraryListScrollRestore}
+            onClick={markLibraryScrollRestore}
             scroll={false}
             className={`${navButtonClass} shrink-0`}
           >
@@ -105,7 +108,10 @@ export function LibraryDetailNav({
                 aria-label={`Previous: ${prev.name}`}
                 className={navButtonClass}
                 scroll={false}
-                onClick={captureLibraryScrollState}
+                onClick={() => {
+                  captureLibraryScrollState();
+                  markLibraryScrollRestore();
+                }}
               >
                 <span aria-hidden>←</span>
                 <span className="hidden sm:inline">Previous</span>
@@ -122,7 +128,10 @@ export function LibraryDetailNav({
                 aria-label={`Next: ${next.name}`}
                 className={navButtonClass}
                 scroll={false}
-                onClick={captureLibraryScrollState}
+                onClick={() => {
+                  captureLibraryScrollState();
+                  markLibraryScrollRestore();
+                }}
               >
                 <span className="hidden sm:inline">Next</span>
                 <span aria-hidden>→</span>

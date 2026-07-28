@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AnswerFeedbackLayer, type FeedbackBurst } from "@/components/AnswerFeedback";
 import { AnswerAtlasle } from "@/components/AnswerAtlasle";
@@ -33,7 +34,8 @@ import {
   getMapProgressSummary,
   toMapProgressDifficulty,
 } from "@/lib/map-progress";
-import { getQuestionTaskLabel, getTypeInPlacePlaceholder, scopeText, SCOPE_INFO } from "@/lib/scope";
+import { buildLibraryDetailHref } from "@/lib/library";
+import { getQuestionTaskLabel, getTypeInPlacePlaceholder, isStateCode, scopeText, SCOPE_INFO } from "@/lib/scope";
 import { getStatsMode } from "@/lib/game-setup";
 import type { ChallengeModifier, Difficulty, GameMode, GameScope, Question, Region, RoundQuestionSetting } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -563,6 +565,12 @@ export function GameBoard({
         <span className="font-black">{question.correctAnswer}</span>
       </>
     ) : undefined;
+  const learnCardLibraryScope = isStateCode(learnCardCountryCode) ? "usa" : scope;
+  const learnCardLibraryHref = buildLibraryDetailHref(
+    learnCardCountryCode,
+    learnCardLibraryScope,
+    "All",
+  );
   const learnCardProps = {
     countryCode: learnCardCountryCode,
     heading: learnCardHeading,
@@ -609,19 +617,34 @@ export function GameBoard({
 
       <div className="relative z-50 shrink-0 px-0.5 py-1.5 sm:px-1 sm:py-2">
         <div className="flex items-center justify-between gap-1.5 sm:grid sm:grid-cols-[auto_minmax(0,1fr)_minmax(0,auto)] sm:items-center sm:gap-2">
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleExit();
-            }}
-            aria-label="Exit this round and return home"
-            className="min-h-10 shrink-0 gap-1.5 font-extrabold sm:px-4"
-          >
-            <span aria-hidden>←</span>
-            <span>Exit</span>
-          </Button>
+          <div className="flex shrink-0 items-center gap-1.5">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleExit();
+              }}
+              aria-label="Exit this round and return home"
+              className="min-h-10 gap-1.5 font-extrabold sm:px-4"
+            >
+              <span aria-hidden>←</span>
+              <span>Exit</span>
+            </Button>
+            {showLearnCard && (
+              <Link
+                href={learnCardLibraryHref}
+                onClick={(e) => e.stopPropagation()}
+                aria-label={`Open ${getCountryName(learnCardCountryCode)} in library`}
+                className={cn(
+                  "inline-flex min-h-10 items-center justify-center gap-1.5 rounded-2xl border-2 border-slate-200 bg-white px-3 py-2 text-sm font-extrabold text-slate-700 shadow-[0_3px_0_var(--color-slate-200)] transition-all duration-100 hover:border-sky-300 hover:text-sky-700 active:translate-y-[3px] active:shadow-none dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:shadow-[0_3px_0_var(--color-slate-700)] dark:hover:border-sky-500 dark:hover:text-sky-300 sm:px-4",
+                )}
+              >
+                <span aria-hidden>🧭</span>
+                <span className="hidden sm:inline">Library</span>
+              </Link>
+            )}
+          </div>
           <div className="hidden min-w-0 px-1 text-center leading-tight sm:block">
             {roundTitlePanel}
           </div>

@@ -2,14 +2,30 @@
 
 import { usePathname } from "next/navigation";
 import { useLayoutEffect } from "react";
-import { consumeLibraryScrollState, restoreLibraryScrollState } from "@/lib/library-scroll";
+import {
+  clearLibraryScrollRestore,
+  consumeLibraryScrollState,
+  LIBRARY_SCROLL_STORAGE_KEY,
+  restoreLibraryScrollState,
+  shouldRestoreLibraryScroll,
+} from "@/lib/library-scroll";
 
 export function LibraryScrollRestore() {
   const pathname = usePathname();
 
   useLayoutEffect(() => {
+    if (!shouldRestoreLibraryScroll()) {
+      sessionStorage.removeItem(LIBRARY_SCROLL_STORAGE_KEY);
+      return;
+    }
+
     const state = consumeLibraryScrollState();
-    if (!state) return;
+    if (!state) {
+      clearLibraryScrollRestore();
+      return;
+    }
+
+    clearLibraryScrollRestore();
 
     const apply = () => restoreLibraryScrollState(state);
 

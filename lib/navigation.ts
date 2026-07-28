@@ -5,13 +5,18 @@ export function isMapRoute(pathname: string): boolean {
   return pathname === "/map" || pathname.startsWith("/map/");
 }
 
-export function isLibraryRoute(pathname: string): boolean {
+export function isExploreRoute(pathname: string): boolean {
   return pathname === "/library" || pathname.startsWith("/library/");
+}
+
+/** @deprecated Use {@link isExploreRoute}. */
+export function isLibraryRoute(pathname: string): boolean {
+  return isExploreRoute(pathname);
 }
 
 export function getPrimaryNavHref(pathname: string): "/" | "/library" | "/map" {
   if (pathname === "/" || pathname.startsWith("/play/")) return "/";
   if (isMapRoute(pathname)) return "/map";
-  if (isLibraryRoute(pathname)) return "/library";
+  if (isExploreRoute(pathname)) return "/library";
   return "/";
 }

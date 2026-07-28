@@ -8,7 +8,7 @@ import { isStateCode } from "@/lib/scope";
 const worldCountries = countriesData as Country[];
 const usStates = statesData as Country[];
 
-/** Alpha-2 codes whose @svg-maps/world id differs from lowercase code. */
+/** Alpha-2 codes whose Natural Earth path id differs from lowercase ISO code. */
 export const SUPPLEMENTAL_MAP_IDS: Record<string, string | string[]> = {
   FM: "fm",
   MH: "mh",

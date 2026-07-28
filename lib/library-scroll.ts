@@ -1,9 +1,19 @@
-import type { LibraryFilter, LibrarySort } from "@/lib/library";
+import { normalizeLibraryFilter, normalizeLibrarySort, type LibraryFilter, type LibrarySort } from "@/lib/library";
+import { normalizeScope } from "@/lib/scope";
 import type { GameScope } from "@/lib/types";
 
 export const LIBRARY_SCROLL_STORAGE_KEY = "atlas-academy-library-detail-scroll";
 export const LIBRARY_LIST_SCROLL_STORAGE_KEY = "atlas-academy-library-list-scroll";
-export const LIBRARY_LIST_SCROLL_RESTORE_KEY = "atlas-academy-library-list-restore";
+export const LIBRARY_SCROLL_RESTORE_KEY = "atlas-academy-library-scroll-restore";
+export const LIBRARY_LAST_PATH_KEY = "atlas-academy-library-last-path";
+
+/** @deprecated Use {@link LIBRARY_SCROLL_RESTORE_KEY}. */
+export const LIBRARY_LIST_SCROLL_RESTORE_KEY = LIBRARY_SCROLL_RESTORE_KEY;
+
+export type LibraryLocation = {
+  pathname: string;
+  search: string;
+};
 
 export const LIBRARY_PLACE_HEADER_ID = "library-place-header";
 
@@ -150,19 +160,60 @@ export function captureLibraryListScrollState(
   sessionStorage.setItem(LIBRARY_LIST_SCROLL_STORAGE_KEY, JSON.stringify(state));
 }
 
-export function markLibraryListScrollRestore(): void {
+export function markLibraryScrollRestore(): void {
   if (typeof window === "undefined") return;
-  sessionStorage.setItem(LIBRARY_LIST_SCROLL_RESTORE_KEY, "1");
+  sessionStorage.setItem(LIBRARY_SCROLL_RESTORE_KEY, "1");
 }
 
-function clearLibraryListScrollRestore(): void {
-  sessionStorage.removeItem(LIBRARY_LIST_SCROLL_RESTORE_KEY);
+/** @deprecated Use {@link markLibraryScrollRestore}. */
+export function markLibraryListScrollRestore(): void {
+  markLibraryScrollRestore();
+}
+
+export function clearLibraryScrollRestore(): void {
+  sessionStorage.removeItem(LIBRARY_SCROLL_RESTORE_KEY);
+}
+
+export function shouldRestoreLibraryScroll(): boolean {
+  if (typeof window === "undefined") return false;
+  return sessionStorage.getItem(LIBRARY_SCROLL_RESTORE_KEY) === "1";
+}
+
+/** @deprecated Use {@link shouldRestoreLibraryScroll}. */
+export function shouldRestoreLibraryListScroll(): boolean {
+  return shouldRestoreLibraryScroll();
+}
+
+export function getLastLibraryHref(): string {
+  if (typeof window === "undefined") return "/library";
+  return sessionStorage.getItem(LIBRARY_LAST_PATH_KEY) ?? "/library";
+}
+
+export function persistLibrarySession(location: LibraryLocation): void {
+  if (typeof window === "undefined") return;
+
+  const path = location.search
+    ? `${location.pathname}?${location.search}`
+    : location.pathname;
+  sessionStorage.setItem(LIBRARY_LAST_PATH_KEY, path);
+
+  if (isLibraryListPath(location.pathname)) {
+    const params = new URLSearchParams(location.search);
+    const scope = normalizeScope(params.get("scope"));
+    const filter = normalizeLibraryFilter(scope, params.get("region"));
+    const sort = normalizeLibrarySort(params.get("sort"));
+    captureLibraryListScrollState(scope, filter, sort);
+  } else if (location.pathname.startsWith("/library/")) {
+    captureLibraryScrollState();
+  }
+
+  markLibraryScrollRestore();
 }
 
 export function consumeLibraryListScrollState(): LibraryListScrollState | null {
   if (typeof window === "undefined") return null;
 
-  clearLibraryListScrollRestore();
+  clearLibraryScrollRestore();
 
   try {
     const raw = sessionStorage.getItem(LIBRARY_LIST_SCROLL_STORAGE_KEY);
@@ -178,9 +229,4 @@ export function consumeLibraryListScrollState(): LibraryListScrollState | null {
 
 export function restoreLibraryListScrollState(state: LibraryListScrollState): void {
   window.scrollTo(0, Math.min(Math.max(0, state.y), getMaxScrollY()));
-}
-
-export function shouldRestoreLibraryListScroll(): boolean {
-  if (typeof window === "undefined") return false;
-  return sessionStorage.getItem(LIBRARY_LIST_SCROLL_RESTORE_KEY) === "1";
 }

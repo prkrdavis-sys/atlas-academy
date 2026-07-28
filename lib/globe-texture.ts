@@ -18,8 +18,8 @@ export const GLOBE_TEXTURE_DATA = globeData as GlobeTextureData;
 
 /** Base texture width (equirectangular, so height = width / 2). */
 export const GLOBE_BASE_TEXTURE_SIZE = 2048;
-/** Hard upper bound; an 8192x4096 RGBA texture is already ~128 MB of GPU memory. */
-export const GLOBE_MAX_TEXTURE_SIZE = 8192;
+/** Hard upper bound; a 4096x2048 RGBA texture is already ~32 MB of GPU memory. */
+export const GLOBE_MAX_TEXTURE_SIZE = 4096;
 
 /**
  * Picks the largest globe texture width the device can comfortably handle:
@@ -27,7 +27,11 @@ export const GLOBE_MAX_TEXTURE_SIZE = 8192;
  * small-screen devices where a giant canvas raster would hurt more than help.
  */
 export function resolveGlobeTextureSize(maxGpuTextureSize: number): number {
-  let size = Math.min(GLOBE_MAX_TEXTURE_SIZE, maxGpuTextureSize);
+  const gpuMax =
+    Number.isFinite(maxGpuTextureSize) && maxGpuTextureSize > 0
+      ? maxGpuTextureSize
+      : GLOBE_BASE_TEXTURE_SIZE;
+  let size = Math.min(GLOBE_MAX_TEXTURE_SIZE, gpuMax);
 
   if (typeof navigator !== "undefined") {
     const deviceMemory = (navigator as { deviceMemory?: number }).deviceMemory;

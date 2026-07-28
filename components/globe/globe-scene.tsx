@@ -1,11 +1,12 @@
 "use client";
 
-import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Billboard, useTexture } from "@react-three/drei";
 import * as THREE from "three";
 import {
   buildGlobeTextureCanvas,
+  getGlobePalette,
   resolveGlobeTextureSize,
   type GlobeUsMode,
 } from "@/lib/globe-texture";
@@ -63,6 +64,50 @@ export function useGlobeSceneEnvironment(): GlobeSceneEnvironment {
   }, []);
 
   return { webglOk, reducedMotion, pageVisible };
+}
+
+const MAX_CANVAS_RECOVERY_ATTEMPTS = 5;
+
+/**
+ * Remount key for a globe Canvas. Incrementing the key recreates the WebGL
+ * context after loss (common during dev HMR or GPU memory pressure).
+ */
+export function useGlobeCanvasKey() {
+  const [canvasKey, setCanvasKey] = useState(0);
+  const attemptsRef = useRef(0);
+
+  const remountCanvas = useCallback(() => {
+    if (attemptsRef.current >= MAX_CANVAS_RECOVERY_ATTEMPTS) return;
+    attemptsRef.current += 1;
+    requestAnimationFrame(() => {
+      setCanvasKey((key) => key + 1);
+    });
+  }, []);
+
+  return { canvasKey, remountCanvas };
+}
+
+/** Detects a lost WebGL context and triggers a Canvas remount. */
+export function GlobeContextRecovery({ onContextLost }: { onContextLost: () => void }) {
+  const gl = useThree((state) => state.gl);
+  const reportedRef = useRef(false);
+
+  useEffect(() => {
+    reportedRef.current = false;
+    const canvas = gl.domElement;
+
+    const handleLost = (event: Event) => {
+      event.preventDefault();
+      if (reportedRef.current) return;
+      reportedRef.current = true;
+      onContextLost();
+    };
+
+    canvas.addEventListener("webglcontextlost", handleLost);
+    return () => canvas.removeEventListener("webglcontextlost", handleLost);
+  }, [gl, onContextLost]);
+
+  return null;
 }
 
 export type GlobeTextureConfig = {
@@ -260,6 +305,29 @@ const DISTANT_SUN_DISTANCE = 56;
 const SUN_TEXTURE_URL = "/globe/sun.png";
 /** Soft radial falloff sprite for wash / bloom (no hard circle edge). */
 const SUN_GLOW_TEXTURE_URL = "/globe/sun-glow.png";
+
+useTexture.preload(SUN_TEXTURE_URL);
+useTexture.preload(SUN_GLOW_TEXTURE_URL);
+
+/** Ocean-colored placeholder shown while the painted globe texture loads. */
+export function GlobeLoadingSphere({ isDark }: { isDark: boolean }) {
+  const ocean = getGlobePalette(isDark).ocean;
+  return (
+    <mesh>
+      <sphereGeometry args={[1, 64, 64]} />
+      <meshBasicMaterial color={ocean} />
+    </mesh>
+  );
+}
+
+/** Forces an initial draw after Canvas mount (avoids a blank first frame). */
+export function GlobeInitialInvalidate() {
+  const invalidate = useThree((state) => state.invalidate);
+  useEffect(() => {
+    invalidate();
+  }, [invalidate]);
+  return null;
+}
 
 /** Skip picking so the sun never steals globe taps. */
 function ignoreRaycast() {}

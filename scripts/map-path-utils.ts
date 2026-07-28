@@ -9,6 +9,12 @@ export type PathBounds = [left: number, top: number, right: number, bottom: numb
 /** Matches the Natural Earth fitSize width in natural-earth-map-data.ts. */
 export const MAP_WIDTH = 10000;
 
+/** Target canvas for library/quiz silhouette SVGs (local coords, not map space). */
+export const SHAPE_OUTPUT_CANVAS = 1000;
+export const SHAPE_PAD_RATIO = 0.03;
+/** Reject silhouettes whose viewBox edge is too small to render reliably as `<img>`. */
+export const MIN_SHAPE_VIEWBOX = SHAPE_OUTPUT_CANVAS * 0.1;
+
 export function toPathBounds(path: string): PathBounds {
   const [left, top, right, bottom] = getPathBounds(path);
   return [left, top, right, bottom];
@@ -103,4 +109,42 @@ export function unwrapAntimeridianPath(path: string): string {
   const unwrappedBounds = toPathBounds(unwrapped);
   const unwrappedWidth = unwrappedBounds[2] - unwrappedBounds[0];
   return unwrappedWidth < originalWidth * 0.92 ? unwrapped : path;
+}
+
+export function parseShapeViewBox(svg: string): [number, number, number, number] | null {
+  const match = svg.match(/viewBox="([^"]+)"/);
+  if (!match) return null;
+  const parts = match[1].trim().split(/\s+/).map(Number);
+  if (parts.length !== 4 || parts.some(Number.isNaN)) return null;
+  return [parts[0], parts[1], parts[2], parts[3]];
+}
+
+export function shapeViewBoxTooSmall(svg: string): boolean {
+  const viewBox = parseShapeViewBox(svg);
+  if (!viewBox) return true;
+  const [, , width, height] = viewBox;
+  return width < MIN_SHAPE_VIEWBOX || height < MIN_SHAPE_VIEWBOX;
+}
+
+/**
+ * Builds a silhouette SVG in local coordinates (~1000px canvas) from paths in
+ * Natural Earth / map projected space. Uses an SVG group transform so every
+ * path command type (curves, relative segments, etc.) stays intact.
+ */
+export function buildShapeSvg(paths: string[]): string {
+  const bounds = paths.map((path) => toPathBounds(path));
+  const left = Math.min(...bounds.map(([l]) => l));
+  const top = Math.min(...bounds.map(([, t]) => t));
+  const right = Math.max(...bounds.map(([, , r]) => r));
+  const bottom = Math.max(...bounds.map(([, , , b]) => b));
+  const width = right - left;
+  const height = bottom - top;
+  const span = Math.max(width, height, 1e-9);
+  const pad = SHAPE_OUTPUT_CANVAS * SHAPE_PAD_RATIO;
+  const scale = (SHAPE_OUTPUT_CANVAS - pad * 2) / span;
+  const outWidth = width * scale + pad * 2;
+  const outHeight = height * scale + pad * 2;
+  const transform = `translate(${pad.toFixed(2)} ${pad.toFixed(2)}) scale(${scale.toFixed(6)}) translate(${(-left).toFixed(2)} ${(-top).toFixed(2)})`;
+  const pathMarkup = paths.map((path) => `<path d="${path}" fill="#000000"/>`).join("");
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${outWidth.toFixed(2)} ${outHeight.toFixed(2)}"><g transform="${transform}">${pathMarkup}</g></svg>\n`;
 }

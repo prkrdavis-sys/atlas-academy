@@ -3,16 +3,18 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { getPrimaryNavHref } from "@/lib/navigation";
+import { useLibraryNavHref } from "@/lib/use-library-nav-href";
 import { cn } from "@/lib/utils";
 
 const PLAY_MODE_ITEMS = [
-  { href: "/map", label: "Map", icon: "🗺️" },
-  { href: "/", label: "Play", icon: "🌎" },
-  { href: "/library", label: "Library", icon: "📚" },
+  { href: "/map" as const, label: "Map", icon: "🗺️" },
+  { href: "/" as const, label: "Play", icon: "🌎" },
+  { href: "library" as const, label: "Explore", icon: "🧭" },
 ] as const;
 
 export function PlayModeSwitcher() {
   const pathname = usePathname();
+  const libraryHref = useLibraryNavHref();
   const activeHref = getPrimaryNavHref(pathname);
 
   return (
@@ -22,11 +24,15 @@ export function PlayModeSwitcher() {
       className="inline-flex rounded-full border border-slate-200 bg-slate-100 p-1 shadow-inner dark:border-slate-700 dark:bg-slate-800/80"
     >
       {PLAY_MODE_ITEMS.map((item) => {
-        const active = item.href === activeHref;
+        const href = item.href === "library" ? libraryHref : item.href;
+        const active = item.href === "library"
+          ? activeHref === "/library"
+          : item.href === activeHref;
         return (
           <Link
-            key={item.href}
-            href={item.href}
+            key={item.label}
+            href={href}
+            scroll={item.href === "library" ? false : undefined}
             role="tab"
             aria-selected={active}
             className={cn(

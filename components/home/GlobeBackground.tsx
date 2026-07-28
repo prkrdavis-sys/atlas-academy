@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { Suspense, useEffect, useRef } from "react";
 import { Canvas, useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
 import { Stars } from "@react-three/drei";
 import * as THREE from "three";
@@ -18,8 +18,12 @@ import {
   GlobeAtmosphere,
   GlobeFillLights,
   GlobeSurfaceMaterial,
+  GlobeContextRecovery,
+  GlobeInitialInvalidate,
+  GlobeLoadingSphere,
   tryReleasePointerCapture,
   trySetPointerCapture,
+  useGlobeCanvasKey,
   useGlobeSceneEnvironment,
   useGlobeTexture,
 } from "@/components/globe/globe-scene";
@@ -196,6 +200,7 @@ export default function GlobeBackground({
   handleRef?: React.RefObject<GlobeHandle | null>;
 }) {
   const { webglOk, reducedMotion, pageVisible } = useGlobeSceneEnvironment();
+  const { canvasKey, remountCanvas } = useGlobeCanvasKey();
   const { isDark } = useIsDark();
   const { usMode } = useGlobeUsMode();
   const { enabled: dayNight } = useGlobeDayNight();
@@ -209,13 +214,16 @@ export default function GlobeBackground({
     >
       {webglOk ? (
         <Canvas
+          key={canvasKey}
           aria-hidden
           camera={{ position: [0, 0, 2.6], fov: 45 }}
           dpr={[1, 1.75]}
           frameloop={pageVisible ? "always" : "never"}
-          gl={{ antialias: true, alpha: true }}
+          gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
           style={{ touchAction: "none" }}
         >
+          <GlobeContextRecovery onContextLost={remountCanvas} />
+          <GlobeInitialInvalidate />
           <GlobeFillLights isDark={isDark} dayNight={dayNight} />
           {isDark ? (
             <Stars
@@ -228,14 +236,16 @@ export default function GlobeBackground({
               speed={reducedMotion ? 0 : 0.6}
             />
           ) : null}
-          <ProgressGlobe
-            profile={profile}
-            reducedMotion={reducedMotion}
-            isDark={isDark}
-            usMode={usMode}
-            dayNight={dayNight}
-            handleRef={handleRef}
-          />
+          <Suspense fallback={<GlobeLoadingSphere isDark={isDark} />}>
+            <ProgressGlobe
+              profile={profile}
+              reducedMotion={reducedMotion}
+              isDark={isDark}
+              usMode={usMode}
+              dayNight={dayNight}
+              handleRef={handleRef}
+            />
+          </Suspense>
         </Canvas>
       ) : webglOk === false && isDark ? (
         <StaticStarfield isDark />

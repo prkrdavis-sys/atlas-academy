@@ -12,12 +12,8 @@ import {
   buildNaturalEarthLocations,
   loadNaturalEarthFeatures,
 } from "./natural-earth-map-data";
-import { unwrapAntimeridianPath } from "./map-path-utils";
-import {
-  buildShapeSvg,
-  isCustomShapeCode,
-  writeCustomShape,
-} from "./supplemental-shapes";
+import { buildShapeSvg, unwrapAntimeridianPath } from "./map-path-utils";
+import { isCustomShapeCode, writeCustomShape } from "./supplemental-shapes";
 
 const countries = countriesData as Country[];
 const SHAPES_DIR = join(process.cwd(), "public", "shapes");

@@ -22,7 +22,7 @@ import {
   type LibraryFilter,
   type LibrarySort,
 } from "@/lib/library";
-import { captureLibraryListScrollState } from "@/lib/library-scroll";
+import { captureLibraryListScrollState, clearLibraryScrollRestore } from "@/lib/library-scroll";
 import { SCOPE_INFO, setStoredLibraryScope } from "@/lib/scope";
 import { getCommonlyMissedCountries } from "@/lib/stats-helpers";
 import { GAME_SCOPES, type GameScope } from "@/lib/types";
@@ -104,6 +104,11 @@ export function LibraryBrowser({ scope = "world" }: LibraryBrowserProps) {
 
   const saveListScroll = () => captureLibraryListScrollState(scope, filter, sort);
 
+  const openDetailFromList = () => {
+    clearLibraryScrollRestore();
+    saveListScroll();
+  };
+
   return (
     <div className="space-y-5 sm:space-y-7">
       <LibraryListScrollRestore scope={scope} filter={filter} sort={sort} />
@@ -148,7 +153,7 @@ export function LibraryBrowser({ scope = "world" }: LibraryBrowserProps) {
         sort={sort}
         isState={isUsa}
         className="w-full max-w-xl"
-        onNavigateToDetail={saveListScroll}
+        onNavigateToDetail={openDetailFromList}
       />
 
       <section aria-labelledby="library-filter-heading">
@@ -218,7 +223,7 @@ export function LibraryBrowser({ scope = "world" }: LibraryBrowserProps) {
               <li key={country.code}>
                 <Link
                   href={buildLibraryDetailHref(country.code, scope, filter, sort)}
-                  onClick={saveListScroll}
+                  onClick={openDetailFromList}
                   className="group relative flex h-full min-h-48 flex-col overflow-hidden rounded-2xl border-2 border-slate-200 bg-white/85 p-3 shadow-sm transition-all hover:-translate-y-0.5 hover:border-teal-400 hover:shadow-md active:translate-y-0 dark:border-slate-700 dark:bg-slate-900/85 dark:hover:border-teal-500 sm:min-h-56 sm:p-4"
                 >
                   {isCommonlyMissed ? (

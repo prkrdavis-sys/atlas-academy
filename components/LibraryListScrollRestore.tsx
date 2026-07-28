@@ -6,7 +6,7 @@ import type { LibraryFilter, LibrarySort } from "@/lib/library";
 import {
   consumeLibraryListScrollState,
   restoreLibraryListScrollState,
-  shouldRestoreLibraryListScroll,
+  shouldRestoreLibraryScroll,
 } from "@/lib/library-scroll";
 import type { GameScope } from "@/lib/types";
 
@@ -24,7 +24,7 @@ export function LibraryListScrollRestore({
   const pathname = usePathname();
 
   useLayoutEffect(() => {
-    if (!shouldRestoreLibraryListScroll()) return;
+    if (!shouldRestoreLibraryScroll()) return;
 
     const state = consumeLibraryListScrollState();
     if (!state) return;

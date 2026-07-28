@@ -1,7 +1,9 @@
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import sharp from "sharp";
 
-const SRC =
-  "/Users/parker/.cursor/projects/Users-parker-Projects-atlas-academy/assets/Cropped_Logo-acbeffb4-d3a3-4279-90da-9f5e009f01ac.png";
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const SRC = join(__dirname, "assets/atlas-academy-logo-source.png");
 const SIZE = 1024;
 
 // The source is a full-bleed rounded square on black. Detect the corner
@@ -64,13 +66,13 @@ async function main() {
   const resize = (buf, size) => sharp(buf).resize(size, size).png().toBuffer();
 
   const outputs = [
-    // Transparent rounded icons (favicons / PWA "any" icons)
+    // Transparent rounded icons (browser tab favicons only)
     ["public/favicon-16.png", await resize(rounded1024, 16)],
     ["public/favicon-32.png", await resize(rounded1024, 32)],
-    ["public/icon-192.png", await resize(rounded1024, 192)],
-    ["public/icon-512.png", await resize(rounded1024, 512)],
-    ["app/icon.png", await resize(rounded1024, 512)],
-    // Full-bleed squares (Apple touch icons must not have transparency)
+    // Full-bleed squares for dock/home-screen icons (macOS/iOS reject transparent corners)
+    ["public/icon-192.png", await resize(fullBleed1024, 192)],
+    ["public/icon-512.png", await resize(fullBleed1024, 512)],
+    ["app/icon.png", await resize(fullBleed1024, 512)],
     ["public/apple-icon.png", await resize(fullBleed1024, 180)],
     ["app/apple-icon.png", await resize(fullBleed1024, 180)],
     // Maskable: artwork scaled to 84% over the full-bleed background so the

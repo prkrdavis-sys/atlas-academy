@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useLayoutEffect, useRef, useState, type RefObject } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, Suspense, type RefObject } from "react";
 import { Canvas, useFrame, type ThreeEvent } from "@react-three/fiber";
 import { OrbitControls, Stars } from "@react-three/drei";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
@@ -14,6 +14,10 @@ import {
   GlobeAtmosphere,
   GlobeFillLights,
   GlobeSurfaceMaterial,
+  GlobeContextRecovery,
+  GlobeInitialInvalidate,
+  GlobeLoadingSphere,
+  useGlobeCanvasKey,
   useGlobeSceneEnvironment,
   useGlobeTexture,
 } from "@/components/globe/globe-scene";
@@ -327,6 +331,7 @@ export default function InteractiveGlobe({
   statsScrollTargetId,
 }: InteractiveGlobeProps) {
   const { webglOk, reducedMotion, pageVisible } = useGlobeSceneEnvironment();
+  const { canvasKey, remountCanvas } = useGlobeCanvasKey();
   const { isDark, ready } = useIsDark();
   const { enabled: dayNight } = useGlobeDayNight();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -338,6 +343,13 @@ export default function InteractiveGlobe({
   const placeFocusTarget = initialPlaceCode ? getGlobeFocusTarget(initialPlaceCode) : null;
   const usePlaceFocus = placeFocusTarget !== null;
   const highlightedCode = selectedCode ?? initialPlaceCode;
+
+  useEffect(() => {
+    if (!initialPlaceCode) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setFocusIntroComplete(false);
+    setIntroCancelled(false);
+  }, [initialPlaceCode]);
 
   const onOrbitStart = useCallback(() => {
     setIntroCancelled(true);
@@ -391,13 +403,16 @@ export default function InteractiveGlobe({
       >
         {webglOk && ready ? (
           <Canvas
+            key={canvasKey}
             camera={{ position: [0, 0, INITIAL_CAMERA_DISTANCE], fov: 45 }}
             dpr={[1, 2]}
             frameloop={pageVisible ? "always" : "never"}
-            gl={{ antialias: true, alpha: true }}
+            gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
             style={{ touchAction: "none" }}
             onPointerMissed={() => onSelectPlace(null)}
           >
+            <GlobeContextRecovery onContextLost={remountCanvas} />
+            <GlobeInitialInvalidate />
             <GlobeFillLights isDark={isDark} dayNight={dayNight} />
             {isDark ? (
               <Stars
@@ -410,19 +425,22 @@ export default function InteractiveGlobe({
                 speed={reducedMotion ? 0 : 0.6}
               />
             ) : null}
-            <PickableGlobe
-              profile={profile}
-              difficulty={difficulty}
-              usMode={usMode}
-              isDark={isDark}
-              dayNight={dayNight}
-              selectedCode={highlightedCode}
-              meshRotationYRef={meshRotationYRef}
-              onPickPlace={onSelectPlace}
-            />
+            <Suspense fallback={<GlobeLoadingSphere isDark={isDark} />}>
+              <PickableGlobe
+                profile={profile}
+                difficulty={difficulty}
+                usMode={usMode}
+                isDark={isDark}
+                dayNight={dayNight}
+                selectedCode={highlightedCode}
+                meshRotationYRef={meshRotationYRef}
+                onPickPlace={onSelectPlace}
+              />
+            </Suspense>
             <SyncOrbitRotateSpeed controlsRef={controlsRef} />
             {usePlaceFocus && placeFocusTarget ? (
               <PlaceFocusIntro
+                key={initialPlaceCode ?? "none"}
                 controlsRef={controlsRef}
                 meshRotationYRef={meshRotationYRef}
                 focusTarget={placeFocusTarget}

@@ -11,6 +11,7 @@ import countriesData from "../data/countries.json";
 import { CONTEXT_MAP_TEMPLATES, getContextMapPathIds } from "../lib/context-maps";
 import type { Country } from "../lib/types";
 import type { GlobeTextureData } from "./generate-globe-texture-data";
+import { MIN_SHAPE_VIEWBOX, parseShapeViewBox, shapeViewBoxTooSmall } from "./map-path-utils";
 import { isCustomShapeCode } from "./supplemental-shapes";
 
 const countries = countriesData as Country[];
@@ -85,6 +86,13 @@ async function main() {
       }
       if (!svg.includes("<path")) {
         failures.push(`${country.name}: shape SVG has no paths`);
+      }
+      if (shapeViewBoxTooSmall(svg)) {
+        const viewBox = parseShapeViewBox(svg);
+        const detail = viewBox
+          ? `${viewBox[2].toFixed(2)}×${viewBox[3].toFixed(2)} (min ${MIN_SHAPE_VIEWBOX})`
+          : "missing or invalid viewBox";
+        failures.push(`${country.name}: shape viewBox too small to render (${detail})`);
       }
     }
 

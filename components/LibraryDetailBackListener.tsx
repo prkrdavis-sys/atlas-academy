@@ -1,14 +1,15 @@
 "use client";
 
 import { useEffect } from "react";
-import { isLibraryListPath, markLibraryListScrollRestore } from "@/lib/library-scroll";
+import { markLibraryScrollRestore } from "@/lib/library-scroll";
+import { isExploreRoute } from "@/lib/navigation";
 
-/** Marks list scroll restore when the user browser-backs from a detail page to the list. */
+/** Marks scroll restore when the user browser-backs into the library. */
 export function LibraryDetailBackListener() {
   useEffect(() => {
     const onPopState = () => {
-      if (isLibraryListPath(window.location.pathname)) {
-        markLibraryListScrollRestore();
+      if (isExploreRoute(window.location.pathname)) {
+        markLibraryScrollRestore();
       }
     };
 

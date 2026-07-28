@@ -242,11 +242,10 @@ export function MapPageContent() {
               enough for the globe + atmosphere halo without clipping. */}
           <div className="h-[max(20rem,calc(100dvh-22rem))]">
             <InteractiveGlobe
-              key={resolvedInitialPlace ?? "default"}
               profile={profile}
               difficulty={mapDifficulty}
               usMode={usMode}
-              selectedCode={activeGlobeSelection}
+              selectedCode={selectedGlobePlace}
               initialPlaceCode={resolvedInitialPlace}
               onSelectPlace={setSelectedGlobePlace}
               statsScrollTargetId={MAP_STATS_PANEL_ID}
