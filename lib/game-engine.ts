@@ -5,9 +5,11 @@ import {
 } from "@/lib/atlasle";
 import {
   getCountryByCode,
+  getCountryLanguages,
   getCountryName,
   getEligibleMixedQuestionTypes,
   getPlayablePool,
+  getPrimaryLanguage,
 } from "@/lib/countries";
 import { isSameCountry, normalizeAnswerText, validateAnswer } from "@/lib/answer-matcher";
 import {
@@ -28,6 +30,7 @@ import {
 import {
   buildCapitalPrompt,
   buildFlagFromPlacePrompt,
+  buildLanguagePrompt,
   buildNeighborPrompt,
   filterDailyDatesByScope,
   placeText,
@@ -173,6 +176,40 @@ function buildCapitalMcOptions(
   }
 
   return { options: shuffleWith([correct.capital, ...distractors], random) };
+}
+
+function buildLanguageMcOptions(
+  correct: Country,
+  pool: Country[],
+  random: () => number = Math.random,
+): { options: string[] } | undefined {
+  const primary = getPrimaryLanguage(correct);
+  if (!primary) return undefined;
+
+  // Block every official language for the target so a wrong MC pick can't
+  // still validate as another accepted language (e.g. French for Belgium).
+  const usedLabels = new Set(
+    getCountryLanguages(correct).map((language) => normalizeAnswerText(language)),
+  );
+  const distractors: string[] = [];
+
+  const tryAddLanguage = (language: string) => {
+    if (distractors.length >= 3) return;
+    const normalized = normalizeAnswerText(language);
+    if (!normalized || usedLabels.has(normalized)) return;
+    usedLabels.add(normalized);
+    distractors.push(language);
+  };
+
+  for (const country of shuffleWith(pool, random)) {
+    if (distractors.length >= 3) break;
+    if (country.code === correct.code) continue;
+    const language = getPrimaryLanguage(country);
+    if (language) tryAddLanguage(language);
+  }
+
+  if (distractors.length < 1) return undefined;
+  return { options: shuffleWith([primary, ...distractors], random) };
 }
 
 export class GameEngine {
@@ -384,6 +421,26 @@ export class GameEngine {
           ...mc,
         };
       }
+      case "country-to-language": {
+        const primary = getPrimaryLanguage(country);
+        if (!primary) {
+          return this.buildQuestion(country, "flag-to-country");
+        }
+        const mc =
+          this.difficulty !== "hard"
+            ? buildLanguageMcOptions(country, this.pool, this.random)
+            : undefined;
+        return {
+          id,
+          mode,
+          countryCode: country.code,
+          prompt: buildLanguagePrompt(country, this.scope),
+          correctAnswer: primary,
+          correctCode: country.code,
+          displayType: country.hasFlag ? "flag" : "text",
+          ...mc,
+        };
+      }
       case "shape-to-country": {
         const mc =
           this.difficulty !== "hard"
@@ -524,6 +581,10 @@ export class GameEngine {
 
     if (question.mode === "country-to-capital" || question.atlasleTarget === "capital") {
       return validateAnswer(answer, question.countryCode, "capital");
+    }
+
+    if (question.mode === "country-to-language") {
+      return validateAnswer(answer, question.countryCode, "language");
     }
 
     if (question.mode === "atlasle") {

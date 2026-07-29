@@ -479,8 +479,8 @@ input:focus-visible {
   height: 6px;
   margin-left: -3px;
   border-radius: 9999px;
-  background: rgb(251 146 60);
-  box-shadow: 0 0 8px rgb(251 146 60 / 0.7);
+  background: rgb(251 113 133);
+  box-shadow: 0 0 8px rgb(251 113 133 / 0.7);
 }
 
 .streak-ember-1 {
@@ -501,8 +501,8 @@ input:focus-visible {
   --ember-x: 32px;
   width: 4px;
   height: 4px;
-  background: rgb(251 191 36);
-  box-shadow: 0 0 7px rgb(251 191 36 / 0.7);
+  background: rgb(244 63 94);
+  box-shadow: 0 0 7px rgb(244 63 94 / 0.7);
   animation-delay: 0.36s;
 }
 
@@ -510,8 +510,8 @@ input:focus-visible {
   --ember-x: -8px;
   width: 5px;
   height: 5px;
-  background: rgb(249 115 22);
-  box-shadow: 0 0 8px rgb(249 115 22 / 0.65);
+  background: rgb(225 29 72);
+  box-shadow: 0 0 8px rgb(225 29 72 / 0.65);
   animation-delay: 0.42s;
 }
 

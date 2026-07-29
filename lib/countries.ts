@@ -34,6 +34,19 @@ export function getCountryName(code: string): string {
   return getCountryByCode(code)?.name ?? code;
 }
 
+/** Official languages split from the ` · `-joined country field. */
+export function getCountryLanguages(country: Country): string[] {
+  if (!country.languages?.trim()) return [];
+  return country.languages
+    .split(" · ")
+    .map((language) => language.trim())
+    .filter((language) => language.length > 0);
+}
+
+export function getPrimaryLanguage(country: Country): string | undefined {
+  return getCountryLanguages(country)[0];
+}
+
 type FilterOptions = {
   continents: Region[];
   includeTerritories?: boolean;
@@ -82,6 +95,10 @@ export function filterCountries(options: FilterOptions): Country[] {
 
   if (options.mode === "country-to-capital") {
     pool = pool.filter((c) => c.capital.length > 0);
+  }
+
+  if (options.mode === "country-to-language") {
+    pool = pool.filter((c) => getPrimaryLanguage(c) !== undefined);
   }
 
   if (options.mode === "neighbor-quiz") {

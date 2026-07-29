@@ -24,9 +24,25 @@ export function getStoredMapProgressDifficulty(): MapProgressDifficulty {
 }
 
 /**
+ * Persist which map-progress track (Normal vs Hard) the map/globe/stats should
+ * show. Also used when a Normal/Hard game starts so the last played difficulty
+ * is remembered automatically. No-ops when the value is already stored.
+ */
+export function setStoredMapProgressDifficulty(
+  difficulty: MapProgressDifficulty,
+): void {
+  if (typeof window === "undefined") return;
+  if (localStorage.getItem(STORAGE_KEY) === difficulty) return;
+  localStorage.setItem(STORAGE_KEY, difficulty);
+  window.dispatchEvent(new Event(CHANGE_EVENT));
+}
+
+/**
  * Device-wide preference for which map-progress track (Normal vs Hard) to show
  * on the home globe, map page, and stats. Persisted in localStorage and synced
- * across components (and tabs) so every surface agrees.
+ * across components (and tabs) so every surface agrees. Updated manually via
+ * the difficulty toggle, or automatically when the player starts a Normal/Hard
+ * game.
  */
 export function useMapProgressDifficulty(): {
   mapDifficulty: MapProgressDifficulty;
@@ -52,9 +68,8 @@ export function useMapProgressDifficulty(): {
   }, []);
 
   const setMapDifficulty = useCallback((difficulty: MapProgressDifficulty) => {
-    localStorage.setItem(STORAGE_KEY, difficulty);
+    setStoredMapProgressDifficulty(difficulty);
     setMapDifficultyState(difficulty);
-    window.dispatchEvent(new Event(CHANGE_EVENT));
   }, []);
 
   return { mapDifficulty, setMapDifficulty };

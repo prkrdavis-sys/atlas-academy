@@ -43,7 +43,7 @@ export const MAP_PROGRESS_CATEGORY_INFO: Record<
   trivia: {
     label: "Trivia",
     icon: "💡",
-    modes: ["fact-to-country"],
+    modes: ["fact-to-country", "country-to-language"],
   },
 };
 
@@ -59,6 +59,7 @@ function resolveMapProgressCategoryFromGameMode(mode: GameMode): MapProgressCate
     case "country-to-capital":
       return "capital";
     case "fact-to-country":
+    case "country-to-language":
       return "trivia";
     default:
       return null;

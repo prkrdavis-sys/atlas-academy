@@ -31,6 +31,7 @@ import {
   recordAnswer,
   recordDailyChallengeCompletion,
 } from "@/lib/storage";
+import { triggerHaptic } from "@/lib/haptics";
 import { playSound } from "@/lib/sound";
 import { getGlobalStreakOrZero } from "@/lib/stats-helpers";
 import { STREAK_SNUFF_MIN } from "@/lib/streak-tier";
@@ -41,6 +42,7 @@ import {
 import { buildLibraryDetailHref, LIBRARY_ICON } from "@/lib/library";
 import { getQuestionTaskLabel, getTypeInPlacePlaceholder, isStateCode, scopeText, SCOPE_INFO } from "@/lib/scope";
 import { getStatsMode } from "@/lib/game-setup";
+import { setStoredMapProgressDifficulty } from "@/lib/use-map-progress-difficulty";
 import type { ChallengeModifier, Difficulty, GameMode, GameScope, Question, Region, RoundQuestionSetting } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -188,6 +190,13 @@ export function GameBoard({
     setNewAchievements([]);
   }, []);
 
+  // Remember the last Normal/Hard session so the map and globe show that track.
+  useEffect(() => {
+    if (tracksMapProgress && mapProgressDifficulty) {
+      setStoredMapProgressDifficulty(mapProgressDifficulty);
+    }
+  }, [tracksMapProgress, mapProgressDifficulty]);
+
   useEffect(() => {
     if (!timed || gameOver) return;
     const timer = setTimeout(() => {
@@ -293,6 +302,7 @@ export function GameBoard({
       streak: correct ? streak + 1 : undefined,
       lostStreak,
     });
+    triggerHaptic(correct ? "correct" : "incorrect", activeProfile, { lostStreak });
 
     if (countStats) {
       recordAnswer(
@@ -572,10 +582,11 @@ export function GameBoard({
       ? question.correctCode ?? question.countryCode
       : question.countryCode;
   const answerPlace = getCountryByCode(answerCode);
-  const roundTaskLabel = getQuestionTaskLabel(question, mode, scope, answerPlace);
+  const roundTaskLabel = getQuestionTaskLabel(question, scope, answerPlace);
   const dailyDateLabel = mode === "daily-challenge" ? formatDailyDate() : null;
   const isTextOnlyPrompt =
     (question.mode === "country-to-capital" && question.displayType === "text") ||
+    (question.mode === "country-to-language" && question.displayType === "text") ||
     (question.mode === "capital-to-country" && question.displayType === "text") ||
     question.mode === "fact-to-country";
   const isAtlasleRound = question.displayType === "atlasle";
@@ -722,7 +733,10 @@ export function GameBoard({
         >
           {!showChoiceReveal && !(showLearnCard && !isMultipleChoiceRound) && !isAtlasleRound && (
             <>
-              <div className="min-h-0 flex-[0.24] sm:hidden" aria-hidden />
+              <div
+                className={`min-h-0 sm:hidden ${difficulty === "hard" ? "flex-[0.06]" : "flex-[0.24]"}`}
+                aria-hidden
+              />
 
               <div className="shrink-0 px-3 pb-2 text-center sm:hidden">
                 <p
@@ -753,14 +767,20 @@ export function GameBoard({
           )}
 
           {!showLearnCard && isTextOnlyPrompt && (
-            <div className="hidden min-h-0 flex-1 items-center justify-center px-4 py-6 text-center sm:flex">
+            <div
+              className={`hidden px-4 text-center sm:flex ${
+                difficulty === "hard"
+                  ? "shrink-0 justify-center pb-2 pt-1"
+                  : "min-h-0 flex-1 items-center justify-center py-6"
+              }`}
+            >
               <p className="max-w-2xl font-display text-2xl font-extrabold leading-snug text-slate-800 dark:text-slate-100 sm:text-3xl md:text-4xl">
                 {question.prompt}
               </p>
             </div>
           )}
 
-          {!showLearnCard && isTextOnlyPrompt && (
+          {!showLearnCard && isTextOnlyPrompt && difficulty !== "hard" && (
             <div className="min-h-0 flex-[0.76] sm:hidden" aria-hidden />
           )}
 
@@ -815,7 +835,11 @@ export function GameBoard({
               />
             </div>
           ) : !showLearnCard && !isTextOnlyPrompt ? (
-            <div className="flex min-h-0 flex-[0.76] flex-col items-center justify-center overflow-hidden sm:flex-1">
+            <div
+              className={`flex min-h-0 flex-col items-center justify-center overflow-hidden ${
+                difficulty === "hard" ? "max-h-[38%] shrink-0 sm:max-h-none sm:flex-1" : "flex-[0.76] sm:flex-1"
+              }`}
+            >
               {question.displayType === "flag" && (
                 <FlagDisplay code={question.countryCode} size="md" />
               )}
@@ -840,11 +864,32 @@ export function GameBoard({
               )}
             </div>
           ) : null}
+
+          {/* Hard mode: keep the type-in field high so it stays visible above the keyboard. */}
+          {!showLearnCard && difficulty === "hard" && !isAtlasleRound && (
+            <>
+              <div className="mx-auto w-full max-w-2xl shrink-0 px-1 pt-2 sm:pt-3">
+                <AnswerTypeIn
+                  onSubmit={handleAnswer}
+                  disabled={disabled}
+                placeholder={
+                  question.mode === "country-to-capital"
+                    ? "Type the capital..."
+                    : question.mode === "country-to-language"
+                      ? "Type the language..."
+                      : getTypeInPlacePlaceholder(scope, answerPlace?.isTerritory ?? false)
+                }
+                />
+              </div>
+              <div className="min-h-0 flex-1" aria-hidden />
+            </>
+          )}
         </div>
 
         {(showChoiceReveal || !showLearnCard) &&
           question.displayType !== "flags-grid" &&
-          !isAtlasleRound && (
+          !isAtlasleRound &&
+          difficulty !== "hard" && (
           <div className="mt-2 shrink-0 space-y-2 sm:mt-3 sm:space-y-3">
             {!showLearnCard && difficulty === "easy" && (
               <div className="flex justify-end gap-2">
@@ -859,17 +904,7 @@ export function GameBoard({
               </div>
             )}
 
-            {difficulty === "hard" ? (
-              <AnswerTypeIn
-                onSubmit={handleAnswer}
-                disabled={disabled}
-                placeholder={
-                  question.mode === "country-to-capital"
-                    ? "Type the capital..."
-                    : getTypeInPlacePlaceholder(scope, answerPlace?.isTerritory ?? false)
-                }
-              />
-            ) : question.options ? (
+            {question.options ? (
               <AnswerMultipleChoice
                 options={question.options}
                 optionCodes={question.optionCodes}

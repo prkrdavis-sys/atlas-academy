@@ -16,12 +16,12 @@ type AnswerMultipleChoiceProps = {
 };
 
 const BASE_OPTION_CLASS =
-  "min-h-[3.25rem] rounded-2xl border-2 px-2 py-3 text-center text-[13px] font-semibold leading-tight sm:px-4 sm:py-4 sm:text-left sm:text-sm";
+  "inline-flex min-h-[3.25rem] items-center justify-center rounded-2xl border-2 px-2 py-3 text-center text-[13px] font-semibold leading-tight sm:justify-start sm:px-4 sm:py-4 sm:text-left sm:text-sm";
 
 const NEUTRAL_OPTION_CLASS = cn(
   BASE_OPTION_CLASS,
   "border-slate-200 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200",
-  "shadow-[0_3px_0_var(--color-slate-200)] transition-all duration-100 dark:shadow-[0_3px_0_var(--color-slate-700)]",
+  "shadow-[0_3px_0_var(--color-slate-200)] transition-[border-color,background-color,color,box-shadow,transform] duration-100 dark:shadow-[0_3px_0_var(--color-slate-700)]",
   "hover:border-sky-300 hover:bg-sky-50 hover:text-sky-800 dark:hover:border-sky-500 dark:hover:bg-sky-950/50 dark:hover:text-sky-300",
   "active:translate-y-[3px] active:shadow-none",
   "disabled:opacity-50 disabled:active:translate-y-0 disabled:active:shadow-[0_3px_0_var(--color-slate-200)]",
@@ -37,6 +37,12 @@ const INCORRECT_REVEAL_CLASS = cn(
   BASE_OPTION_CLASS,
   "border-rose-400 bg-rose-100 text-rose-900 shadow-[0_3px_0_var(--color-rose-300)]",
   "dark:border-rose-500 dark:bg-rose-950/70 dark:text-rose-100 dark:shadow-[0_3px_0_var(--color-rose-800)]",
+);
+
+const REVEALED_NEUTRAL_CLASS = cn(
+  BASE_OPTION_CLASS,
+  "border-slate-200 bg-white text-slate-700 shadow-[0_3px_0_var(--color-slate-200)]",
+  "dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:shadow-[0_3px_0_var(--color-slate-700)]",
 );
 
 function isOptionCorrect(
@@ -88,33 +94,21 @@ export function AnswerMultipleChoice({
           } else if (isSelected) {
             optionClass = INCORRECT_REVEAL_CLASS;
           } else {
-            optionClass = cn(
-              BASE_OPTION_CLASS,
-              "border-slate-200 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200",
-              "shadow-[0_3px_0_var(--color-slate-200)] dark:shadow-[0_3px_0_var(--color-slate-700)]",
-            );
+            optionClass = REVEALED_NEUTRAL_CLASS;
           }
-        }
-
-        const content = <>{option}</>;
-
-        if (revealed) {
-          return (
-            <div key={`${option}-${index}`} className={optionClass} aria-hidden>
-              {content}
-            </div>
-          );
         }
 
         return (
           <button
             key={`${option}-${index}`}
             type="button"
-            disabled={disabled}
+            disabled={disabled || revealed}
             onClick={() => onSelect(option, code)}
             className={optionClass}
+            tabIndex={revealed ? -1 : undefined}
+            aria-hidden={revealed || undefined}
           >
-            {content}
+            {option}
           </button>
         );
       })}

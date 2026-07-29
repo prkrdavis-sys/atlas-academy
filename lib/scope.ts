@@ -147,6 +147,16 @@ export function buildCapitalPrompt(country: Country, scope: GameScope): string {
   return `What is the capital of ${country.name}?`;
 }
 
+export function buildLanguagePrompt(country: Country, scope: GameScope): string {
+  if (scope === "usa") {
+    return `What is an official language of ${country.name}?`;
+  }
+  if (country.isTerritory) {
+    return `What is an official language of the territory of ${country.name}?`;
+  }
+  return `What is an official language of ${country.name}?`;
+}
+
 export function buildFlagFromPlacePrompt(country: Country, scope: GameScope): string {
   if (scope === "usa") {
     return scopeText(`Which flag belongs to ${country.name}?`, scope);
@@ -189,21 +199,12 @@ export function getTypeInPlacePlaceholder(scope: GameScope, isTerritory: boolean
 
 export function getQuestionTaskLabel(
   question: Question,
-  sessionMode: GameMode,
   scope: GameScope,
   place?: PlaceLike | null,
 ): string {
-  if (sessionMode === "weak-spots") {
-    return scopeText(
-      scope === "world" ? "Practice commonly missed countries and territories" : "Practice commonly missed states",
-      scope,
-    );
-  }
-  if (sessionMode === "daily-challenge") {
-    return "Daily challenge";
-  }
-
-  const effectiveMode = sessionMode === "mixed" ? question.mode : sessionMode;
+  // Always label from the question on screen so mixed/daily per-question
+  // types and silent engine fallbacks (e.g. language → flag) stay accurate.
+  const effectiveMode = question.mode;
   const isTerritory = scope === "world" && (place?.isTerritory ?? false);
 
   switch (effectiveMode) {
@@ -218,13 +219,15 @@ export function getQuestionTaskLabel(
     case "population-showdown":
       return isTerritory ? "Pick the larger territory" : "Pick the larger population";
     case "fact-to-country":
-      return placeText("Which country does this profile describe?", scope, place ?? undefined);
+      return placeText("Which country has this trivia?", scope, place ?? undefined);
     case "atlasle":
       return question.atlasleTarget === "capital"
         ? "Guess the capital"
         : placeText("Guess the country", scope, place ?? undefined);
     case "country-to-capital":
       return "Name the capital";
+    case "country-to-language":
+      return "Name the language";
     case "marathon":
       return "Keep your streak alive";
     case "speed-round":

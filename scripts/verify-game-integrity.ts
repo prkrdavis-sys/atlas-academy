@@ -67,6 +67,7 @@ const MODES: GameMode[] = [
   "capital-to-country",
   "country-to-capital",
   "country-to-flag",
+  "country-to-language",
   "neighbor-quiz",
   "population-showdown",
   "fact-to-country",
@@ -103,16 +104,17 @@ for (const mode of MODES) {
           fail(`${mode}: easy/medium must offer 4 flag choices (got ${options.length})`);
         }
 
-        if (questionMode === "country-to-capital") {
+        if (questionMode === "country-to-capital" || questionMode === "country-to-language") {
+          const labelKind = questionMode === "country-to-capital" ? "capital" : "language";
           if (optionCodes) {
-            fail(`${mode}: capital MC must use label selection, not optionCodes`);
+            fail(`${mode}: ${labelKind} MC must use label selection, not optionCodes`);
             continue;
           }
           const correctIdx = options.findIndex(
             (option) => normalizeAnswerText(option) === normalizeAnswerText(correctAnswer),
           );
           if (correctIdx === -1) {
-            fail(`${mode}: correct capital not among options (${correctAnswer})`);
+            fail(`${mode}: correct ${labelKind} not among options (${correctAnswer})`);
             continue;
           }
           const labels = options.map((option) => option.toLowerCase());
@@ -203,6 +205,22 @@ for (const c of [...countries, ...usStates].filter((x) => x.hasFlag)) {
     };
     if (!nameEngine.checkAnswer(qc, c.capital)) fail(`type-in capital: "${c.capital}" rejected for ${c.name}`);
   }
+  if (c.languages?.trim()) {
+    const languages = c.languages.split(" · ").map((language) => language.trim()).filter(Boolean);
+    const ql: Question = {
+      id: "t3",
+      mode: "country-to-language",
+      countryCode: c.code,
+      prompt: "",
+      correctAnswer: languages[0] ?? c.languages,
+      correctCode: c.code,
+    };
+    for (const language of languages) {
+      if (!nameEngine.checkAnswer(ql, language)) {
+        fail(`type-in language: "${language}" rejected for ${c.name}`);
+      }
+    }
+  }
 }
 
 // Map progress category resolution
@@ -224,6 +242,15 @@ const countryToFlagQuestion: Question = {
   correctCode: "FR",
   displayType: "flags-grid",
 };
+const countryToLanguageQuestion: Question = {
+  id: "country-to-language",
+  mode: "country-to-language",
+  countryCode: "FR",
+  prompt: "",
+  correctAnswer: "French",
+  correctCode: "FR",
+  displayType: "flag",
+};
 
 if (resolveMapProgressCategory(flagToCountryQuestion) !== "flag") {
   fail("Countries from flags should count toward Flag map progress");
@@ -233,6 +260,9 @@ if (resolveMapProgressCategory(countryToFlagQuestion) !== "flag") {
 }
 if (resolveMapProgressCategory(countryToFlagQuestion, "country-to-flag") !== "flag") {
   fail("Flags from countries stats mode should count toward Flag map progress");
+}
+if (resolveMapProgressCategory(countryToLanguageQuestion) !== "trivia") {
+  fail("Languages from countries should count toward Trivia map progress");
 }
 
 if (

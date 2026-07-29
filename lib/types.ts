@@ -134,6 +134,7 @@ export type GameMode =
   | "capital-to-country"
   | "country-to-capital"
   | "country-to-flag"
+  | "country-to-language"
   | "neighbor-quiz"
   | "population-showdown"
   | "fact-to-country"
@@ -195,6 +196,7 @@ const TYPE_IN_HARD_MODES: GameMode[] = [
   "shape-to-country",
   "capital-to-country",
   "country-to-capital",
+  "country-to-language",
   "neighbor-quiz",
   "fact-to-country",
   "weak-spots",
@@ -308,6 +310,8 @@ export type Profile = {
     recentModes?: GameMode[];
     /** Sound effects on/off; defaults to on. */
     soundEnabled?: boolean;
+    /** Vibration / haptic feedback on/off; defaults to on. */
+    hapticsEnabled?: boolean;
   };
   achievements: string[];
   countryProgress?: Record<string, { correct: number; total: number }>;
@@ -372,6 +376,7 @@ export const PRACTICE_MODES: GameMode[] = ["weak-spots"];
 /** Phase-2 quiz modes shown on the game setup page (not core Play or Practice). */
 export const EXTRA_QUIZ_MODES: GameMode[] = [
   "country-to-flag",
+  "country-to-language",
   "neighbor-quiz",
   "population-showdown",
   "fact-to-country",
@@ -421,6 +426,13 @@ export const GAME_MODES: {
     title: "Flags from countries",
     description: "See a country name, pick its flag — Hard adds two more choices",
     icon: "🎌",
+    phase: 2,
+  },
+  {
+    id: "country-to-language",
+    title: "Languages from countries",
+    description: "Name an official language for each country",
+    icon: "🗣️",
     phase: 2,
   },
   {
@@ -537,6 +549,7 @@ export const ACHIEVEMENTS = [
   { id: "border-boss", title: "Border Boss", description: "Answer 50 neighbor quiz questions correctly" },
   { id: "population-prophet", title: "Population Prophet", description: "Answer 50 population showdown questions correctly" },
   { id: "fact-finder", title: "Profile Expert", description: "Answer 50 Country Profiles questions correctly" },
+  { id: "language-learner", title: "Language Learner", description: "Answer 50 languages-from-countries questions correctly" },
   { id: "atlasle-ace", title: "Atlasle Ace", description: "Solve 50 Atlasle puzzles correctly" },
   { id: "marathon-25", title: "Endurance", description: "Reach a best marathon run of 25" },
   { id: "marathon-45", title: "Long Distance", description: "Reach a best marathon run of 45" },

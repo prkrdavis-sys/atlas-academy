@@ -1,5 +1,7 @@
-import { getCountryByCode } from "@/lib/countries";
+import { getCountryByCode, getCountryLanguages } from "@/lib/countries";
 import type { Country } from "@/lib/types";
+
+export type AnswerField = "name" | "capital" | "language";
 
 export function normalizeAnswerText(value: string): string {
   return value
@@ -31,7 +33,7 @@ function inputVariants(input: string): string[] {
 export function matchesAnswer(
   input: string,
   country: Country,
-  field: "name" | "capital" = "name",
+  field: AnswerField = "name",
 ): boolean {
   const variants = inputVariants(input);
   if (variants.length === 0) return false;
@@ -39,7 +41,12 @@ export function matchesAnswer(
   const candidates =
     field === "capital"
       ? [country.capital]
-      : [country.name, country.officialName, ...country.aliases];
+      : field === "language"
+        ? [
+            ...getCountryLanguages(country),
+            ...(country.languages?.trim() ? [country.languages.trim()] : []),
+          ]
+        : [country.name, country.officialName, ...country.aliases];
 
   return candidates.some((candidate) => {
     const normalizedCandidate = normalizeAnswerText(candidate);
@@ -64,15 +71,20 @@ export function isSameCountry(codeA: string, codeB: string): boolean {
   return Boolean(a && b && a.code === b.code);
 }
 
-export function getAcceptedAnswers(country: Country, field: "name" | "capital" = "name"): string[] {
+export function getAcceptedAnswers(country: Country, field: AnswerField = "name"): string[] {
   if (field === "capital") return [country.capital];
+  if (field === "language") {
+    const languages = getCountryLanguages(country);
+    if (country.languages?.trim()) return [...languages, country.languages.trim()];
+    return languages;
+  }
   return [country.name, ...country.aliases.filter((a) => a !== country.name.toLowerCase())];
 }
 
 export function validateAnswer(
   input: string,
   correctCode: string,
-  field: "name" | "capital" = "name",
+  field: AnswerField = "name",
 ): boolean {
   const country = getCountryByCode(correctCode);
   if (!country) return false;

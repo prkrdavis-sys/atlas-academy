@@ -88,6 +88,7 @@ function getDefaultProfileSettings(): Profile["settings"] {
     lastSelectedMode: "mixed",
     recentModes: ["mixed"],
     soundEnabled: true,
+    hapticsEnabled: true,
   };
 }
 
