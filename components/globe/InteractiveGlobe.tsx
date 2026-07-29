@@ -24,9 +24,11 @@ import {
   GlobeAtmosphere,
   GlobeContextRecovery,
   GlobeFillLights,
+  globeFillDistance,
   GlobeInitialInvalidate,
   GlobeRecoveryReset,
   GlobeSurfaceMaterial,
+  SyncDayNightZoomStrength,
   useGlobeCanvasKey,
   useGlobeFrameloop,
   useGlobeSceneEnvironment,
@@ -77,19 +79,6 @@ const ZOOM_BUTTON_FACTOR = 0.75;
 /** Unit sphere radius for the map globe mesh. */
 const GLOBE_RADIUS = 1;
 
-/**
- * Camera distance at which the unit globe's limb reaches the viewport corners
- * (outer space no longer visible). Uses the perspective frustum corner angle.
- */
-function globeFillDistance(fovDeg: number, aspect: number, radius = GLOBE_RADIUS): number {
-  const halfV = THREE.MathUtils.degToRad(fovDeg / 2);
-  const halfH = Math.atan(Math.tan(halfV) * Math.max(aspect, 1e-6));
-  const halfCorner = Math.atan(Math.hypot(Math.tan(halfH), Math.tan(halfV)));
-  const sinCorner = Math.sin(halfCorner);
-  if (sinCorner <= 1e-6) return radius;
-  return radius / sinCorner;
-}
-
 /** Extra zoom-out required before shooting stars return (avoids edge flicker). */
 const SPACE_VISIBLE_HYSTERESIS = 1.06;
 
@@ -115,6 +104,7 @@ function SyncOuterSpaceVisible({
     const fillAt = globeFillDistance(
       camera.fov,
       size.width / Math.max(size.height, 1),
+      GLOBE_RADIUS,
     );
     const distance = controls.getDistance();
     const next = visibleRef.current
@@ -329,6 +319,8 @@ type GlobeSceneProps = {
   perfTier: GlobePerfTier;
   /** Prefetch / force detail overlays during library place-focus fly-to. */
   forceDetailOverlays?: boolean;
+  /** 0..1 day/night lighting strength (fades out when zoomed in). */
+  dayNightStrengthRef: RefObject<number>;
   spinGroupRef: RefObject<THREE.Group | null>;
   controlsRef: RefObject<OrbitControlsImpl | null>;
   onPickPlace: (code: string | null) => void;
@@ -344,6 +336,7 @@ function PickableGlobe({
   selectedCode,
   perfTier,
   forceDetailOverlays = false,
+  dayNightStrengthRef,
   spinGroupRef,
   controlsRef,
   onPickPlace,
@@ -410,10 +403,19 @@ function PickableGlobe({
           dayNight={dayNight}
           isDark={isDark}
           perfTier={perfTier}
+          dayNightStrengthRef={dayNightStrengthRef}
         />
         <DistantSun isDark={isDark} perfTier={perfTier} />
-        <EarthSunLight isDark={isDark} dayNight={dayNight} />
-        <EarthshineLight isDark={isDark} dayNight={dayNight} />
+        <EarthSunLight
+          isDark={isDark}
+          dayNight={dayNight}
+          dayNightStrengthRef={dayNightStrengthRef}
+        />
+        <EarthshineLight
+          isDark={isDark}
+          dayNight={dayNight}
+          dayNightStrengthRef={dayNightStrengthRef}
+        />
       </mesh>
       <GlobeCloseupLayer
         profile={profile}
@@ -477,6 +479,7 @@ export default function InteractiveGlobe({
   const containerRef = useRef<HTMLDivElement>(null);
   const controlsRef = useRef<OrbitControlsImpl | null>(null);
   const spinGroupRef = useRef<THREE.Group | null>(null);
+  const dayNightStrengthRef = useRef(1);
   const [autoSpin, setAutoSpin] = useState(true);
   const [introCancelled, setIntroCancelled] = useState(false);
   const [focusIntroComplete, setFocusIntroComplete] = useState(false);
@@ -593,7 +596,16 @@ export default function InteractiveGlobe({
             <GlobeContextRecovery onContextLost={remountCanvas} />
             <GlobeRecoveryReset onStable={resetRecoveryAttempts} />
             <GlobeInitialInvalidate />
-            <GlobeFillLights isDark={isDark} dayNight={dayNight} />
+            <SyncDayNightZoomStrength
+              controlsRef={controlsRef}
+              enabled={dayNight}
+              strengthRef={dayNightStrengthRef}
+            />
+            <GlobeFillLights
+              isDark={isDark}
+              dayNight={dayNight}
+              dayNightStrengthRef={dayNightStrengthRef}
+            />
             {isDark ? (
               <Stars
                 radius={60}
@@ -614,6 +626,7 @@ export default function InteractiveGlobe({
               selectedCode={highlightedCode}
               perfTier={perfTier}
               forceDetailOverlays={usePlaceFocus}
+              dayNightStrengthRef={dayNightStrengthRef}
               spinGroupRef={spinGroupRef}
               controlsRef={controlsRef}
               onPickPlace={(code) => {

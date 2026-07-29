@@ -54,17 +54,19 @@ export function GlobeGrabOrbit({
       const controls = controlsRef.current;
       if (!controls || !controls.enabled) return;
 
+      const camera = controls.object;
+      if (!(camera instanceof THREE.PerspectiveCamera)) return;
+
       const rect = el.getBoundingClientRect();
       if (
         !pointerGlobeUnit(
           event.clientX,
           event.clientY,
           rect,
-          controls.object,
+          camera,
           controls.target,
           radius,
           grabUnit,
-          false,
         )
       ) {
         return;
@@ -84,9 +86,12 @@ export function GlobeGrabOrbit({
       const controls = controlsRef.current;
       if (!controls || !controls.enabled) return;
 
+      const camera = controls.object;
+      if (!(camera instanceof THREE.PerspectiveCamera)) return;
+
       const rect = el.getBoundingClientRect();
       orbitCameraToKeepGrab(
-        controls.object,
+        camera,
         controls.target,
         grabUnit,
         event.clientX,
