@@ -156,7 +156,34 @@ export default function AdvancedStatsPage() {
             Totals across every mode in {scopeInfo.label}
           </p>
         </div>
-        <div className="overflow-x-auto">
+        <ul className="divide-y divide-slate-100 dark:divide-slate-800 sm:hidden">
+          {difficultyBreakdown.map(({ level, totals, streak }) => (
+            <li
+              key={level}
+              className={cn(
+                "px-4 py-3.5",
+                level === difficulty && "bg-teal-50/70 dark:bg-teal-950/30",
+              )}
+            >
+              <div className="flex items-start justify-between gap-2">
+                <p className="font-display text-sm font-extrabold text-slate-900 dark:text-slate-100">
+                  {DIFFICULTY_LABELS[level]}
+                </p>
+                <span className="shrink-0 rounded-lg bg-emerald-50 px-2 py-0.5 font-mono text-xs font-bold tabular-nums text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400">
+                  {totals.accuracy}%
+                </span>
+              </div>
+              <p className="mt-1.5 text-xs leading-relaxed text-slate-600 dark:text-slate-400">
+                <span className="font-semibold text-slate-800 dark:text-slate-200">{streak.currentStreak}</span> streak
+                <span className="mx-1.5 text-slate-300 dark:text-slate-600" aria-hidden>·</span>
+                <span className="font-semibold text-emerald-700 dark:text-emerald-400">{streak.bestStreak}</span> best
+                <span className="mx-1.5 text-slate-300 dark:text-slate-600" aria-hidden>·</span>
+                <span className="font-semibold text-slate-800 dark:text-slate-200">{totals.totalPlayed}</span> played
+              </p>
+            </li>
+          ))}
+        </ul>
+        <div className="hidden overflow-x-auto sm:block">
           <table className="min-w-full text-sm">
             <thead className="border-b border-slate-200 dark:border-slate-700">
               <tr className="bg-slate-50/80 dark:bg-slate-800/80">

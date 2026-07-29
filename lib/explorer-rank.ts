@@ -1,18 +1,22 @@
 import { getGlobeMasteryLevel } from "@/lib/globe-texture";
 import { getPlayablePlacesForScope } from "@/lib/map-progress";
-import type { GameScope, Profile } from "@/lib/types";
+import type { GameScope, MapProgressDifficulty, Profile } from "@/lib/types";
 
 export type MasteredProgress = { mastered: number; total: number };
 
 /**
- * Places fully mastered on Normal — the same measure the home globe glows
- * with, so the counter and the planet always agree.
+ * Places fully mastered on the active map-progress track — the same measure
+ * the home globe glows with, so the counter and the planet always agree.
  */
-export function getMasteredProgress(scope: GameScope, profile: Profile): MasteredProgress {
+export function getMasteredProgress(
+  scope: GameScope,
+  profile: Profile,
+  difficulty: MapProgressDifficulty = "medium",
+): MasteredProgress {
   const places = getPlayablePlacesForScope(scope);
   let mastered = 0;
   for (const place of places) {
-    if (getGlobeMasteryLevel(place.code, profile) === 4) mastered += 1;
+    if (getGlobeMasteryLevel(place.code, profile, difficulty) === 4) mastered += 1;
   }
   return { mastered, total: places.length };
 }

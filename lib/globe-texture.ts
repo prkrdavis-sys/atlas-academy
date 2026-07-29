@@ -78,11 +78,15 @@ export function getGlobePalette(isDark: boolean): GlobePalette {
 }
 
 /**
- * Normal-mode mastery — used by explorer rank so rank tiers stay aligned with
- * the default globe coloring.
+ * Mastery for the active map-progress track — used by explorer rank so rank
+ * tiers stay aligned with the globe coloring for that difficulty.
  */
-export function getGlobeMasteryLevel(code: string, profile: Profile): PlaceMasteryLevel {
-  return getPlaceMasteryLevel(code, profile, "medium");
+export function getGlobeMasteryLevel(
+  code: string,
+  profile: Profile,
+  difficulty: MapProgressDifficulty = "medium",
+): PlaceMasteryLevel {
+  return getPlaceMasteryLevel(code, profile, difficulty);
 }
 
 type PaintedShape = {
@@ -379,13 +383,11 @@ export function createGlobeTexturePaint(
     if (activeSelectedCode) {
       const selected = shapes.find((shape) => shape.code === activeSelectedCode);
       if (selected) {
+        // Fill only — keep the base border stroke so selection doesn't thicken
+        // or recolor outlines (which reads as pixelation at high zoom).
         const path = pathFor(selected.code, selected.rings);
-        const highlight = mapPalette.highlight;
-        ctx.fillStyle = highlight.fill;
+        ctx.fillStyle = mapPalette.highlight.fill;
         ctx.fill(path, "evenodd");
-        ctx.lineWidth = (selected.isState ? 1.6 : 2.2) * pixelScale;
-        ctx.strokeStyle = highlight.stroke;
-        ctx.stroke(path);
       }
     }
   };

@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import { MapProgressSummaryCard } from "@/components/MapProgressSummaryCard";
 import { MapProgressDifficultySelector } from "@/components/PlaceMapProgressPanel";
 import { SCOPE_INFO } from "@/lib/scope";
-import type { MapProgressDifficulty, Profile } from "@/lib/types";
+import type { Profile } from "@/lib/types";
 import { DIFFICULTY_LABELS, type GameScope } from "@/lib/types";
+import { useMapProgressDifficulty } from "@/lib/use-map-progress-difficulty";
 
 type StatsMapProgressSummaryProps = {
   profile: Profile;
@@ -13,9 +13,7 @@ type StatsMapProgressSummaryProps = {
 };
 
 export function StatsMapProgressSummary({ profile, scope }: StatsMapProgressSummaryProps) {
-  const defaultDifficulty: MapProgressDifficulty =
-    profile.settings.difficulty === "hard" ? "hard" : "medium";
-  const [mapDifficulty, setMapDifficulty] = useState<MapProgressDifficulty>(defaultDifficulty);
+  const { mapDifficulty, setMapDifficulty } = useMapProgressDifficulty();
   const scopeInfo = SCOPE_INFO[scope];
 
   return (

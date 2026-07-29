@@ -32,6 +32,7 @@ import {
   useGlobeSceneEnvironment,
   useGlobeTexture,
 } from "@/components/globe/globe-scene";
+import { GlobeCloseupLayer } from "@/components/globe/GlobeCloseupLayer";
 import { GlobeDetailOverlays } from "@/components/globe/GlobeDetailOverlays";
 import { SpaceBackdrop, StaticStarfield } from "@/components/globe/SpaceBackdrop";
 import { MapScrollDownButton } from "@/components/MapScrollDownButton";
@@ -377,6 +378,17 @@ function PickableGlobe({
         <EarthSunLight isDark={isDark} dayNight={dayNight} />
         <EarthshineLight isDark={isDark} dayNight={dayNight} />
       </mesh>
+      <GlobeCloseupLayer
+        profile={profile}
+        difficulty={difficulty}
+        usMode={usMode}
+        isDark={isDark}
+        selectedCode={selectedCode}
+        forceActive={forceDetailOverlays}
+        perfTier={perfTier}
+        controlsRef={controlsRef}
+        spinGroupRef={spinGroupRef}
+      />
       <GlobeDetailOverlays
         profile={profile}
         difficulty={difficulty}

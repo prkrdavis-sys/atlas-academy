@@ -4,6 +4,8 @@
  *   equirectangular globe texture (distant viewing).
  * - data/globe-detail-countries.json — NE 10m (+ geoBoundaries upgrades) rings
  *   for small / under-tessellated places, used as vector overlays when zoomed in.
+ * - data/globe-closeup-countries.json — NE 10m (+ geoBoundaries upgrades) rings
+ *   for all playable countries/states, painted into regional close-up patches.
  *
  * Coordinates are normalized equirectangular floats (x, y in 0..1), keyed by the
  * same codes as profile.placeMapProgress.
@@ -26,6 +28,8 @@ const NATURAL_EARTH_50M_COUNTRIES_URL =
   "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_admin_0_countries.geojson";
 const NATURAL_EARTH_50M_STATES_URL =
   "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_admin_1_states_provinces.geojson";
+const NATURAL_EARTH_10M_STATES_URL =
+  "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_admin_1_states_provinces.geojson";
 
 /** Decimal places for the base texture rings (~0.6px at an 8192-wide texture). */
 const COORD_PRECISION = 5;
@@ -85,6 +89,11 @@ export type GlobeTextureData = {
 
 export type GlobeDetailData = {
   countries: GlobeCountryShape[];
+};
+
+export type GlobeCloseupData = {
+  countries: GlobeCountryShape[];
+  usStates: GlobeCountryShape[];
 };
 
 const countries = countriesData as Country[];
@@ -329,6 +338,66 @@ async function buildDetailCountries(
     .sort((a, b) => a.code.localeCompare(b.code));
 }
 
+/**
+ * NE 10m (+ geoBoundaries) rings for every playable country — used by the
+ * regional close-up texture painter when the camera zooms in.
+ */
+async function buildCloseupCountries(): Promise<GlobeCountryShape[]> {
+  console.log(`Building close-up rings for ${countries.length} places...`);
+
+  const features = await loadNaturalEarthFeatures();
+  const featureByCode = new Map<string, NaturalEarthFeature>();
+  for (const country of countries) {
+    const feature = findFeatureForCountry(features, country);
+    if (feature) featureByCode.set(country.code, feature);
+  }
+
+  const resolved = await mapPool(countries, 3, async (country) => {
+    const baseFeature = featureByCode.get(country.code);
+    if (!baseFeature?.geometry || !isAreaGeometry(baseFeature.geometry)) {
+      return null;
+    }
+
+    const detailed = await loadDetailedGeometry(country, baseFeature.geometry);
+    if (!isAreaGeometry(detailed)) return null;
+
+    const rings = simplifyRings(
+      projectGeometryRings(detailed, DETAIL_COORD_PRECISION),
+      DETAIL_MAX_PREFERRED_COORDINATES,
+    );
+    if (rings.length === 0) return null;
+
+    return { code: country.code, rings } satisfies GlobeCountryShape;
+  });
+
+  return resolved
+    .filter((entry): entry is GlobeCountryShape => entry !== null)
+    .sort((a, b) => a.code.localeCompare(b.code));
+}
+
+/** NE 10m US state rings for close-up patches in states mode. */
+async function buildCloseupUsStates(): Promise<GlobeCountryShape[]> {
+  console.log("Fetching Natural Earth 10m states/provinces for close-up...");
+  const statesCollection = await fetchFeatureCollection(NATURAL_EARTH_10M_STATES_URL);
+  const stateByCode = new Map<string, number[][]>();
+
+  for (const feature of statesCollection.features as StateFeature[]) {
+    if (!isAreaGeometry(feature.geometry)) continue;
+    const code = resolveStateCode(feature);
+    if (!code) continue;
+    const rings = simplifyRings(
+      projectGeometryRings(feature.geometry, DETAIL_COORD_PRECISION),
+      DETAIL_MAX_PREFERRED_COORDINATES,
+    );
+    if (rings.length === 0) continue;
+    stateByCode.set(code, [...(stateByCode.get(code) ?? []), ...rings]);
+  }
+
+  return [...stateByCode.entries()]
+    .map(([code, rings]) => ({ code, rings }))
+    .sort((a, b) => a.code.localeCompare(b.code));
+}
+
 async function main() {
   console.log("Fetching Natural Earth 50m countries...");
   const countryCollection = await fetchFeatureCollection(NATURAL_EARTH_50M_COUNTRIES_URL);
@@ -408,6 +477,23 @@ async function main() {
   );
   console.log(
     `Wrote ${detailCountries.length} detail overlays (${detailVerts} verts) to data/globe-detail-countries.json`,
+  );
+
+  const closeupCountries = await buildCloseupCountries();
+  const closeupUsStates = await buildCloseupUsStates();
+  const closeupData: GlobeCloseupData = {
+    countries: closeupCountries,
+    usStates: closeupUsStates,
+  };
+  const closeupPath = path.join(process.cwd(), "data", "globe-closeup-countries.json");
+  await writeFile(closeupPath, JSON.stringify(closeupData));
+
+  const closeupVerts =
+    closeupCountries.reduce((sum, country) => sum + countRingVertices(country.rings), 0) +
+    closeupUsStates.reduce((sum, state) => sum + countRingVertices(state.rings), 0);
+  console.log(
+    `Wrote ${closeupCountries.length} close-up countries + ${closeupUsStates.length} US states ` +
+      `(${closeupVerts} verts) to data/globe-closeup-countries.json`,
   );
 }
 

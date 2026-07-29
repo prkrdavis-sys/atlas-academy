@@ -3,15 +3,15 @@
 import dynamic from "next/dynamic";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ExplorerRankBadge } from "@/components/ExplorerRankBadge";
 import { supportsWebGL } from "@/lib/webgl";
 import { MapPageProgressPanel } from "@/components/MapPageProgressPanel";
 import { MapProgressDifficultySelector } from "@/components/PlaceMapProgressPanel";
 import { useProfiles } from "@/components/ProfileProvider";
 import { resolvePlaceCodeFromParam } from "@/lib/context-maps";
 import { isStateCode } from "@/lib/scope";
-import type { GameScope, MapProgressDifficulty } from "@/lib/types";
+import type { GameScope } from "@/lib/types";
 import { useGlobeUsMode } from "@/lib/use-globe-us-mode";
+import { useMapProgressDifficulty } from "@/lib/use-map-progress-difficulty";
 import { cn } from "@/lib/utils";
 
 type MapView = "globe" | GameScope;
@@ -115,11 +115,11 @@ export function MapPageContent() {
   );
   const paramView = useMemo(() => resolveMapViewFromParams(searchParams), [searchParams]);
   const [storedView, setStoredView] = useState<MapView | null>(null);
-  const [mapDifficulty, setMapDifficulty] = useState<MapProgressDifficulty>("medium");
   const [webglOk, setWebglOk] = useState<boolean | null>(null);
   const [showGlobeFallbackNotice, setShowGlobeFallbackNotice] = useState(false);
   const [selectedGlobePlace, setSelectedGlobePlace] = useState<string | null>(null);
   const { usMode } = useGlobeUsMode();
+  const { mapDifficulty, setMapDifficulty } = useMapProgressDifficulty();
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -134,13 +134,6 @@ export function MapPageContent() {
       setStoredView("globe");
     }
   }, [paramView]);
-
-  useEffect(() => {
-    if (profile) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setMapDifficulty(profile.settings.difficulty === "hard" ? "hard" : "medium");
-    }
-  }, [profile?.id, profile?.settings.difficulty]);
 
   const requestedView = paramView ?? storedView;
   // Devices without WebGL fall back to the 2D world map, with a small notice.
@@ -192,12 +185,9 @@ export function MapPageContent() {
     <div className="space-y-5 sm:space-y-6">
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-            <h1 className="font-display text-2xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 sm:text-3xl">
-              🗺️ Map
-            </h1>
-            {profile ? <ExplorerRankBadge profile={profile} scope={panelScope} /> : null}
-          </div>
+          <h1 className="font-display text-2xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 sm:text-3xl">
+            🗺️ Map
+          </h1>
           <p className="mt-1 max-w-2xl text-sm text-slate-600 dark:text-slate-400">
             Click a country or U.S. state to see your progress and open its Library page.
           </p>

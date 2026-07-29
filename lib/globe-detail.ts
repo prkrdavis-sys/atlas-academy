@@ -120,14 +120,14 @@ export function resolveDetailFillColor(
     selectedCode: string | null;
   },
 ): { fill: string; stroke: string } {
+  const stroke = isDark ? "#5a7896" : "#1e293b";
   if (selectedCode === code) {
-    const highlight = getMapPalette(isDark).highlight;
-    return { fill: highlight.fill, stroke: highlight.stroke };
+    return { fill: getMapPalette(isDark).highlight.fill, stroke };
   }
   const level = profile ? getPlaceMasteryLevel(code, profile, difficulty) : 0;
   return {
     fill: getProgressFillColor(level, isDark, difficulty),
-    stroke: isDark ? "#5a7896" : "#1e293b",
+    stroke,
   };
 }
 

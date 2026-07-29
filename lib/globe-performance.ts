@@ -19,6 +19,13 @@ export const GLOBE_DETAIL_MAX_OVERLAYS_BY_TIER: Record<GlobePerfTier, number> = 
   desktop: 12,
 };
 
+/** Regional close-up patch texture width (height follows the geographic aspect). */
+export const GLOBE_CLOSEUP_TEXTURE_WIDTH_BY_TIER: Record<GlobePerfTier, number> = {
+  phone: 1024,
+  tablet: 1536,
+  desktop: 2048,
+};
+
 /** Sphere width/height segments for the main planet mesh. */
 export const GLOBE_SPHERE_SEGMENTS_BY_TIER: Record<GlobePerfTier, number> = {
   phone: 32,
@@ -93,5 +100,13 @@ export function isGlobeFxConstrained(tier: GlobePerfTier = getGlobePerfTier()): 
 
 /** True when free-zoom detail overlays should stay off (place-focus only). */
 export function isGlobeDetailFocusOnly(tier: GlobePerfTier = getGlobePerfTier()): boolean {
+  return tier === "phone";
+}
+
+/**
+ * True when free-zoom regional close-up patches should stay off (place-focus /
+ * selection only). Mirrors detail-overlay phone policy.
+ */
+export function isGlobeCloseupFocusOnly(tier: GlobePerfTier = getGlobePerfTier()): boolean {
   return tier === "phone";
 }

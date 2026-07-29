@@ -34,10 +34,11 @@ import {
 } from "@/components/globe/globe-scene";
 import { SpaceBackdrop, StaticStarfield } from "@/components/globe/SpaceBackdrop";
 import type { GlobePerfTier } from "@/lib/globe-performance";
-import type { Profile } from "@/lib/types";
+import type { MapProgressDifficulty, Profile } from "@/lib/types";
 import { useGlobeDayNight } from "@/lib/use-globe-day-night";
 import { useGlobeUsMode } from "@/lib/use-globe-us-mode";
 import { useIsDark } from "@/lib/use-is-dark";
+import { useMapProgressDifficulty } from "@/lib/use-map-progress-difficulty";
 
 /**
  * Imperative controls so overlaid page content (which sits above the canvas
@@ -56,6 +57,7 @@ type GlobeProps = {
   isDark: boolean;
   usMode: "country" | "states";
   dayNight: boolean;
+  difficulty: MapProgressDifficulty;
   perfTier: GlobePerfTier;
   onActivity: () => void;
   handleRef?: React.RefObject<GlobeHandle | null>;
@@ -78,6 +80,7 @@ function ProgressGlobe({
   isDark,
   usMode,
   dayNight,
+  difficulty,
   perfTier,
   onActivity,
   handleRef,
@@ -116,10 +119,9 @@ function ProgressGlobe({
   // ~84% of the viewport, so it fits phones and desktops alike.
   const scale = Math.min(0.62, (viewport.width * 0.84) / 2);
 
-  // The home globe mirrors Normal map progress; the map page globe follows
-  // its own difficulty toggle.
+  // Follows the same Normal/Hard toggle as the map page.
   const texture = useGlobeTexture(profile, {
-    difficulty: "medium",
+    difficulty,
     usMode,
     isDark,
     perfTier,
@@ -240,6 +242,7 @@ export default function GlobeBackground({
   const { isDark } = useIsDark();
   const { usMode } = useGlobeUsMode();
   const { enabled: dayNight } = useGlobeDayNight();
+  const { mapDifficulty } = useMapProgressDifficulty();
   const rootRef = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(true);
   const { frameloop, bumpActivity } = useGlobeFrameloop(pageVisible && inView, {
@@ -308,6 +311,7 @@ export default function GlobeBackground({
             isDark={isDark}
             usMode={usMode}
             dayNight={dayNight}
+            difficulty={mapDifficulty}
             perfTier={perfTier}
             onActivity={bumpActivity}
             handleRef={handleRef}

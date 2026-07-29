@@ -9,6 +9,7 @@ import {
 } from "@/lib/explorer-rank";
 import { SCOPE_INFO } from "@/lib/scope";
 import type { GameScope, Profile } from "@/lib/types";
+import { useMapProgressDifficulty } from "@/lib/use-map-progress-difficulty";
 import { cn } from "@/lib/utils";
 
 type PopoverPlacement = "above" | "below";
@@ -28,7 +29,8 @@ export function ExplorerRankBadge({ profile, scope, className }: ExplorerRankBad
   const [panelStyle, setPanelStyle] = useState<CSSProperties>({ visibility: "hidden" });
   const triggerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
-  const progress = getMasteredProgress(scope, profile);
+  const { mapDifficulty } = useMapProgressDifficulty();
+  const progress = getMasteredProgress(scope, profile, mapDifficulty);
   const rank = getExplorerRank(progress);
   const next = getNextExplorerRank(progress);
   const scopeInfo = SCOPE_INFO[scope];
@@ -155,7 +157,7 @@ export function ExplorerRankBadge({ profile, scope, className }: ExplorerRankBad
         className="mt-2 text-xs leading-relaxed text-slate-600 dark:text-slate-300"
       >
         Fully master {placeNoun} on the map to climb ranks. A place counts when you complete all
-        four categories in Normal or Hard.
+        four categories on the selected Normal or Hard track.
       </p>
 
       <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-800/60">
