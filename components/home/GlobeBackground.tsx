@@ -120,7 +120,7 @@ function ProgressGlobe({
   const scale = Math.min(0.62, (viewport.width * 0.84) / 2);
 
   // Follows the same Normal/Hard toggle as the map page.
-  const texture = useGlobeTexture(profile, {
+  const { map, metalnessMap, roughnessMap } = useGlobeTexture(profile, {
     difficulty,
     usMode,
     isDark,
@@ -209,7 +209,9 @@ function ProgressGlobe({
       >
         <sphereGeometry args={[1, segments, segments]} />
         <GlobeSurfaceMaterial
-          map={texture}
+          map={map}
+          metalnessMap={metalnessMap}
+          roughnessMap={roughnessMap}
           dayNight={dayNight}
           isDark={isDark}
           perfTier={perfTier}

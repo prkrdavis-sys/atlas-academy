@@ -73,12 +73,33 @@ const CINEMATIC_ZOOM_DURATION_S = 3.2;
 const PLACE_FOCUS_DURATION_S = 2.8;
 /** Camera-distance multiplier for one zoom button press. */
 const ZOOM_BUTTON_FACTOR = 0.75;
-/** Orbit drag speed at {@link INITIAL_CAMERA_DISTANCE}; scaled by zoom so close-ups stay controllable. */
+/** Unit sphere radius for the map globe mesh. */
+const GLOBE_RADIUS = 1;
+/**
+ * Orbit drag speed at fully zoomed-out framing. Scaled by distance-to-surface
+ * so a finger swipe tracks the surface at a similar screen-space rate when
+ * zoomed in (center-distance alone under-compensates near the planet).
+ */
 const BASE_ROTATE_SPEED = 0.45;
+/** Approach (camera distance − radius) at which {@link BASE_ROTATE_SPEED} applies. */
+const ROTATE_SPEED_REF_APPROACH = MAX_CAMERA_DISTANCE - GLOBE_RADIUS;
+/**
+ * Floor so microstate close-ups stay steerable; without this, approach ≈ 0.005
+ * would make rotateSpeed effectively zero.
+ */
+const MIN_ROTATE_APPROACH = 0.08;
+
+/** Match orbit drag sensitivity to the current zoom level. */
+function applyZoomScaledRotateSpeed(controls: OrbitControlsImpl) {
+  const approach = Math.max(controls.getDistance() - GLOBE_RADIUS, MIN_ROTATE_APPROACH);
+  controls.rotateSpeed = BASE_ROTATE_SPEED * (approach / ROTATE_SPEED_REF_APPROACH);
+}
 
 /**
- * Keep drag/spin sensitivity proportional to camera distance so a finger swipe
- * moves the surface at a similar screen-space rate whether zoomed in or out.
+ * Keep drag/spin sensitivity proportional to zoom. Runs before OrbitControls'
+ * update (−1) and must not rely on a declarative `rotateSpeed` prop — R3F
+ * re-applies that prop on idle re-renders and would restore the unscaled base
+ * while the canvas is in demand mode.
  */
 function SyncOrbitRotateSpeed({
   controlsRef,
@@ -88,9 +109,8 @@ function SyncOrbitRotateSpeed({
   useFrame(() => {
     const controls = controlsRef.current;
     if (!controls) return;
-    controls.rotateSpeed =
-      BASE_ROTATE_SPEED * (controls.getDistance() / INITIAL_CAMERA_DISTANCE);
-  });
+    applyZoomScaledRotateSpeed(controls);
+  }, -2);
   return null;
 }
 
@@ -313,7 +333,7 @@ function PickableGlobe({
   controlsRef,
   onPickPlace,
 }: GlobeSceneProps) {
-  const texture = useGlobeTexture(profile, {
+  const { map, metalnessMap, roughnessMap } = useGlobeTexture(profile, {
     difficulty,
     usMode,
     isDark,
@@ -369,7 +389,9 @@ function PickableGlobe({
       >
         <sphereGeometry args={[1, segments, segments]} />
         <GlobeSurfaceMaterial
-          map={texture}
+          map={map}
+          metalnessMap={metalnessMap}
+          roughnessMap={roughnessMap}
           dayNight={dayNight}
           isDark={isDark}
           perfTier={perfTier}
@@ -472,6 +494,9 @@ export default function InteractiveGlobe({
   const onOrbitStart = useCallback(() => {
     setIntroCancelled(true);
     setAutoSpin(false);
+    // Demand-mode may not have run SyncOrbitRotateSpeed since the last zoom;
+    // set speed before the first pointer-move sample.
+    if (controlsRef.current) applyZoomScaledRotateSpeed(controlsRef.current);
     bumpActivity();
   }, [bumpActivity]);
 
@@ -491,6 +516,7 @@ export default function InteractiveGlobe({
       offset.setLength(distance);
       camera.position.copy(controls.target).add(offset);
       controls.update();
+      applyZoomScaledRotateSpeed(controls);
     },
     [bumpActivity],
   );
@@ -592,7 +618,8 @@ export default function InteractiveGlobe({
               enablePan={false}
               enableDamping={!(usePlaceFocus && !focusIntroComplete && !introCancelled)}
               dampingFactor={0.08}
-              rotateSpeed={BASE_ROTATE_SPEED}
+              // rotateSpeed is owned by applyZoomScaledRotateSpeed — do not pass a
+              // static prop here or idle re-renders will wipe the zoom-scaled value.
               zoomSpeed={0.7}
               minDistance={MIN_CAMERA_DISTANCE}
               maxDistance={MAX_CAMERA_DISTANCE}

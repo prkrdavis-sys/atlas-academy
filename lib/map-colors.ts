@@ -23,7 +23,8 @@ type MapPalette = Record<MapPathRole, MapPathStyle> & { ocean: string };
 const LIGHT_MAP_PALETTE: MapPalette = {
   ocean: "#e0f2fe",
   default: {
-    fill: "#cbd5e1",
+    // Soft grey with a whisper of sage — reads as default land, not tinted mint.
+    fill: "#cad2cb",
     stroke: "#94a3b8",
     strokeWidth: 0.35,
   },
@@ -42,7 +43,8 @@ const LIGHT_MAP_PALETTE: MapPalette = {
 const DARK_MAP_PALETTE: MapPalette = {
   ocean: "#0f172a",
   default: {
-    fill: "#475569",
+    // Cool grey with a soft sage cast so bare land reads more natural.
+    fill: "#46554d",
     stroke: "#64748b",
     strokeWidth: 0.35,
   },
@@ -72,6 +74,35 @@ const DARK_SUBTLE_NEIGHBOR: MapPathStyle = {
 
 export function getMapPalette(isDark: boolean): MapPalette {
   return isDark ? DARK_MAP_PALETTE : LIGHT_MAP_PALETTE;
+}
+
+/**
+ * Soft edge bloom for the selected country on canvas maps / globe textures.
+ * Multiplied by texture pixel scale (same contract as mastery glow).
+ */
+export const MAP_SELECTION_GLOW_BLUR = 2.2;
+
+/** Fills a country path with optional soft teal glow around the selection. */
+export function fillSelectedMapPath(
+  ctx: CanvasRenderingContext2D,
+  path: Path2D,
+  fill: string,
+  {
+    glowBlur = 0,
+    allowGlow = true,
+  }: {
+    glowBlur?: number;
+    allowGlow?: boolean;
+  } = {},
+) {
+  ctx.save();
+  if (allowGlow && glowBlur > 0) {
+    ctx.shadowColor = fill;
+    ctx.shadowBlur = glowBlur;
+  }
+  ctx.fillStyle = fill;
+  ctx.fill(path, "evenodd");
+  ctx.restore();
 }
 
 export function getSubtleNeighborMapStyle(isDark: boolean): MapPathStyle {

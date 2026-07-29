@@ -1,0 +1,9 @@
+mastery-gold-brushed.jpg / mastery-gold-roughness.jpg
+
+Source: ambientCG Metal009 (brushed metal PBR), CC0 / public domain.
+https://ambientcg.com/view?id=Metal009
+License: https://docs.ambientcg.com/license/ (CC0 1.0)
+
+Derived for Atlas Academy: Color map luminance remapped to yellow-gold;
+Roughness map remapped toward a shinier brushed-metal response for Normal
+mastery-4 map/globe fills.

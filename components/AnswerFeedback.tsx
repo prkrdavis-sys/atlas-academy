@@ -12,7 +12,7 @@ export type FeedbackBurst = {
 };
 
 const BURST_LIFETIME_MS = 950;
-const STREAK_SNUFF_LIFETIME_MS = 1650;
+const STREAK_SNUFF_LIFETIME_MS = 2650;
 
 function Burst({ burst, onDone }: { burst: FeedbackBurst; onDone: (id: number) => void }) {
   const lostStreak = burst.lostStreak;

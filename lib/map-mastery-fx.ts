@@ -34,7 +34,7 @@ export const MASTERY_LEGENDARY_STOPS: readonly MasteryGradientStop[] = [
 ];
 
 /** Representative solid for consumers that cannot paint a gradient. */
-export const MASTERY_GOLD_SOLID = "#eab308";
+export const MASTERY_GOLD_SOLID = "#d4af37";
 export const MASTERY_LEGENDARY_SOLID = "#e879f9";
 
 export type MasteryGlowIntensity = {

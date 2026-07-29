@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react";
 import {
   MASTERY_GOLD_GRADIENT_ID,
-  MASTERY_GOLD_STOPS,
   MASTERY_LEGENDARY_GRADIENT_ID,
   MASTERY_LEGENDARY_STOPS,
   type MasteryGradientStop,
 } from "@/lib/map-mastery-fx";
+import { MASTERY_GOLD_TEXTURE_PATH } from "@/lib/mastery-gold-texture";
 
 function MasteryGradientDef({
   id,
@@ -44,7 +44,7 @@ function MasteryGradientDef({
 
 /**
  * Shared mastery-4 fills for progress-map paths.
- * Gold is a static metallic gradient; legendary gets a gentle holographic drift.
+ * Gold uses a tiled brushed-metal photo texture; legendary drifts holographically.
  */
 export function MapMasteryFxDefs() {
   const [animateLegendary, setAnimateLegendary] = useState(true);
@@ -59,12 +59,21 @@ export function MapMasteryFxDefs() {
 
   return (
     <defs>
-      <MasteryGradientDef
+      {/* objectBoundingBox tiles so each country shows brushed grain, not flat gold */}
+      <pattern
         id={MASTERY_GOLD_GRADIENT_ID}
-        stops={MASTERY_GOLD_STOPS}
-        durationSec={3.2}
-        animate={false}
-      />
+        patternUnits="objectBoundingBox"
+        width="0.28"
+        height="0.28"
+        patternContentUnits="objectBoundingBox"
+      >
+        <image
+          href={MASTERY_GOLD_TEXTURE_PATH}
+          width="0.28"
+          height="0.28"
+          preserveAspectRatio="none"
+        />
+      </pattern>
       <MasteryGradientDef
         id={MASTERY_LEGENDARY_GRADIENT_ID}
         stops={MASTERY_LEGENDARY_STOPS}

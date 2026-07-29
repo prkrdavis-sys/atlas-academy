@@ -1,9 +1,16 @@
 import * as THREE from "three";
 import { normalizedToLocalDirection } from "@/lib/globe-focus";
-import { getMapPalette, getProgressFillColor } from "@/lib/map-colors";
+import { isGlobeFxConstrained } from "@/lib/globe-performance";
+import {
+  fillSelectedMapPath,
+  getMapPalette,
+  getProgressFillColor,
+  MAP_SELECTION_GLOW_BLUR,
+} from "@/lib/map-colors";
 import { getMasterySolidColor } from "@/lib/map-mastery-fx";
 import { getPlaceMasteryLevel } from "@/lib/map-progress";
 import {
+  GLOBE_BASE_TEXTURE_SIZE,
   getGlobePalette,
   type GlobeCountryShape,
   type GlobeUsMode,
@@ -366,8 +373,11 @@ export function paintGlobeCloseupRegion(
     const selected = shapes.find((shape) => shape.code === selectedCode);
     if (selected) {
       const path = buildPatchPath(selected.rings, window, width, height);
-      ctx.fillStyle = mapPalette.highlight.fill;
-      ctx.fill(path, "evenodd");
+      const pixelScale = width / GLOBE_BASE_TEXTURE_SIZE;
+      fillSelectedMapPath(ctx, path, mapPalette.highlight.fill, {
+        glowBlur: MAP_SELECTION_GLOW_BLUR * Math.max(pixelScale, 0.5),
+        allowGlow: !isGlobeFxConstrained(),
+      });
       // Re-stroke with the normal border so the fill doesn't erase the outline.
       ctx.lineWidth = Math.max(0.8, (selected.isState ? 0.9 : 1.25) * (width / 1024));
       ctx.strokeStyle = selected.isState ? palette.stateBorder : palette.border;

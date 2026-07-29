@@ -256,15 +256,16 @@ export function GlobeCloseupLayer({
 
     const inputs = inputsRef.current;
     const distance = controls.getDistance();
+    // Selection must NOT force close-up: at overview distance the patch spans
+    // ~half Earth as a low-poly unlit mesh and corrupts globe lighting/texture.
+    // Highlight stays on the main equirect canvas; close-up only for zoom / place-focus.
     const wantActive =
       inputs.forceActive ||
-      inputs.selectedCode !== null ||
       (!inputs.focusOnly && distance <= GLOBE_CLOSEUP_ACTIVATE_DISTANCE);
 
     if (activeRef.current) {
       const keep =
         inputs.forceActive ||
-        inputs.selectedCode !== null ||
         (!inputs.focusOnly && distance < GLOBE_CLOSEUP_DEACTIVATE_DISTANCE);
       if (!keep) {
         activeRef.current = false;

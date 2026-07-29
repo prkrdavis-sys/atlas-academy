@@ -5,7 +5,12 @@ import {
   isGlobeFxConstrained,
   type GlobePerfTier,
 } from "@/lib/globe-performance";
-import { getMapPalette, getProgressFillColor } from "@/lib/map-colors";
+import {
+  fillSelectedMapPath,
+  getMapPalette,
+  getProgressFillColor,
+  MAP_SELECTION_GLOW_BLUR,
+} from "@/lib/map-colors";
 import {
   getMasteryGradientStops,
   getMasterySolidColor,
@@ -14,6 +19,10 @@ import {
   masteryFxPhaseFromTime,
   sampleGradientColor,
 } from "@/lib/map-mastery-fx";
+import {
+  createMasteryGoldPattern,
+  MASTERY_GOLD_ALBEDO_FALLBACK,
+} from "@/lib/mastery-gold-texture";
 import { getPlaceMasteryLevel } from "@/lib/map-progress";
 import type { MapProgressDifficulty, PlaceMasteryLevel, Profile } from "@/lib/types";
 
@@ -59,16 +68,16 @@ type GlobePalette = {
   stateBorder: string;
 };
 
-/** Deep slate ocean — muted navy that reads as water in space, not neon cyan. */
+/** Deep royal navy — richer and less cyan so oceans read as depth, not teal. */
 const DARK_GLOBE_PALETTE: GlobePalette = {
-  ocean: "#2d6888",
+  ocean: "#1e4570",
   border: "rgba(90, 120, 150, 0.5)",
   stateBorder: "rgba(90, 120, 150, 0.42)",
 };
 
-/** Soft Atlantic blue — globe-like in light mode without looking washed out. */
+/** Deep Atlantic royal — globe-like in light mode without looking washed out. */
 const LIGHT_GLOBE_PALETTE: GlobePalette = {
-  ocean: "#5a96b5",
+  ocean: "#3a6f9e",
   border: "rgba(30, 41, 59, 0.45)",
   stateBorder: "rgba(30, 41, 59, 0.35)",
 };
@@ -166,24 +175,19 @@ export function profileHasMastery4(
   return collectShapes(profile, difficulty, usMode).some((shape) => shape.level === 4);
 }
 
-function createMastery4Gradient(
+function createMastery4FillStyle(
   ctx: CanvasRenderingContext2D,
   width: number,
   height: number,
   difficulty: MapProgressDifficulty,
   phase: number,
-): CanvasGradient {
-  const stops = getMasteryGradientStops(difficulty);
-
+  goldPattern: CanvasPattern | null,
+): string | CanvasGradient | CanvasPattern {
   if (difficulty === "medium") {
-    // Static brushed-metal diagonal — texture only, no phase drift.
-    const grad = ctx.createLinearGradient(0, 0, width * 0.85, height * 0.75);
-    for (const stop of stops) {
-      grad.addColorStop(Math.min(0.999, Math.max(0, stop.offset)), stop.color);
-    }
-    return grad;
+    return goldPattern ?? MASTERY_GOLD_ALBEDO_FALLBACK;
   }
 
+  const stops = getMasteryGradientStops(difficulty);
   // Hard legendary: gentle holographic crawl across the map.
   const ox = ((phase * 0.55) % 1) * width * 0.35;
   const oy = ((phase * 0.3) % 1) * height * 0.25;
@@ -207,6 +211,7 @@ function drawShapeFill(
     height,
     phase,
     allowCanvasGlow,
+    goldPattern,
   }: {
     isDark: boolean;
     difficulty: MapProgressDifficulty;
@@ -215,6 +220,7 @@ function drawShapeFill(
     height: number;
     phase: number;
     allowCanvasGlow: boolean;
+    goldPattern: CanvasPattern | null;
   },
 ) {
   const glow = MASTERY_GLOW_BY_LEVEL[level];
@@ -235,7 +241,14 @@ function drawShapeFill(
   }
 
   if (level === 4) {
-    ctx.fillStyle = createMastery4Gradient(ctx, width, height, difficulty, phase);
+    ctx.fillStyle = createMastery4FillStyle(
+      ctx,
+      width,
+      height,
+      difficulty,
+      phase,
+      goldPattern,
+    );
   } else {
     ctx.fillStyle = solid;
   }
@@ -269,10 +282,18 @@ export type GlobeTextureOptions = {
   allowCanvasGlow?: boolean;
   /** When false, mastery-4 paints a static mid-phase sample. */
   allowMastery4Animation?: boolean;
+  /** Preloaded brushed-gold albedo (Normal mastery 4). */
+  goldColorImage?: HTMLImageElement | null;
+  /** Preloaded brushed-gold roughness (Normal mastery 4 specular response). */
+  goldRoughnessImage?: HTMLImageElement | null;
 };
 
 export type GlobeTexturePaintHandle = {
   canvas: HTMLCanvasElement;
+  /** Metalness map — bright on Normal mastery-4 gold, dark elsewhere. */
+  metalnessCanvas: HTMLCanvasElement | null;
+  /** Roughness map — smoother (shinier) on Normal mastery-4 gold. */
+  roughnessCanvas: HTMLCanvasElement | null;
   /** True when any mastery-4 places exist. */
   hasMastery4: boolean;
   /** True when mastery-4 fills should animate (Hard legendary only, non-constrained). */
@@ -303,6 +324,8 @@ export function createGlobeTexturePaint(
     phase = masteryFxPhaseFromTime(0),
     allowCanvasGlow = !isGlobeFxConstrained(),
     allowMastery4Animation = !isGlobeFxConstrained(),
+    goldColorImage = null,
+    goldRoughnessImage = null,
   }: GlobeTextureOptions = {},
 ): GlobeTexturePaintHandle {
   const width = size;
@@ -331,6 +354,13 @@ export function createGlobeTexturePaint(
   base.height = height;
   const baseCtx = base.getContext("2d")!;
 
+  // ~128px tiles at 2048 width so brush streaks read at country scale.
+  const goldTilePx = Math.max(48, Math.round(128 * pixelScale));
+  const goldPattern =
+    difficulty === "medium" && goldColorImage
+      ? createMasteryGoldPattern(baseCtx, goldColorImage, goldTilePx)
+      : null;
+
   baseCtx.fillStyle = palette.ocean;
   baseCtx.fillRect(0, 0, width, height);
 
@@ -342,6 +372,7 @@ export function createGlobeTexturePaint(
     height,
     phase: 0.35,
     allowCanvasGlow,
+    goldPattern,
   };
 
   {
@@ -369,6 +400,46 @@ export function createGlobeTexturePaint(
   canvas.height = height;
   const ctx = canvas.getContext("2d")!;
 
+  // Specular response maps — only meaningful for Normal gold mastery.
+  const useMetalMaps = difficulty === "medium" && hasMastery4;
+  let metalnessCanvas: HTMLCanvasElement | null = null;
+  let roughnessCanvas: HTMLCanvasElement | null = null;
+
+  if (useMetalMaps) {
+    metalnessCanvas = document.createElement("canvas");
+    metalnessCanvas.width = width;
+    metalnessCanvas.height = height;
+    const metalCtx = metalnessCanvas.getContext("2d")!;
+    metalCtx.fillStyle = "#050505";
+    metalCtx.fillRect(0, 0, width, height);
+
+    roughnessCanvas = document.createElement("canvas");
+    roughnessCanvas.width = width;
+    roughnessCanvas.height = height;
+    const roughCtx = roughnessCanvas.getContext("2d")!;
+    // Default land/ocean stay fairly matte (high roughness).
+    roughCtx.fillStyle = "#c4c4c4";
+    roughCtx.fillRect(0, 0, width, height);
+
+    const roughPattern =
+      goldRoughnessImage != null
+        ? createMasteryGoldPattern(roughCtx, goldRoughnessImage, goldTilePx)
+        : null;
+
+    for (const shape of mastery4Shapes) {
+      const path = pathFor(shape.code, shape.rings);
+      // White mask — material.metalness factor sets how metallic (keeps diffuse gold).
+      metalCtx.fillStyle = "#ffffff";
+      metalCtx.fill(path, "evenodd");
+
+      roughCtx.save();
+      // Slightly higher roughness than polished chrome so grain stays lit.
+      roughCtx.fillStyle = roughPattern ?? "#7a7a7a";
+      roughCtx.fill(path, "evenodd");
+      roughCtx.restore();
+    }
+  }
+
   const paintFrame = (nextPhase: number) => {
     ctx.clearRect(0, 0, width, height);
     ctx.drawImage(base, 0, 0);
@@ -386,8 +457,10 @@ export function createGlobeTexturePaint(
         // Fill only — keep the base border stroke so selection doesn't thicken
         // or recolor outlines (which reads as pixelation at high zoom).
         const path = pathFor(selected.code, selected.rings);
-        ctx.fillStyle = mapPalette.highlight.fill;
-        ctx.fill(path, "evenodd");
+        fillSelectedMapPath(ctx, path, mapPalette.highlight.fill, {
+          glowBlur: MAP_SELECTION_GLOW_BLUR * pixelScale,
+          allowGlow: allowCanvasGlow,
+        });
       }
     }
   };
@@ -396,6 +469,8 @@ export function createGlobeTexturePaint(
 
   return {
     canvas,
+    metalnessCanvas,
+    roughnessCanvas,
     hasMastery4,
     animateMastery4:
       hasMastery4 && allowMastery4Animation && mastery4ShouldAnimate(difficulty),

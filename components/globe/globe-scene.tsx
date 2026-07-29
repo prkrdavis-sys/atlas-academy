@@ -21,6 +21,11 @@ import {
   type GlobeUsMode,
 } from "@/lib/globe-texture";
 import {
+  loadMasteryGoldColorImage,
+  loadMasteryGoldRoughnessImage,
+} from "@/lib/mastery-gold-texture";
+import { masteryFxPhaseFromTime } from "@/lib/map-mastery-fx";
+import {
   getGlobePerfTier,
   GLOBE_ATMOSPHERE_SEGMENTS_BY_TIER,
   GLOBE_DPR_CAP_BY_TIER,
@@ -31,7 +36,6 @@ import {
   isGlobeFxConstrained,
   type GlobePerfTier,
 } from "@/lib/globe-performance";
-import { masteryFxPhaseFromTime } from "@/lib/map-mastery-fx";
 import { subsolarDirection } from "@/lib/sun-position";
 import { supportsWebGL } from "@/lib/webgl";
 import type { MapProgressDifficulty, Profile } from "@/lib/types";
@@ -204,10 +208,17 @@ export type GlobeTextureConfig = {
   perfTier?: GlobePerfTier;
 };
 
+export type GlobeSurfaceMaps = {
+  map: THREE.CanvasTexture;
+  metalnessMap: THREE.CanvasTexture | null;
+  roughnessMap: THREE.CanvasTexture | null;
+};
+
 /**
  * Builds the progress-painted planet texture at the highest resolution the
  * device's GPU comfortably supports, rebuilding when inputs change. Hard
- * mastery-4 places get a gentle holographic drift; Normal gold stays static.
+ * mastery-4 places get a gentle holographic drift; Normal gold uses a brushed
+ * metal albedo plus metalness/roughness maps so sunlight catches those places.
  * Selection highlight updates without rebuilding the base layer.
  */
 export function useGlobeTexture(
@@ -219,7 +230,7 @@ export function useGlobeTexture(
     selectedCode = null,
     perfTier = getGlobePerfTier(),
   }: GlobeTextureConfig,
-): THREE.CanvasTexture {
+): GlobeSurfaceMaps {
   const gl = useThree((state) => state.gl);
   const invalidate = useThree((state) => state.invalidate);
   const fxConstrained = isGlobeFxConstrained(perfTier);
@@ -227,6 +238,29 @@ export function useGlobeTexture(
     () => resolveGlobeTextureSize(gl.capabilities.maxTextureSize, perfTier),
     [gl.capabilities.maxTextureSize, perfTier],
   );
+
+  const [goldMaps, setGoldMaps] = useState<{
+    color: HTMLImageElement | null;
+    roughness: HTMLImageElement | null;
+  }>({ color: null, roughness: null });
+
+  useEffect(() => {
+    if (difficulty !== "medium") {
+      setGoldMaps({ color: null, roughness: null });
+      return;
+    }
+    let cancelled = false;
+    Promise.all([loadMasteryGoldColorImage(), loadMasteryGoldRoughnessImage()])
+      .then(([color, roughness]) => {
+        if (!cancelled) setGoldMaps({ color, roughness });
+      })
+      .catch(() => {
+        if (!cancelled) setGoldMaps({ color: null, roughness: null });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [difficulty]);
 
   const paint = useMemo(
     () =>
@@ -239,21 +273,49 @@ export function useGlobeTexture(
         phase: MASTERY_FX_STATIC_PHASE,
         allowCanvasGlow: !fxConstrained,
         allowMastery4Animation: !fxConstrained,
+        goldColorImage: goldMaps.color,
+        goldRoughnessImage: goldMaps.roughness,
       }),
-    [profile, difficulty, usMode, isDark, size, fxConstrained],
+    [profile, difficulty, usMode, isDark, size, fxConstrained, goldMaps],
   );
 
-  const texture = useMemo(() => {
-    const canvasTexture = new THREE.CanvasTexture(paint.canvas);
-    canvasTexture.colorSpace = THREE.SRGBColorSpace;
-    canvasTexture.anisotropy = Math.min(
+  const maps = useMemo(() => {
+    const anisotropy = Math.min(
       fxConstrained ? 2 : 8,
       gl.capabilities.getMaxAnisotropy(),
     );
-    return canvasTexture;
+
+    const map = new THREE.CanvasTexture(paint.canvas);
+    map.colorSpace = THREE.SRGBColorSpace;
+    map.anisotropy = anisotropy;
+
+    const metalnessMap = paint.metalnessCanvas
+      ? new THREE.CanvasTexture(paint.metalnessCanvas)
+      : null;
+    if (metalnessMap) {
+      metalnessMap.colorSpace = THREE.NoColorSpace;
+      metalnessMap.anisotropy = anisotropy;
+    }
+
+    const roughnessMap = paint.roughnessCanvas
+      ? new THREE.CanvasTexture(paint.roughnessCanvas)
+      : null;
+    if (roughnessMap) {
+      roughnessMap.colorSpace = THREE.NoColorSpace;
+      roughnessMap.anisotropy = anisotropy;
+    }
+
+    return { map, metalnessMap, roughnessMap };
   }, [paint, gl, fxConstrained]);
 
-  useEffect(() => () => texture.dispose(), [texture]);
+  useEffect(
+    () => () => {
+      maps.map.dispose();
+      maps.metalnessMap?.dispose();
+      maps.roughnessMap?.dispose();
+    },
+    [maps],
+  );
 
   // Selection is an overlay layer — update without rebuilding the base canvas.
   useEffect(() => {
@@ -263,9 +325,9 @@ export function useGlobeTexture(
     } else {
       paint.paintFrame(masteryFxPhaseFromTime(performance.now(), 5500));
     }
-    texture.needsUpdate = true;
+    maps.map.needsUpdate = true;
     invalidate();
-  }, [paint, selectedCode, texture, invalidate]);
+  }, [paint, selectedCode, maps, invalidate]);
 
   useEffect(() => {
     if (!paint.animateMastery4) return;
@@ -284,7 +346,7 @@ export function useGlobeTexture(
       if (now - lastPaint >= frameIntervalMs) {
         lastPaint = now;
         paint.paintFrame(masteryFxPhaseFromTime(now, 5500));
-        texture.needsUpdate = true;
+        maps.map.needsUpdate = true;
         invalidate();
       }
       raf = requestAnimationFrame(tick);
@@ -299,7 +361,7 @@ export function useGlobeTexture(
       if (motionQuery.matches) {
         stop();
         paint.paintFrame(MASTERY_FX_STATIC_PHASE);
-        texture.needsUpdate = true;
+        maps.map.needsUpdate = true;
         invalidate();
         return;
       }
@@ -313,9 +375,9 @@ export function useGlobeTexture(
       stop();
       motionQuery.removeEventListener("change", syncMotion);
     };
-  }, [paint, texture, invalidate, perfTier]);
+  }, [paint, maps, invalidate, perfTier]);
 
-  return texture;
+  return maps;
 }
 
 /** Cheap additive atmosphere halo around the planet's rim. */
@@ -345,15 +407,22 @@ export function GlobeAtmosphere({
 /**
  * Planet surface material: enough gloss for a polished 3D globe, still matte
  * enough that mastery colors and borders stay readable. Phones use Lambert
- * (no specular/emissiveMap double-sample) to cut fill-rate.
+ * (no specular/emissiveMap double-sample) to cut fill-rate. When metalness /
+ * roughness maps are present (Normal gold mastery), sunlight catches those
+ * places more than default land — and a soft gold emissive keeps the color
+ * readable even on the shaded side of the globe.
  */
 export function GlobeSurfaceMaterial({
   map,
+  metalnessMap = null,
+  roughnessMap = null,
   dayNight,
   isDark,
   perfTier = "desktop",
 }: {
   map: THREE.Texture;
+  metalnessMap?: THREE.Texture | null;
+  roughnessMap?: THREE.Texture | null;
   dayNight: boolean;
   isDark: boolean;
   perfTier?: GlobePerfTier;
@@ -362,14 +431,33 @@ export function GlobeSurfaceMaterial({
     return <meshLambertMaterial map={map} />;
   }
 
+  const hasMetalMaps = Boolean(metalnessMap && roughnessMap);
+
+  // Gold mastery: subtle fill-light so shaded countries stay gold, not neon.
+  // metalnessMap is white only on gold mastery places.
+  const emissiveMap = hasMetalMaps
+    ? metalnessMap!
+    : isDark && dayNight
+      ? map
+      : undefined;
+  const emissive = hasMetalMaps
+    ? "#c9a227"
+    : isDark && dayNight
+      ? "#ffffff"
+      : "#000000";
+  const emissiveIntensity = hasMetalMaps ? 0.22 : isDark && dayNight ? 0.18 : 0;
+
   return (
     <meshStandardMaterial
       map={map}
-      emissiveMap={isDark && dayNight ? map : undefined}
-      emissive={isDark && dayNight ? "#ffffff" : "#000000"}
-      emissiveIntensity={isDark && dayNight ? 0.18 : 0}
-      roughness={dayNight ? 0.72 : 0.52}
-      metalness={dayNight ? 0.04 : 0.08}
+      metalnessMap={metalnessMap ?? undefined}
+      roughnessMap={roughnessMap ?? undefined}
+      emissiveMap={emissiveMap}
+      emissive={emissive}
+      emissiveIntensity={emissiveIntensity}
+      roughness={hasMetalMaps ? 1 : dayNight ? 0.72 : 0.52}
+      // Enough metal for brushed sheen; enough diffuse for gold in shadow.
+      metalness={hasMetalMaps ? 0.32 : dayNight ? 0.04 : 0.08}
     />
   );
 }
@@ -575,12 +663,14 @@ function DistantSunVisual({
     }
   });
 
-  // Soft radial sprites only — glow map alpha dies before the quad edge, so
-  // nothing reads as a square or hard ring in additive space.
-  const wash = isDark ? 0.55 : 0.7;
-  const bloom = isDark ? 0.65 : 0.8;
-  const plate = isDark ? 0.92 : 1;
-  const core = isDark ? 0.55 : 0.7;
+  // Soft radial sprites — glow map alpha dies before the quad edge, so nothing
+  // reads as a square or hard ring in additive space. The NASA plate is dark-
+  // limb imagery: skip it in light mode or its near-opaque brown pixels
+  // darken the pale CSS sky into a black ring through the transparent canvas.
+  const wash = isDark ? 0.55 : 0.78;
+  const bloom = isDark ? 0.65 : 0.92;
+  const plate = 0.92;
+  const core = isDark ? 0.55 : 0.85;
 
   return (
     <group ref={groupRef} frustumCulled={false}>
@@ -618,11 +708,13 @@ function DistantSunVisual({
             />
           </mesh>
 
-          {/* Textured disk + baked corona (circular alpha). */}
-          <mesh scale={simplified ? 4.2 : 5.4} raycast={ignoreRaycast} frustumCulled={false}>
-            <planeGeometry args={[2, 2]} />
-            <meshBasicMaterial map={plateMap} opacity={plate} {...sunAdditive} />
-          </mesh>
+          {/* Textured disk + baked corona — dark space only (see note above). */}
+          {isDark ? (
+            <mesh scale={simplified ? 4.2 : 5.4} raycast={ignoreRaycast} frustumCulled={false}>
+              <planeGeometry args={[2, 2]} />
+              <meshBasicMaterial map={plateMap} opacity={plate} {...sunAdditive} />
+            </mesh>
+          ) : null}
 
           {/* Soft white-hot core (same glow sprite, small). */}
           {!simplified ? (
@@ -647,6 +739,19 @@ function DistantSunVisual({
               </mesh>
             </>
           ) : null}
+          {/* Phone light mode has no plate — keep a small hot core so the sun
+              still reads as a disk against the pale sky. */}
+          {simplified && !isDark ? (
+            <mesh scale={1.35} raycast={ignoreRaycast} frustumCulled={false}>
+              <planeGeometry args={[2, 2]} />
+              <meshBasicMaterial
+                map={glowMap}
+                color="#ffffff"
+                opacity={core * 0.7}
+                {...sunAdditive}
+              />
+            </mesh>
+          ) : null}
         </group>
       </Billboard>
     </group>
@@ -657,7 +762,8 @@ function DistantSunVisual({
  * Bright distant sun in outer space, locked to the real subsolar direction.
  * Always mounted (independent of the day/night lighting toggle) as a child of
  * the earth mesh so it stays aligned with geography while the globe spins.
- * Uses a designed plate built from NASA SDO AIA 171 (public domain).
+ * Dark mode uses a NASA SDO AIA 171 plate; light mode uses soft glow sprites
+ * only so the plate's dark limb never rings against the pale sky.
  */
 export function DistantSun({
   isDark,
