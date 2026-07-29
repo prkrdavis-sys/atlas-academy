@@ -60,6 +60,11 @@ type SpaceBackdropProps = {
   canvasNebulae?: boolean;
   /** Fade the lower area into the base color so foreground cards stay readable. */
   fadeBottom?: boolean;
+  /**
+   * CSS shooting-star streaks. Disable when the globe fills the viewport so
+   * they don't streak across land after outer space is gone.
+   */
+  shootingStars?: boolean;
   className?: string;
   children?: ReactNode;
 };
@@ -76,6 +81,7 @@ export const SpaceBackdrop = forwardRef<HTMLDivElement, SpaceBackdropProps>(
       reducedMotion,
       canvasNebulae = false,
       fadeBottom = false,
+      shootingStars = true,
       className,
       children,
     },
@@ -102,7 +108,7 @@ export const SpaceBackdrop = forwardRef<HTMLDivElement, SpaceBackdropProps>(
 
         {children}
 
-        {!reducedMotion && (
+        {!reducedMotion && shootingStars ? (
           <>
             <span aria-hidden className="shooting-star" style={{ top: "12%", right: "4%" }} />
             <span
@@ -111,7 +117,7 @@ export const SpaceBackdrop = forwardRef<HTMLDivElement, SpaceBackdropProps>(
               style={{ top: "32%", right: "-6%", animationDelay: "5.5s" }}
             />
           </>
-        )}
+        ) : null}
 
         {fadeBottom ? (
           <div

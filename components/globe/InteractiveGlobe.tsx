@@ -34,6 +34,7 @@ import {
 } from "@/components/globe/globe-scene";
 import { GlobeCloseupLayer } from "@/components/globe/GlobeCloseupLayer";
 import { GlobeDetailOverlays } from "@/components/globe/GlobeDetailOverlays";
+import { GlobeGrabOrbit } from "@/components/globe/GlobeGrabOrbit";
 import { SpaceBackdrop, StaticStarfield } from "@/components/globe/SpaceBackdrop";
 import { MapScrollDownButton } from "@/components/MapScrollDownButton";
 import { MapZoomControls } from "@/components/MapZoomControls";
@@ -75,42 +76,56 @@ const PLACE_FOCUS_DURATION_S = 2.8;
 const ZOOM_BUTTON_FACTOR = 0.75;
 /** Unit sphere radius for the map globe mesh. */
 const GLOBE_RADIUS = 1;
-/**
- * Orbit drag speed at fully zoomed-out framing. Scaled by distance-to-surface
- * so a finger swipe tracks the surface at a similar screen-space rate when
- * zoomed in (center-distance alone under-compensates near the planet).
- */
-const BASE_ROTATE_SPEED = 0.45;
-/** Approach (camera distance − radius) at which {@link BASE_ROTATE_SPEED} applies. */
-const ROTATE_SPEED_REF_APPROACH = MAX_CAMERA_DISTANCE - GLOBE_RADIUS;
-/**
- * Floor so microstate close-ups stay steerable; without this, approach ≈ 0.005
- * would make rotateSpeed effectively zero.
- */
-const MIN_ROTATE_APPROACH = 0.08;
 
-/** Match orbit drag sensitivity to the current zoom level. */
-function applyZoomScaledRotateSpeed(controls: OrbitControlsImpl) {
-  const approach = Math.max(controls.getDistance() - GLOBE_RADIUS, MIN_ROTATE_APPROACH);
-  controls.rotateSpeed = BASE_ROTATE_SPEED * (approach / ROTATE_SPEED_REF_APPROACH);
+/**
+ * Camera distance at which the unit globe's limb reaches the viewport corners
+ * (outer space no longer visible). Uses the perspective frustum corner angle.
+ */
+function globeFillDistance(fovDeg: number, aspect: number, radius = GLOBE_RADIUS): number {
+  const halfV = THREE.MathUtils.degToRad(fovDeg / 2);
+  const halfH = Math.atan(Math.tan(halfV) * Math.max(aspect, 1e-6));
+  const halfCorner = Math.atan(Math.hypot(Math.tan(halfH), Math.tan(halfV)));
+  const sinCorner = Math.sin(halfCorner);
+  if (sinCorner <= 1e-6) return radius;
+  return radius / sinCorner;
 }
 
+/** Extra zoom-out required before shooting stars return (avoids edge flicker). */
+const SPACE_VISIBLE_HYSTERESIS = 1.06;
+
 /**
- * Keep drag/spin sensitivity proportional to zoom. Runs before OrbitControls'
- * update (−1) and must not rely on a declarative `rotateSpeed` prop — R3F
- * re-applies that prop on idle re-renders and would restore the unscaled base
- * while the canvas is in demand mode.
+ * Reports when the orbit camera is still far enough that outer space shows in
+ * the viewport corners. Used to gate CSS shooting stars over the canvas.
  */
-function SyncOrbitRotateSpeed({
+function SyncOuterSpaceVisible({
   controlsRef,
+  onChange,
 }: {
   controlsRef: RefObject<OrbitControlsImpl | null>;
+  onChange: (visible: boolean) => void;
 }) {
+  const camera = useThree((s) => s.camera);
+  const size = useThree((s) => s.size);
+  const visibleRef = useRef(true);
+
   useFrame(() => {
     const controls = controlsRef.current;
-    if (!controls) return;
-    applyZoomScaledRotateSpeed(controls);
-  }, -2);
+    if (!controls || !(camera instanceof THREE.PerspectiveCamera)) return;
+
+    const fillAt = globeFillDistance(
+      camera.fov,
+      size.width / Math.max(size.height, 1),
+    );
+    const distance = controls.getDistance();
+    const next = visibleRef.current
+      ? distance > fillAt
+      : distance > fillAt * SPACE_VISIBLE_HYSTERESIS;
+
+    if (next === visibleRef.current) return;
+    visibleRef.current = next;
+    onChange(next);
+  });
+
   return null;
 }
 
@@ -466,6 +481,8 @@ export default function InteractiveGlobe({
   const [introCancelled, setIntroCancelled] = useState(false);
   const [focusIntroComplete, setFocusIntroComplete] = useState(false);
   const [cinematicIntroComplete, setCinematicIntroComplete] = useState(false);
+  /** False once the globe fills the viewport — gates CSS shooting stars. */
+  const [outerSpaceVisible, setOuterSpaceVisible] = useState(true);
   const placeFocusTarget = initialPlaceCode ? getGlobeFocusTarget(initialPlaceCode) : null;
   const usePlaceFocus = placeFocusTarget !== null;
   const highlightedCode = selectedCode ?? initialPlaceCode;
@@ -494,9 +511,6 @@ export default function InteractiveGlobe({
   const onOrbitStart = useCallback(() => {
     setIntroCancelled(true);
     setAutoSpin(false);
-    // Demand-mode may not have run SyncOrbitRotateSpeed since the last zoom;
-    // set speed before the first pointer-move sample.
-    if (controlsRef.current) applyZoomScaledRotateSpeed(controlsRef.current);
     bumpActivity();
   }, [bumpActivity]);
 
@@ -516,7 +530,6 @@ export default function InteractiveGlobe({
       offset.setLength(distance);
       camera.position.copy(controls.target).add(offset);
       controls.update();
-      applyZoomScaledRotateSpeed(controls);
     },
     [bumpActivity],
   );
@@ -540,6 +553,7 @@ export default function InteractiveGlobe({
     <SpaceBackdrop
       isDark={isDark}
       reducedMotion={reducedMotion}
+      shootingStars={outerSpaceVisible}
       className={cn("relative", className)}
     >
       <ProgressMapContainer
@@ -607,7 +621,15 @@ export default function InteractiveGlobe({
                 onSelectPlace(code);
               }}
             />
-            <SyncOrbitRotateSpeed controlsRef={controlsRef} />
+            <GlobeGrabOrbit
+              controlsRef={controlsRef}
+              radius={GLOBE_RADIUS}
+              onGrabStart={onOrbitStart}
+            />
+            <SyncOuterSpaceVisible
+              controlsRef={controlsRef}
+              onChange={setOuterSpaceVisible}
+            />
             <KeepFrameloopAlive
               controlsRef={controlsRef}
               autoSpin={autoSpin && !reducedMotion && !usePlaceFocus}
@@ -616,10 +638,9 @@ export default function InteractiveGlobe({
             <OrbitControls
               ref={controlsRef}
               enablePan={false}
+              enableRotate={false}
               enableDamping={!(usePlaceFocus && !focusIntroComplete && !introCancelled)}
               dampingFactor={0.08}
-              // rotateSpeed is owned by applyZoomScaledRotateSpeed — do not pass a
-              // static prop here or idle re-renders will wipe the zoom-scaled value.
               zoomSpeed={0.7}
               minDistance={MIN_CAMERA_DISTANCE}
               maxDistance={MAX_CAMERA_DISTANCE}

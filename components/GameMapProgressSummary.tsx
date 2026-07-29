@@ -23,10 +23,10 @@ type GameMapProgressSummaryProps = {
   currentOverallSummary: MapProgressSummary;
 };
 
-function formatRoundDelta(
+function formatRoundDeltaParts(
   scope: GameScope,
   delta: ReturnType<typeof getMapProgressDelta>,
-): string | null {
+): string[] {
   const parts: string[] = [];
   const scopeInfo = SCOPE_INFO[scope];
 
@@ -37,11 +37,13 @@ function formatRoundDelta(
   }
   if (delta.masteredPlaces > 0) {
     parts.push(
-      `+${delta.masteredPlaces} ${scopeInfo.noun}${delta.masteredPlaces === 1 ? "" : "s"} mastered`,
+      `+${delta.masteredPlaces} ${
+        delta.masteredPlaces === 1 ? scopeInfo.noun : scopeInfo.nounPlural
+      } mastered`,
     );
   }
 
-  return parts.length > 0 ? parts.join(" · ") : null;
+  return parts;
 }
 
 function ProgressBarFill({
@@ -132,7 +134,7 @@ export function GameMapProgressSummary({
   const panelRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const delta = getMapProgressDelta(initialSummary, currentSummary);
-  const roundDelta = formatRoundDelta(scope, delta);
+  const roundDeltaParts = formatRoundDeltaParts(scope, delta);
   const chrome = getMapProgressChrome(difficulty);
   const areaLabel = formatMapProgressAreaLabel(scope, continents);
   const showOverallInfo = !isFullMapProgressSelection(scope, continents);
@@ -163,59 +165,71 @@ export function GameMapProgressSummary({
 
   return (
     <div className={cn("relative", chrome.gamePanelClass)} aria-label="Map progress this round">
-      <div className="flex items-baseline justify-between gap-3">
+      <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <div className="flex items-baseline gap-1.5">
-            <span className={cn("text-xs font-bold", chrome.gameLabelClass)}>Map progress</span>
-            <span
-              className={cn("select-none text-xs opacity-60", chrome.gameLabelClass)}
-              aria-hidden
-            >
-              –
-            </span>
-            <span
-              className={cn(
-                "font-display text-base font-extrabold tabular-nums leading-none",
-                chrome.gamePercentClass,
-              )}
-            >
-              {currentSummary.percentComplete}%
-            </span>
-            {showOverallInfo ? (
-              <button
-                ref={triggerRef}
-                type="button"
-                onClick={() => setInfoOpen((open) => !open)}
-                aria-expanded={infoOpen}
-                aria-controls={infoId}
-                aria-label={`${overallLabel} map progress`}
-                className={cn(
-                  "ml-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition-colors",
-                  difficulty === "hard"
-                    ? "border-fuchsia-300/80 text-fuchsia-700 hover:bg-fuchsia-100/80 dark:border-fuchsia-700 dark:text-fuchsia-300 dark:hover:bg-fuchsia-950/60"
-                    : "border-teal-300/80 text-teal-700 hover:bg-teal-100/80 dark:border-teal-700 dark:text-teal-300 dark:hover:bg-teal-950/60",
-                )}
-              >
-                <InfoIcon className="h-3.5 w-3.5" />
-              </button>
-            ) : null}
-          </div>
-          <p className={cn("mt-0.5 text-[11px] leading-tight", chrome.gameLabelClass)}>
+          <p className={cn("text-xs font-bold leading-tight", chrome.gameLabelClass)}>
+            Map progress
+          </p>
+          <p className={cn("mt-0.5 text-[11px] leading-tight opacity-80", chrome.gameLabelClass)}>
             of {areaLabel}
           </p>
         </div>
-        <p className={cn("min-w-0 truncate text-right text-xs leading-tight", chrome.gameLabelClass)}>
-          {roundDelta ? (
-            <>
-              <span className={cn("font-bold", chrome.gamePercentClass)}>{roundDelta}</span> this round
-            </>
-          ) : (
-            <span className="opacity-70">No new progress</span>
-          )}
-        </p>
+        <div className="flex shrink-0 items-center gap-1.5 pt-0.5">
+          <span
+            className={cn(
+              "font-display text-lg font-extrabold tabular-nums leading-none",
+              chrome.gamePercentClass,
+            )}
+          >
+            {currentSummary.percentComplete}%
+          </span>
+          {showOverallInfo ? (
+            <button
+              ref={triggerRef}
+              type="button"
+              onClick={() => setInfoOpen((open) => !open)}
+              aria-expanded={infoOpen}
+              aria-controls={infoId}
+              aria-label={`${overallLabel} map progress`}
+              className={cn(
+                "inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition-colors",
+                difficulty === "hard"
+                  ? "border-fuchsia-300/80 text-fuchsia-700 hover:bg-fuchsia-100/80 dark:border-fuchsia-700 dark:text-fuchsia-300 dark:hover:bg-fuchsia-950/60"
+                  : "border-teal-300/80 text-teal-700 hover:bg-teal-100/80 dark:border-teal-700 dark:text-teal-300 dark:hover:bg-teal-950/60",
+              )}
+            >
+              <InfoIcon className="h-3.5 w-3.5" />
+            </button>
+          ) : null}
+        </div>
       </div>
 
-      <div className="mt-1.5">
+      <div className="mt-2.5">
+        {roundDeltaParts.length > 0 ? (
+          <div className="space-y-0.5">
+            {roundDeltaParts.map((part) => (
+              <p
+                key={part}
+                className={cn(
+                  "text-xs font-bold leading-snug",
+                  chrome.gamePercentClass,
+                )}
+              >
+                {part}
+              </p>
+            ))}
+            <p className={cn("text-[11px] leading-tight opacity-70", chrome.gameLabelClass)}>
+              this round
+            </p>
+          </div>
+        ) : (
+          <p className={cn("text-xs leading-snug opacity-70", chrome.gameLabelClass)}>
+            No new progress
+          </p>
+        )}
+      </div>
+
+      <div className="mt-2.5">
         <ProgressBarFill
           initialSummary={initialSummary}
           currentSummary={currentSummary}

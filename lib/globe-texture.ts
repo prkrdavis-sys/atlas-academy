@@ -43,11 +43,11 @@ export const GLOBE_TEXTURE_DATA = globeData as GlobeTextureData;
 export const GLOBE_BASE_TEXTURE_SIZE = 2048;
 /** Hard upper bound; a 4096x2048 RGBA texture is already ~32 MB of GPU memory. */
 export const GLOBE_MAX_TEXTURE_SIZE = 4096;
-/** Phone / low-memory floor — detail overlays cover close-up fidelity. */
+/** Phone / low-memory floor — close-up patches cover zoomed-in fidelity. */
 export const GLOBE_MOBILE_TEXTURE_SIZE = GLOBE_TEXTURE_SIZE_BY_TIER.phone;
 
 /**
- * Picks a globe texture width for the device: phone 1024, tablet 2048,
+ * Picks a globe texture width for the device: phone/tablet 2048,
  * desktop up to 4096 — always capped by the GPU's max texture size.
  */
 export function resolveGlobeTextureSize(

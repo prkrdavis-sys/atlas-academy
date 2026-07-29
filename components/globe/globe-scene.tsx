@@ -435,17 +435,24 @@ export function GlobeSurfaceMaterial({
 
   // Gold mastery: subtle fill-light so shaded countries stay gold, not neon.
   // metalnessMap is white only on gold mastery places.
+  // Day/night: soft map emissive lifts the night hemisphere (stronger in dark).
   const emissiveMap = hasMetalMaps
     ? metalnessMap!
-    : isDark && dayNight
+    : dayNight
       ? map
       : undefined;
   const emissive = hasMetalMaps
     ? "#c9a227"
-    : isDark && dayNight
+    : dayNight
       ? "#ffffff"
       : "#000000";
-  const emissiveIntensity = hasMetalMaps ? 0.22 : isDark && dayNight ? 0.18 : 0;
+  const emissiveIntensity = hasMetalMaps
+    ? 0.22
+    : dayNight
+      ? isDark
+        ? 0.2
+        : 0.1
+      : 0;
 
   return (
     <meshStandardMaterial
@@ -476,10 +483,10 @@ export function GlobeFillLights({
 }) {
   if (dayNight) {
     // Raised floor so oceans and mastery stay readable on the night hemisphere.
-    return <ambientLight intensity={isDark ? 0.7 : 0.4} />;
+    return <ambientLight intensity={isDark ? 0.9 : 0.72} />;
   }
   // Bright enough that the soft sun shade never swallows oceans or land.
-  return <ambientLight intensity={isDark ? 1.85 : 1.35} />;
+  return <ambientLight intensity={isDark ? 2.05 : 1.6} />;
 }
 
 /**
@@ -517,13 +524,14 @@ export function EarthSunLight({
   });
 
   // Full day/night: strong terminator. Off: just enough realtime shade to read.
+  // Light-mode daylight runs hotter so the sunlit hemisphere pops.
   const intensity = dayNight
     ? isDark
-      ? 1.9
-      : 1.85
+      ? 2.15
+      : 2.55
     : isDark
-      ? 0.62
-      : 0.45;
+      ? 0.72
+      : 0.58;
 
   return <directionalLight ref={lightRef} intensity={intensity} color="#fff4e0" />;
 }
@@ -560,7 +568,9 @@ export function EarthshineLight({
 
   if (!dayNight) return null;
 
-  const intensity = isDark ? 0.58 : 0.32;
+  // Stronger fill in light mode so the night side stays legible without
+  // flattening the terminator.
+  const intensity = isDark ? 0.7 : 0.55;
   const color = isDark ? "#8eb4d4" : "#9ec0dc";
 
   return <directionalLight ref={lightRef} intensity={intensity} color={color} />;

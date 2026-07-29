@@ -121,7 +121,6 @@ export function GlobeDetailOverlays({
     if (!controls || !spinGroup) return;
 
     const distance = controls.getDistance();
-    // Phones: detail overlays only for place-focus / selection, not free zoom.
     const active =
       forceActive ||
       selectedCode !== null ||

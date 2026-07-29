@@ -7,21 +7,21 @@ export type GlobePerfTier = "phone" | "tablet" | "desktop";
 
 /** Texture width targets per tier (equirectangular; height = width / 2). */
 export const GLOBE_TEXTURE_SIZE_BY_TIER: Record<GlobePerfTier, number> = {
-  phone: 1024,
+  phone: 2048,
   tablet: 2048,
   desktop: 4096,
 };
 
 /** Max concurrent detail overlays when free-zooming (selected place is always 1). */
 export const GLOBE_DETAIL_MAX_OVERLAYS_BY_TIER: Record<GlobePerfTier, number> = {
-  phone: 4,
+  phone: 6,
   tablet: 8,
   desktop: 12,
 };
 
 /** Regional close-up patch texture width (height follows the geographic aspect). */
 export const GLOBE_CLOSEUP_TEXTURE_WIDTH_BY_TIER: Record<GlobePerfTier, number> = {
-  phone: 1024,
+  phone: 1536,
   tablet: 1536,
   desktop: 2048,
 };
@@ -49,7 +49,7 @@ export const GLOBE_STAR_COUNT_BY_TIER: Record<GlobePerfTier, number> = {
 
 /** Canvas pixel-ratio cap for the R3F renderer. */
 export const GLOBE_DPR_CAP_BY_TIER: Record<GlobePerfTier, number> = {
-  phone: 1,
+  phone: 1.5,
   tablet: 1.5,
   desktop: 1.75,
 };
@@ -98,15 +98,18 @@ export function isGlobeFxConstrained(tier: GlobePerfTier = getGlobePerfTier()): 
   return tier === "phone";
 }
 
-/** True when free-zoom detail overlays should stay off (place-focus only). */
-export function isGlobeDetailFocusOnly(tier: GlobePerfTier = getGlobePerfTier()): boolean {
-  return tier === "phone";
+/**
+ * True when free-zoom detail overlays should stay off (place-focus only).
+ * All tiers allow free-zoom overlays so phones get crisp borders when close.
+ */
+export function isGlobeDetailFocusOnly(_tier: GlobePerfTier = getGlobePerfTier()): boolean {
+  return false;
 }
 
 /**
  * True when free-zoom regional close-up patches should stay off (place-focus /
- * selection only). Mirrors detail-overlay phone policy.
+ * selection only). All tiers allow free-zoom close-up for high-detail borders.
  */
-export function isGlobeCloseupFocusOnly(tier: GlobePerfTier = getGlobePerfTier()): boolean {
-  return tier === "phone";
+export function isGlobeCloseupFocusOnly(_tier: GlobePerfTier = getGlobePerfTier()): boolean {
+  return false;
 }
