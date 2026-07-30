@@ -23,8 +23,8 @@ type MapPalette = Record<MapPathRole, MapPathStyle> & { ocean: string };
 const LIGHT_MAP_PALETTE: MapPalette = {
   ocean: "#e0f2fe",
   default: {
-    // Soft grey with a whisper of sage — reads as default land, not tinted mint.
-    fill: "#cad2cb",
+    // Pale stone with a whisper of sage — unstarted land in the concept art.
+    fill: "#ccd4c9",
     stroke: "#94a3b8",
     strokeWidth: 0.35,
   },
@@ -43,8 +43,8 @@ const LIGHT_MAP_PALETTE: MapPalette = {
 const DARK_MAP_PALETTE: MapPalette = {
   ocean: "#0f172a",
   default: {
-    // Cool grey with a soft sage cast so bare land reads more natural.
-    fill: "#46554d",
+    // Muted sage stone so bare land reads natural against the painted ocean.
+    fill: "#5b685e",
     stroke: "#64748b",
     strokeWidth: 0.35,
   },
@@ -161,43 +161,44 @@ export function getProgressBorder(isDark: boolean): Pick<MapPathStyle, "stroke" 
 }
 
 /**
- * Normal (medium) progress — teal ladder warming toward gold at level 3,
- * with level 4 represented by a metallic gold solid (animated texture applied
- * separately on the map / globe).
+ * Normal (medium) progress — a storybook teal ladder deepening from pale sea
+ * glass toward rich deep teal, then gold foil at level 4 (animated texture
+ * applied separately on the map / globe). Matched to the globe concept art.
  */
 const LIGHT_PROGRESS_FILL_COLORS: Record<PlaceMasteryLevel, string> = {
   0: LIGHT_MAP_PALETTE.default.fill,
-  1: "#115e59",
-  2: "#0f766e",
-  3: "#0d9488",
+  1: "#a9d4c6",
+  2: "#57ab99",
+  3: "#15887a",
   4: getMasterySolidColor("medium"),
 };
 
 const DARK_PROGRESS_FILL_COLORS: Record<PlaceMasteryLevel, string> = {
   0: DARK_MAP_PALETTE.default.fill,
-  1: "#0f5e56",
-  2: "#0f766e",
-  3: "#14b8a6",
+  1: "#9ccfc0",
+  2: "#4aa593",
+  3: "#128678",
   4: getMasterySolidColor("medium"),
 };
 
 /**
- * Hard progress — deep violet → magenta → hot pink/cyan accents, with level 4
- * as a Clash Royale–style legendary solid (animated holographic texture on map/globe).
+ * Hard progress — pale lavender deepening through violet to magenta, with
+ * level 4 as a Clash Royale–style legendary solid (animated holographic
+ * texture on map/globe). Same deepening direction as the Normal ladder.
  */
 const LIGHT_HARD_PROGRESS_FILL_COLORS: Record<PlaceMasteryLevel, string> = {
   0: LIGHT_MAP_PALETTE.default.fill,
-  1: "#2e1065",
-  2: "#86198f",
-  3: "#e879f9",
+  1: "#c4b5fd",
+  2: "#a855f7",
+  3: "#c026d3",
   4: getMasterySolidColor("hard"),
 };
 
 const DARK_HARD_PROGRESS_FILL_COLORS: Record<PlaceMasteryLevel, string> = {
   0: DARK_MAP_PALETTE.default.fill,
-  1: "#1e0b3d",
-  2: "#6b21a8",
-  3: "#d946ef",
+  1: "#b7a3f5",
+  2: "#9333ea",
+  3: "#c026d3",
   4: getMasterySolidColor("hard"),
 };
 

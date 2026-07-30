@@ -11,19 +11,14 @@ const DARK_NEBULA =
   "radial-gradient(ellipse 55% 40% at 85% 12%, rgb(99 102 241 / 0.12), transparent 60%)," +
   "radial-gradient(ellipse 70% 55% at 50% 92%, rgb(14 116 144 / 0.16), transparent 65%)";
 
-/** Pale "daytime space" wash: high sky fading toward white, with soft pastels. */
-const LIGHT_NEBULA =
-  "radial-gradient(ellipse 60% 45% at 18% 20%, rgb(13 148 136 / 0.10), transparent 65%)," +
-  "radial-gradient(ellipse 55% 40% at 85% 12%, rgb(99 102 241 / 0.10), transparent 60%)," +
-  "radial-gradient(ellipse 70% 55% at 50% 92%, rgb(56 189 248 / 0.18), transparent 65%)";
+/** Painted sunset cloudscape behind the light-mode globe. */
+const LIGHT_SKY_IMAGE_URL = "/globe/sky-sunset.jpg";
 
-const LIGHT_SKY_GRADIENT = "linear-gradient(to bottom, #dbeafe, #eff6ff 55%, #f8fafc)";
+/** Sunset-toned gradient shown beneath the image while it streams in. */
+const LIGHT_SKY_FALLBACK_GRADIENT =
+  "linear-gradient(to bottom, #7d74c4, #c98ba4 45%, #f29d69 80%, #f8ab63)";
 
-/**
- * Deterministic star specks: the no-WebGL fallback in dark mode, and the
- * always-on subtle starfield in light mode (white GPU stars would vanish
- * against the pale sky).
- */
+/** Deterministic star specks — the no-WebGL fallback in dark mode. */
 export function StaticStarfield({ isDark }: { isDark: boolean }) {
   const stars = Array.from({ length: 70 }, (_, i) => ({
     left: `${(i * 61) % 100}%`,
@@ -64,9 +59,9 @@ type SpaceBackdropProps = {
 };
 
 /**
- * Outer-space scenery: space-black with a nebula glow in dark mode, a pale
- * daytime-sky wash with subtle darker stars in light mode. The 3D canvas
- * (planet + GPU starfield + flybys) renders as children on top of it.
+ * Outer-space scenery: space-black with a nebula glow in dark mode, a painted
+ * sunset cloudscape (soft orange / rose / lavender) in light mode. The 3D
+ * canvas (planet + GPU starfield + flybys) renders as children on top of it.
  */
 export const SpaceBackdrop = forwardRef<HTMLDivElement, SpaceBackdropProps>(
   function SpaceBackdrop(
@@ -85,18 +80,20 @@ export const SpaceBackdrop = forwardRef<HTMLDivElement, SpaceBackdropProps>(
         className={cn("overflow-hidden", className)}
         style={{
           background: isDark ? SPACE_DARK_BASE : undefined,
-          backgroundImage: isDark ? undefined : LIGHT_SKY_GRADIENT,
+          backgroundImage: isDark
+            ? undefined
+            : `url(${LIGHT_SKY_IMAGE_URL}), ${LIGHT_SKY_FALLBACK_GRADIENT}`,
+          backgroundSize: isDark ? undefined : "cover",
+          backgroundPosition: isDark ? undefined : "center",
         }}
       >
-        {!canvasNebulae ? (
+        {isDark && !canvasNebulae ? (
           <div
             aria-hidden
             className="absolute inset-0"
-            style={{ backgroundImage: isDark ? DARK_NEBULA : LIGHT_NEBULA }}
+            style={{ backgroundImage: DARK_NEBULA }}
           />
         ) : null}
-
-        {!isDark ? <StaticStarfield isDark={false} /> : null}
 
         {children}
 
@@ -107,7 +104,7 @@ export const SpaceBackdrop = forwardRef<HTMLDivElement, SpaceBackdropProps>(
             style={{
               backgroundImage: isDark
                 ? `linear-gradient(to top, ${SPACE_DARK_BASE}d9, transparent)`
-                : "linear-gradient(to top, rgb(248 250 252 / 0.85), transparent)",
+                : "linear-gradient(to top, rgb(255 227 199 / 0.85), transparent)",
             }}
           />
         ) : null}

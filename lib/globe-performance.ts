@@ -108,8 +108,9 @@ export function isGlobeDetailFocusOnly(_tier: GlobePerfTier = getGlobePerfTier()
 
 /**
  * True when free-zoom regional close-up patches should stay off.
- * Always off: unlit rectangular patches change shade/tone vs the lit globe.
+ * On for all tiers: patches use a lit material under the shared lighting rig,
+ * so their tone matches the globe at every zoom level.
  */
 export function isGlobeCloseupFocusOnly(_tier: GlobePerfTier = getGlobePerfTier()): boolean {
-  return true;
+  return false;
 }

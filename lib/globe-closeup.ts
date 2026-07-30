@@ -8,8 +8,10 @@ import {
   MAP_SELECTION_GLOW_BLUR,
 } from "@/lib/map-colors";
 import { getMasterySolidColor } from "@/lib/map-mastery-fx";
+import { createMasteryGoldPattern } from "@/lib/mastery-gold-texture";
 import { getPlaceMasteryLevel } from "@/lib/map-progress";
 import {
+  applyGlobeSurfaceGrain,
   GLOBE_BASE_TEXTURE_SIZE,
   getGlobePalette,
   type GlobeCountryShape,
@@ -318,7 +320,12 @@ export type PaintCloseupOptions = {
   selectedCode?: string | null;
   /** Target texture width; height follows the window aspect. */
   textureWidth?: number;
+  /** Preloaded gold foil albedo so Normal mastery-4 keeps its texture up close. */
+  goldColorImage?: HTMLImageElement | null;
 };
+
+/** Grain scale cap so the tile never stretches into blur at extreme zoom. */
+const CLOSEUP_GRAIN_SCALE_CAP = 8;
 
 /**
  * Paints a high-density regional equirectangular patch for the given window.
@@ -334,6 +341,7 @@ export function paintGlobeCloseupRegion(
     isDark = true,
     selectedCode = null,
     textureWidth = 2048,
+    goldColorImage = null,
   }: PaintCloseupOptions = {},
 ): HTMLCanvasElement {
   const aspect = (window.halfY * 2) / Math.max(window.halfX * 2, 1e-6);
@@ -348,9 +356,29 @@ export function paintGlobeCloseupRegion(
   const palette = getGlobePalette(isDark);
   const mapPalette = getMapPalette(isDark);
   const strokeWidth = Math.max(0.8, (width / 1024) * 1.15);
+  // How many px one full-Earth texture pixel spans inside this patch — keeps
+  // grain and gold foil the same apparent size as the base globe texture.
+  const effectiveScale =
+    width / Math.max(window.halfX * 2, 1e-6) / GLOBE_BASE_TEXTURE_SIZE;
 
   ctx.fillStyle = palette.ocean;
   ctx.fillRect(0, 0, width, height);
+  applyGlobeSurfaceGrain(
+    ctx,
+    width,
+    height,
+    Math.min(effectiveScale, CLOSEUP_GRAIN_SCALE_CAP),
+    "ocean",
+  );
+
+  const goldPattern =
+    difficulty === "medium" && goldColorImage
+      ? createMasteryGoldPattern(
+          ctx,
+          goldColorImage,
+          Math.max(48, Math.round(96 * effectiveScale)),
+        )
+      : null;
 
   const shapes = collectCloseupShapes(data, profile, difficulty, usMode, window);
 
@@ -358,16 +386,33 @@ export function paintGlobeCloseupRegion(
     const path = buildPatchPath(shape.rings, window, width, height);
     const level = shape.level as 0 | 1 | 2 | 3 | 4;
     if (level === 4) {
-      ctx.fillStyle = getMasterySolidColor(difficulty);
+      ctx.fillStyle = goldPattern ?? getMasterySolidColor(difficulty);
     } else {
       ctx.fillStyle = getProgressFillColor(level, isDark, difficulty);
     }
     ctx.fill(path, "evenodd");
 
+    // Warm the gold foil like the base texture does.
+    if (level === 4 && goldPattern) {
+      ctx.save();
+      ctx.globalCompositeOperation = "overlay";
+      ctx.fillStyle = "rgba(255, 168, 41, 0.4)";
+      ctx.fill(path, "evenodd");
+      ctx.restore();
+    }
+
     ctx.lineWidth = shape.isState ? strokeWidth * 0.85 : strokeWidth;
     ctx.strokeStyle = shape.isState ? palette.stateBorder : palette.border;
     ctx.stroke(path);
   }
+
+  applyGlobeSurfaceGrain(
+    ctx,
+    width,
+    height,
+    Math.min(effectiveScale, CLOSEUP_GRAIN_SCALE_CAP),
+    "land",
+  );
 
   if (selectedCode) {
     const selected = shapes.find((shape) => shape.code === selectedCode);

@@ -43,9 +43,17 @@ type FlagImgProps = {
   className?: string;
   constrainedAxis?: "width" | "height";
   priority?: boolean;
+  clipPath?: string;
 };
 
-function FlagImg({ code, alt, className, constrainedAxis = "width", priority }: FlagImgProps) {
+function FlagImg({
+  code,
+  alt,
+  className,
+  constrainedAxis = "width",
+  priority,
+  clipPath,
+}: FlagImgProps) {
   return (
     // Local SVG assets keep their intrinsic viewBox when rendered as a native image.
     // eslint-disable-next-line @next/next/no-img-element
@@ -54,7 +62,10 @@ function FlagImg({ code, alt, className, constrainedAxis = "width", priority }: 
       alt={alt}
       decoding="async"
       className={cn("block max-w-full", className)}
-      style={constrainedAxis === "width" ? { height: "auto" } : { width: "auto" }}
+      style={{
+        ...(constrainedAxis === "width" ? { height: "auto" } : { width: "auto" }),
+        ...(clipPath ? { clipPath } : null),
+      }}
       {...(priority ? { fetchPriority: "high" as const } : {})}
     />
   );
@@ -71,10 +82,7 @@ function wrapWithFrame(
 
   if (shaped && clipPath) {
     return (
-      <span
-        className={cn("inline-block max-w-full leading-none", SHAPED_FRAME_STYLES[frame], className)}
-        style={{ clipPath }}
-      >
+      <span className={cn("inline-block max-w-full leading-none", className)}>
         {image}
       </span>
     );
@@ -107,6 +115,10 @@ export function FlagImage({
   const clipPath = getFlagClipPath(code);
   const isHeightConstrained = constrainedAxis === "height";
 
+  const shapedFrameClass =
+    shaped && frame !== "none" ? SHAPED_FRAME_STYLES[frame] : undefined;
+  const imgClipPath = shaped ? clipPath : undefined;
+
   const image =
     layout === "tile" ? (
       <span className="relative block h-full w-full">
@@ -114,7 +126,8 @@ export function FlagImage({
           code={code}
           alt={alt}
           priority={priority}
-          className="h-full w-full object-contain"
+          clipPath={imgClipPath}
+          className={cn("h-full w-full object-contain", shapedFrameClass)}
           constrainedAxis="width"
         />
       </span>
@@ -123,7 +136,12 @@ export function FlagImage({
         code={code}
         alt={alt}
         priority={priority}
-        className={isHeightConstrained ? cn("block", className) : "h-auto w-full"}
+        clipPath={imgClipPath}
+        className={cn(
+          isHeightConstrained ? "block" : "h-auto w-full",
+          !isHeightConstrained ? className : undefined,
+          shapedFrameClass,
+        )}
         constrainedAxis={constrainedAxis}
       />
     );
@@ -131,16 +149,6 @@ export function FlagImage({
   const outerClassName = isHeightConstrained ? undefined : className;
 
   if (frame === "none") {
-    if (layout === "intrinsic" && shaped && clipPath) {
-      return (
-        <span
-          className={cn("inline-block max-w-full leading-none", outerClassName)}
-          style={{ clipPath }}
-        >
-          {image}
-        </span>
-      );
-    }
     if (layout === "intrinsic" && !isHeightConstrained) {
       return (
         <span className={cn("inline-block max-w-full leading-none", outerClassName)}>{image}</span>
@@ -259,15 +267,11 @@ export function FlagGrid({
           const isIncorrect = revealed && selectedCode === code && correctCode !== code;
           const shaped = isShapedFlag(code);
           const aspectRatio = getFlagAspectRatio(code);
-          const clipPath = getFlagClipPath(code);
           const tileClassName = cn(
             "block w-full leading-none",
             getTileBorderClass(shaped, tileRadius, isCorrect, isIncorrect, revealed),
           );
-          const tileStyle = {
-            aspectRatio,
-            ...(shaped && clipPath ? { clipPath } : null),
-          };
+          const tileStyle = { aspectRatio };
 
           const flag = (
             <FlagImage

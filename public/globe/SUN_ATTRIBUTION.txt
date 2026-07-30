@@ -9,3 +9,17 @@ NASA media use: https://www.nasa.gov/nasa-brand-center/images-and-media/
 The disk is color-graded and composited with an original soft circular corona
 for the Atlas Academy globe; NASA owns the source plate. Alpha is forced to
 zero before the frame edge so no square outline appears in additive blending.
+
+---
+
+night-lights.jpg — night-side city lights layer for the globe day/night mode.
+
+Source imagery: NASA Earth Observatory "Black Marble" 2016 composite
+(Suomi NPP VIIRS day/night band), downscaled to 2048x1024.
+Source: https://earthobservatory.nasa.gov/features/NightLights
+License: Public domain (U.S. government work / NASA imagery)
+
+---
+
+sky-sunset.jpg — AI-generated painted sunset cloudscape used as the
+light-mode backdrop behind the globe. Original artwork for Atlas Academy.

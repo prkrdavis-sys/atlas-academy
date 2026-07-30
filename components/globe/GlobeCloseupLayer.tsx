@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, type RefObject } from "react";
+import { useEffect, useRef, useState, type RefObject } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
@@ -22,6 +22,7 @@ import {
   type GlobePerfTier,
 } from "@/lib/globe-performance";
 import type { GlobeUsMode } from "@/lib/globe-texture";
+import { loadMasteryGoldColorImage } from "@/lib/mastery-gold-texture";
 import type { MapProgressDifficulty, Profile } from "@/lib/types";
 
 type GlobeCloseupLayerProps = {
@@ -44,7 +45,7 @@ type PatchResources = {
   mesh: THREE.Mesh;
   texture: THREE.CanvasTexture;
   geometry: THREE.BufferGeometry;
-  material: THREE.MeshBasicMaterial;
+  material: THREE.MeshLambertMaterial | THREE.MeshStandardMaterial;
   window: CloseupWindow;
   paintKey: string;
 };
@@ -58,6 +59,7 @@ type PaintInputs = {
   textureWidth: number;
   forceActive: boolean;
   focusOnly: boolean;
+  goldColorImage: HTMLImageElement | null;
 };
 
 function paintKeyOf(inputs: PaintInputs): string {
@@ -68,6 +70,7 @@ function paintKeyOf(inputs: PaintInputs): string {
     inputs.isDark ? "d" : "l",
     inputs.selectedCode ?? "",
     inputs.textureWidth,
+    inputs.goldColorImage ? "gold" : "flat",
   ].join("|");
 }
 
@@ -104,6 +107,27 @@ export function GlobeCloseupLayer({
   const lookDirRef = useRef(new THREE.Vector3());
   const localCameraRef = useRef(new THREE.Vector3());
 
+  const [goldColorImage, setGoldColorImage] = useState<HTMLImageElement | null>(null);
+
+  useEffect(() => {
+    if (difficulty !== "medium") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setGoldColorImage(null);
+      return;
+    }
+    let cancelled = false;
+    loadMasteryGoldColorImage()
+      .then((image) => {
+        if (!cancelled) setGoldColorImage(image);
+      })
+      .catch(() => {
+        if (!cancelled) setGoldColorImage(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [difficulty]);
+
   const inputsRef = useRef<PaintInputs>({
     profile,
     difficulty,
@@ -113,6 +137,7 @@ export function GlobeCloseupLayer({
     textureWidth: GLOBE_CLOSEUP_TEXTURE_WIDTH_BY_TIER[perfTier],
     forceActive,
     focusOnly: isGlobeCloseupFocusOnly(perfTier),
+    goldColorImage,
   });
   inputsRef.current = {
     profile,
@@ -123,6 +148,7 @@ export function GlobeCloseupLayer({
     textureWidth: GLOBE_CLOSEUP_TEXTURE_WIDTH_BY_TIER[perfTier],
     forceActive,
     focusOnly: isGlobeCloseupFocusOnly(perfTier),
+    goldColorImage,
   };
 
   const clearDebounce = () => {
@@ -158,6 +184,7 @@ export function GlobeCloseupLayer({
       isDark: inputs.isDark,
       selectedCode: inputs.selectedCode,
       textureWidth: inputs.textureWidth,
+      goldColorImage: inputs.goldColorImage,
     });
 
     const texture = new THREE.CanvasTexture(canvas);
@@ -169,14 +196,27 @@ export function GlobeCloseupLayer({
     texture.needsUpdate = true;
 
     const geometry = buildCloseupPatchGeometry(window);
-    const material = new THREE.MeshBasicMaterial({
-      map: texture,
-      transparent: true,
-      opacity: 0,
-      depthWrite: false,
-      toneMapped: false,
-      side: THREE.DoubleSide,
-    });
+    // Lit material matching the planet surface for this tier, so the patch
+    // shades exactly like the globe beneath it — zooming across the activation
+    // distance must not shift tone.
+    const material =
+      perfTier === "phone"
+        ? new THREE.MeshLambertMaterial({
+            map: texture,
+            transparent: true,
+            opacity: 0,
+            depthWrite: false,
+            side: THREE.DoubleSide,
+          })
+        : new THREE.MeshStandardMaterial({
+            map: texture,
+            roughness: 0.72,
+            metalness: 0.04,
+            transparent: true,
+            opacity: 0,
+            depthWrite: false,
+            side: THREE.DoubleSide,
+          });
     const mesh = new THREE.Mesh(geometry, material);
     mesh.renderOrder = 5;
     mesh.raycast = () => {};

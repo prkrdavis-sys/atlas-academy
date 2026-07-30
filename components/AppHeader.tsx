@@ -7,7 +7,7 @@ import { HeaderStreakChip } from "@/components/HeaderStreakChip";
 import { LibraryScrollKeeper } from "@/components/LibraryScrollKeeper";
 import { PlayModeSwitcher } from "@/components/PlayModeSwitcher";
 import { ProfileSwitcher } from "@/components/ProfileSwitcher";
-import { getPrimaryNavHref } from "@/lib/navigation";
+import { getPrimaryNavHref, isExploreRoute } from "@/lib/navigation";
 import { useLibraryNavHref } from "@/lib/use-library-nav-href";
 import { LIBRARY_ICON } from "@/lib/library";
 import { cn } from "@/lib/utils";
@@ -29,6 +29,7 @@ function isMobileNavItemActive(
 export function AppHeader() {
   const pathname = usePathname();
   const libraryHref = useLibraryNavHref();
+  const onLibraryTab = isExploreRoute(pathname);
   const hideHeader = pathname.startsWith("/play/") && !pathname.startsWith("/play/setup");
 
   if (hideHeader) return null;
@@ -72,7 +73,7 @@ export function AppHeader() {
               <Link
                 key={item.label}
                 href={href}
-                scroll={item.href === "library" ? false : undefined}
+                scroll={item.href === "library" && !onLibraryTab ? false : undefined}
                 aria-current={active ? "page" : undefined}
                 className={cn(
                   "relative flex min-h-11 flex-col items-center justify-center gap-0.5 rounded-xl text-[11px] font-bold transition-colors active:bg-slate-100 dark:active:bg-slate-800",

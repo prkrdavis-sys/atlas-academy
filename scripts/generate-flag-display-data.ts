@@ -6,7 +6,7 @@ const OUTPUT_PATH = path.join(process.cwd(), "data/flag-display.json");
 
 /** Flags whose outline is not a plain rectangle — borders clip to this shape. */
 const SHAPED_FLAGS: Record<string, string> = {
-  NP: "polygon(1% 100%, 60.2% 100%, 21.5% 49.6%, 61.7% 49.7%, 1% 1%)",
+  NP: "polygon(1.6% 96.7%, 92.6% 96.7%, 33% 48.6%, 94.9% 48.7%, 1.6% 1.2%)",
   "US-OH": "polygon(0% 100%, 0% 0%, 100% 18.75%, 76.92% 50%, 100% 81.25%)",
 };
 

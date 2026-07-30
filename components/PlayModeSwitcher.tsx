@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { getPrimaryNavHref } from "@/lib/navigation";
+import { getPrimaryNavHref, isExploreRoute } from "@/lib/navigation";
 import { useLibraryNavHref } from "@/lib/use-library-nav-href";
 import { LIBRARY_ICON } from "@/lib/library";
 import { cn } from "@/lib/utils";
@@ -17,6 +17,7 @@ export function PlayModeSwitcher() {
   const pathname = usePathname();
   const libraryHref = useLibraryNavHref();
   const activeHref = getPrimaryNavHref(pathname);
+  const onLibraryTab = isExploreRoute(pathname);
 
   return (
     <div
@@ -33,7 +34,7 @@ export function PlayModeSwitcher() {
           <Link
             key={item.label}
             href={href}
-            scroll={item.href === "library" ? false : undefined}
+            scroll={item.href === "library" && !onLibraryTab ? false : undefined}
             role="tab"
             aria-selected={active}
             className={cn(

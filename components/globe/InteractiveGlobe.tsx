@@ -13,27 +13,23 @@ import { OrbitControls, Stars } from "@react-three/drei";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
 import {
-  DistantSun,
-  EarthshineLight,
-  EarthSunLight,
   GLOBE_IDLE_RESET_MS,
   GLOBE_ROTATION_SPEED,
   GLOBE_TAP_TRAVEL_THRESHOLD,
   getGlobeCanvasGlSettings,
-  getGlobeSphereSegments,
   getGlobeStarCount,
-  GlobeAtmosphere,
+  GlobeAssetPreloader,
   GlobeContextRecovery,
   GlobeFillLights,
   globeFillDistance,
   GlobeInitialInvalidate,
+  GlobePlanet,
   GlobeRecoveryReset,
-  GlobeSurfaceMaterial,
   useGlobeCanvasKey,
   useGlobeFrameloop,
   useGlobeSceneEnvironment,
-  useGlobeTexture,
 } from "@/components/globe/globe-scene";
+import { GlobeCloseupLayer } from "@/components/globe/GlobeCloseupLayer";
 import { GlobeGrabOrbit } from "@/components/globe/GlobeGrabOrbit";
 import { SpaceBackdrop, StaticStarfield } from "@/components/globe/SpaceBackdrop";
 import { SpaceFlybys } from "@/components/globe/SpaceFlybys";
@@ -473,15 +469,7 @@ function PickableGlobe({
   controlsRef,
   onPickPlace,
 }: GlobeSceneProps) {
-  const { map, metalnessMap, roughnessMap } = useGlobeTexture(profile, {
-    difficulty,
-    usMode,
-    isDark,
-    selectedCode,
-    perfTier,
-  });
   const tapRef = useRef<TapState | null>(null);
-  const segments = getGlobeSphereSegments(perfTier);
 
   // No declarative rotation on the spin group — R3F prop updates fight place-focus.
   // Seed the default Europe-facing yaw once the group exists.
@@ -519,32 +507,33 @@ function PickableGlobe({
 
   return (
     <group ref={spinGroupRef}>
-      <mesh
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-        onPointerCancel={() => {
-          tapRef.current = null;
-        }}
-      >
-        <sphereGeometry args={[1, segments, segments]} />
-        <GlobeSurfaceMaterial
-          map={map}
-          metalnessMap={metalnessMap}
-          roughnessMap={roughnessMap}
-          dayNight={dayNight}
-          isDark={isDark}
-          perfTier={perfTier}
-          uniformShade
-        />
-        <DistantSun isDark={isDark} perfTier={perfTier} />
-        <EarthSunLight isDark={isDark} dayNight={dayNight} uniformShade />
-        <EarthshineLight isDark={isDark} dayNight={dayNight} uniformShade />
-      </mesh>
-      <GlobeAtmosphere
+      <GlobePlanet
+        profile={profile}
+        difficulty={difficulty}
+        usMode={usMode}
         isDark={isDark}
+        dayNight={dayNight}
+        selectedCode={selectedCode}
         perfTier={perfTier}
         controlsRef={controlsRef}
+        meshProps={{
+          onPointerDown,
+          onPointerMove,
+          onPointerUp,
+          onPointerCancel: () => {
+            tapRef.current = null;
+          },
+        }}
+      />
+      <GlobeCloseupLayer
+        profile={profile}
+        difficulty={difficulty}
+        usMode={usMode}
+        isDark={isDark}
+        selectedCode={selectedCode}
+        perfTier={perfTier}
+        controlsRef={controlsRef}
+        spinGroupRef={spinGroupRef}
       />
     </group>
   );
@@ -733,8 +722,9 @@ export default function InteractiveGlobe({
           >
             <GlobeContextRecovery onContextLost={remountCanvas} />
             <GlobeRecoveryReset onStable={resetRecoveryAttempts} />
+            <GlobeAssetPreloader />
             <GlobeInitialInvalidate />
-            <GlobeFillLights isDark={isDark} dayNight={dayNight} uniformShade />
+            <GlobeFillLights isDark={isDark} dayNight={dayNight} />
             {isDark ? (
               <Stars
                 radius={60}

@@ -59,18 +59,18 @@ export function MapMasteryFxDefs() {
 
   return (
     <defs>
-      {/* objectBoundingBox tiles so each country shows brushed grain, not flat gold */}
+      {/* objectBoundingBox tiles so each country shows dense ornate ring relief */}
       <pattern
         id={MASTERY_GOLD_GRADIENT_ID}
         patternUnits="objectBoundingBox"
-        width="0.28"
-        height="0.28"
+        width="0.18"
+        height="0.18"
         patternContentUnits="objectBoundingBox"
       >
         <image
           href={MASTERY_GOLD_TEXTURE_PATH}
-          width="0.28"
-          height="0.28"
+          width="0.18"
+          height="0.18"
           preserveAspectRatio="none"
         />
       </pattern>

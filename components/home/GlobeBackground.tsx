@@ -6,9 +6,6 @@ import { Canvas, useFrame, useThree, type ThreeEvent } from "@react-three/fiber"
 import { Stars } from "@react-three/drei";
 import * as THREE from "three";
 import {
-  DistantSun,
-  EarthshineLight,
-  EarthSunLight,
   GLOBE_DRAG_SPIN_FACTOR,
   GLOBE_IDLE_RETURN_DELAY_MS,
   GLOBE_MAX_TILT,
@@ -16,21 +13,18 @@ import {
   GLOBE_TAP_TRAVEL_THRESHOLD,
   GLOBE_TILT_RETURN_DAMP,
   getGlobeCanvasGlSettings,
-  getGlobeSphereSegments,
   getGlobeStarCount,
-  GlobeAtmosphere,
   GlobeAssetPreloader,
   GlobeContextRecovery,
   GlobeFillLights,
   GlobeInitialInvalidate,
+  GlobePlanet,
   GlobeRecoveryReset,
-  GlobeSurfaceMaterial,
   tryReleasePointerCapture,
   trySetPointerCapture,
   useGlobeCanvasKey,
   useGlobeFrameloop,
   useGlobeSceneEnvironment,
-  useGlobeTexture,
 } from "@/components/globe/globe-scene";
 import { SpaceBackdrop, StaticStarfield } from "@/components/globe/SpaceBackdrop";
 import { SpaceFlybys } from "@/components/globe/SpaceFlybys";
@@ -94,7 +88,6 @@ function ProgressGlobe({
   const externallyDraggingRef = useRef(false);
   /** 0 means "never interacted" so auto-spin starts immediately on mount. */
   const lastInteractAtRef = useRef(0);
-  const segments = getGlobeSphereSegments(perfTier);
 
   useEffect(() => {
     if (!handleRef) return;
@@ -120,14 +113,6 @@ function ProgressGlobe({
   // Keep the planet in the upper-middle of the screen and never wider than
   // ~84% of the viewport, so it fits phones and desktops alike.
   const scale = Math.min(0.62, (viewport.width * 0.84) / 2);
-
-  // Follows the same Normal/Hard toggle as the map page.
-  const { map, metalnessMap, roughnessMap } = useGlobeTexture(profile, {
-    difficulty,
-    usMode,
-    isDark,
-    perfTier,
-  });
 
   useFrame((_, delta) => {
     if (reducedMotion || !globeRef.current) return;
@@ -171,58 +156,52 @@ function ProgressGlobe({
 
   return (
     <group position={[0, 0.28, 0]} scale={scale} rotation={[0.25, 0, 0]}>
-      <mesh
-        ref={globeRef}
-        // Start facing Europe so land is visible right away.
-        rotation={[0, GLOBE_MESH_Y_ROTATION, 0]}
-        onPointerDown={(event) => {
-          event.stopPropagation();
-          dragRef.current = {
-            pointerId: event.pointerId,
-            lastX: event.nativeEvent.clientX,
-            lastY: event.nativeEvent.clientY,
-            traveled: 0,
-          };
-          lastInteractAtRef.current = performance.now();
-          onActivity();
-          trySetPointerCapture(event.target as Element, event.pointerId);
-          document.body.style.cursor = "grabbing";
+      <GlobePlanet
+        profile={profile}
+        difficulty={difficulty}
+        usMode={usMode}
+        isDark={isDark}
+        dayNight={dayNight}
+        perfTier={perfTier}
+        meshRef={globeRef}
+        meshProps={{
+          // Start facing Europe so land is visible right away.
+          rotation: [0, GLOBE_MESH_Y_ROTATION, 0],
+          onPointerDown: (event) => {
+            event.stopPropagation();
+            dragRef.current = {
+              pointerId: event.pointerId,
+              lastX: event.nativeEvent.clientX,
+              lastY: event.nativeEvent.clientY,
+              traveled: 0,
+            };
+            lastInteractAtRef.current = performance.now();
+            onActivity();
+            trySetPointerCapture(event.target as Element, event.pointerId);
+            document.body.style.cursor = "grabbing";
+          },
+          onPointerMove: (event) => {
+            const drag = dragRef.current;
+            if (!drag || drag.pointerId !== event.pointerId || !globeRef.current) return;
+            const deltaX = event.nativeEvent.clientX - drag.lastX;
+            const deltaY = event.nativeEvent.clientY - drag.lastY;
+            drag.lastX = event.nativeEvent.clientX;
+            drag.lastY = event.nativeEvent.clientY;
+            drag.traveled += Math.hypot(deltaX, deltaY);
+            applyGlobeSpin(globeRef.current, deltaX, deltaY);
+            lastInteractAtRef.current = performance.now();
+            onActivity();
+          },
+          onPointerUp: (event) => endDrag(event, { navigateOnTap: true }),
+          onPointerCancel: (event) => endDrag(event, { navigateOnTap: false }),
+          onPointerOver: () => {
+            if (!dragRef.current) document.body.style.cursor = "grab";
+          },
+          onPointerOut: () => {
+            if (!dragRef.current) document.body.style.cursor = "";
+          },
         }}
-        onPointerMove={(event) => {
-          const drag = dragRef.current;
-          if (!drag || drag.pointerId !== event.pointerId || !globeRef.current) return;
-          const deltaX = event.nativeEvent.clientX - drag.lastX;
-          const deltaY = event.nativeEvent.clientY - drag.lastY;
-          drag.lastX = event.nativeEvent.clientX;
-          drag.lastY = event.nativeEvent.clientY;
-          drag.traveled += Math.hypot(deltaX, deltaY);
-          applyGlobeSpin(globeRef.current, deltaX, deltaY);
-          lastInteractAtRef.current = performance.now();
-          onActivity();
-        }}
-        onPointerUp={(event) => endDrag(event, { navigateOnTap: true })}
-        onPointerCancel={(event) => endDrag(event, { navigateOnTap: false })}
-        onPointerOver={() => {
-          if (!dragRef.current) document.body.style.cursor = "grab";
-        }}
-        onPointerOut={() => {
-          if (!dragRef.current) document.body.style.cursor = "";
-        }}
-      >
-        <sphereGeometry args={[1, segments, segments]} />
-        <GlobeSurfaceMaterial
-          map={map}
-          metalnessMap={metalnessMap}
-          roughnessMap={roughnessMap}
-          dayNight={dayNight}
-          isDark={isDark}
-          perfTier={perfTier}
-        />
-        <DistantSun isDark={isDark} perfTier={perfTier} />
-        <EarthSunLight isDark={isDark} dayNight={dayNight} />
-        <EarthshineLight isDark={isDark} dayNight={dayNight} />
-      </mesh>
-      <GlobeAtmosphere isDark={isDark} perfTier={perfTier} />
+      />
     </group>
   );
 }
@@ -232,7 +211,7 @@ function ProgressGlobe({
  * glow, star field, occasional 3D flybys, and a slowly spinning 3D globe
  * painted with the player's actual country and state mastery. Tapping the
  * planet opens the full progress map. Theme-aware: deep space in dark mode,
- * a pale daytime sky in light mode.
+ * a painted sunset cloudscape in light mode.
  */
 export default function GlobeBackground({
   profile,

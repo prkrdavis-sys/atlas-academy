@@ -10,7 +10,7 @@ import {
   useState,
   type RefObject,
 } from "react";
-import { useFrame, useThree } from "@react-three/fiber";
+import { useFrame, useThree, type ThreeElements } from "@react-three/fiber";
 import { Billboard, useTexture } from "@react-three/drei";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
@@ -22,8 +22,7 @@ import {
   type GlobeUsMode,
 } from "@/lib/globe-texture";
 import {
-  loadMasteryGoldColorImage,
-  loadMasteryGoldRoughnessImage,
+  loadMasteryGoldPbrImages,
 } from "@/lib/mastery-gold-texture";
 import { masteryFxPhaseFromTime } from "@/lib/map-mastery-fx";
 import {
@@ -215,6 +214,7 @@ export type GlobeSurfaceMaps = {
   map: THREE.CanvasTexture;
   metalnessMap: THREE.CanvasTexture | null;
   roughnessMap: THREE.CanvasTexture | null;
+  normalMap: THREE.CanvasTexture | null;
 };
 
 /**
@@ -245,20 +245,21 @@ export function useGlobeTexture(
   const [goldMaps, setGoldMaps] = useState<{
     color: HTMLImageElement | null;
     roughness: HTMLImageElement | null;
-  }>({ color: null, roughness: null });
+    normal: HTMLImageElement | null;
+  }>({ color: null, roughness: null, normal: null });
 
   useEffect(() => {
     if (difficulty !== "medium") {
-      setGoldMaps({ color: null, roughness: null });
+      setGoldMaps({ color: null, roughness: null, normal: null });
       return;
     }
     let cancelled = false;
-    Promise.all([loadMasteryGoldColorImage(), loadMasteryGoldRoughnessImage()])
-      .then(([color, roughness]) => {
-        if (!cancelled) setGoldMaps({ color, roughness });
+    loadMasteryGoldPbrImages()
+      .then((images) => {
+        if (!cancelled) setGoldMaps(images);
       })
       .catch(() => {
-        if (!cancelled) setGoldMaps({ color: null, roughness: null });
+        if (!cancelled) setGoldMaps({ color: null, roughness: null, normal: null });
       });
     return () => {
       cancelled = true;
@@ -278,6 +279,7 @@ export function useGlobeTexture(
         allowMastery4Animation: !fxConstrained,
         goldColorImage: goldMaps.color,
         goldRoughnessImage: goldMaps.roughness,
+        goldNormalImage: goldMaps.normal,
       }),
     [profile, difficulty, usMode, isDark, size, fxConstrained, goldMaps],
   );
@@ -317,7 +319,15 @@ export function useGlobeTexture(
       configureCanvasTexture(roughnessMap);
     }
 
-    return { map, metalnessMap, roughnessMap };
+    const normalMap = paint.normalCanvas
+      ? new THREE.CanvasTexture(paint.normalCanvas)
+      : null;
+    if (normalMap) {
+      normalMap.colorSpace = THREE.NoColorSpace;
+      configureCanvasTexture(normalMap);
+    }
+
+    return { map, metalnessMap, roughnessMap, normalMap };
   }, [paint, gl, fxConstrained]);
 
   useEffect(
@@ -325,6 +335,7 @@ export function useGlobeTexture(
       maps.map.dispose();
       maps.metalnessMap?.dispose();
       maps.roughnessMap?.dispose();
+      maps.normalMap?.dispose();
     },
     [maps],
   );
@@ -441,7 +452,8 @@ export function GlobeAtmosphere({
       <sphereGeometry args={[1, segments, segments]} />
       <meshBasicMaterial
         ref={materialRef}
-        color={isDark ? "#2dd4bf" : "#38bdf8"}
+        // Teal aura in dark space; a warm haze against the light-mode sunset sky.
+        color={isDark ? "#2dd4bf" : "#ffb27d"}
         transparent
         opacity={baseOpacity}
         side={THREE.BackSide}
@@ -452,22 +464,29 @@ export function GlobeAtmosphere({
   );
 }
 
-/** Ambient intensities: flat (explore / day-night off) vs terminator floor. */
+/**
+ * One lighting rig for every globe surface and zoom level.
+ *
+ * Day/night OFF: bright, even "studio" lighting — a readable base with a soft
+ * key light for surface relief, stable at every camera distance.
+ * Day/night ON: dimmer base so the real-time sun casts a clear terminator,
+ * but the ambient floor + earthshine keep the night side fully readable.
+ */
 function globeAmbientIntensity(isDark: boolean, dayNight: boolean): number {
-  if (dayNight) return isDark ? 1.05 : 0.88;
-  // Explore / flat: bright enough to read mastery colors, dark enough for navy oceans.
-  return isDark ? 1.65 : 1.45;
+  if (dayNight) return isDark ? 0.78 : 0.72;
+  return isDark ? 1.12 : 1.02;
 }
 
-/** Key sunlight intensities for flat shade vs full day/night terminator. */
-function globeSunIntensity(isDark: boolean, dayNight: boolean): number {
-  if (dayNight) return isDark ? 1.35 : 1.55;
-  // Tiny form light only — strong enough to read the sphere, too weak to band.
-  return isDark ? 0.12 : 0.1;
+function globeHemisphereIntensity(dayNight: boolean): number {
+  return dayNight ? 0.3 : 0.52;
 }
 
-function globeEarthshineIntensity(isDark: boolean): number {
-  return isDark ? 0.45 : 0.35;
+function globeSunIntensity(dayNight: boolean): number {
+  return dayNight ? 1.25 : 0.5;
+}
+
+function globeEarthshineIntensity(): number {
+  return 0.5;
 }
 
 /**
@@ -487,10 +506,13 @@ export function globeFillDistance(
   return radius / sinCorner;
 }
 
+/** Ornate gold normal intensity — strong enough for ring relief to catch light. */
+const GOLD_NORMAL_SCALE = new THREE.Vector2(2.15, 2.15);
+
 /**
  * Planet surface material: enough gloss for a polished 3D globe, still matte
  * enough that mastery colors and borders stay readable. Phones use Lambert
- * (no specular/emissiveMap double-sample) to cut fill-rate. When metalness /
+ * (no specular) unless Normal gold maps need brushed sheen. When metalness /
  * roughness maps are present (Normal gold mastery), sunlight catches those
  * places more than default land — and a soft gold emissive keeps the color
  * readable even on the shaded side of the globe.
@@ -498,100 +520,85 @@ export function globeFillDistance(
  * Day/night does NOT use the color map as emissiveMap — that turned borders and
  * selection glow into a globe-wide lit grid whenever the texture updated.
  * Night-side readability comes from ambient + earthshine instead.
- *
- * `uniformShade` (map explorer) uses Lambert + flat lighting params so zoom
- * never shifts tone via specular hotspots or terminator banding.
  */
 export function GlobeSurfaceMaterial({
   map,
   metalnessMap = null,
   roughnessMap = null,
-  dayNight,
-  isDark: _isDark,
+  normalMap = null,
   perfTier = "desktop",
-  uniformShade = false,
 }: {
   map: THREE.Texture;
   metalnessMap?: THREE.Texture | null;
   roughnessMap?: THREE.Texture | null;
-  dayNight: boolean;
-  isDark: boolean;
+  normalMap?: THREE.Texture | null;
   perfTier?: GlobePerfTier;
-  /** Map explorer: ignore day/night material params for zoom-stable tone. */
-  uniformShade?: boolean;
 }) {
   const hasMetalMaps = Boolean(metalnessMap && roughnessMap);
-  const useDayNight = dayNight && !uniformShade;
-  const flatRoughness = 0.52;
-  const dayNightRoughness = 0.68;
-  const flatMetalness = 0.06;
-  const dayNightMetalness = 0.03;
 
-  // Lambert avoids specular hotspots that shift with zoom. Keep Standard when
-  // gold metal maps need a sheen.
-  if ((perfTier === "phone" || uniformShade) && !hasMetalMaps) {
+  // Lambert avoids specular hotspots on constrained GPUs. Keep Standard when
+  // gold metal maps need a sheen / brushed normals.
+  if (perfTier === "phone" && !hasMetalMaps) {
     return <meshLambertMaterial map={map} />;
   }
 
   // Gold mastery: subtle fill-light so shaded countries stay gold, not neon.
   // metalnessMap is white only on gold mastery places.
   const emissiveMap = hasMetalMaps ? metalnessMap! : undefined;
-  const emissive = hasMetalMaps ? "#c9a227" : "#000000";
-  const emissiveIntensity = hasMetalMaps ? 0.22 : 0;
+  const emissive = hasMetalMaps ? "#d1a02a" : "#000000";
+  const emissiveIntensity = hasMetalMaps ? 0.26 : 0;
 
   return (
     <meshStandardMaterial
       map={map}
       metalnessMap={metalnessMap ?? undefined}
       roughnessMap={roughnessMap ?? undefined}
+      normalMap={normalMap ?? undefined}
+      normalScale={normalMap ? GOLD_NORMAL_SCALE : undefined}
       emissiveMap={emissiveMap}
       emissive={emissive}
       emissiveIntensity={emissiveIntensity}
-      roughness={hasMetalMaps ? 1 : useDayNight ? dayNightRoughness : flatRoughness}
-      // Enough metal for brushed sheen; enough diffuse for gold in shadow.
-      metalness={hasMetalMaps ? 0.32 : useDayNight ? dayNightMetalness : flatMetalness}
+      roughness={hasMetalMaps ? 1 : 0.72}
+      // Enough metal for ornate sheen; enough diffuse for gold in shadow.
+      metalness={hasMetalMaps ? 0.45 : 0.04}
     />
   );
 }
 
 /**
- * Scene fill lights for the globe. Day/night on: dim ambient so the real-time
- * sun casts a clear terminator. Day/night off / uniformShade: flat ambient so
- * zoom never shifts ocean/land tone.
+ * Scene fill lights for the globe: an ambient base plus a soft hemisphere
+ * bounce so the sphere always reads as a lit object. Day/night on: dimmer so
+ * the real-time sun casts a clear terminator (the ambient floor keeps the
+ * night side readable). One rig for every surface and zoom level.
  */
 export function GlobeFillLights({
   isDark,
   dayNight,
-  uniformShade = false,
 }: {
   isDark: boolean;
   dayNight: boolean;
-  /** Map explorer: keep ambient at the flat level regardless of day/night. */
-  uniformShade?: boolean;
 }) {
-  const useDayNight = dayNight && !uniformShade;
   return (
-    <ambientLight intensity={globeAmbientIntensity(isDark, useDayNight)} />
+    <>
+      <ambientLight intensity={globeAmbientIntensity(isDark, dayNight)} />
+      <hemisphereLight
+        color="#fffdf7"
+        groundColor="#b9c6d8"
+        intensity={globeHemisphereIntensity(dayNight)}
+      />
+    </>
   );
 }
 
 /**
  * Real-time sunlight for the planet mesh. Mount as a child of the earth mesh
  * so the day/night terminator stays locked to geographic longitude while the
- * globe spins or the camera orbits. `uniformShade` keeps only a tiny form light
- * so map zoom never introduces terminator bands.
+ * globe spins or the camera orbits. With day/night off it stays a soft key
+ * light that gives the surface relief without a visible terminator.
  */
-export function EarthSunLight({
-  isDark,
-  dayNight,
-  uniformShade = false,
-}: {
-  isDark: boolean;
-  dayNight: boolean;
-  uniformShade?: boolean;
-}) {
+export function EarthSunLight({ dayNight }: { dayNight: boolean }) {
   const lightRef = useRef<THREE.DirectionalLight>(null);
-  const intensity = globeSunIntensity(isDark, dayNight && !uniformShade);
+  const intensity = globeSunIntensity(dayNight);
 
   useLayoutEffect(() => {
     const light = lightRef.current;
@@ -623,23 +630,21 @@ export function EarthSunLight({
 }
 
 /**
- * Cool anti-solar fill (earthshine) for the night hemisphere. Mount as a child
- * of the earth mesh so the moonlit wash stays locked to geography. Skipped when
- * `uniformShade` is set (map explorer).
+ * Cool anti-solar fill (earthshine / moonlight) for the night hemisphere.
+ * Mount as a child of the earth mesh so the moonlit wash stays locked to
+ * geography. Only active while day/night lighting is on.
  */
 export function EarthshineLight({
   isDark,
   dayNight,
-  uniformShade = false,
 }: {
   isDark: boolean;
   dayNight: boolean;
-  uniformShade?: boolean;
 }) {
   const lightRef = useRef<THREE.DirectionalLight>(null);
-  const baseIntensity = globeEarthshineIntensity(isDark);
+  const baseIntensity = globeEarthshineIntensity();
   const color = isDark ? "#8eb4d4" : "#9ec0dc";
-  const active = dayNight && !uniformShade;
+  const active = dayNight;
 
   useLayoutEffect(() => {
     const light = lightRef.current;
@@ -677,12 +682,18 @@ const DISTANT_SUN_DISTANCE = 56;
 const SUN_TEXTURE_URL = "/globe/sun.png";
 /** Soft radial falloff sprite for wash / bloom (no hard circle edge). */
 const SUN_GLOW_TEXTURE_URL = "/globe/sun-glow.png";
+/**
+ * NASA Black Marble composite (public domain) — real city lights, so glow
+ * appears only where people actually live. See public/globe/SUN_ATTRIBUTION.txt.
+ */
+const NIGHT_LIGHTS_TEXTURE_URL = "/globe/night-lights.jpg";
 
 /** Preloads sun textures on the client after the Canvas mounts. */
 export function GlobeAssetPreloader() {
   useEffect(() => {
     useTexture.preload(SUN_TEXTURE_URL);
     useTexture.preload(SUN_GLOW_TEXTURE_URL);
+    useTexture.preload(NIGHT_LIGHTS_TEXTURE_URL);
   }, []);
   return null;
 }
@@ -723,10 +734,24 @@ export function GlobeInitialInvalidate() {
 /** Skip picking so the sun never steals globe taps. */
 function ignoreRaycast() {}
 
+/**
+ * Additive color blending that leaves the destination alpha untouched. The
+ * R3F canvas is transparent over a CSS sky, so plain AdditiveBlending would
+ * write the sprite's alpha into the framebuffer and let dark texels (the NASA
+ * plate's limb) occlude the CSS backdrop as a dark ring. With destination
+ * alpha preserved, sprites can only ever brighten what's behind them — in both
+ * themes.
+ */
 const sunAdditive = {
   transparent: true,
   depthWrite: false,
-  blending: THREE.AdditiveBlending,
+  blending: THREE.CustomBlending,
+  blendEquation: THREE.AddEquation,
+  blendSrc: THREE.OneFactor,
+  blendDst: THREE.OneFactor,
+  blendEquationAlpha: THREE.AddEquation,
+  blendSrcAlpha: THREE.ZeroFactor,
+  blendDstAlpha: THREE.OneFactor,
   toneMapped: false,
 } as const;
 
@@ -764,13 +789,12 @@ function DistantSunVisual({
   });
 
   // Soft radial sprites — glow map alpha dies before the quad edge, so nothing
-  // reads as a square or hard ring in additive space. The NASA plate is dark-
-  // limb imagery: skip it in light mode or its near-opaque brown pixels
-  // darken the pale CSS sky into a black ring through the transparent canvas.
-  const wash = isDark ? 0.55 : 0.78;
-  const bloom = isDark ? 0.65 : 0.92;
-  const plate = 0.92;
-  const core = isDark ? 0.55 : 0.85;
+  // reads as a square or hard ring in additive space. The blending preserves
+  // destination alpha, so the NASA plate is safe over the pale sky too.
+  const wash = isDark ? 0.55 : 0.72;
+  const bloom = isDark ? 0.65 : 0.85;
+  const plate = isDark ? 0.92 : 1;
+  const core = isDark ? 0.55 : 0.7;
 
   return (
     <group ref={groupRef} frustumCulled={false}>
@@ -808,13 +832,11 @@ function DistantSunVisual({
             />
           </mesh>
 
-          {/* Textured disk + baked corona — dark space only (see note above). */}
-          {isDark ? (
-            <mesh scale={simplified ? 4.2 : 5.4} raycast={ignoreRaycast} frustumCulled={false}>
-              <planeGeometry args={[2, 2]} />
-              <meshBasicMaterial map={plateMap} opacity={plate} {...sunAdditive} />
-            </mesh>
-          ) : null}
+          {/* Textured disk + baked corona — both themes (see blending note). */}
+          <mesh scale={simplified ? 4.2 : 5.4} raycast={ignoreRaycast} frustumCulled={false}>
+            <planeGeometry args={[2, 2]} />
+            <meshBasicMaterial map={plateMap} opacity={plate} {...sunAdditive} />
+          </mesh>
 
           {/* Soft white-hot core (same glow sprite, small). */}
           {!simplified ? (
@@ -839,19 +861,6 @@ function DistantSunVisual({
               </mesh>
             </>
           ) : null}
-          {/* Phone light mode has no plate — keep a small hot core so the sun
-              still reads as a disk against the pale sky. */}
-          {simplified && !isDark ? (
-            <mesh scale={1.35} raycast={ignoreRaycast} frustumCulled={false}>
-              <planeGeometry args={[2, 2]} />
-              <meshBasicMaterial
-                map={glowMap}
-                color="#ffffff"
-                opacity={core * 0.7}
-                {...sunAdditive}
-              />
-            </mesh>
-          ) : null}
         </group>
       </Billboard>
     </group>
@@ -862,8 +871,8 @@ function DistantSunVisual({
  * Bright distant sun in outer space, locked to the real subsolar direction.
  * Always mounted (independent of the day/night lighting toggle) as a child of
  * the earth mesh so it stays aligned with geography while the globe spins.
- * Dark mode uses a NASA SDO AIA 171 plate; light mode uses soft glow sprites
- * only so the plate's dark limb never rings against the pale sky.
+ * Both themes render the NASA SDO AIA 171 plate plus glow sprites; the custom
+ * blending keeps the plate's dark limb from ringing against a pale sky.
  */
 export function DistantSun({
   isDark,
@@ -876,6 +885,177 @@ export function DistantSun({
     <Suspense fallback={null}>
       <DistantSunVisual isDark={isDark} perfTier={perfTier} />
     </Suspense>
+  );
+}
+
+/** Sits above the close-up patch shell (1.001) so lights stay visible zoomed in. */
+const CITY_LIGHTS_RADIUS = 1.004;
+
+const CITY_LIGHTS_VERTEX_SHADER = /* glsl */ `
+  varying vec2 vUv;
+  varying vec3 vObjNormal;
+  void main() {
+    vUv = uv;
+    vObjNormal = normalize(position);
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+`;
+
+const CITY_LIGHTS_FRAGMENT_SHADER = /* glsl */ `
+  uniform sampler2D uNightMap;
+  uniform vec3 uSunDir;
+  uniform float uIntensity;
+  varying vec2 vUv;
+  varying vec3 vObjNormal;
+  void main() {
+    // Fade lights in across the terminator; fully lit only in deep night.
+    float night = 1.0 - smoothstep(-0.18, 0.12, dot(normalize(vObjNormal), uSunDir));
+    vec3 texel = texture2D(uNightMap, vUv).rgb;
+    float lum = dot(texel, vec3(0.299, 0.587, 0.114));
+    // Cut faint airglow/terrain noise so empty deserts and oceans stay dark.
+    lum = smoothstep(0.1, 0.82, lum);
+    vec3 warm = mix(vec3(1.0, 0.62, 0.28), vec3(1.0, 0.88, 0.58), lum);
+    gl_FragColor = vec4(warm * lum * uIntensity * night, 0.0);
+  }
+`;
+
+function configureNightMap(texture: THREE.Texture | THREE.Texture[]) {
+  for (const map of Array.isArray(texture) ? texture : [texture]) {
+    map.colorSpace = THREE.SRGBColorSpace;
+    map.anisotropy = 1;
+  }
+}
+
+function GlobeCityLightsVisual({ perfTier }: { perfTier: GlobePerfTier }) {
+  const materialRef = useRef<THREE.ShaderMaterial>(null);
+  const nightMap = useTexture(NIGHT_LIGHTS_TEXTURE_URL, configureNightMap);
+  const segments = getGlobeSphereSegments(perfTier);
+
+  const uniforms = useMemo(
+    () => ({
+      uNightMap: { value: nightMap },
+      uSunDir: { value: new THREE.Vector3(1, 0, 0) },
+      uIntensity: { value: 1.15 },
+    }),
+    [nightMap],
+  );
+
+  useFrame(() => {
+    const material = materialRef.current;
+    if (!material) return;
+    const sun = subsolarDirection();
+    (material.uniforms.uSunDir.value as THREE.Vector3).set(sun.x, sun.y, sun.z);
+  });
+
+  return (
+    <mesh
+      scale={CITY_LIGHTS_RADIUS}
+      raycast={ignoreRaycast}
+      renderOrder={6}
+    >
+      <sphereGeometry args={[1, segments, segments]} />
+      <shaderMaterial
+        ref={materialRef}
+        vertexShader={CITY_LIGHTS_VERTEX_SHADER}
+        fragmentShader={CITY_LIGHTS_FRAGMENT_SHADER}
+        uniforms={uniforms}
+        transparent
+        depthWrite={false}
+        blending={THREE.CustomBlending}
+        blendEquation={THREE.AddEquation}
+        blendSrc={THREE.OneFactor}
+        blendDst={THREE.OneFactor}
+        blendEquationAlpha={THREE.AddEquation}
+        blendSrcAlpha={THREE.ZeroFactor}
+        blendDstAlpha={THREE.OneFactor}
+      />
+    </mesh>
+  );
+}
+
+/**
+ * Real city lights (NASA Black Marble) that fade in on the night hemisphere
+ * while day/night lighting is on. Mount as a child of the earth mesh so the
+ * lights stay locked to geography. Additive with destination alpha preserved,
+ * so it can only brighten the surface beneath.
+ */
+export function GlobeCityLights({
+  dayNight,
+  perfTier = "desktop",
+}: {
+  dayNight: boolean;
+  perfTier?: GlobePerfTier;
+}) {
+  if (!dayNight) return null;
+  return (
+    <Suspense fallback={null}>
+      <GlobeCityLightsVisual perfTier={perfTier} />
+    </Suspense>
+  );
+}
+
+type GlobeMeshProps = Omit<ThreeElements["mesh"], "ref" | "children">;
+
+export type GlobePlanetProps = {
+  profile: Profile | null;
+  difficulty: MapProgressDifficulty;
+  usMode: GlobeUsMode;
+  isDark: boolean;
+  dayNight: boolean;
+  selectedCode?: string | null;
+  perfTier: GlobePerfTier;
+  /** Orbit controls (map explorer) — lets the atmosphere fade with distance. */
+  controlsRef?: RefObject<OrbitControlsImpl | null>;
+  meshRef?: RefObject<THREE.Mesh | null>;
+  /** Pointer handlers / initial rotation for the planet mesh. */
+  meshProps?: GlobeMeshProps;
+};
+
+/**
+ * The shared planet unit: progress-painted sphere, sun + earthshine lights,
+ * distant sun visual, night-side city lights, and the atmosphere rim — one
+ * component so the home globe and the map explorer are always the same globe.
+ * Interactivity stays with the caller via `meshProps` / `meshRef`.
+ */
+export function GlobePlanet({
+  profile,
+  difficulty,
+  usMode,
+  isDark,
+  dayNight,
+  selectedCode = null,
+  perfTier,
+  controlsRef,
+  meshRef,
+  meshProps,
+}: GlobePlanetProps) {
+  const { map, metalnessMap, roughnessMap, normalMap } = useGlobeTexture(profile, {
+    difficulty,
+    usMode,
+    isDark,
+    selectedCode,
+    perfTier,
+  });
+  const segments = getGlobeSphereSegments(perfTier);
+
+  return (
+    <>
+      <mesh ref={meshRef} {...meshProps}>
+        <sphereGeometry args={[1, segments, segments]} />
+        <GlobeSurfaceMaterial
+          map={map}
+          metalnessMap={metalnessMap}
+          roughnessMap={roughnessMap}
+          normalMap={normalMap}
+          perfTier={perfTier}
+        />
+        <GlobeCityLights dayNight={dayNight} perfTier={perfTier} />
+        <DistantSun isDark={isDark} perfTier={perfTier} />
+        <EarthSunLight dayNight={dayNight} />
+        <EarthshineLight isDark={isDark} dayNight={dayNight} />
+      </mesh>
+      <GlobeAtmosphere isDark={isDark} perfTier={perfTier} controlsRef={controlsRef} />
+    </>
   );
 }
 

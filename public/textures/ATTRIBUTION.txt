@@ -1,9 +1,11 @@
-mastery-gold-brushed.jpg / mastery-gold-roughness.jpg
+mastery-gold-brushed.jpg / mastery-gold-roughness.jpg / mastery-gold-normal.jpg
 
-Source: ambientCG Metal009 (brushed metal PBR), CC0 / public domain.
-https://ambientcg.com/view?id=Metal009
-License: https://docs.ambientcg.com/license/ (CC0 1.0)
+Source: TextureCan Metal 0046 — Circular Flat Gold Chainmail (CC0 / public domain).
+https://www.texturecan.com/details/437/
+License: CC0 — free for commercial use (TextureCan CC0 textures)
 
-Derived for Atlas Academy: Color map luminance remapped to yellow-gold;
-Roughness map remapped toward a shinier brushed-metal response for Normal
-mastery-4 map/globe fills.
+Derived for Atlas Academy Normal mastery-4:
+- Color: remapped to readable yellow-gold while preserving ring relief structure
+- Roughness: contrast-stretched into a mid-polish ornate band
+- Normal: OpenGL normal map with amplified relief so lighting casts textured shadows
+  across the interlocking ring pattern

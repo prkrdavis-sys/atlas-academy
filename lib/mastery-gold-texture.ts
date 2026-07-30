@@ -1,13 +1,15 @@
-/** Paths and helpers for the Normal mastery-4 brushed gold texture (CC0). */
+/** Paths and helpers for the Normal mastery-4 ornate gold PBR set (CC0). */
 
 export const MASTERY_GOLD_TEXTURE_PATH = "/textures/mastery-gold-brushed.jpg";
 export const MASTERY_GOLD_ROUGHNESS_PATH = "/textures/mastery-gold-roughness.jpg";
+export const MASTERY_GOLD_NORMAL_PATH = "/textures/mastery-gold-normal.jpg";
 
 /** Classic yellow-gold solid fallback (not orange). */
 export const MASTERY_GOLD_ALBEDO_FALLBACK = "#d4af37";
 
 let colorImagePromise: Promise<HTMLImageElement> | null = null;
 let roughnessImagePromise: Promise<HTMLImageElement> | null = null;
+let normalImagePromise: Promise<HTMLImageElement> | null = null;
 
 function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
@@ -39,6 +41,32 @@ export function loadMasteryGoldRoughnessImage(): Promise<HTMLImageElement> {
     roughnessImagePromise = loadImage(MASTERY_GOLD_ROUGHNESS_PATH);
   }
   return roughnessImagePromise;
+}
+
+/** Lazily loads the brushed gold normal map (OpenGL, browser only). */
+export function loadMasteryGoldNormalImage(): Promise<HTMLImageElement> {
+  if (typeof window === "undefined") {
+    return Promise.reject(new Error("Gold normal requires a browser environment"));
+  }
+  if (!normalImagePromise) {
+    normalImagePromise = loadImage(MASTERY_GOLD_NORMAL_PATH);
+  }
+  return normalImagePromise;
+}
+
+export type MasteryGoldPbrImages = {
+  color: HTMLImageElement;
+  roughness: HTMLImageElement;
+  normal: HTMLImageElement;
+};
+
+/** Loads the full brushed-gold PBR set used by Normal mastery 4. */
+export function loadMasteryGoldPbrImages(): Promise<MasteryGoldPbrImages> {
+  return Promise.all([
+    loadMasteryGoldColorImage(),
+    loadMasteryGoldRoughnessImage(),
+    loadMasteryGoldNormalImage(),
+  ]).then(([color, roughness, normal]) => ({ color, roughness, normal }));
 }
 
 /**
