@@ -118,6 +118,8 @@ export function MapPageContent() {
   const [webglOk, setWebglOk] = useState<boolean | null>(null);
   const [showGlobeFallbackNotice, setShowGlobeFallbackNotice] = useState(false);
   const [selectedGlobePlace, setSelectedGlobePlace] = useState<string | null>(null);
+  /** Once the user clears a selection, don't revive the ?place= highlight. */
+  const [initialPlaceDismissed, setInitialPlaceDismissed] = useState(false);
   const { usMode } = useGlobeUsMode();
   const { mapDifficulty, setMapDifficulty } = useMapProgressDifficulty();
 
@@ -126,6 +128,13 @@ export function MapPageContent() {
     setStoredView(getStoredMapView());
     setWebglOk(supportsWebGL());
   }, []);
+
+  useEffect(() => {
+    // New deep-link → allow the incoming place to highlight again.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setInitialPlaceDismissed(false);
+    setSelectedGlobePlace(null);
+  }, [resolvedInitialPlace]);
 
   useEffect(() => {
     if (paramView === "globe") {
@@ -148,19 +157,42 @@ export function MapPageContent() {
     }
   }, [requestedView, globeUnavailable]);
 
-  const activeGlobeSelection = selectedGlobePlace ?? resolvedInitialPlace;
+  const activeGlobeSelection =
+    selectedGlobePlace ??
+    (initialPlaceDismissed ? null : resolvedInitialPlace);
+
+  const clearPlaceQueryParam = useCallback(() => {
+    if (!searchParams.has("place")) return;
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("place");
+    const query = params.toString();
+    router.replace(query ? `/map?${query}` : "/map", { scroll: false });
+  }, [router, searchParams]);
+
+  const handleGlobeSelectPlace = useCallback(
+    (code: string | null) => {
+      setSelectedGlobePlace(code);
+      if (code === null) {
+        setInitialPlaceDismissed(true);
+        clearPlaceQueryParam();
+      }
+    },
+    [clearPlaceQueryParam],
+  );
 
   const setView = useCallback(
     (nextView: MapView) => {
       localStorage.setItem(MAP_VIEW_STORAGE_KEY, nextView);
       setStoredView(nextView);
       setSelectedGlobePlace(null);
+      setInitialPlaceDismissed(true);
       const params = new URLSearchParams(searchParams.toString());
       if (nextView === "globe") {
         params.delete("view");
       } else {
         params.set("view", nextView);
       }
+      params.delete("place");
       const query = params.toString();
       router.replace(query ? `/map?${query}` : "/map", { scroll: false });
     },
@@ -241,7 +273,7 @@ export function MapPageContent() {
               usMode={usMode}
               selectedCode={activeGlobeSelection}
               initialPlaceCode={resolvedInitialPlace}
-              onSelectPlace={setSelectedGlobePlace}
+              onSelectPlace={handleGlobeSelectPlace}
               statsScrollTargetId={MAP_STATS_PANEL_ID}
               className="h-full w-full"
             />

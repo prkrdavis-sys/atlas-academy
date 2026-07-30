@@ -90,12 +90,12 @@ export function GlobeDetailOverlays({
   }, [forceActive, selectedCode]);
 
   /**
-   * Place-focus / selection must work even when the Canvas frameloop is paused
-   * (background tab). Seed overlays from the selected place's centroid.
+   * Place-focus must work even when the Canvas frameloop is paused
+   * (background tab). Seed overlays from the focused place's centroid.
    */
   useEffect(() => {
     if (!candidates) return;
-    if (!forceActive && selectedCode === null) return;
+    if (!forceActive) return;
 
     const anchor =
       (selectedCode ? candidates.find((entry) => entry.code === selectedCode) : null) ??
@@ -121,10 +121,11 @@ export function GlobeDetailOverlays({
     if (!controls || !spinGroup) return;
 
     const distance = controls.getDistance();
+    // Selection highlight lives on the painted texture; vector overlays only
+    // when close (or place-focus), so picking a country at overview doesn't
+    // drop unlit meshes over a lit globe.
     const active =
-      forceActive ||
-      selectedCode !== null ||
-      (!focusOnly && distance < GLOBE_DETAIL_ACTIVATE_DISTANCE);
+      forceActive || (!focusOnly && distance < GLOBE_DETAIL_ACTIVATE_DISTANCE);
 
     if (!active) {
       if (activeCodesRef.current.length > 0) {

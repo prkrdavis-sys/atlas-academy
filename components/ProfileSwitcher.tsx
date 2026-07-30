@@ -151,7 +151,7 @@ export function ProfileSwitcher({ compact = false }: { compact?: boolean }) {
               className="flex min-h-11 w-full items-center justify-center rounded-xl px-3 py-2 text-sm font-semibold text-emerald-700 transition-colors hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950/50"
               onClick={closeMenu}
             >
-              Manage profiles
+              {hydrated && profiles.length === 0 ? "Create profile" : "Manage profiles"}
             </Link>
           </div>
         </div>

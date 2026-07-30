@@ -162,6 +162,9 @@ export function GlobeCloseupLayer({
 
     const texture = new THREE.CanvasTexture(canvas);
     texture.colorSpace = THREE.SRGBColorSpace;
+    texture.generateMipmaps = false;
+    texture.minFilter = THREE.LinearFilter;
+    texture.magFilter = THREE.LinearFilter;
     texture.anisotropy = Math.min(4, gl.capabilities.getMaxAnisotropy());
     texture.needsUpdate = true;
 

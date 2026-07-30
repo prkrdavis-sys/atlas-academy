@@ -33,6 +33,8 @@ import {
   useGlobeTexture,
 } from "@/components/globe/globe-scene";
 import { SpaceBackdrop, StaticStarfield } from "@/components/globe/SpaceBackdrop";
+import { SpaceFlybys } from "@/components/globe/SpaceFlybys";
+import { GLOBE_MESH_Y_ROTATION } from "@/lib/globe-focus";
 import type { GlobePerfTier } from "@/lib/globe-performance";
 import type { MapProgressDifficulty, Profile } from "@/lib/types";
 import { useGlobeDayNight } from "@/lib/use-globe-day-night";
@@ -171,8 +173,8 @@ function ProgressGlobe({
     <group position={[0, 0.28, 0]} scale={scale} rotation={[0.25, 0, 0]}>
       <mesh
         ref={globeRef}
-        // Start on the Atlantic so land is visible right away.
-        rotation={[0, -1.1, 0]}
+        // Start facing Europe so land is visible right away.
+        rotation={[0, GLOBE_MESH_Y_ROTATION, 0]}
         onPointerDown={(event) => {
           event.stopPropagation();
           dragRef.current = {
@@ -227,10 +229,10 @@ function ProgressGlobe({
 
 /**
  * Full-screen outer-space backdrop for the home page: space with a nebula
- * glow, star field, shooting stars, and a slowly spinning 3D globe painted
- * with the player's actual country and state mastery. Tapping the planet
- * opens the full progress map. Theme-aware: deep space in dark mode, a pale
- * daytime sky in light mode.
+ * glow, star field, occasional 3D flybys, and a slowly spinning 3D globe
+ * painted with the player's actual country and state mastery. Tapping the
+ * planet opens the full progress map. Theme-aware: deep space in dark mode,
+ * a pale daytime sky in light mode.
  */
 export default function GlobeBackground({
   profile,
@@ -270,7 +272,6 @@ export default function GlobeBackground({
     <SpaceBackdrop
       ref={rootRef}
       isDark={isDark}
-      reducedMotion={reducedMotion}
       fadeBottom
       className="fixed inset-0 -z-10"
     >
@@ -317,6 +318,12 @@ export default function GlobeBackground({
             perfTier={perfTier}
             onActivity={bumpActivity}
             handleRef={handleRef}
+          />
+          <SpaceFlybys
+            enabled={!reducedMotion}
+            isDark={isDark}
+            perfTier={perfTier}
+            onActivity={bumpActivity}
           />
         </Canvas>
       ) : webglOk === false && isDark ? (

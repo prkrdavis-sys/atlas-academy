@@ -28,15 +28,15 @@ export const GLOBE_CLOSEUP_TEXTURE_WIDTH_BY_TIER: Record<GlobePerfTier, number> 
 
 /** Sphere width/height segments for the main planet mesh. */
 export const GLOBE_SPHERE_SEGMENTS_BY_TIER: Record<GlobePerfTier, number> = {
-  phone: 32,
-  tablet: 48,
+  phone: 48,
+  tablet: 56,
   desktop: 64,
 };
 
 /** Atmosphere shell segments (cheaper than the planet mesh). */
 export const GLOBE_ATMOSPHERE_SEGMENTS_BY_TIER: Record<GlobePerfTier, number> = {
-  phone: 24,
-  tablet: 32,
+  phone: 32,
+  tablet: 40,
   desktop: 48,
 };
 
@@ -99,17 +99,17 @@ export function isGlobeFxConstrained(tier: GlobePerfTier = getGlobePerfTier()): 
 }
 
 /**
- * True when free-zoom detail overlays should stay off (place-focus only).
- * All tiers allow free-zoom overlays so phones get crisp borders when close.
+ * True when free-zoom detail overlays should stay off.
+ * Always off: unlit overlay fills change shade vs the lit globe when zooming.
  */
 export function isGlobeDetailFocusOnly(_tier: GlobePerfTier = getGlobePerfTier()): boolean {
-  return false;
+  return true;
 }
 
 /**
- * True when free-zoom regional close-up patches should stay off (place-focus /
- * selection only). All tiers allow free-zoom close-up for high-detail borders.
+ * True when free-zoom regional close-up patches should stay off.
+ * Always off: unlit rectangular patches change shade/tone vs the lit globe.
  */
 export function isGlobeCloseupFocusOnly(_tier: GlobePerfTier = getGlobePerfTier()): boolean {
-  return false;
+  return true;
 }

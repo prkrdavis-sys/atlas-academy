@@ -2,8 +2,8 @@ import * as THREE from "three";
 import { GLOBE_TEXTURE_DATA } from "@/lib/globe-texture";
 import { isStateCode } from "@/lib/scope";
 
-/** Y rotation on the map-page globe mesh — keep in sync with InteractiveGlobe. */
-export const GLOBE_MESH_Y_ROTATION = -1.1;
+/** Y rotation that faces Europe toward the camera — keep in sync with home globe. */
+export const GLOBE_MESH_Y_ROTATION = -1.65;
 
 /** Camera polar angle when the camera sits on the +Z axis at default zoom. */
 export const GLOBE_DEFAULT_POLAR = Math.PI / 2;

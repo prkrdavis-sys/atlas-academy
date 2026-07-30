@@ -55,33 +55,25 @@ export function StaticStarfield({ isDark }: { isDark: boolean }) {
 
 type SpaceBackdropProps = {
   isDark: boolean;
-  reducedMotion: boolean;
   /** When true, nebula color is rendered in the WebGL canvas instead of CSS. */
   canvasNebulae?: boolean;
   /** Fade the lower area into the base color so foreground cards stay readable. */
   fadeBottom?: boolean;
-  /**
-   * CSS shooting-star streaks. Disable when the globe fills the viewport so
-   * they don't streak across land after outer space is gone.
-   */
-  shootingStars?: boolean;
   className?: string;
   children?: ReactNode;
 };
 
 /**
- * Outer-space scenery: space-black with a nebula glow and shooting stars in
- * dark mode, a pale daytime-sky wash with subtle darker stars in light mode.
- * The 3D canvas (planet + GPU starfield) renders as children on top of it.
+ * Outer-space scenery: space-black with a nebula glow in dark mode, a pale
+ * daytime-sky wash with subtle darker stars in light mode. The 3D canvas
+ * (planet + GPU starfield + flybys) renders as children on top of it.
  */
 export const SpaceBackdrop = forwardRef<HTMLDivElement, SpaceBackdropProps>(
   function SpaceBackdrop(
     {
       isDark,
-      reducedMotion,
       canvasNebulae = false,
       fadeBottom = false,
-      shootingStars = true,
       className,
       children,
     },
@@ -107,17 +99,6 @@ export const SpaceBackdrop = forwardRef<HTMLDivElement, SpaceBackdropProps>(
         {!isDark ? <StaticStarfield isDark={false} /> : null}
 
         {children}
-
-        {!reducedMotion && shootingStars ? (
-          <>
-            <span aria-hidden className="shooting-star" style={{ top: "12%", right: "4%" }} />
-            <span
-              aria-hidden
-              className="shooting-star"
-              style={{ top: "32%", right: "-6%", animationDelay: "5.5s" }}
-            />
-          </>
-        ) : null}
 
         {fadeBottom ? (
           <div

@@ -16,6 +16,7 @@ import {
   DistantSun,
   EarthshineLight,
   EarthSunLight,
+  GLOBE_IDLE_RESET_MS,
   GLOBE_ROTATION_SPEED,
   GLOBE_TAP_TRAVEL_THRESHOLD,
   getGlobeCanvasGlSettings,
@@ -28,16 +29,15 @@ import {
   GlobeInitialInvalidate,
   GlobeRecoveryReset,
   GlobeSurfaceMaterial,
-  SyncDayNightZoomStrength,
   useGlobeCanvasKey,
   useGlobeFrameloop,
   useGlobeSceneEnvironment,
   useGlobeTexture,
 } from "@/components/globe/globe-scene";
-import { GlobeCloseupLayer } from "@/components/globe/GlobeCloseupLayer";
 import { GlobeDetailOverlays } from "@/components/globe/GlobeDetailOverlays";
 import { GlobeGrabOrbit } from "@/components/globe/GlobeGrabOrbit";
 import { SpaceBackdrop, StaticStarfield } from "@/components/globe/SpaceBackdrop";
+import { SpaceFlybys } from "@/components/globe/SpaceFlybys";
 import { MapScrollDownButton } from "@/components/MapScrollDownButton";
 import { MapZoomControls } from "@/components/MapZoomControls";
 import { ProgressMapContainer } from "@/components/ProgressMapOverlays";
@@ -74,6 +74,10 @@ const CINEMATIC_REST_DISTANCE = 3.25;
 const CINEMATIC_ZOOM_DURATION_S = 3.2;
 /** Seconds to spin and zoom toward a linked place from the library. */
 const PLACE_FOCUS_DURATION_S = 2.8;
+/** Seconds to ease the camera home after the reset button. */
+const RESET_HOME_DURATION_S = 1.8;
+/** Damping for idle polar-angle leveling before auto-spin resumes. */
+const IDLE_POLAR_RETURN_DAMP = 2.4;
 /** Camera-distance multiplier for one zoom button press. */
 const ZOOM_BUTTON_FACTOR = 0.75;
 /** Unit sphere radius for the map globe mesh. */
@@ -218,7 +222,11 @@ function PlaceFocusIntro({
     if (!controls) return;
 
     if (cancelled) {
-      controls.enabled = true;
+      if (!finishedRef.current) {
+        finishedRef.current = true;
+        controls.enabled = true;
+        onComplete();
+      }
       return;
     }
 
@@ -282,6 +290,137 @@ function PlaceFocusIntro({
   return null;
 }
 
+type ViewSettleMode = "idle" | "home";
+
+/**
+ * Idle: levels the camera polar angle (vertical tilt) in place, then resumes
+ * auto-spin from the current longitude / zoom.
+ * Home: eases yaw, tilt, zoom, and mesh spin back to the Europe-facing rest pose.
+ */
+function ViewSettleAnimation({
+  controlsRef,
+  spinGroupRef,
+  mode,
+  reducedMotion,
+  onComplete,
+  onActivity,
+}: {
+  controlsRef: RefObject<OrbitControlsImpl | null>;
+  spinGroupRef: RefObject<THREE.Group | null>;
+  mode: ViewSettleMode;
+  reducedMotion: boolean;
+  onComplete: () => void;
+  onActivity?: () => void;
+}) {
+  const elapsedRef = useRef(0);
+  const finishedRef = useRef(false);
+  const startRef = useRef<{
+    theta: number;
+    phi: number;
+    radius: number;
+    spinY: number;
+  } | null>(null);
+  const offsetRef = useRef(new THREE.Vector3());
+  const sphericalRef = useRef(new THREE.Spherical());
+
+  useFrame((_, delta) => {
+    if (finishedRef.current) return;
+    const controls = controlsRef.current;
+    if (!controls) return;
+
+    const offset = offsetRef.current;
+    const spherical = sphericalRef.current;
+    offset.copy(controls.object.position).sub(controls.target);
+    spherical.setFromVector3(offset);
+
+    if (!startRef.current) {
+      startRef.current = {
+        theta: spherical.theta,
+        phi: spherical.phi,
+        radius: spherical.radius,
+        spinY: spinGroupRef.current?.rotation.y ?? GLOBE_MESH_Y_ROTATION,
+      };
+    }
+
+    onActivity?.();
+
+    const finish = () => {
+      finishedRef.current = true;
+      controls.enabled = true;
+      if (mode === "home") controls.saveState();
+      onComplete();
+    };
+
+    if (mode === "idle") {
+      if (reducedMotion) {
+        spherical.phi = GLOBE_DEFAULT_POLAR;
+        spherical.makeSafe();
+        offset.setFromSpherical(spherical);
+        controls.object.position.copy(controls.target).add(offset);
+        controls.object.lookAt(controls.target);
+        controls.update();
+        finish();
+        return;
+      }
+
+      controls.enabled = false;
+      spherical.phi = THREE.MathUtils.damp(
+        spherical.phi,
+        GLOBE_DEFAULT_POLAR,
+        IDLE_POLAR_RETURN_DAMP,
+        delta,
+      );
+      if (Math.abs(spherical.phi - GLOBE_DEFAULT_POLAR) <= 0.001) {
+        spherical.phi = GLOBE_DEFAULT_POLAR;
+      }
+      spherical.makeSafe();
+      offset.setFromSpherical(spherical);
+      controls.object.position.copy(controls.target).add(offset);
+      controls.object.lookAt(controls.target);
+      controls.update();
+
+      if (spherical.phi === GLOBE_DEFAULT_POLAR) finish();
+      return;
+    }
+
+    // mode === "home"
+    const start = startRef.current;
+    const applyHome = (progress: number) => {
+      const theta = lerpAngle(start.theta, 0, progress);
+      const phi = THREE.MathUtils.lerp(start.phi, GLOBE_DEFAULT_POLAR, progress);
+      const radius = THREE.MathUtils.lerp(start.radius, CINEMATIC_REST_DISTANCE, progress);
+      const spinY = lerpAngle(start.spinY, GLOBE_MESH_Y_ROTATION, progress);
+
+      spherical.set(radius, phi, theta);
+      spherical.makeSafe();
+      offset.setFromSpherical(spherical);
+      controls.object.position.copy(controls.target).add(offset);
+      controls.object.lookAt(controls.target);
+
+      const spinGroup = spinGroupRef.current;
+      if (spinGroup) spinGroup.rotation.set(0, spinY, 0);
+    };
+
+    if (reducedMotion) {
+      applyHome(1);
+      controls.update();
+      finish();
+      return;
+    }
+
+    controls.enabled = false;
+    elapsedRef.current += delta;
+    const t = Math.min(1, elapsedRef.current / RESET_HOME_DURATION_S);
+    const eased = 1 - (1 - t) ** 3;
+    applyHome(eased);
+    controls.update();
+
+    if (t >= 1) finish();
+  });
+
+  return null;
+}
+
 /** Keeps demand-mode frameloop alive while OrbitControls damping/autoRotate run. */
 function KeepFrameloopAlive({
   controlsRef,
@@ -319,8 +458,6 @@ type GlobeSceneProps = {
   perfTier: GlobePerfTier;
   /** Prefetch / force detail overlays during library place-focus fly-to. */
   forceDetailOverlays?: boolean;
-  /** 0..1 day/night lighting strength (fades out when zoomed in). */
-  dayNightStrengthRef: RefObject<number>;
   spinGroupRef: RefObject<THREE.Group | null>;
   controlsRef: RefObject<OrbitControlsImpl | null>;
   onPickPlace: (code: string | null) => void;
@@ -336,7 +473,6 @@ function PickableGlobe({
   selectedCode,
   perfTier,
   forceDetailOverlays = false,
-  dayNightStrengthRef,
   spinGroupRef,
   controlsRef,
   onPickPlace,
@@ -352,7 +488,7 @@ function PickableGlobe({
   const segments = getGlobeSphereSegments(perfTier);
 
   // No declarative rotation on the spin group — R3F prop updates fight place-focus.
-  // Seed the default Atlantic-facing yaw once the group exists.
+  // Seed the default Europe-facing yaw once the group exists.
   useLayoutEffect(() => {
     const group = spinGroupRef.current;
     if (group) group.rotation.set(0, GLOBE_MESH_Y_ROTATION, 0);
@@ -403,31 +539,17 @@ function PickableGlobe({
           dayNight={dayNight}
           isDark={isDark}
           perfTier={perfTier}
-          dayNightStrengthRef={dayNightStrengthRef}
         />
         <DistantSun isDark={isDark} perfTier={perfTier} />
         <EarthSunLight
           isDark={isDark}
           dayNight={dayNight}
-          dayNightStrengthRef={dayNightStrengthRef}
         />
         <EarthshineLight
           isDark={isDark}
           dayNight={dayNight}
-          dayNightStrengthRef={dayNightStrengthRef}
         />
       </mesh>
-      <GlobeCloseupLayer
-        profile={profile}
-        difficulty={difficulty}
-        usMode={usMode}
-        isDark={isDark}
-        selectedCode={selectedCode}
-        forceActive={forceDetailOverlays}
-        perfTier={perfTier}
-        controlsRef={controlsRef}
-        spinGroupRef={spinGroupRef}
-      />
       <GlobeDetailOverlays
         profile={profile}
         difficulty={difficulty}
@@ -459,8 +581,9 @@ type InteractiveGlobeProps = {
 /**
  * The map page's full-bleed 3D globe: outer-space scenery in the foreground
  * with orbit + zoom camera controls, tap-to-select countries and states, a
- * mastery legend, and zoom buttons. Auto-spins gently until the player first
- * grabs it.
+ * mastery legend, and zoom buttons. Auto-spins gently until the player
+ * interacts; idle levels tilt and resumes spin in place, while reset eases
+ * back to the Europe-facing rest pose.
  */
 export default function InteractiveGlobe({
   profile,
@@ -479,24 +602,72 @@ export default function InteractiveGlobe({
   const containerRef = useRef<HTMLDivElement>(null);
   const controlsRef = useRef<OrbitControlsImpl | null>(null);
   const spinGroupRef = useRef<THREE.Group | null>(null);
-  const dayNightStrengthRef = useRef(1);
+  const idleResetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [autoSpin, setAutoSpin] = useState(true);
   const [introCancelled, setIntroCancelled] = useState(false);
   const [focusIntroComplete, setFocusIntroComplete] = useState(false);
   const [cinematicIntroComplete, setCinematicIntroComplete] = useState(false);
+  const [settleMode, setSettleMode] = useState<ViewSettleMode | null>(null);
+  const [settleKey, setSettleKey] = useState(0);
   /** False once the globe fills the viewport — gates CSS shooting stars. */
   const [outerSpaceVisible, setOuterSpaceVisible] = useState(true);
   const placeFocusTarget = initialPlaceCode ? getGlobeFocusTarget(initialPlaceCode) : null;
   const usePlaceFocus = placeFocusTarget !== null;
-  const highlightedCode = selectedCode ?? initialPlaceCode;
+  // Parent owns selection (including the initial ?place= highlight). Do not fall
+  // back to initialPlaceCode here or ocean/reset clears snap the highlight back.
+  const highlightedCode = selectedCode;
   const introRunning = usePlaceFocus
     ? !introCancelled && !focusIntroComplete
     : !introCancelled && !cinematicIntroComplete;
+  const settleRunning = settleMode !== null;
   const { frameloop, bumpActivity } = useGlobeFrameloop(pageVisible, {
-    forceAlways: (autoSpin && !reducedMotion && !usePlaceFocus) || introRunning,
+    forceAlways:
+      (autoSpin && !reducedMotion && !usePlaceFocus) || introRunning || settleRunning,
   });
   const canvasGl = getGlobeCanvasGlSettings(perfTier);
   const starCount = getGlobeStarCount(perfTier);
+
+  const clearIdleResetTimer = useCallback(() => {
+    if (idleResetTimerRef.current) {
+      clearTimeout(idleResetTimerRef.current);
+      idleResetTimerRef.current = null;
+    }
+  }, []);
+
+  const beginSettle = useCallback(
+    (mode: ViewSettleMode) => {
+      clearIdleResetTimer();
+      setIntroCancelled(true);
+      setAutoSpin(false);
+      bumpActivity();
+      onSelectPlace(null);
+      setSettleMode(mode);
+      setSettleKey((key) => key + 1);
+    },
+    [bumpActivity, clearIdleResetTimer, onSelectPlace],
+  );
+
+  const resetView = useCallback(() => {
+    beginSettle("home");
+  }, [beginSettle]);
+
+  const armIdleReset = useCallback(() => {
+    clearIdleResetTimer();
+    idleResetTimerRef.current = setTimeout(() => {
+      idleResetTimerRef.current = null;
+      beginSettle("idle");
+    }, GLOBE_IDLE_RESET_MS);
+  }, [clearIdleResetTimer, beginSettle]);
+
+  const noteUserInteraction = useCallback(() => {
+    setSettleMode(null);
+    setIntroCancelled(true);
+    setAutoSpin(false);
+    bumpActivity();
+    armIdleReset();
+  }, [bumpActivity, armIdleReset]);
+
+  useEffect(() => () => clearIdleResetTimer(), [clearIdleResetTimer]);
 
   useEffect(() => {
     if (!initialPlaceCode) return;
@@ -508,19 +679,14 @@ export default function InteractiveGlobe({
     setAutoSpin(false);
     setFocusIntroComplete(false);
     setIntroCancelled(false);
+    setSettleMode(null);
     bumpActivity();
-  }, [initialPlaceCode, bumpActivity]);
-
-  const onOrbitStart = useCallback(() => {
-    setIntroCancelled(true);
-    setAutoSpin(false);
-    bumpActivity();
-  }, [bumpActivity]);
+    armIdleReset();
+  }, [initialPlaceCode, bumpActivity, armIdleReset]);
 
   const zoomBy = useCallback(
     (factor: number) => {
-      setIntroCancelled(true);
-      bumpActivity();
+      noteUserInteraction();
       const controls = controlsRef.current;
       if (!controls) return;
       const camera = controls.object;
@@ -534,19 +700,8 @@ export default function InteractiveGlobe({
       camera.position.copy(controls.target).add(offset);
       controls.update();
     },
-    [bumpActivity],
+    [noteUserInteraction],
   );
-
-  const resetView = useCallback(() => {
-    setIntroCancelled(true);
-    bumpActivity();
-    onSelectPlace(null);
-    if (spinGroupRef.current) {
-      spinGroupRef.current.rotation.set(0, GLOBE_MESH_Y_ROTATION, 0);
-    }
-    controlsRef.current?.reset();
-  }, [onSelectPlace, bumpActivity]);
-
   const panelScope = highlightedCode && isStateCode(highlightedCode) ? "usa" : "world";
 
   const globeBottomPanelClass =
@@ -555,8 +710,6 @@ export default function InteractiveGlobe({
   return (
     <SpaceBackdrop
       isDark={isDark}
-      reducedMotion={reducedMotion}
-      shootingStars={outerSpaceVisible}
       className={cn("relative", className)}
     >
       <ProgressMapContainer
@@ -596,16 +749,7 @@ export default function InteractiveGlobe({
             <GlobeContextRecovery onContextLost={remountCanvas} />
             <GlobeRecoveryReset onStable={resetRecoveryAttempts} />
             <GlobeInitialInvalidate />
-            <SyncDayNightZoomStrength
-              controlsRef={controlsRef}
-              enabled={dayNight}
-              strengthRef={dayNightStrengthRef}
-            />
-            <GlobeFillLights
-              isDark={isDark}
-              dayNight={dayNight}
-              dayNightStrengthRef={dayNightStrengthRef}
-            />
+            <GlobeFillLights isDark={isDark} dayNight={dayNight} />
             {isDark ? (
               <Stars
                 radius={60}
@@ -626,18 +770,24 @@ export default function InteractiveGlobe({
               selectedCode={highlightedCode}
               perfTier={perfTier}
               forceDetailOverlays={usePlaceFocus}
-              dayNightStrengthRef={dayNightStrengthRef}
               spinGroupRef={spinGroupRef}
               controlsRef={controlsRef}
               onPickPlace={(code) => {
-                bumpActivity();
+                if (code) noteUserInteraction();
+                else bumpActivity();
                 onSelectPlace(code);
               }}
+            />
+            <SpaceFlybys
+              enabled={!reducedMotion && outerSpaceVisible}
+              isDark={isDark}
+              perfTier={perfTier}
+              onActivity={bumpActivity}
             />
             <GlobeGrabOrbit
               controlsRef={controlsRef}
               radius={GLOBE_RADIUS}
-              onGrabStart={onOrbitStart}
+              onGrabStart={noteUserInteraction}
             />
             <SyncOuterSpaceVisible
               controlsRef={controlsRef}
@@ -652,17 +802,39 @@ export default function InteractiveGlobe({
               ref={controlsRef}
               enablePan={false}
               enableRotate={false}
-              enableDamping={!(usePlaceFocus && !focusIntroComplete && !introCancelled)}
+              enableDamping={
+                !(usePlaceFocus && !focusIntroComplete && !introCancelled) && !settleRunning
+              }
               dampingFactor={0.08}
               zoomSpeed={0.7}
               minDistance={MIN_CAMERA_DISTANCE}
               maxDistance={MAX_CAMERA_DISTANCE}
-              autoRotate={autoSpin && !reducedMotion && !usePlaceFocus}
+              autoRotate={autoSpin && !reducedMotion && !usePlaceFocus && !settleRunning}
               // OrbitControls speed 1.0 ≈ 0.1 rad/s; match the home globe's gentle spin.
               autoRotateSpeed={GLOBE_ROTATION_SPEED * 10}
-              onStart={onOrbitStart}
-              onChange={bumpActivity}
+              onStart={noteUserInteraction}
+              onChange={() => {
+                bumpActivity();
+                // Keep pushing the idle deadline out while the camera is still moving
+                // from a drag, pinch, or zoom — otherwise a long gesture can auto-reset mid-move.
+                if (idleResetTimerRef.current) armIdleReset();
+              }}
             />
+            {settleMode ? (
+              <ViewSettleAnimation
+                key={`settle-${settleKey}`}
+                controlsRef={controlsRef}
+                spinGroupRef={spinGroupRef}
+                mode={settleMode}
+                reducedMotion={reducedMotion}
+                onComplete={() => {
+                  setSettleMode(null);
+                  setAutoSpin(true);
+                  bumpActivity();
+                }}
+                onActivity={bumpActivity}
+              />
+            ) : null}
             {usePlaceFocus && placeFocusTarget ? (
               <PlaceFocusIntro
                 key={initialPlaceCode ?? "none"}
@@ -670,7 +842,7 @@ export default function InteractiveGlobe({
                 spinGroupRef={spinGroupRef}
                 focusTarget={placeFocusTarget}
                 enabled={!reducedMotion}
-                cancelled={introCancelled}
+                cancelled={introCancelled || settleRunning}
                 onComplete={() => setFocusIntroComplete(true)}
                 onActivity={bumpActivity}
               />
@@ -678,7 +850,7 @@ export default function InteractiveGlobe({
               <CinematicIntroZoom
                 controlsRef={controlsRef}
                 enabled={!reducedMotion}
-                cancelled={introCancelled}
+                cancelled={introCancelled || settleRunning}
                 onComplete={() => setCinematicIntroComplete(true)}
                 onActivity={bumpActivity}
               />

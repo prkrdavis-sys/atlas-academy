@@ -12,7 +12,6 @@ import {
 } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Billboard, useTexture } from "@react-three/drei";
-import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
 import {
   createGlobeTexturePaint,
@@ -41,7 +40,7 @@ import { subsolarDirection } from "@/lib/sun-position";
 import { supportsWebGL } from "@/lib/webgl";
 import type { MapProgressDifficulty, Profile } from "@/lib/types";
 
-export const GLOBE_ROTATION_SPEED = 0.045;
+export const GLOBE_ROTATION_SPEED = 0.055;
 /** Pointer travel (px) below which a release counts as a tap, not a drag. */
 export const GLOBE_TAP_TRAVEL_THRESHOLD = 8;
 /** Radians of spin per pixel of pointer drag. */
@@ -50,6 +49,8 @@ export const GLOBE_DRAG_SPIN_FACTOR = 0.006;
 export const GLOBE_MAX_TILT = Math.PI * 0.45;
 /** Idle time after a drag before the globe eases back onto its default axis. */
 export const GLOBE_IDLE_RETURN_DELAY_MS = 2000;
+/** Idle time after map-globe interaction before leveling tilt and resuming auto-spin. */
+export const GLOBE_IDLE_RESET_MS = 7000;
 /** Damping factor for easing tilt back to the default axis (higher = snappier). */
 export const GLOBE_TILT_RETURN_DAMP = 2.4;
 
@@ -286,16 +287,25 @@ export function useGlobeTexture(
       gl.capabilities.getMaxAnisotropy(),
     );
 
+    const configureCanvasTexture = (texture: THREE.CanvasTexture) => {
+      // CanvasTexture mipmaps flicker/band when the canvas is repainted (selection,
+      // mastery FX). Linear filtering keeps borders and fills stable.
+      texture.generateMipmaps = false;
+      texture.minFilter = THREE.LinearFilter;
+      texture.magFilter = THREE.LinearFilter;
+      texture.anisotropy = anisotropy;
+    };
+
     const map = new THREE.CanvasTexture(paint.canvas);
     map.colorSpace = THREE.SRGBColorSpace;
-    map.anisotropy = anisotropy;
+    configureCanvasTexture(map);
 
     const metalnessMap = paint.metalnessCanvas
       ? new THREE.CanvasTexture(paint.metalnessCanvas)
       : null;
     if (metalnessMap) {
       metalnessMap.colorSpace = THREE.NoColorSpace;
-      metalnessMap.anisotropy = anisotropy;
+      configureCanvasTexture(metalnessMap);
     }
 
     const roughnessMap = paint.roughnessCanvas
@@ -303,7 +313,7 @@ export function useGlobeTexture(
       : null;
     if (roughnessMap) {
       roughnessMap.colorSpace = THREE.NoColorSpace;
-      roughnessMap.anisotropy = anisotropy;
+      configureCanvasTexture(roughnessMap);
     }
 
     return { map, metalnessMap, roughnessMap };
@@ -391,7 +401,7 @@ export function GlobeAtmosphere({
 }) {
   const segments = getGlobeAtmosphereSegments(perfTier);
   return (
-    <mesh scale={1.07}>
+    <mesh scale={1.07} raycast={ignoreRaycast}>
       <sphereGeometry args={[1, segments, segments]} />
       <meshBasicMaterial
         color={isDark ? "#2dd4bf" : "#38bdf8"}
@@ -405,25 +415,25 @@ export function GlobeAtmosphere({
   );
 }
 
-/** Ambient intensities: flat (day/night off / zoomed-in) vs terminator floor. */
+/** Ambient intensities: flat (day/night off) vs terminator floor. */
 function globeAmbientIntensity(isDark: boolean, dayNight: boolean): number {
-  if (dayNight) return isDark ? 0.85 : 0.68;
-  return isDark ? 2.05 : 1.6;
+  if (dayNight) return isDark ? 1.05 : 0.88;
+  return isDark ? 2.25 : 1.85;
 }
 
 /** Key sunlight intensities for flat shade vs full day/night terminator. */
 function globeSunIntensity(isDark: boolean, dayNight: boolean): number {
-  if (dayNight) return isDark ? 1.75 : 2.05;
-  return isDark ? 0.72 : 0.58;
+  if (dayNight) return isDark ? 1.35 : 1.55;
+  return isDark ? 0.22 : 0.18;
 }
 
 function globeEarthshineIntensity(isDark: boolean): number {
-  return isDark ? 0.55 : 0.42;
+  return isDark ? 0.45 : 0.35;
 }
 
 /**
  * Camera distance at which a unit globe's limb reaches the viewport corners
- * (outer space no longer visible). Matches the shooting-star cutoff.
+ * (outer space no longer visible). Matches the SpaceFlybys cutoff.
  */
 export function globeFillDistance(
   fovDeg: number,
@@ -439,62 +449,6 @@ export function globeFillDistance(
 }
 
 /**
- * Day/night lighting strength from orbit distance vs globe-fill distance.
- * 1 = full terminator (space still in the corners); 0 = flat lighting once the
- * globe fills the viewport (same threshold that stops shooting stars).
- */
-export function dayNightStrengthFromDistance(
-  distance: number,
-  fillDistance: number,
-): number {
-  const fadeEnd = fillDistance;
-  const fadeStart = fillDistance * 1.28;
-  if (distance >= fadeStart) return 1;
-  if (distance <= fadeEnd) return 0;
-  const t = (distance - fadeEnd) / (fadeStart - fadeEnd);
-  return t * t * (3 - 2 * t);
-}
-
-/**
- * Writes a 0..1 day/night strength into `strengthRef` from the orbit camera.
- * When day/night is disabled, strength stays 0.
- */
-export function SyncDayNightZoomStrength({
-  controlsRef,
-  enabled,
-  strengthRef,
-}: {
-  controlsRef: RefObject<OrbitControlsImpl | null>;
-  enabled: boolean;
-  strengthRef: RefObject<number>;
-}) {
-  const camera = useThree((s) => s.camera);
-  const size = useThree((s) => s.size);
-
-  useFrame(() => {
-    if (!enabled) {
-      strengthRef.current = 0;
-      return;
-    }
-    const controls = controlsRef.current;
-    if (!controls || !(camera instanceof THREE.PerspectiveCamera)) {
-      strengthRef.current = 1;
-      return;
-    }
-    const fillAt = globeFillDistance(
-      camera.fov,
-      size.width / Math.max(size.height, 1),
-    );
-    strengthRef.current = dayNightStrengthFromDistance(
-      controls.getDistance(),
-      fillAt,
-    );
-  });
-
-  return null;
-}
-
-/**
  * Planet surface material: enough gloss for a polished 3D globe, still matte
  * enough that mastery colors and borders stay readable. Phones use Lambert
  * (no specular/emissiveMap double-sample) to cut fill-rate. When metalness /
@@ -502,17 +456,18 @@ export function SyncDayNightZoomStrength({
  * places more than default land — and a soft gold emissive keeps the color
  * readable even on the shaded side of the globe.
  *
- * Optional `dayNightStrengthRef` fades terminator-only emissive as the camera
- * zooms past the globe-fill / shooting-star cutoff.
+ * Day/night does NOT use the color map as emissiveMap — that turned borders and
+ * selection glow into a globe-wide lit grid whenever the texture updated.
+ * Night-side readability comes from ambient + earthshine instead.
+ * Lighting strength does not change with zoom — shade/tone stay consistent.
  */
 export function GlobeSurfaceMaterial({
   map,
   metalnessMap = null,
   roughnessMap = null,
   dayNight,
-  isDark,
+  isDark: _isDark,
   perfTier = "desktop",
-  dayNightStrengthRef,
 }: {
   map: THREE.Texture;
   metalnessMap?: THREE.Texture | null;
@@ -520,24 +475,12 @@ export function GlobeSurfaceMaterial({
   dayNight: boolean;
   isDark: boolean;
   perfTier?: GlobePerfTier;
-  dayNightStrengthRef?: RefObject<number>;
 }) {
-  const materialRef = useRef<THREE.MeshStandardMaterial>(null);
   const hasMetalMaps = Boolean(metalnessMap && roughnessMap);
-  const dayNightEmissive = isDark ? 0.18 : 0.08;
   const flatRoughness = 0.52;
-  const dayNightRoughness = 0.72;
-  const flatMetalness = 0.08;
-  const dayNightMetalness = 0.04;
-
-  useFrame(() => {
-    const mat = materialRef.current;
-    if (!mat || hasMetalMaps || !dayNight) return;
-    const strength = dayNightStrengthRef?.current ?? 1;
-    mat.emissiveIntensity = dayNightEmissive * strength;
-    mat.roughness = THREE.MathUtils.lerp(flatRoughness, dayNightRoughness, strength);
-    mat.metalness = THREE.MathUtils.lerp(flatMetalness, dayNightMetalness, strength);
-  });
+  const dayNightRoughness = 0.68;
+  const flatMetalness = 0.06;
+  const dayNightMetalness = 0.03;
 
   if (perfTier === "phone") {
     return <meshLambertMaterial map={map} />;
@@ -545,26 +488,12 @@ export function GlobeSurfaceMaterial({
 
   // Gold mastery: subtle fill-light so shaded countries stay gold, not neon.
   // metalnessMap is white only on gold mastery places.
-  // Day/night: soft map emissive lifts the night hemisphere (stronger in dark).
-  const emissiveMap = hasMetalMaps
-    ? metalnessMap!
-    : dayNight
-      ? map
-      : undefined;
-  const emissive = hasMetalMaps
-    ? "#c9a227"
-    : dayNight
-      ? "#ffffff"
-      : "#000000";
-  const emissiveIntensity = hasMetalMaps
-    ? 0.22
-    : dayNight
-      ? dayNightEmissive
-      : 0;
+  const emissiveMap = hasMetalMaps ? metalnessMap! : undefined;
+  const emissive = hasMetalMaps ? "#c9a227" : "#000000";
+  const emissiveIntensity = hasMetalMaps ? 0.22 : 0;
 
   return (
     <meshStandardMaterial
-      ref={materialRef}
       map={map}
       metalnessMap={metalnessMap ?? undefined}
       roughnessMap={roughnessMap ?? undefined}
@@ -582,37 +511,16 @@ export function GlobeSurfaceMaterial({
  * Scene fill lights for the globe. Day/night on: dim ambient so the real-time
  * sun casts a clear terminator. Day/night off: bright ambient so the planet
  * stays vivid, while a weak realtime sun still adds a subtle shade.
- * Optional strength ref lerps toward flat ambient when zoomed in.
  */
 export function GlobeFillLights({
   isDark,
   dayNight,
-  dayNightStrengthRef,
 }: {
   isDark: boolean;
   dayNight: boolean;
-  dayNightStrengthRef?: RefObject<number>;
 }) {
-  const lightRef = useRef<THREE.AmbientLight>(null);
-  const flat = globeAmbientIntensity(isDark, false);
-  const terminator = globeAmbientIntensity(isDark, true);
-
-  useFrame(() => {
-    const light = lightRef.current;
-    if (!light) return;
-    if (!dayNight) {
-      light.intensity = flat;
-      return;
-    }
-    const strength = dayNightStrengthRef?.current ?? 1;
-    light.intensity = THREE.MathUtils.lerp(flat, terminator, strength);
-  });
-
   return (
-    <ambientLight
-      ref={lightRef}
-      intensity={dayNight ? terminator : flat}
-    />
+    <ambientLight intensity={globeAmbientIntensity(isDark, dayNight)} />
   );
 }
 
@@ -620,21 +528,17 @@ export function GlobeFillLights({
  * Real-time sunlight for the planet mesh. Mount as a child of the earth mesh
  * so the day/night terminator stays locked to geographic longitude while the
  * globe spins or the camera orbits. Always on: strong when day/night is
- * enabled, a minimal shade when it is not. Strength ref fades the terminator
- * toward flat shade when the camera zooms in.
+ * enabled, a minimal shade when it is not. Zoom does not change intensity.
  */
 export function EarthSunLight({
   isDark,
   dayNight,
-  dayNightStrengthRef,
 }: {
   isDark: boolean;
   dayNight: boolean;
-  dayNightStrengthRef?: RefObject<number>;
 }) {
   const lightRef = useRef<THREE.DirectionalLight>(null);
-  const flat = globeSunIntensity(isDark, false);
-  const terminator = globeSunIntensity(isDark, true);
+  const intensity = globeSunIntensity(isDark, dayNight);
 
   useLayoutEffect(() => {
     const light = lightRef.current;
@@ -653,18 +557,13 @@ export function EarthSunLight({
     if (!light) return;
     const sun = subsolarDirection();
     light.position.set(sun.x, sun.y, sun.z).multiplyScalar(5);
-    if (!dayNight) {
-      light.intensity = flat;
-      return;
-    }
-    const strength = dayNightStrengthRef?.current ?? 1;
-    light.intensity = THREE.MathUtils.lerp(flat, terminator, strength);
+    light.intensity = intensity;
   });
 
   return (
     <directionalLight
       ref={lightRef}
-      intensity={dayNight ? terminator : flat}
+      intensity={intensity}
       color="#fff4e0"
     />
   );
@@ -672,17 +571,14 @@ export function EarthSunLight({
 
 /**
  * Cool anti-solar fill (earthshine) for the night hemisphere. Mount as a child
- * of the earth mesh so the moonlit wash stays locked to geography. Fades out
- * with day/night zoom strength so close-ups stay evenly lit.
+ * of the earth mesh so the moonlit wash stays locked to geography.
  */
 export function EarthshineLight({
   isDark,
   dayNight,
-  dayNightStrengthRef,
 }: {
   isDark: boolean;
   dayNight: boolean;
-  dayNightStrengthRef?: RefObject<number>;
 }) {
   const lightRef = useRef<THREE.DirectionalLight>(null);
   const baseIntensity = globeEarthshineIntensity(isDark);
@@ -703,8 +599,7 @@ export function EarthshineLight({
     if (!light) return;
     const sun = subsolarDirection();
     light.position.set(-sun.x, -sun.y, -sun.z).multiplyScalar(5);
-    const strength = dayNight ? (dayNightStrengthRef?.current ?? 1) : 0;
-    light.intensity = baseIntensity * strength;
+    light.intensity = dayNight ? baseIntensity : 0;
   });
 
   if (!dayNight) return null;
