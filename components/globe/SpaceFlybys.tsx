@@ -19,13 +19,20 @@ const METEOR_PATH_HALF_LEN = 4.5;
 const METEOR_STREAK_LEN = 0.55;
 const METEOR_STREAK_WIDTH = 0.012;
 
-const UFO_SPAWN_MIN_S = 90;
-const UFO_SPAWN_MAX_S = 180;
-const UFO_DURATION_MIN_S = 10;
-const UFO_DURATION_MAX_S = 16;
-const UFO_PERIAPSIS_MIN = 1.5;
-const UFO_PERIAPSIS_MAX = 3.0;
-const UFO_PATH_HALF_LEN = 5.5;
+const FLYBY_SPAWN_MIN_S = 90;
+const FLYBY_SPAWN_MAX_S = 180;
+const FLYBY_DURATION_MIN_S = 10;
+const FLYBY_DURATION_MAX_S = 16;
+const FLYBY_PERIAPSIS_MIN = 1.5;
+const FLYBY_PERIAPSIS_MAX = 3.0;
+const FLYBY_PATH_HALF_LEN = 5.5;
+
+/** Classic hero palette — generic flying figure, no logos or trademarks. */
+const HERO_SUIT = "#0055a4";
+const HERO_CAPE = "#c8102e";
+const HERO_ACCENT = "#ffc72c";
+const HERO_SKIN = "#d4a574";
+const HERO_TRAIL = "#60a5fa";
 
 type Chord = {
   start: THREE.Vector3;
@@ -41,13 +48,42 @@ type MeteorSlot = {
   opacity: number;
 };
 
-type UfoState = {
+type FlybyState = {
   active: boolean;
   t: number;
   duration: number;
   start: THREE.Vector3;
   end: THREE.Vector3;
 };
+
+const flybyFadeMaterial = {
+  flybyFade: true,
+} as const;
+
+function fadeMaterial(
+  color: string,
+  baseOpacity: number,
+  options: {
+    depthWrite?: boolean;
+    blending?: THREE.Blending;
+    toneMapped?: boolean;
+    side?: THREE.Side;
+  } = {},
+) {
+  return (
+    <meshBasicMaterial
+      color={color}
+      transparent
+      opacity={baseOpacity}
+      depthWrite={options.depthWrite ?? true}
+      depthTest
+      blending={options.blending}
+      toneMapped={options.toneMapped}
+      side={options.side}
+      userData={{ ...flybyFadeMaterial, baseOpacity }}
+    />
+  );
+}
 
 function randRange(min: number, max: number) {
   return min + Math.random() * (max - min);
@@ -115,9 +151,10 @@ type SpaceFlybysProps = {
 };
 
 /**
- * World-space meteors and a rare UFO flyby. Mount as a sibling of the planet
- * (not inside the Earth spin group) so depth testing against the globe works
- * and orbiting the camera changes parallax.
+ * World-space meteors and a rare flyby — UFO in dark mode, a generic caped
+ * hero in light mode. Mount as a sibling of the planet (not inside the Earth
+ * spin group) so depth testing against the globe works and orbiting the camera
+ * changes parallax.
  */
 export function SpaceFlybys({
   enabled,
@@ -129,8 +166,9 @@ export function SpaceFlybys({
   const groupRef = useRef<THREE.Group>(null);
   const meteorMeshes = useRef<(THREE.Mesh | null)[]>([null, null]);
   const meteorMats = useRef<(THREE.MeshBasicMaterial | null)[]>([null, null]);
-  const ufoGroupRef = useRef<THREE.Group>(null);
-  const ufoGlowMatRef = useRef<THREE.MeshBasicMaterial>(null);
+  const flybyGroupRef = useRef<THREE.Group>(null);
+  const flybyGlowMatRef = useRef<THREE.MeshBasicMaterial>(null);
+  const capeRef = useRef<THREE.Group>(null);
 
   const chordScratch = useMemo<Chord>(
     () => ({ start: new THREE.Vector3(), end: new THREE.Vector3() }),
@@ -149,7 +187,7 @@ export function SpaceFlybys({
       opacity: 0,
     })),
   );
-  const ufoRef = useRef<UfoState>({
+  const flybyRef = useRef<FlybyState>({
     active: false,
     t: 0,
     duration: 12,
@@ -157,7 +195,7 @@ export function SpaceFlybys({
     end: new THREE.Vector3(),
   });
   const nextMeteorAtRef = useRef(randRange(METEOR_SPAWN_MIN_S, METEOR_SPAWN_MAX_S));
-  const nextUfoAtRef = useRef(randRange(UFO_SPAWN_MIN_S, UFO_SPAWN_MAX_S));
+  const nextFlybyAtRef = useRef(randRange(FLYBY_SPAWN_MIN_S, FLYBY_SPAWN_MAX_S));
   const elapsedRef = useRef(0);
   const wasEnabledRef = useRef(false);
 
@@ -170,16 +208,16 @@ export function SpaceFlybys({
   useLayoutEffect(() => {
     if (!enabled && wasEnabledRef.current) {
       for (const slot of meteorsRef.current) slot.active = false;
-      ufoRef.current.active = false;
+      flybyRef.current.active = false;
       for (const mat of meteorMats.current) {
         if (mat) mat.opacity = 0;
       }
-      if (ufoGroupRef.current) ufoGroupRef.current.visible = false;
+      if (flybyGroupRef.current) flybyGroupRef.current.visible = false;
     }
     if (enabled && !wasEnabledRef.current) {
       elapsedRef.current = 0;
       nextMeteorAtRef.current = randRange(METEOR_SPAWN_MIN_S * 0.4, METEOR_SPAWN_MAX_S * 0.6);
-      nextUfoAtRef.current = randRange(UFO_SPAWN_MIN_S, UFO_SPAWN_MAX_S);
+      nextFlybyAtRef.current = randRange(FLYBY_SPAWN_MIN_S, FLYBY_SPAWN_MAX_S);
     }
     wasEnabledRef.current = enabled;
   }, [enabled]);
@@ -212,25 +250,25 @@ export function SpaceFlybys({
         elapsedRef.current + randRange(METEOR_SPAWN_MIN_S, METEOR_SPAWN_MAX_S);
     }
 
-    // --- UFO spawn (rare; skip concurrent on phone) ---
+    // --- Rare flyby spawn (UFO in dark mode, hero in light mode) ---
     if (
-      !ufoRef.current.active &&
-      elapsedRef.current >= nextUfoAtRef.current
+      !flybyRef.current.active &&
+      elapsedRef.current >= nextFlybyAtRef.current
     ) {
       randomFlybyChord(
-        UFO_PERIAPSIS_MIN,
-        UFO_PERIAPSIS_MAX,
-        UFO_PATH_HALF_LEN,
+        FLYBY_PERIAPSIS_MIN,
+        FLYBY_PERIAPSIS_MAX,
+        FLYBY_PATH_HALF_LEN,
         chordScratch,
       );
-      const ufo = ufoRef.current;
-      ufo.active = true;
-      ufo.t = 0;
-      ufo.duration = randRange(UFO_DURATION_MIN_S, UFO_DURATION_MAX_S);
-      ufo.start.copy(chordScratch.start);
-      ufo.end.copy(chordScratch.end);
-      nextUfoAtRef.current =
-        elapsedRef.current + randRange(UFO_SPAWN_MIN_S, UFO_SPAWN_MAX_S);
+      const flyby = flybyRef.current;
+      flyby.active = true;
+      flyby.t = 0;
+      flyby.duration = randRange(FLYBY_DURATION_MIN_S, FLYBY_DURATION_MAX_S);
+      flyby.start.copy(chordScratch.start);
+      flyby.end.copy(chordScratch.end);
+      nextFlybyAtRef.current =
+        elapsedRef.current + randRange(FLYBY_SPAWN_MIN_S, FLYBY_SPAWN_MAX_S);
     }
 
     // --- Update meteors ---
@@ -266,33 +304,44 @@ export function SpaceFlybys({
       mesh.visible = opacity > 0.01;
     }
 
-    // --- Update UFO ---
-    const ufo = ufoRef.current;
-    const ufoGroup = ufoGroupRef.current;
-    if (ufoGroup) {
-      if (!ufo.active) {
-        ufoGroup.visible = false;
+    // --- Update flyby (UFO or hero) ---
+    const flyby = flybyRef.current;
+    const flybyGroup = flybyGroupRef.current;
+    if (flybyGroup) {
+      if (!flyby.active) {
+        flybyGroup.visible = false;
       } else {
-        ufo.t += dt / ufo.duration;
-        if (ufo.t >= 1) {
-          ufo.active = false;
-          ufoGroup.visible = false;
+        flyby.t += dt / flyby.duration;
+        if (flyby.t >= 1) {
+          flyby.active = false;
+          flybyGroup.visible = false;
         } else {
           anyActive = true;
-          const u = easeInOutQuad(ufo.t);
-          posScratch.lerpVectors(ufo.start, ufo.end, u);
-          lookScratch.lerpVectors(ufo.start, ufo.end, Math.min(1, u + 0.01));
-          ufoGroup.position.copy(posScratch);
-          // Keep the dome pointing roughly away from Earth while facing travel.
-          ufoGroup.up.copy(posScratch).normalize();
-          ufoGroup.lookAt(lookScratch);
+          const u = easeInOutQuad(flyby.t);
+          posScratch.lerpVectors(flyby.start, flyby.end, u);
+          lookScratch.lerpVectors(flyby.start, flyby.end, Math.min(1, u + 0.01));
+          flybyGroup.position.copy(posScratch);
+          flybyGroup.rotation.set(0, 0, 0);
+          if (isDark) {
+            // Keep the saucer dome pointing roughly away from Earth while facing travel.
+            flybyGroup.up.copy(posScratch).normalize();
+          } else {
+            flybyGroup.up.set(0, 1, 0);
+          }
+          flybyGroup.lookAt(lookScratch);
+
+          const cape = capeRef.current;
+          if (!isDark && cape) {
+            const flutter = Math.sin(elapsedRef.current * 8) * 0.12;
+            cape.rotation.x = -0.35 + flutter;
+          }
 
           // Soft fade at the ends of the flyby.
           let fade = 1;
-          if (ufo.t < 0.08) fade = ufo.t / 0.08;
-          else if (ufo.t > 0.9) fade = (1 - ufo.t) / 0.1;
-          ufoGroup.visible = fade > 0.02;
-          ufoGroup.traverse((obj) => {
+          if (flyby.t < 0.08) fade = flyby.t / 0.08;
+          else if (flyby.t > 0.9) fade = (1 - flyby.t) / 0.1;
+          flybyGroup.visible = fade > 0.02;
+          flybyGroup.traverse((obj) => {
             const mesh = obj as THREE.Mesh;
             if (!mesh.isMesh) return;
             const mat = mesh.material as THREE.MeshBasicMaterial;
@@ -300,9 +349,9 @@ export function SpaceFlybys({
               mat.opacity = fade * (mat.userData.baseOpacity as number);
             }
           });
-          if (ufoGlowMatRef.current) {
+          if (flybyGlowMatRef.current) {
             const pulse = 0.55 + Math.sin(elapsedRef.current * 6) * 0.2;
-            ufoGlowMatRef.current.opacity = fade * pulse * (isDark ? 0.7 : 0.4);
+            flybyGlowMatRef.current.opacity = fade * pulse * (isDark ? 0.7 : 0.55);
           }
         }
       }
@@ -311,7 +360,9 @@ export function SpaceFlybys({
     if (anyActive) onActivity();
   });
 
-  const ufoScale = simplified ? 0.045 : 0.055;
+  const flybyScale = simplified ? 0.045 : 0.055;
+  const heroScale = simplified ? 0.07 : 0.085;
+  const limbSegments = simplified ? 6 : 10;
 
   return (
     <group ref={groupRef}>
@@ -341,63 +392,113 @@ export function SpaceFlybys({
         </mesh>
       ))}
 
-      <group ref={ufoGroupRef} visible={false} scale={ufoScale} frustumCulled={false}>
-        {/* Saucer body — short cylinder along local Y (flat disc). */}
-        <mesh raycast={ignoreRaycast}>
-          <cylinderGeometry args={[1.1, 1.4, 0.22, simplified ? 12 : 20]} />
-          <meshBasicMaterial
-            color={ufoBody}
-            transparent
-            opacity={0.92}
-            depthWrite
-            depthTest
-            userData={{ flybyFade: true, baseOpacity: 0.92 }}
-          />
-        </mesh>
-        {/* Rim ring in the saucer plane */}
-        <mesh raycast={ignoreRaycast} rotation={[Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
-          <torusGeometry args={[1.15, 0.06, 6, simplified ? 12 : 20]} />
-          <meshBasicMaterial
-            color={isDark ? "#c5ced9" : "#8b95a5"}
-            transparent
-            opacity={0.85}
-            depthWrite
-            depthTest
-            userData={{ flybyFade: true, baseOpacity: 0.85 }}
-          />
-        </mesh>
-        {/* Dome */}
-        <mesh raycast={ignoreRaycast} position={[0, 0.18, 0]}>
-          <sphereGeometry
-            args={[0.45, simplified ? 10 : 16, simplified ? 8 : 12, 0, Math.PI * 2, 0, Math.PI / 2]}
-          />
-          <meshBasicMaterial
-            color={ufoDome}
-            transparent
-            opacity={0.9}
-            depthWrite
-            depthTest
-            userData={{ flybyFade: true, baseOpacity: 0.9 }}
-          />
-        </mesh>
-        {/* Under-glow */}
-        {!simplified ? (
-          <mesh raycast={ignoreRaycast} position={[0, -0.08, 0]} rotation={[Math.PI / 2, 0, 0]}>
-            <circleGeometry args={[0.7, 16]} />
-            <meshBasicMaterial
-              ref={ufoGlowMatRef}
-              color={ufoGlow}
-              transparent
-              opacity={0.5}
-              depthWrite={false}
-              depthTest
-              blending={THREE.AdditiveBlending}
-              toneMapped={false}
-              side={THREE.DoubleSide}
-            />
+      {isDark ? (
+        <group ref={flybyGroupRef} visible={false} scale={flybyScale} frustumCulled={false}>
+          <mesh raycast={ignoreRaycast}>
+            <cylinderGeometry args={[1.1, 1.4, 0.22, simplified ? 12 : 20]} />
+            {fadeMaterial(ufoBody, 0.92)}
           </mesh>
-        ) : null}
-      </group>
+          <mesh raycast={ignoreRaycast} rotation={[Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
+            <torusGeometry args={[1.15, 0.06, 6, simplified ? 12 : 20]} />
+            {fadeMaterial(isDark ? "#c5ced9" : "#8b95a5", 0.85)}
+          </mesh>
+          <mesh raycast={ignoreRaycast} position={[0, 0.18, 0]}>
+            <sphereGeometry
+              args={[0.45, simplified ? 10 : 16, simplified ? 8 : 12, 0, Math.PI * 2, 0, Math.PI / 2]}
+            />
+            {fadeMaterial(ufoDome, 0.9)}
+          </mesh>
+          {!simplified ? (
+            <mesh raycast={ignoreRaycast} position={[0, -0.08, 0]} rotation={[Math.PI / 2, 0, 0]}>
+              <circleGeometry args={[0.7, 16]} />
+              <meshBasicMaterial
+                ref={flybyGlowMatRef}
+                color={ufoGlow}
+                transparent
+                opacity={0.5}
+                depthWrite={false}
+                depthTest
+                blending={THREE.AdditiveBlending}
+                toneMapped={false}
+                side={THREE.DoubleSide}
+              />
+            </mesh>
+          ) : null}
+        </group>
+      ) : (
+        <group ref={flybyGroupRef} visible={false} scale={heroScale} frustumCulled={false}>
+          {/* Prone flying pose along -Z (lookAt forward). */}
+          <mesh raycast={ignoreRaycast} position={[0, 0, -0.08]} rotation={[Math.PI / 2, 0, 0]}>
+            <capsuleGeometry args={[0.22, 0.52, 4, limbSegments]} />
+            {fadeMaterial(HERO_SUIT, 0.94)}
+          </mesh>
+          <mesh raycast={ignoreRaycast} position={[0, 0.1, -0.4]}>
+            <sphereGeometry args={[0.15, limbSegments, limbSegments]} />
+            {fadeMaterial(HERO_SKIN, 0.95)}
+          </mesh>
+          <mesh raycast={ignoreRaycast} position={[-0.28, 0.04, -0.28]} rotation={[0.45, 0, 0.25]}>
+            <capsuleGeometry args={[0.07, 0.38, 4, limbSegments]} />
+            {fadeMaterial(HERO_SUIT, 0.94)}
+          </mesh>
+          <mesh raycast={ignoreRaycast} position={[0.28, 0.04, -0.28]} rotation={[0.45, 0, -0.25]}>
+            <capsuleGeometry args={[0.07, 0.38, 4, limbSegments]} />
+            {fadeMaterial(HERO_SUIT, 0.94)}
+          </mesh>
+          <mesh raycast={ignoreRaycast} position={[-0.12, 0.04, 0.32]} rotation={[-0.55, 0, 0.08]}>
+            <capsuleGeometry args={[0.08, 0.42, 4, limbSegments]} />
+            {fadeMaterial(HERO_SUIT, 0.94)}
+          </mesh>
+          <mesh raycast={ignoreRaycast} position={[0.12, 0.04, 0.32]} rotation={[-0.55, 0, -0.08]}>
+            <capsuleGeometry args={[0.08, 0.42, 4, limbSegments]} />
+            {fadeMaterial(HERO_SUIT, 0.94)}
+          </mesh>
+          <mesh raycast={ignoreRaycast} position={[-0.12, 0.02, 0.5]}>
+            <boxGeometry args={[0.14, 0.1, 0.16]} />
+            {fadeMaterial(HERO_ACCENT, 0.92)}
+          </mesh>
+          <mesh raycast={ignoreRaycast} position={[0.12, 0.02, 0.5]}>
+            <boxGeometry args={[0.14, 0.1, 0.16]} />
+            {fadeMaterial(HERO_ACCENT, 0.92)}
+          </mesh>
+          <mesh raycast={ignoreRaycast} position={[0, 0.08, -0.08]} rotation={[Math.PI / 2, 0, 0]}>
+            <torusGeometry args={[0.24, 0.05, 6, simplified ? 10 : 14]} />
+            {fadeMaterial(HERO_ACCENT, 0.95)}
+          </mesh>
+          <group ref={capeRef} position={[0, 0.12, 0.06]}>
+            <mesh raycast={ignoreRaycast} position={[0, 0, 0.28]} rotation={[-0.35, 0, 0]}>
+              <planeGeometry args={[0.72, 0.88]} />
+              {fadeMaterial(HERO_CAPE, 0.88, { side: THREE.DoubleSide })}
+            </mesh>
+          </group>
+          {!simplified ? (
+            <>
+              <mesh raycast={ignoreRaycast} position={[0, 0.06, -0.58]} rotation={[Math.PI / 2, 0, 0]}>
+                <circleGeometry args={[0.22, 12]} />
+                <meshBasicMaterial
+                  ref={flybyGlowMatRef}
+                  color={HERO_TRAIL}
+                  transparent
+                  opacity={0.45}
+                  depthWrite={false}
+                  depthTest
+                  blending={THREE.AdditiveBlending}
+                  toneMapped={false}
+                  side={THREE.DoubleSide}
+                />
+              </mesh>
+              <mesh raycast={ignoreRaycast} position={[0, 0.06, -0.72]} rotation={[Math.PI / 2, 0, 0]}>
+                <circleGeometry args={[0.14, 10]} />
+                {fadeMaterial(HERO_CAPE, 0.35, {
+                  depthWrite: false,
+                  blending: THREE.AdditiveBlending,
+                  toneMapped: false,
+                  side: THREE.DoubleSide,
+                })}
+              </mesh>
+            </>
+          ) : null}
+        </group>
+      )}
     </group>
   );
 }
