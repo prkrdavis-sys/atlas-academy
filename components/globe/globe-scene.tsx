@@ -12,6 +12,7 @@ import {
 } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Billboard, useTexture } from "@react-three/drei";
+import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
 import {
   createGlobeTexturePaint,
@@ -391,22 +392,58 @@ export function useGlobeTexture(
   return maps;
 }
 
-/** Cheap additive atmosphere halo around the planet's rim. */
+/**
+ * Additive atmosphere halo around the planet's rim. When `controlsRef` is set
+ * (map explorer), opacity fades out as the globe fills the viewport so the
+ * low-poly shell cannot wash the ocean in rectangular bands.
+ */
 export function GlobeAtmosphere({
   isDark,
   perfTier = "desktop",
+  controlsRef,
 }: {
   isDark: boolean;
   perfTier?: GlobePerfTier;
+  controlsRef?: RefObject<OrbitControlsImpl | null>;
 }) {
+  const materialRef = useRef<THREE.MeshBasicMaterial>(null);
+  const camera = useThree((s) => s.camera);
+  const size = useThree((s) => s.size);
   const segments = getGlobeAtmosphereSegments(perfTier);
+  const baseOpacity = isDark ? 0.1 : 0.16;
+
+  useFrame(() => {
+    const mat = materialRef.current;
+    if (!mat) return;
+    const controls = controlsRef?.current;
+    if (!controls || !(camera instanceof THREE.PerspectiveCamera)) {
+      mat.opacity = baseOpacity;
+      return;
+    }
+    const fillAt = globeFillDistance(
+      camera.fov,
+      size.width / Math.max(size.height, 1),
+    );
+    const distance = controls.getDistance();
+    const fadeStart = fillAt * 1.35;
+    const fadeEnd = fillAt * 0.95;
+    let strength = 1;
+    if (distance <= fadeEnd) strength = 0;
+    else if (distance < fadeStart) {
+      const t = (distance - fadeEnd) / (fadeStart - fadeEnd);
+      strength = t * t * (3 - 2 * t);
+    }
+    mat.opacity = baseOpacity * strength;
+  });
+
   return (
     <mesh scale={1.07} raycast={ignoreRaycast}>
       <sphereGeometry args={[1, segments, segments]} />
       <meshBasicMaterial
+        ref={materialRef}
         color={isDark ? "#2dd4bf" : "#38bdf8"}
         transparent
-        opacity={isDark ? 0.1 : 0.16}
+        opacity={baseOpacity}
         side={THREE.BackSide}
         blending={THREE.AdditiveBlending}
         depthWrite={false}
@@ -415,16 +452,18 @@ export function GlobeAtmosphere({
   );
 }
 
-/** Ambient intensities: flat (day/night off) vs terminator floor. */
+/** Ambient intensities: flat (explore / day-night off) vs terminator floor. */
 function globeAmbientIntensity(isDark: boolean, dayNight: boolean): number {
   if (dayNight) return isDark ? 1.05 : 0.88;
-  return isDark ? 2.25 : 1.85;
+  // Explore / flat: bright enough to read mastery colors, dark enough for navy oceans.
+  return isDark ? 1.65 : 1.45;
 }
 
 /** Key sunlight intensities for flat shade vs full day/night terminator. */
 function globeSunIntensity(isDark: boolean, dayNight: boolean): number {
   if (dayNight) return isDark ? 1.35 : 1.55;
-  return isDark ? 0.22 : 0.18;
+  // Tiny form light only — strong enough to read the sphere, too weak to band.
+  return isDark ? 0.12 : 0.1;
 }
 
 function globeEarthshineIntensity(isDark: boolean): number {
@@ -459,7 +498,9 @@ export function globeFillDistance(
  * Day/night does NOT use the color map as emissiveMap — that turned borders and
  * selection glow into a globe-wide lit grid whenever the texture updated.
  * Night-side readability comes from ambient + earthshine instead.
- * Lighting strength does not change with zoom — shade/tone stay consistent.
+ *
+ * `uniformShade` (map explorer) uses Lambert + flat lighting params so zoom
+ * never shifts tone via specular hotspots or terminator banding.
  */
 export function GlobeSurfaceMaterial({
   map,
@@ -468,6 +509,7 @@ export function GlobeSurfaceMaterial({
   dayNight,
   isDark: _isDark,
   perfTier = "desktop",
+  uniformShade = false,
 }: {
   map: THREE.Texture;
   metalnessMap?: THREE.Texture | null;
@@ -475,14 +517,19 @@ export function GlobeSurfaceMaterial({
   dayNight: boolean;
   isDark: boolean;
   perfTier?: GlobePerfTier;
+  /** Map explorer: ignore day/night material params for zoom-stable tone. */
+  uniformShade?: boolean;
 }) {
   const hasMetalMaps = Boolean(metalnessMap && roughnessMap);
+  const useDayNight = dayNight && !uniformShade;
   const flatRoughness = 0.52;
   const dayNightRoughness = 0.68;
   const flatMetalness = 0.06;
   const dayNightMetalness = 0.03;
 
-  if (perfTier === "phone") {
+  // Lambert avoids specular hotspots that shift with zoom. Keep Standard when
+  // gold metal maps need a sheen.
+  if ((perfTier === "phone" || uniformShade) && !hasMetalMaps) {
     return <meshLambertMaterial map={map} />;
   }
 
@@ -500,45 +547,51 @@ export function GlobeSurfaceMaterial({
       emissiveMap={emissiveMap}
       emissive={emissive}
       emissiveIntensity={emissiveIntensity}
-      roughness={hasMetalMaps ? 1 : dayNight ? dayNightRoughness : flatRoughness}
+      roughness={hasMetalMaps ? 1 : useDayNight ? dayNightRoughness : flatRoughness}
       // Enough metal for brushed sheen; enough diffuse for gold in shadow.
-      metalness={hasMetalMaps ? 0.32 : dayNight ? dayNightMetalness : flatMetalness}
+      metalness={hasMetalMaps ? 0.32 : useDayNight ? dayNightMetalness : flatMetalness}
     />
   );
 }
 
 /**
  * Scene fill lights for the globe. Day/night on: dim ambient so the real-time
- * sun casts a clear terminator. Day/night off: bright ambient so the planet
- * stays vivid, while a weak realtime sun still adds a subtle shade.
+ * sun casts a clear terminator. Day/night off / uniformShade: flat ambient so
+ * zoom never shifts ocean/land tone.
  */
 export function GlobeFillLights({
   isDark,
   dayNight,
+  uniformShade = false,
 }: {
   isDark: boolean;
   dayNight: boolean;
+  /** Map explorer: keep ambient at the flat level regardless of day/night. */
+  uniformShade?: boolean;
 }) {
+  const useDayNight = dayNight && !uniformShade;
   return (
-    <ambientLight intensity={globeAmbientIntensity(isDark, dayNight)} />
+    <ambientLight intensity={globeAmbientIntensity(isDark, useDayNight)} />
   );
 }
 
 /**
  * Real-time sunlight for the planet mesh. Mount as a child of the earth mesh
  * so the day/night terminator stays locked to geographic longitude while the
- * globe spins or the camera orbits. Always on: strong when day/night is
- * enabled, a minimal shade when it is not. Zoom does not change intensity.
+ * globe spins or the camera orbits. `uniformShade` keeps only a tiny form light
+ * so map zoom never introduces terminator bands.
  */
 export function EarthSunLight({
   isDark,
   dayNight,
+  uniformShade = false,
 }: {
   isDark: boolean;
   dayNight: boolean;
+  uniformShade?: boolean;
 }) {
   const lightRef = useRef<THREE.DirectionalLight>(null);
-  const intensity = globeSunIntensity(isDark, dayNight);
+  const intensity = globeSunIntensity(isDark, dayNight && !uniformShade);
 
   useLayoutEffect(() => {
     const light = lightRef.current;
@@ -571,18 +624,22 @@ export function EarthSunLight({
 
 /**
  * Cool anti-solar fill (earthshine) for the night hemisphere. Mount as a child
- * of the earth mesh so the moonlit wash stays locked to geography.
+ * of the earth mesh so the moonlit wash stays locked to geography. Skipped when
+ * `uniformShade` is set (map explorer).
  */
 export function EarthshineLight({
   isDark,
   dayNight,
+  uniformShade = false,
 }: {
   isDark: boolean;
   dayNight: boolean;
+  uniformShade?: boolean;
 }) {
   const lightRef = useRef<THREE.DirectionalLight>(null);
   const baseIntensity = globeEarthshineIntensity(isDark);
   const color = isDark ? "#8eb4d4" : "#9ec0dc";
+  const active = dayNight && !uniformShade;
 
   useLayoutEffect(() => {
     const light = lightRef.current;
@@ -599,10 +656,10 @@ export function EarthshineLight({
     if (!light) return;
     const sun = subsolarDirection();
     light.position.set(-sun.x, -sun.y, -sun.z).multiplyScalar(5);
-    light.intensity = dayNight ? baseIntensity : 0;
+    light.intensity = active ? baseIntensity : 0;
   });
 
-  if (!dayNight) return null;
+  if (!active) return null;
 
   return (
     <directionalLight ref={lightRef} intensity={baseIntensity} color={color} />

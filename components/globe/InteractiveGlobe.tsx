@@ -34,7 +34,6 @@ import {
   useGlobeSceneEnvironment,
   useGlobeTexture,
 } from "@/components/globe/globe-scene";
-import { GlobeDetailOverlays } from "@/components/globe/GlobeDetailOverlays";
 import { GlobeGrabOrbit } from "@/components/globe/GlobeGrabOrbit";
 import { SpaceBackdrop, StaticStarfield } from "@/components/globe/SpaceBackdrop";
 import { SpaceFlybys } from "@/components/globe/SpaceFlybys";
@@ -456,8 +455,6 @@ type GlobeSceneProps = {
   dayNight: boolean;
   selectedCode: string | null;
   perfTier: GlobePerfTier;
-  /** Prefetch / force detail overlays during library place-focus fly-to. */
-  forceDetailOverlays?: boolean;
   spinGroupRef: RefObject<THREE.Group | null>;
   controlsRef: RefObject<OrbitControlsImpl | null>;
   onPickPlace: (code: string | null) => void;
@@ -472,7 +469,6 @@ function PickableGlobe({
   dayNight,
   selectedCode,
   perfTier,
-  forceDetailOverlays = false,
   spinGroupRef,
   controlsRef,
   onPickPlace,
@@ -539,28 +535,17 @@ function PickableGlobe({
           dayNight={dayNight}
           isDark={isDark}
           perfTier={perfTier}
+          uniformShade
         />
         <DistantSun isDark={isDark} perfTier={perfTier} />
-        <EarthSunLight
-          isDark={isDark}
-          dayNight={dayNight}
-        />
-        <EarthshineLight
-          isDark={isDark}
-          dayNight={dayNight}
-        />
+        <EarthSunLight isDark={isDark} dayNight={dayNight} uniformShade />
+        <EarthshineLight isDark={isDark} dayNight={dayNight} uniformShade />
       </mesh>
-      <GlobeDetailOverlays
-        profile={profile}
-        difficulty={difficulty}
+      <GlobeAtmosphere
         isDark={isDark}
-        selectedCode={selectedCode}
-        forceActive={forceDetailOverlays}
         perfTier={perfTier}
         controlsRef={controlsRef}
-        spinGroupRef={spinGroupRef}
       />
-      <GlobeAtmosphere isDark={isDark} perfTier={perfTier} />
     </group>
   );
 }
@@ -749,7 +734,7 @@ export default function InteractiveGlobe({
             <GlobeContextRecovery onContextLost={remountCanvas} />
             <GlobeRecoveryReset onStable={resetRecoveryAttempts} />
             <GlobeInitialInvalidate />
-            <GlobeFillLights isDark={isDark} dayNight={dayNight} />
+            <GlobeFillLights isDark={isDark} dayNight={dayNight} uniformShade />
             {isDark ? (
               <Stars
                 radius={60}
@@ -769,7 +754,6 @@ export default function InteractiveGlobe({
               dayNight={dayNight}
               selectedCode={highlightedCode}
               perfTier={perfTier}
-              forceDetailOverlays={usePlaceFocus}
               spinGroupRef={spinGroupRef}
               controlsRef={controlsRef}
               onPickPlace={(code) => {
