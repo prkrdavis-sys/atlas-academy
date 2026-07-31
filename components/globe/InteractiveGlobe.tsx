@@ -8,7 +8,7 @@ import {
   useState,
   type RefObject,
 } from "react";
-import { Canvas, useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, Stars } from "@react-three/drei";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
@@ -211,6 +211,13 @@ function PlaceFocusIntro({
   const offsetRef = useRef(new THREE.Vector3());
   const sphericalRef = useRef(new THREE.Spherical());
 
+  useEffect(() => {
+    return () => {
+      const controls = controlsRef.current;
+      if (controls) controls.enabled = true;
+    };
+  }, [controlsRef]);
+
   useFrame((_, delta) => {
     if (finishedRef.current) return;
     const controls = controlsRef.current;
@@ -317,6 +324,13 @@ function ViewSettleAnimation({
   } | null>(null);
   const offsetRef = useRef(new THREE.Vector3());
   const sphericalRef = useRef(new THREE.Spherical());
+
+  useEffect(() => {
+    return () => {
+      const controls = controlsRef.current;
+      if (controls) controls.enabled = true;
+    };
+  }, [controlsRef]);
 
   useFrame((_, delta) => {
     if (finishedRef.current) return;
@@ -469,7 +483,12 @@ function PickableGlobe({
   controlsRef,
   onPickPlace,
 }: GlobeSceneProps) {
+  const gl = useThree((state) => state.gl);
+  const camera = useThree((state) => state.camera);
+  const globeMeshRef = useRef<THREE.Mesh | null>(null);
   const tapRef = useRef<TapState | null>(null);
+  const raycasterRef = useRef(new THREE.Raycaster());
+  const ndcRef = useRef(new THREE.Vector2());
 
   // No declarative rotation on the spin group — R3F prop updates fight place-focus.
   // Seed the default Europe-facing yaw once the group exists.
@@ -478,32 +497,68 @@ function PickableGlobe({
     if (group) group.rotation.set(0, GLOBE_MESH_Y_ROTATION, 0);
   }, [spinGroupRef]);
 
-  const onPointerDown = (event: ThreeEvent<PointerEvent>) => {
-    tapRef.current = {
-      pointerId: event.pointerId,
-      lastX: event.nativeEvent.clientX,
-      lastY: event.nativeEvent.clientY,
-      traveled: 0,
+  useEffect(() => {
+    const el = gl.domElement;
+
+    const onPointerDown = (event: PointerEvent) => {
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+      tapRef.current = {
+        pointerId: event.pointerId,
+        lastX: event.clientX,
+        lastY: event.clientY,
+        traveled: 0,
+      };
     };
-  };
 
-  const onPointerMove = (event: ThreeEvent<PointerEvent>) => {
-    const tap = tapRef.current;
-    if (!tap || tap.pointerId !== event.pointerId) return;
-    tap.traveled +=
-      Math.abs(event.nativeEvent.clientX - tap.lastX) +
-      Math.abs(event.nativeEvent.clientY - tap.lastY);
-    tap.lastX = event.nativeEvent.clientX;
-    tap.lastY = event.nativeEvent.clientY;
-  };
+    const onPointerMove = (event: PointerEvent) => {
+      const tap = tapRef.current;
+      if (!tap || tap.pointerId !== event.pointerId) return;
+      tap.traveled +=
+        Math.abs(event.clientX - tap.lastX) + Math.abs(event.clientY - tap.lastY);
+      tap.lastX = event.clientX;
+      tap.lastY = event.clientY;
+    };
 
-  const onPointerUp = (event: ThreeEvent<PointerEvent>) => {
-    const tap = tapRef.current;
-    if (!tap || tap.pointerId !== event.pointerId) return;
-    tapRef.current = null;
-    if (tap.traveled >= GLOBE_TAP_TRAVEL_THRESHOLD || !event.uv) return;
-    onPickPlace(pickGlobePlaceAtUv(event.uv.x, event.uv.y, usMode));
-  };
+    const onPointerUp = (event: PointerEvent) => {
+      const tap = tapRef.current;
+      if (!tap || tap.pointerId !== event.pointerId) return;
+      tapRef.current = null;
+      if (tap.traveled >= GLOBE_TAP_TRAVEL_THRESHOLD) return;
+
+      const mesh = globeMeshRef.current;
+      if (!mesh) return;
+
+      const rect = el.getBoundingClientRect();
+      ndcRef.current.set(
+        ((event.clientX - rect.left) / rect.width) * 2 - 1,
+        -((event.clientY - rect.top) / rect.height) * 2 + 1,
+      );
+      raycasterRef.current.setFromCamera(ndcRef.current, camera);
+      const hit = raycasterRef.current.intersectObject(mesh, false)[0];
+      if (!hit?.uv) {
+        onPickPlace(null);
+        return;
+      }
+      onPickPlace(pickGlobePlaceAtUv(hit.uv.x, hit.uv.y, usMode));
+    };
+
+    const onPointerCancel = (event: PointerEvent) => {
+      const tap = tapRef.current;
+      if (tap?.pointerId === event.pointerId) tapRef.current = null;
+    };
+
+    el.addEventListener("pointerdown", onPointerDown);
+    el.addEventListener("pointermove", onPointerMove);
+    el.addEventListener("pointerup", onPointerUp);
+    el.addEventListener("pointercancel", onPointerCancel);
+
+    return () => {
+      el.removeEventListener("pointerdown", onPointerDown);
+      el.removeEventListener("pointermove", onPointerMove);
+      el.removeEventListener("pointerup", onPointerUp);
+      el.removeEventListener("pointercancel", onPointerCancel);
+    };
+  }, [camera, gl, onPickPlace, usMode]);
 
   return (
     <group ref={spinGroupRef}>
@@ -516,14 +571,7 @@ function PickableGlobe({
         selectedCode={selectedCode}
         perfTier={perfTier}
         controlsRef={controlsRef}
-        meshProps={{
-          onPointerDown,
-          onPointerMove,
-          onPointerUp,
-          onPointerCancel: () => {
-            tapRef.current = null;
-          },
-        }}
+        meshRef={globeMeshRef}
       />
       <GlobeCloseupLayer
         profile={profile}
@@ -696,6 +744,10 @@ export default function InteractiveGlobe({
         difficulty={difficulty}
         scope={panelScope}
         inlinePanelClassName="absolute inset-x-4 bottom-16 z-10 sm:hidden"
+        onDismissSelection={() => {
+          bumpActivity();
+          onSelectPlace(null);
+        }}
       >
         {webglOk && ready ? (
           <Canvas
@@ -747,6 +799,11 @@ export default function InteractiveGlobe({
               spinGroupRef={spinGroupRef}
               controlsRef={controlsRef}
               onPickPlace={(code) => {
+                if (code && code === highlightedCode) {
+                  bumpActivity();
+                  onSelectPlace(null);
+                  return;
+                }
                 if (code) noteUserInteraction();
                 else bumpActivity();
                 onSelectPlace(code);
@@ -844,7 +901,7 @@ export default function InteractiveGlobe({
 
         {ready ? (
           <div className="pointer-events-none absolute inset-x-0 bottom-3 z-20 flex items-stretch justify-center gap-2 px-4">
-            <div className={cn(globeBottomPanelClass, "px-3 py-2")}>
+            <div className={cn(globeBottomPanelClass, "px-2.5 py-1.5")}>
               <MapProgressFillLegend isDark={isDark} difficulty={difficulty} />
             </div>
             {statsScrollTargetId ? (

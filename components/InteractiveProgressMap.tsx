@@ -235,11 +235,18 @@ export function InteractiveProgressMap({
 
   return (
     <div className="overflow-hidden rounded-[1.75rem] border-2 border-slate-200 bg-white/85 shadow-sm dark:border-slate-700 dark:bg-slate-900/85">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-4 py-3 dark:border-slate-700 sm:px-5">
+      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-b border-slate-200 px-4 py-2.5 dark:border-slate-700 sm:px-5">
         <div className="min-w-0 flex-1">
           <p className="truncate font-display text-base font-extrabold text-slate-900 dark:text-slate-100 sm:text-lg">
             {activePlace ? activePlace.name : copy.emptyPrompt}
           </p>
+          {ready ? (
+            <MapProgressFillLegend
+              isDark={isDark}
+              difficulty={difficulty}
+              className="mt-1.5"
+            />
+          ) : null}
         </div>
         <MapZoomControls
           onZoomOut={() => panzoomRef.current?.zoomOut({ step: MAP_ZOOM_BUTTON_STEP })}
@@ -250,12 +257,6 @@ export function InteractiveProgressMap({
           }}
         />
       </div>
-
-      {ready ? (
-        <div className="border-b border-slate-200 px-4 py-2.5 dark:border-slate-700 sm:px-5">
-          <MapProgressFillLegend isDark={isDark} difficulty={difficulty} />
-        </div>
-      ) : null}
 
       <ProgressMapContainer
         containerRef={containerRef}

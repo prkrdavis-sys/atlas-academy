@@ -8,13 +8,14 @@ import { LibraryListScrollRestore } from "@/components/LibraryListScrollRestore"
 import { LibraryPlaceVisual } from "@/components/LibraryPlaceVisual";
 import { LibrarySearch } from "@/components/LibrarySearch";
 import { useProfiles } from "@/components/ProfileProvider";
-import { getRegionsForScope } from "@/lib/countries";
 import {
   buildLibraryDetailHref,
   buildLibraryListHref,
   getFilteredLibraryPlaces,
+  getLibraryFilterOptions,
   getStoredLibraryFilter,
   getStoredLibrarySort,
+  isLibraryTerritoriesFilter,
   normalizeLibraryFilter,
   normalizeLibrarySort,
   setStoredLibraryFilter,
@@ -44,7 +45,7 @@ export function LibraryBrowser({ scope = "world" }: LibraryBrowserProps) {
   const [sort, setSort] = useState<LibrarySort>("alphabetical");
 
   const scopeInfo = SCOPE_INFO[scope];
-  const regions = getRegionsForScope(scope);
+  const filterOptions = getLibraryFilterOptions(scope);
   const isUsa = scope === "usa";
 
   const commonlyMissedCodes = useMemo(
@@ -194,13 +195,13 @@ export function LibraryBrowser({ scope = "world" }: LibraryBrowserProps) {
           </p>
         ) : null}
         <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:flex-wrap sm:px-0">
-          {(["All", ...regions] as LibraryFilter[]).map((region) => {
-            const active = filter === region;
+          {filterOptions.map((option) => {
+            const active = filter === option;
             return (
               <button
-                key={region}
+                key={option}
                 type="button"
-                onClick={() => updateFilter(region)}
+                onClick={() => updateFilter(option)}
                 aria-pressed={active}
                 className={`min-h-11 shrink-0 rounded-full border-2 px-4 py-2 text-sm font-bold transition-all active:scale-[0.98] ${
                   active
@@ -208,7 +209,7 @@ export function LibraryBrowser({ scope = "world" }: LibraryBrowserProps) {
                     : "border-slate-200 bg-white/80 text-slate-700 hover:border-teal-400 hover:text-teal-700 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-300 dark:hover:border-teal-500 dark:hover:text-teal-300"
                 }`}
               >
-                {region}
+                {option}
               </button>
             );
           })}
@@ -255,7 +256,9 @@ export function LibraryBrowser({ scope = "world" }: LibraryBrowserProps) {
         </ul>
       ) : (
         <div className="rounded-2xl border-2 border-dashed border-slate-300 p-10 text-center text-sm font-semibold text-slate-500 dark:border-slate-700 dark:text-slate-400">
-          No places match this {isUsa ? "region" : "continent"}.
+          {isLibraryTerritoriesFilter(filter)
+            ? "No territories match this filter."
+            : `No places match this ${isUsa ? "region" : "continent"}.`}
         </div>
       )}
     </div>

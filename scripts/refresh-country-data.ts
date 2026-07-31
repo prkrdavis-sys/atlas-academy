@@ -7,6 +7,7 @@ import {
   pickPrimaryCurrency,
 } from "./currency-data";
 import { generateCountryShapes } from "./generate-country-shapes";
+import { getCountryAirport, getCountryTravelAccess } from "./airport-data";
 import { fetchSourceCountries, pickPrimaryTimezone } from "./timezone-data";
 
 type RawCountry = {
@@ -262,6 +263,8 @@ async function main() {
     const nativeName = extractNativeName(raw.name.common, raw.name.native);
     const currency = pickPrimaryCurrency(code, raw.currencies);
     const timezone = timezoneByCode.get(code);
+    const largestAirport = getCountryAirport(code);
+    const travelAccess = getCountryTravelAccess(code);
 
     countries.push({
       code,
@@ -272,6 +275,8 @@ async function main() {
       languages: extractLanguages(raw.languages),
       ...(currency ? { currency: attachUsdRate(currency, usdRates) } : {}),
       ...(timezone ? { timezone } : {}),
+      ...(largestAirport ? { largestAirport } : {}),
+      ...(travelAccess ? { travelAccess } : {}),
       capital,
       continent,
       subregion: raw.subregion ?? "",

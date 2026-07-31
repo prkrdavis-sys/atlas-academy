@@ -22,6 +22,8 @@ import {
 import {
   createMasteryGoldPattern,
   MASTERY_GOLD_ALBEDO_FALLBACK,
+  MASTERY_GOLD_TILE_BASE_PX,
+  MASTERY_GOLD_WARM_OVERLAY,
 } from "@/lib/mastery-gold-texture";
 import { getPlaceMasteryLevel } from "@/lib/map-progress";
 import type { MapProgressDifficulty, PlaceMasteryLevel, Profile } from "@/lib/types";
@@ -412,7 +414,7 @@ function drawShapeFill(
   if (level === 4 && difficulty === "medium" && goldPattern) {
     ctx.shadowBlur = 0;
     ctx.globalCompositeOperation = "overlay";
-    ctx.fillStyle = "rgba(255, 168, 41, 0.4)";
+    ctx.fillStyle = MASTERY_GOLD_WARM_OVERLAY;
     ctx.fill(path, "evenodd");
   }
   ctx.restore();
@@ -522,7 +524,7 @@ export function createGlobeTexturePaint(
   const baseCtx = base.getContext("2d")!;
 
   // ~96px tiles at 2048 width — big enough that the foil crinkle reads.
-  const goldTilePx = Math.max(48, Math.round(96 * pixelScale));
+  const goldTilePx = Math.max(40, Math.round(MASTERY_GOLD_TILE_BASE_PX * pixelScale));
   const goldPattern =
     difficulty === "medium" && goldColorImage
       ? createMasteryGoldPattern(baseCtx, goldColorImage, goldTilePx)

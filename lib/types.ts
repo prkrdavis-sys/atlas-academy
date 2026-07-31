@@ -239,6 +239,11 @@ export type CountryCurrency = {
   usdRate?: number;
 };
 
+export type PlaceTravelAccess = {
+  mode: string;
+  from: string;
+};
+
 export type Country = {
   code: string;
   code3: string;
@@ -252,6 +257,10 @@ export type Country = {
   currency?: CountryCurrency;
   /** Primary IANA timezone (capital's zone when a place spans multiple). */
   timezone?: string;
+  /** IATA code for the busiest commercial airport serving this place. */
+  largestAirport?: string;
+  /** Typical overland or sea access when there is no commercial airport. */
+  travelAccess?: PlaceTravelAccess;
   capital: string;
   continent: Region;
   subregion: string;

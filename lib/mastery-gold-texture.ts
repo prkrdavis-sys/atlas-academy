@@ -6,6 +6,10 @@ export const MASTERY_GOLD_NORMAL_PATH = "/textures/mastery-gold-normal.jpg";
 
 /** Classic yellow-gold solid fallback (not orange). */
 export const MASTERY_GOLD_ALBEDO_FALLBACK = "#d4af37";
+/** Canvas overlay — pushes cool scans toward warm crinkled foil. */
+export const MASTERY_GOLD_WARM_OVERLAY = "rgba(255, 120, 20, 0.58)";
+/** Tile width at 2048px texture width; smaller repeats = finer crinkle. */
+export const MASTERY_GOLD_TILE_BASE_PX = 64;
 
 let colorImagePromise: Promise<HTMLImageElement> | null = null;
 let roughnessImagePromise: Promise<HTMLImageElement> | null = null;

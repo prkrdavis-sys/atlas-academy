@@ -8,7 +8,11 @@ import {
   MAP_SELECTION_GLOW_BLUR,
 } from "@/lib/map-colors";
 import { getMasterySolidColor } from "@/lib/map-mastery-fx";
-import { createMasteryGoldPattern } from "@/lib/mastery-gold-texture";
+import {
+  createMasteryGoldPattern,
+  MASTERY_GOLD_TILE_BASE_PX,
+  MASTERY_GOLD_WARM_OVERLAY,
+} from "@/lib/mastery-gold-texture";
 import { getPlaceMasteryLevel } from "@/lib/map-progress";
 import {
   applyGlobeSurfaceGrain,
@@ -376,7 +380,7 @@ export function paintGlobeCloseupRegion(
       ? createMasteryGoldPattern(
           ctx,
           goldColorImage,
-          Math.max(48, Math.round(96 * effectiveScale)),
+          Math.max(40, Math.round(MASTERY_GOLD_TILE_BASE_PX * effectiveScale)),
         )
       : null;
 
@@ -396,7 +400,7 @@ export function paintGlobeCloseupRegion(
     if (level === 4 && goldPattern) {
       ctx.save();
       ctx.globalCompositeOperation = "overlay";
-      ctx.fillStyle = "rgba(255, 168, 41, 0.4)";
+      ctx.fillStyle = MASTERY_GOLD_WARM_OVERLAY;
       ctx.fill(path, "evenodd");
       ctx.restore();
     }

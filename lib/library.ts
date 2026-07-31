@@ -2,7 +2,9 @@ import { getPlacesForScope, getRegionsForScope } from "@/lib/countries";
 import { normalizeAnswerText } from "@/lib/answer-matcher";
 import type { Country, GameScope, Region } from "@/lib/types";
 
-export type LibraryFilter = "All" | Region;
+export const LIBRARY_TERRITORIES_FILTER = "Territories" as const;
+
+export type LibraryFilter = "All" | typeof LIBRARY_TERRITORIES_FILTER | Region;
 
 export type LibrarySort = "alphabetical" | "commonly-missed";
 
@@ -11,8 +13,38 @@ export const LIBRARY_ICON = "📚";
 export const LIBRARY_FILTER_STORAGE_KEY = "atlas-academy-library-filters";
 export const LIBRARY_SORT_STORAGE_KEY = "atlas-academy-library-sort";
 
+export function isLibraryTerritoriesFilter(
+  filter: LibraryFilter,
+): filter is typeof LIBRARY_TERRITORIES_FILTER {
+  return filter === LIBRARY_TERRITORIES_FILTER;
+}
+
 export function isLibraryFilter(scope: GameScope, value: string): value is LibraryFilter {
-  return value === "All" || getRegionsForScope(scope).includes(value as Region);
+  if (value === "All") return true;
+  if (scope === "world" && value === LIBRARY_TERRITORIES_FILTER) return true;
+  return getRegionsForScope(scope).includes(value as Region);
+}
+
+export function getLibraryFilterOptions(scope: GameScope): LibraryFilter[] {
+  const regions = getRegionsForScope(scope);
+  if (scope === "usa") {
+    return ["All", ...regions];
+  }
+
+  const withoutAntarctica = regions.filter((region) => region !== "Antarctica");
+  return ["All", ...withoutAntarctica, LIBRARY_TERRITORIES_FILTER, "Antarctica"];
+}
+
+function matchesLibraryFilter(
+  scope: GameScope,
+  place: Country,
+  filter: LibraryFilter,
+): boolean {
+  if (filter === "All") return true;
+  if (filter === LIBRARY_TERRITORIES_FILTER) {
+    return scope === "world" && place.isTerritory;
+  }
+  return place.continent === filter;
 }
 
 export function isLibrarySort(value: string | null | undefined): value is LibrarySort {
@@ -37,8 +69,8 @@ export function getFilteredLibraryPlaces(
   sort: LibrarySort = "alphabetical",
   commonlyMissedCodes: string[] = [],
 ): Country[] {
-  const places = getPlacesForScope(scope).filter(
-    (place) => filter === "All" || place.continent === filter,
+  const places = getPlacesForScope(scope).filter((place) =>
+    matchesLibraryFilter(scope, place, filter),
   );
 
   if (sort === "commonly-missed" && commonlyMissedCodes.length > 0) {

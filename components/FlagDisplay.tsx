@@ -63,7 +63,9 @@ function FlagImg({
       decoding="async"
       className={cn("block max-w-full", className)}
       style={{
-        ...(constrainedAxis === "width" ? { height: "auto" } : { width: "auto" }),
+        ...(constrainedAxis === "height"
+          ? { aspectRatio: getFlagAspectRatio(code), width: "auto" }
+          : { height: "auto" }),
         ...(clipPath ? { clipPath } : null),
       }}
       {...(priority ? { fetchPriority: "high" as const } : {})}
@@ -138,8 +140,8 @@ export function FlagImage({
         priority={priority}
         clipPath={imgClipPath}
         className={cn(
-          isHeightConstrained ? "block" : "h-auto w-full",
-          !isHeightConstrained ? className : undefined,
+          isHeightConstrained ? "block w-auto max-w-full" : "h-auto w-full",
+          className,
           shapedFrameClass,
         )}
         constrainedAxis={constrainedAxis}
@@ -149,11 +151,6 @@ export function FlagImage({
   const outerClassName = isHeightConstrained ? undefined : className;
 
   if (frame === "none") {
-    if (layout === "intrinsic" && !isHeightConstrained) {
-      return (
-        <span className={cn("inline-block max-w-full leading-none", outerClassName)}>{image}</span>
-      );
-    }
     return image;
   }
 
@@ -255,7 +252,7 @@ export function FlagGrid({
     >
       <div
         className={cn(
-          "grid",
+          "grid items-start",
           gridCols,
           revealed
             ? cn("max-h-full gap-1.5 md:gap-2", revealedGridWidth)
@@ -266,24 +263,22 @@ export function FlagGrid({
           const isCorrect = revealed && correctCode === code;
           const isIncorrect = revealed && selectedCode === code && correctCode !== code;
           const shaped = isShapedFlag(code);
-          const aspectRatio = getFlagAspectRatio(code);
           const tileClassName = cn(
-            "block w-full leading-none",
+            "block h-fit w-full shrink-0 leading-none",
             getTileBorderClass(shaped, tileRadius, isCorrect, isIncorrect, revealed),
           );
-          const tileStyle = { aspectRatio };
 
           const flag = (
             <FlagImage
               code={code}
               alt={`Flag option ${code}`}
               width={flagWidth}
-              layout="tile"
+              className="h-auto w-full"
             />
           );
 
           return revealed ? (
-            <div key={code} className={tileClassName} style={tileStyle} aria-hidden>
+            <div key={code} className={tileClassName} aria-hidden>
               {flag}
             </div>
           ) : (
@@ -292,7 +287,6 @@ export function FlagGrid({
               type="button"
               onClick={() => onSelect(code)}
               className={tileClassName}
-              style={tileStyle}
             >
               {flag}
             </button>

@@ -66,6 +66,15 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
     .filter((neighbor) => neighbor !== undefined)
     .toSorted((a, b) => a.name.localeCompare(b.name));
 
+  const airportDetails = country.largestAirport
+    ? [{ label: "Largest airport", value: country.largestAirport }]
+    : country.travelAccess
+      ? [
+          { label: "Typical travel", value: country.travelAccess.mode },
+          { label: "Travel from", value: country.travelAccess.from },
+        ]
+      : [];
+
   const details = isState
     ? [
         { label: "Capital", value: country.capital || "No official capital" },
@@ -77,6 +86,7 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
           value: country.area > 0 ? `${formatPopulation(country.area)} km²` : "Not available",
         },
         { label: "State code", value: formatDisplayCode(country.code) },
+        ...airportDetails,
       ]
     : [
         { label: "Capital", value: country.capital || "No official capital" },
@@ -97,6 +107,7 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
           value: country.area > 0 ? `${formatPopulation(country.area)} km²` : "Not available",
         },
         { label: "Country codes", value: `${country.code} / ${country.code3}` },
+        ...airportDetails,
       ];
 
   return (

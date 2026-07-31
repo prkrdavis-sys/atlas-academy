@@ -507,7 +507,7 @@ export function globeFillDistance(
 }
 
 /** Ornate gold normal intensity — strong enough for ring relief to catch light. */
-const GOLD_NORMAL_SCALE = new THREE.Vector2(2.15, 2.15);
+const GOLD_NORMAL_SCALE = new THREE.Vector2(2.45, 2.45);
 
 /**
  * Planet surface material: enough gloss for a polished 3D globe, still matte

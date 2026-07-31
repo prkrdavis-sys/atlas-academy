@@ -10,6 +10,7 @@
 import { existsSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { getStateFact, getStateFactQuestion } from "./place-facts";
+import { getStateAirport } from "./airport-data";
 import { STATE_TIMEZONES } from "./timezone-data";
 
 type StateRow = [
@@ -109,6 +110,10 @@ const states = STATE_ROWS.map(
     if (!timezone) {
       throw new Error(`Missing timezone for ${name} (${postal})`);
     }
+    const largestAirport = getStateAirport(postal);
+    if (!largestAirport) {
+      throw new Error(`Missing airport for ${name} (${postal})`);
+    }
 
     return {
       code,
@@ -116,6 +121,7 @@ const states = STATE_ROWS.map(
       name,
       officialName: `State of ${name}`,
       timezone,
+      largestAirport,
       capital,
       continent: region,
       subregion: division,

@@ -26,7 +26,8 @@
     "isTerritory": false,
     "fact": "The Saturn V rockets that carried Apollo astronauts to the Moon were designed and built in Huntsville.",
     "factQuestion": "Which state designed and built the Saturn V rockets that carried Apollo astronauts to the Moon in Huntsville?",
-    "timezone": "America/Chicago"
+    "timezone": "America/Chicago",
+    "largestAirport": "BHM"
   },
   {
     "code": "US-AK",
@@ -50,7 +51,8 @@
     "isTerritory": false,
     "fact": "The northernmost, westernmost, and easternmost U.S. state—the Aleutian Islands cross the 180th meridian into the Eastern Hemisphere.",
     "factQuestion": "Which state is the northernmost, westernmost, and easternmost in the U.S., with Aleutian Islands crossing the 180th meridian?",
-    "timezone": "America/Juneau"
+    "timezone": "America/Juneau",
+    "largestAirport": "ANC"
   },
   {
     "code": "US-AZ",
@@ -80,7 +82,8 @@
     "isTerritory": false,
     "fact": "The Grand Canyon exposes nearly two billion years of geology in its colorful layered walls.",
     "factQuestion": "Which state is home to the Grand Canyon, exposing nearly two billion years of geology?",
-    "timezone": "America/Phoenix"
+    "timezone": "America/Phoenix",
+    "largestAirport": "PHX"
   },
   {
     "code": "US-AR",
@@ -111,7 +114,8 @@
     "isTerritory": false,
     "fact": "Hot Springs National Park predates Yellowstone and was the first U.S. federal reserve.",
     "factQuestion": "Which state has Hot Springs National Park, the first U.S. federal reserve, predating Yellowstone?",
-    "timezone": "America/Chicago"
+    "timezone": "America/Chicago",
+    "largestAirport": "LIT"
   },
   {
     "code": "US-CA",
@@ -139,7 +143,8 @@
     "isTerritory": false,
     "fact": "The economy here is larger than that of most countries—if it were independent, it would rank among the world's biggest.",
     "factQuestion": "Which state's economy is larger than that of most countries and would rank among the world's biggest if independent?",
-    "timezone": "America/Los_Angeles"
+    "timezone": "America/Los_Angeles",
+    "largestAirport": "LAX"
   },
   {
     "code": "US-CO",
@@ -171,7 +176,8 @@
     "isTerritory": false,
     "fact": "Denver sits exactly one mile above sea level, giving the capital its 'Mile High City' nickname.",
     "factQuestion": "Which state's capital Denver sits exactly one mile above sea level, earning the 'Mile High City' nickname?",
-    "timezone": "America/Denver"
+    "timezone": "America/Denver",
+    "largestAirport": "DEN"
   },
   {
     "code": "US-CT",
@@ -199,7 +205,8 @@
     "isTerritory": false,
     "fact": "The Fundamental Orders, adopted in 1639, are often called the first written constitution in the Americas.",
     "factQuestion": "Which state's Fundamental Orders of 1639 are often called the first written constitution in the Americas?",
-    "timezone": "America/New_York"
+    "timezone": "America/New_York",
+    "largestAirport": "BDL"
   },
   {
     "code": "US-DE",
@@ -227,7 +234,8 @@
     "isTerritory": false,
     "fact": "The first to ratify the U.S. Constitution on December 7, 1787.",
     "factQuestion": "Which state was the first to ratify the U.S. Constitution on December 7, 1787?",
-    "timezone": "America/New_York"
+    "timezone": "America/New_York",
+    "largestAirport": "ILG"
   },
   {
     "code": "US-FL",
@@ -254,7 +262,8 @@
     "isTerritory": false,
     "fact": "More coastline than any U.S. state except Alaska and the only one bordering both the Atlantic and Gulf.",
     "factQuestion": "Which state has more coastline than any except Alaska and borders both the Atlantic and Gulf?",
-    "timezone": "America/New_York"
+    "timezone": "America/New_York",
+    "largestAirport": "MCO"
   },
   {
     "code": "US-GA",
@@ -284,7 +293,8 @@
     "isTerritory": false,
     "fact": "Coca-Cola was invented by a pharmacist in Atlanta in 1886 and first sold at a local drugstore.",
     "factQuestion": "Which state is where Coca-Cola was invented by a pharmacist in Atlanta in 1886?",
-    "timezone": "America/New_York"
+    "timezone": "America/New_York",
+    "largestAirport": "ATL"
   },
   {
     "code": "US-HI",
@@ -308,7 +318,8 @@
     "isTerritory": false,
     "fact": "The only U.S. state that grows coffee commercially and sits 2,400 miles from the mainland.",
     "factQuestion": "Which state is the only one that grows coffee commercially and sits 2,400 miles from the mainland?",
-    "timezone": "Pacific/Honolulu"
+    "timezone": "Pacific/Honolulu",
+    "largestAirport": "HNL"
   },
   {
     "code": "US-ID",
@@ -339,7 +350,8 @@
     "isTerritory": false,
     "fact": "Produces about one-third of all potatoes grown in the United States.",
     "factQuestion": "Which state produces about one-third of all potatoes grown in the United States?",
-    "timezone": "America/Boise"
+    "timezone": "America/Boise",
+    "largestAirport": "BOI"
   },
   {
     "code": "US-IL",
@@ -369,7 +381,8 @@
     "isTerritory": false,
     "fact": "Chicago reversed the flow of its river in 1900 so wastewater would drain away from Lake Michigan.",
     "factQuestion": "Which state saw Chicago reverse the flow of its river in 1900 to drain wastewater away from Lake Michigan?",
-    "timezone": "America/Chicago"
+    "timezone": "America/Chicago",
+    "largestAirport": "ORD"
   },
   {
     "code": "US-IN",
@@ -398,7 +411,8 @@
     "isTerritory": false,
     "fact": "The Indianapolis 500, first held in 1911, is one of the oldest and most famous car races in the world.",
     "factQuestion": "Which state hosts the Indianapolis 500, first held in 1911, one of the world's most famous car races?",
-    "timezone": "America/Indiana/Indianapolis"
+    "timezone": "America/Indiana/Indianapolis",
+    "largestAirport": "IND"
   },
   {
     "code": "US-IA",
@@ -429,7 +443,8 @@
     "isTerritory": false,
     "fact": "Leads the nation in corn production and raises more pigs than any other state.",
     "factQuestion": "Which state leads the nation in corn production and raises more pigs than any other?",
-    "timezone": "America/Chicago"
+    "timezone": "America/Chicago",
+    "largestAirport": "DSM"
   },
   {
     "code": "US-KS",
@@ -458,7 +473,8 @@
     "isTerritory": false,
     "fact": "The geographic center of the contiguous United States lies near Lebanon.",
     "factQuestion": "Which state contains the geographic center of the contiguous United States near Lebanon?",
-    "timezone": "America/Chicago"
+    "timezone": "America/Chicago",
+    "largestAirport": "ICT"
   },
   {
     "code": "US-KY",
@@ -490,7 +506,8 @@
     "isTerritory": false,
     "fact": "Produces about 95% of the world's bourbon and has more barrels of aging whiskey than people.",
     "factQuestion": "Which state produces about 95% of the world's bourbon and has more whiskey barrels than people?",
-    "timezone": "America/New_York"
+    "timezone": "America/New_York",
+    "largestAirport": "CVG"
   },
   {
     "code": "US-LA",
@@ -518,7 +535,8 @@
     "isTerritory": false,
     "fact": "New Orleans sits largely below sea level and relies on levees, pumps, and Mississippi River silt to stay dry.",
     "factQuestion": "Which state has New Orleans sitting largely below sea level, relying on levees and pumps to stay dry?",
-    "timezone": "America/Chicago"
+    "timezone": "America/Chicago",
+    "largestAirport": "MSY"
   },
   {
     "code": "US-ME",
@@ -544,7 +562,8 @@
     "isTerritory": false,
     "fact": "Supplies roughly 90% of the United States' lobster catch.",
     "factQuestion": "Which state supplies roughly 90% of the United States' lobster catch?",
-    "timezone": "America/New_York"
+    "timezone": "America/New_York",
+    "largestAirport": "PWM"
   },
   {
     "code": "US-MD",
@@ -573,7 +592,8 @@
     "isTerritory": false,
     "fact": "The Star-Spangled Banner was written during the 1814 Battle of Baltimore at Fort McHenry.",
     "factQuestion": "Which state is where the Star-Spangled Banner was written during the 1814 Battle of Baltimore?",
-    "timezone": "America/New_York"
+    "timezone": "America/New_York",
+    "largestAirport": "BWI"
   },
   {
     "code": "US-MA",
@@ -603,7 +623,8 @@
     "isTerritory": false,
     "fact": "The first subway system in the Americas opened in Boston in 1897.",
     "factQuestion": "Which state opened the first subway system in the Americas in Boston in 1897?",
-    "timezone": "America/New_York"
+    "timezone": "America/New_York",
+    "largestAirport": "BOS"
   },
   {
     "code": "US-MI",
@@ -631,7 +652,8 @@
     "isTerritory": false,
     "fact": "Touches four of the five Great Lakes and has more freshwater shoreline than any other state.",
     "factQuestion": "Which state touches four of the five Great Lakes and has more freshwater shoreline than any other?",
-    "timezone": "America/Detroit"
+    "timezone": "America/Detroit",
+    "largestAirport": "DTW"
   },
   {
     "code": "US-MN",
@@ -660,7 +682,8 @@
     "isTerritory": false,
     "fact": "More than 11,000 lakes and the birthplace of water skiing and the Mall of America.",
     "factQuestion": "Which state has more than 11,000 lakes and is the birthplace of water skiing and the Mall of America?",
-    "timezone": "America/Chicago"
+    "timezone": "America/Chicago",
+    "largestAirport": "MSP"
   },
   {
     "code": "US-MS",
@@ -689,7 +712,8 @@
     "isTerritory": false,
     "fact": "A great river forms most of the western border and inspired the state's name.",
     "factQuestion": "Which state has a namesake river forming most of its western border?",
-    "timezone": "America/Chicago"
+    "timezone": "America/Chicago",
+    "largestAirport": "JAN"
   },
   {
     "code": "US-MO",
@@ -722,7 +746,8 @@
     "isTerritory": false,
     "fact": "The Gateway Arch in St. Louis is 630 feet tall—the tallest monument in the United States.",
     "factQuestion": "Which state is home to the 630-foot Gateway Arch in St. Louis, the tallest U.S. monument?",
-    "timezone": "America/Chicago"
+    "timezone": "America/Chicago",
+    "largestAirport": "STL"
   },
   {
     "code": "US-MT",
@@ -751,7 +776,8 @@
     "isTerritory": false,
     "fact": "The name comes from the Spanish word montaña, though it is not the most mountainous U.S. state.",
     "factQuestion": "Which state's name comes from the Spanish word montaña, though it is not the most mountainous?",
-    "timezone": "America/Denver"
+    "timezone": "America/Denver",
+    "largestAirport": "BZN"
   },
   {
     "code": "US-NE",
@@ -782,7 +808,8 @@
     "isTerritory": false,
     "fact": "Carhenge in Alliance is a full-scale replica of England's Stonehenge built from vintage American cars.",
     "factQuestion": "Which state has Carhenge in Alliance, a full-scale Stonehenge replica built from vintage cars?",
-    "timezone": "America/Chicago"
+    "timezone": "America/Chicago",
+    "largestAirport": "OMA"
   },
   {
     "code": "US-NV",
@@ -812,7 +839,8 @@
     "isTerritory": false,
     "fact": "About three-quarters of the population lives in the Las Vegas metro area.",
     "factQuestion": "Which state has about three-quarters of its population living in the Las Vegas metro area?",
-    "timezone": "America/Los_Angeles"
+    "timezone": "America/Los_Angeles",
+    "largestAirport": "LAS"
   },
   {
     "code": "US-NH",
@@ -840,7 +868,8 @@
     "isTerritory": false,
     "fact": "License plates carry the bold motto 'Live Free or Die.'",
     "factQuestion": "Which state's license plates carry the bold motto 'Live Free or Die'?",
-    "timezone": "America/New_York"
+    "timezone": "America/New_York",
+    "largestAirport": "MHT"
   },
   {
     "code": "US-NJ",
@@ -868,7 +897,8 @@
     "isTerritory": false,
     "fact": "Thomas Edison developed the practical light bulb, phonograph, and motion picture in his Menlo Park laboratory.",
     "factQuestion": "Which state is where Thomas Edison developed the light bulb, phonograph, and motion picture in Menlo Park?",
-    "timezone": "America/New_York"
+    "timezone": "America/New_York",
+    "largestAirport": "EWR"
   },
   {
     "code": "US-NM",
@@ -898,7 +928,8 @@
     "isTerritory": false,
     "fact": "Roswell became synonymous with UFO lore after a 1947 incident that still fuels conspiracy theories.",
     "factQuestion": "Which state's Roswell became synonymous with UFO lore after a 1947 incident?",
-    "timezone": "America/Denver"
+    "timezone": "America/Denver",
+    "largestAirport": "ABQ"
   },
   {
     "code": "US-NY",
@@ -928,7 +959,8 @@
     "isTerritory": false,
     "fact": "More people live in the largest city here than in all but a handful of U.S. states.",
     "factQuestion": "Which state has a largest city with more people than all but a handful of other U.S. states?",
-    "timezone": "America/New_York"
+    "timezone": "America/New_York",
+    "largestAirport": "JFK"
   },
   {
     "code": "US-NC",
@@ -957,7 +989,8 @@
     "isTerritory": false,
     "fact": "The Wright brothers achieved the first powered airplane flight at Kitty Hawk in 1903.",
     "factQuestion": "Which state is where the Wright brothers achieved the first powered airplane flight at Kitty Hawk in 1903?",
-    "timezone": "America/New_York"
+    "timezone": "America/New_York",
+    "largestAirport": "CLT"
   },
   {
     "code": "US-ND",
@@ -985,7 +1018,8 @@
     "isTerritory": false,
     "fact": "Theodore Roosevelt National Park preserves the badlands where the future president ranched and found inspiration.",
     "factQuestion": "Which state has Theodore Roosevelt National Park, preserving badlands where the future president ranched?",
-    "timezone": "America/Chicago"
+    "timezone": "America/Chicago",
+    "largestAirport": "FAR"
   },
   {
     "code": "US-OH",
@@ -1015,7 +1049,8 @@
     "isTerritory": false,
     "fact": "Seven U.S. presidents were born here—more than any state except Virginia.",
     "factQuestion": "Which state was the birthplace of seven U.S. presidents—more than any except Virginia?",
-    "timezone": "America/New_York"
+    "timezone": "America/New_York",
+    "largestAirport": "CLE"
   },
   {
     "code": "US-OK",
@@ -1046,7 +1081,8 @@
     "isTerritory": false,
     "fact": "The capital lies close to the geographic center of the contiguous United States.",
     "factQuestion": "Which state's capital lies close to the geographic center of the contiguous United States?",
-    "timezone": "America/Chicago"
+    "timezone": "America/Chicago",
+    "largestAirport": "OKC"
   },
   {
     "code": "US-OR",
@@ -1075,7 +1111,8 @@
     "isTerritory": false,
     "fact": "Crater Lake is the deepest lake in the United States, formed when a volcano collapsed about 7,700 years ago.",
     "factQuestion": "Which state is home to Crater Lake, the deepest lake in the United States?",
-    "timezone": "America/Los_Angeles"
+    "timezone": "America/Los_Angeles",
+    "largestAirport": "PDX"
   },
   {
     "code": "US-PA",
@@ -1106,7 +1143,8 @@
     "isTerritory": false,
     "fact": "Independence Hall in Philadelphia is where the Declaration of Independence and U.S. Constitution were signed.",
     "factQuestion": "Which state is home to Independence Hall, where the Declaration of Independence and Constitution were signed?",
-    "timezone": "America/New_York"
+    "timezone": "America/New_York",
+    "largestAirport": "PHL"
   },
   {
     "code": "US-RI",
@@ -1133,7 +1171,8 @@
     "isTerritory": false,
     "fact": "The smallest U.S. state but with over 400 miles of coastline.",
     "factQuestion": "Which state is the smallest in the U.S. but has over 400 miles of coastline?",
-    "timezone": "America/New_York"
+    "timezone": "America/New_York",
+    "largestAirport": "PVD"
   },
   {
     "code": "US-SC",
@@ -1160,7 +1199,8 @@
     "isTerritory": false,
     "fact": "The first shots of the Civil War were fired at Fort Sumter in Charleston Harbor in 1861.",
     "factQuestion": "Which state is where the first shots of the Civil War were fired at Fort Sumter in 1861?",
-    "timezone": "America/New_York"
+    "timezone": "America/New_York",
+    "largestAirport": "CHS"
   },
   {
     "code": "US-SD",
@@ -1191,7 +1231,8 @@
     "isTerritory": false,
     "fact": "Mount Rushmore's 60-foot presidential faces were carved into the Black Hills over 14 years.",
     "factQuestion": "Which state is home to Mount Rushmore, with 60-foot presidential faces carved over 14 years?",
-    "timezone": "America/Chicago"
+    "timezone": "America/Chicago",
+    "largestAirport": "FSD"
   },
   {
     "code": "US-TN",
@@ -1224,7 +1265,8 @@
     "isTerritory": false,
     "fact": "Memphis is a cradle of blues and rock and roll—Elvis Presley's Graceland draws visitors from around the world.",
     "factQuestion": "Which state has Memphis as a cradle of blues and rock and roll, home to Elvis Presley's Graceland?",
-    "timezone": "America/Chicago"
+    "timezone": "America/Chicago",
+    "largestAirport": "BNA"
   },
   {
     "code": "US-TX",
@@ -1253,7 +1295,8 @@
     "isTerritory": false,
     "fact": "Was an independent republic for nearly ten years before joining the United States in 1845.",
     "factQuestion": "Which state was an independent republic for nearly ten years before joining the United States in 1845?",
-    "timezone": "America/Chicago"
+    "timezone": "America/Chicago",
+    "largestAirport": "DFW"
   },
   {
     "code": "US-UT",
@@ -1284,7 +1327,8 @@
     "isTerritory": false,
     "fact": "The Great Salt Lake is saltier than the ocean, so swimmers float effortlessly on its surface.",
     "factQuestion": "Which state is home to the Great Salt Lake, saltier than the ocean so swimmers float effortlessly?",
-    "timezone": "America/Denver"
+    "timezone": "America/Denver",
+    "largestAirport": "SLC"
   },
   {
     "code": "US-VT",
@@ -1312,7 +1356,8 @@
     "isTerritory": false,
     "fact": "Ben & Jerry's ice cream began in a renovated gas station in Burlington in 1978.",
     "factQuestion": "Which state is where Ben & Jerry's ice cream began in a renovated gas station in Burlington in 1978?",
-    "timezone": "America/New_York"
+    "timezone": "America/New_York",
+    "largestAirport": "BTV"
   },
   {
     "code": "US-VA",
@@ -1342,7 +1387,8 @@
     "isTerritory": false,
     "fact": "Eight U.S. presidents were born here—more than any other state.",
     "factQuestion": "Which state was the birthplace of eight U.S. presidents—more than any other?",
-    "timezone": "America/New_York"
+    "timezone": "America/New_York",
+    "largestAirport": "IAD"
   },
   {
     "code": "US-WA",
@@ -1369,7 +1415,8 @@
     "isTerritory": false,
     "fact": "Mount Rainier is an active volcano towering over Seattle and visible across much of the Puget Sound.",
     "factQuestion": "Which state has Mount Rainier, an active volcano towering over Seattle and visible across the Puget Sound?",
-    "timezone": "America/Los_Angeles"
+    "timezone": "America/Los_Angeles",
+    "largestAirport": "SEA"
   },
   {
     "code": "US-WV",
@@ -1399,7 +1446,8 @@
     "isTerritory": false,
     "fact": "Split from Virginia during the Civil War and joined the Union as its own state in 1863.",
     "factQuestion": "Which state split from Virginia during the Civil War and joined the Union in 1863?",
-    "timezone": "America/New_York"
+    "timezone": "America/New_York",
+    "largestAirport": "CRW"
   },
   {
     "code": "US-WI",
@@ -1428,7 +1476,8 @@
     "isTerritory": false,
     "fact": "Produces more cheese than any other U.S. state and hosts the Green Bay Packers' Lambeau Field.",
     "factQuestion": "Which state produces more cheese than any other and hosts the Green Bay Packers' Lambeau Field?",
-    "timezone": "America/Chicago"
+    "timezone": "America/Chicago",
+    "largestAirport": "MKE"
   },
   {
     "code": "US-WY",
@@ -1459,6 +1508,7 @@
     "isTerritory": false,
     "fact": "Yellowstone National Park—mostly within these borders—was the world's first national park, established in 1872.",
     "factQuestion": "Which state contains most of Yellowstone, the world's first national park, established in 1872?",
-    "timezone": "America/Denver"
+    "timezone": "America/Denver",
+    "largestAirport": "JAC"
   }
 ]

@@ -20,6 +20,7 @@ type ProgressMapContainerProps = ProgressMapOverlayProps & {
   /** Class for the outer flex wrapper (e.g. to absolutely fill a section). */
   wrapperClassName?: string;
   inlinePanelClassName?: string;
+  onDismissSelection?: () => void;
   children: ReactNode;
 };
 
@@ -48,6 +49,7 @@ export function ProgressMapContainer({
   difficulty,
   scope,
   inlinePanelClassName,
+  onDismissSelection,
   children,
 }: ProgressMapContainerProps) {
   return (
@@ -67,13 +69,19 @@ export function ProgressMapContainer({
         ) : null}
       </div>
       {selectedCode ? (
-        <div className={cn("mt-2 sm:hidden", inlinePanelClassName)}>
+        <div
+          className={cn(
+            "mt-2 pointer-events-none sm:hidden",
+            inlinePanelClassName,
+          )}
+        >
           <PlaceMapProgressPanel
             code={selectedCode}
             profile={profile}
             difficulty={difficulty}
             scope={scope}
             variant="inline"
+            onDismiss={onDismissSelection}
           />
         </div>
       ) : null}

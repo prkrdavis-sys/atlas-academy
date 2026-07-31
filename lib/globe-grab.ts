@@ -7,7 +7,6 @@ const _offset = new THREE.Vector3();
 const _spherical = new THREE.Spherical();
 const _quat = new THREE.Quaternion();
 const _pointerUnit = new THREE.Vector3();
-const _toCamera = new THREE.Vector3();
 const _sphere = new THREE.Sphere();
 const _raycaster = new THREE.Raycaster();
 const _hit = new THREE.Vector3();
@@ -27,11 +26,14 @@ export function clientToNdc(
   return target;
 }
 
+export type PointerGlobeUnitResult = "hit" | "miss";
+
 /**
  * Unit vector from `center` to where a pointer ray meets the globe sphere.
  *
- * With `allowMissFallback`, a miss projects onto the sphere via the ray's
- * closest approach so an in-progress drag stays continuous off the limb.
+ * Returns `"hit"` when the ray intersects the sphere, `"miss"` when
+ * `allowMissFallback` projects via the ray's closest approach, or `null` on
+ * failure.
  */
 export function pointerGlobeUnit(
   clientX: number,
@@ -42,7 +44,7 @@ export function pointerGlobeUnit(
   radius: number,
   out: THREE.Vector3,
   allowMissFallback = false,
-): boolean {
+): PointerGlobeUnitResult | null {
   clientToNdc(clientX, clientY, rect, _ndc);
   _raycaster.setFromCamera(_ndc, camera);
   _sphere.center.copy(center);
@@ -50,10 +52,10 @@ export function pointerGlobeUnit(
 
   if (_raycaster.ray.intersectSphere(_sphere, _hit)) {
     out.copy(_hit).sub(center).normalize();
-    return true;
+    return "hit";
   }
 
-  if (!allowMissFallback) return false;
+  if (!allowMissFallback) return null;
 
   _raycaster.ray.closestPointToPoint(center, _hit);
   out.copy(_hit).sub(center);
@@ -62,16 +64,54 @@ export function pointerGlobeUnit(
   } else {
     out.normalize();
   }
-  return true;
+  return "miss";
+}
+
+function applySphericalOrbitStep(
+  camera: THREE.PerspectiveCamera,
+  target: THREE.Vector3,
+  dTheta: number,
+  dPhi: number,
+  minPolar: number,
+  maxPolar: number,
+): void {
+  _offset.copy(camera.position).sub(target);
+  _spherical.setFromVector3(_offset);
+  _spherical.theta += dTheta;
+  _spherical.phi = THREE.MathUtils.clamp(_spherical.phi + dPhi, minPolar, maxPolar);
+  _spherical.makeSafe();
+  _offset.setFromSpherical(_spherical);
+  camera.position.copy(target).add(_offset);
+  camera.up.set(0, 1, 0);
+  camera.lookAt(target);
+}
+
+/** Screen-pixel drag → Y-up spherical orbit (OrbitControls-compatible signs). */
+function orbitCameraByScreenDelta(
+  camera: THREE.PerspectiveCamera,
+  target: THREE.Vector3,
+  deltaX: number,
+  deltaY: number,
+  rect: DOMRect,
+  minPolar: number,
+  maxPolar: number,
+): void {
+  if (deltaX === 0 && deltaY === 0) return;
+
+  const fovY = THREE.MathUtils.degToRad(camera.fov);
+  const fovX = 2 * Math.atan(Math.tan(fovY / 2) * Math.max(camera.aspect, 1e-6));
+  const dTheta = (-deltaX / rect.width) * fovX;
+  const dPhi = (deltaY / rect.height) * fovY;
+  applySphericalOrbitStep(camera, target, dTheta, dPhi, minPolar, maxPolar);
 }
 
 /**
  * Orbit a Y-up camera so `grabUnit` stays under the pointer.
  *
- * 1. Geometric trackball step (stable at any zoom): rotate the camera by the
- *    inverse of the sphere-arc from the grab to the current pointer hit.
- * 2. Snap to a Y-up spherical orbit (OrbitControls-compatible, no roll).
- * 3. Tiny clamped screen-space polish to cancel snap slip — gain is capped so
+ * 1. Geometric trackball step when the pointer ray hits the sphere.
+ * 2. Screen-space delta orbit when the pointer leaves the globe disc.
+ * 3. Snap to a Y-up spherical orbit (OrbitControls-compatible, no roll).
+ * 4. Tiny clamped screen-space polish to cancel snap slip — gain is capped so
  *    close-ups cannot overshoot.
  */
 export function orbitCameraToKeepGrab(
@@ -84,38 +124,49 @@ export function orbitCameraToKeepGrab(
   radius = 1,
   minPolar = 0.01,
   maxPolar = Math.PI - 0.01,
+  deltaX = 0,
+  deltaY = 0,
 ): void {
-  _toCamera.copy(camera.position).sub(target).normalize();
-  if (grabUnit.dot(_toCamera) < 0.05) return;
+  const pointerResult = pointerGlobeUnit(
+    clientX,
+    clientY,
+    rect,
+    camera,
+    target,
+    radius,
+    _pointerUnit,
+    false,
+  );
 
-  if (
-    !pointerGlobeUnit(
-      clientX,
-      clientY,
-      rect,
+  if (pointerResult === "hit") {
+    // Camera orbit is the inverse of an object-trackball grab→pointer arc, so the
+    // grabbed surface point follows the finger (same direction as OrbitControls).
+    _quat.setFromUnitVectors(_pointerUnit, grabUnit);
+    _offset.copy(camera.position).sub(target).applyQuaternion(_quat);
+
+    _spherical.setFromVector3(_offset);
+    _spherical.phi = THREE.MathUtils.clamp(_spherical.phi, minPolar, maxPolar);
+    _spherical.makeSafe();
+    _offset.setFromSpherical(_spherical);
+    camera.position.copy(target).add(_offset);
+    camera.up.set(0, 1, 0);
+    camera.lookAt(target);
+    camera.updateMatrixWorld();
+  } else {
+    // Off the globe disc: pure screen-space orbit so direction reversals follow
+    // the cursor. Skip the grab-point polish — it keeps chasing the original
+    // grab and would override reverse motion while the pointer is in empty space.
+    orbitCameraByScreenDelta(
       camera,
       target,
-      radius,
-      _pointerUnit,
-      true,
-    )
-  ) {
+      deltaX,
+      deltaY,
+      rect,
+      minPolar,
+      maxPolar,
+    );
     return;
   }
-
-  // Camera orbit is the inverse of an object-trackball grab→pointer arc, so the
-  // grabbed surface point follows the finger (same direction as OrbitControls).
-  _quat.setFromUnitVectors(_pointerUnit, grabUnit);
-  _offset.copy(camera.position).sub(target).applyQuaternion(_quat);
-
-  _spherical.setFromVector3(_offset);
-  _spherical.phi = THREE.MathUtils.clamp(_spherical.phi, minPolar, maxPolar);
-  _spherical.makeSafe();
-  _offset.setFromSpherical(_spherical);
-  camera.position.copy(target).add(_offset);
-  camera.up.set(0, 1, 0);
-  camera.lookAt(target);
-  camera.updateMatrixWorld();
 
   // Polish: match OrbitControls drag signs, but clamp the step for close-ups.
   clientToNdc(clientX, clientY, rect, _ndc);
@@ -138,12 +189,5 @@ export function orbitCameraToKeepGrab(
     dPhi *= scale;
   }
 
-  _spherical.setFromVector3(_offset.copy(camera.position).sub(target));
-  _spherical.theta += dTheta;
-  _spherical.phi = THREE.MathUtils.clamp(_spherical.phi + dPhi, minPolar, maxPolar);
-  _spherical.makeSafe();
-  _offset.setFromSpherical(_spherical);
-  camera.position.copy(target).add(_offset);
-  camera.up.set(0, 1, 0);
-  camera.lookAt(target);
+  applySphericalOrbitStep(camera, target, dTheta, dPhi, minPolar, maxPolar);
 }
