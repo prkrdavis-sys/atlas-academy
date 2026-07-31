@@ -764,6 +764,7 @@ export default function InteractiveGlobe({
             gl={{
               antialias: canvasGl.antialias,
               alpha: true,
+              premultipliedAlpha: false,
               powerPreference: canvasGl.powerPreference,
             }}
             style={{ touchAction: "none" }}
@@ -900,16 +901,16 @@ export default function InteractiveGlobe({
         />
 
         {ready ? (
-          <div className="pointer-events-none absolute inset-x-0 bottom-3 z-20 flex items-stretch justify-center gap-2 px-4">
-            <div className={cn(globeBottomPanelClass, "px-2.5 py-1.5")}>
+          <div className="pointer-events-none absolute inset-x-0 bottom-3 z-20 flex items-end justify-center gap-2 px-4">
+            <div className={cn(globeBottomPanelClass, "pointer-events-auto px-2.5 py-1.5")}>
               <MapProgressFillLegend isDark={isDark} difficulty={difficulty} />
             </div>
             {statsScrollTargetId ? (
-              <div className={cn(globeBottomPanelClass, "pointer-events-auto p-0")}>
+              <div className={cn(globeBottomPanelClass, "pointer-events-auto")}>
                 <MapScrollDownButton
                   targetId={statsScrollTargetId}
                   reducedMotion={reducedMotion}
-                  className="h-full w-10 rounded-xl"
+                  className="size-8 rounded-xl"
                 />
               </div>
             ) : null}

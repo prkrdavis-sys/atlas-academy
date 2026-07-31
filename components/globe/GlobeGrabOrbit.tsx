@@ -5,6 +5,7 @@ import { useThree } from "@react-three/fiber";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
 import {
+  GLOBE_TAP_TRAVEL_THRESHOLD,
   tryReleasePointerCapture,
   trySetPointerCapture,
 } from "@/components/globe/globe-scene";
@@ -32,10 +33,16 @@ export function GlobeGrabOrbit({
   useEffect(() => {
     const el = gl.domElement;
     const grabUnit = new THREE.Vector3();
+    const lastPointerUnit = new THREE.Vector3();
+    const probeUnit = new THREE.Vector3();
     let pointerId: number | null = null;
     let activePointers = 0;
-    let lastClientX = 0;
-    let lastClientY = 0;
+    /** Pointer went down on the globe but hasn't moved enough to count as a drag. */
+    let pendingGrab = false;
+    /** Latched on first ray miss — avoids trackball re-entry at the limb. */
+    let screenDragOnly = false;
+    let startClientX = 0;
+    let startClientY = 0;
     let windowListenersAttached = false;
 
     const detachWindowListeners = () => {
@@ -46,12 +53,22 @@ export function GlobeGrabOrbit({
       windowListenersAttached = false;
     };
 
-    const endGrab = () => {
+    const resetPointerSession = () => {
       detachWindowListeners();
       if (pointerId !== null) {
         tryReleasePointerCapture(el, pointerId);
       }
       pointerId = null;
+      pendingGrab = false;
+      screenDragOnly = false;
+    };
+
+    const activateGrab = (controls: OrbitControlsImpl) => {
+      if (pointerId === null) return;
+      pendingGrab = false;
+      trySetPointerCapture(el, pointerId);
+      controls.autoRotate = false;
+      onGrabStart?.();
     };
 
     const onPointerMove = (event: PointerEvent) => {
@@ -62,26 +79,41 @@ export function GlobeGrabOrbit({
       const camera = controls.object;
       if (!(camera instanceof THREE.PerspectiveCamera)) return;
 
-      const deltaX = event.clientX - lastClientX;
-      const deltaY = event.clientY - lastClientY;
-      lastClientX = event.clientX;
-      lastClientY = event.clientY;
+      if (pendingGrab) {
+        const travel =
+          Math.abs(event.clientX - startClientX) + Math.abs(event.clientY - startClientY);
+        if (travel < GLOBE_TAP_TRAVEL_THRESHOLD) return;
+        activateGrab(controls);
+      }
 
       const rect = el.getBoundingClientRect();
+      if (
+        !screenDragOnly &&
+        pointerGlobeUnit(
+          event.clientX,
+          event.clientY,
+          rect,
+          camera,
+          controls.target,
+          radius,
+          probeUnit,
+        ) !== "hit"
+      ) {
+        screenDragOnly = true;
+      }
       orbitCameraToKeepGrab(
         camera,
         controls.target,
         grabUnit,
+        lastPointerUnit,
         event.clientX,
         event.clientY,
         rect,
         radius,
         controls.minPolarAngle,
         controls.maxPolarAngle,
-        deltaX,
-        deltaY,
+        screenDragOnly,
       );
-      // Re-sync OrbitControls' internal spherical from the new camera pose.
       controls.update();
       invalidate();
     };
@@ -89,7 +121,7 @@ export function GlobeGrabOrbit({
     const onPointerUp = (event: PointerEvent) => {
       activePointers = Math.max(0, activePointers - 1);
       if (pointerId !== null && event.pointerId === pointerId) {
-        endGrab();
+        resetPointerSession();
       }
     };
 
@@ -97,7 +129,7 @@ export function GlobeGrabOrbit({
       activePointers += 1;
       // Second finger is pinch-zoom — don't fight OrbitControls dolly.
       if (activePointers > 1) {
-        endGrab();
+        resetPointerSession();
         return;
       }
       if (event.pointerType === "mouse" && event.button !== 0) return;
@@ -124,24 +156,22 @@ export function GlobeGrabOrbit({
       }
 
       pointerId = event.pointerId;
-      lastClientX = event.clientX;
-      lastClientY = event.clientY;
-      trySetPointerCapture(el, event.pointerId);
+      pendingGrab = true;
+      screenDragOnly = false;
+      startClientX = event.clientX;
+      startClientY = event.clientY;
+      lastPointerUnit.copy(grabUnit);
       window.addEventListener("pointermove", onPointerMove);
       window.addEventListener("pointerup", onPointerUp);
       window.addEventListener("pointercancel", onPointerUp);
       windowListenersAttached = true;
-      // Kill auto-spin immediately — waiting on React state would let a frame
-      // of autoRotate fight the grab in controls.update().
-      controls.autoRotate = false;
-      onGrabStart?.();
       invalidate();
     };
 
     el.addEventListener("pointerdown", onPointerDown);
 
     return () => {
-      endGrab();
+      resetPointerSession();
       el.removeEventListener("pointerdown", onPointerDown);
     };
   }, [controlsRef, gl, invalidate, onGrabStart, radius]);

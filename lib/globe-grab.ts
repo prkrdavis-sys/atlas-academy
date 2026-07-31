@@ -67,6 +67,28 @@ export function pointerGlobeUnit(
   return "miss";
 }
 
+function applyTrackballOrbit(
+  camera: THREE.PerspectiveCamera,
+  target: THREE.Vector3,
+  fromUnit: THREE.Vector3,
+  toUnit: THREE.Vector3,
+  minPolar: number,
+  maxPolar: number,
+): void {
+  // Same convention as the on-surface grab: rotate the camera by the sphere
+  // arc from `fromUnit` toward `toUnit`.
+  _quat.setFromUnitVectors(toUnit, fromUnit);
+  _offset.copy(camera.position).sub(target).applyQuaternion(_quat);
+
+  _spherical.setFromVector3(_offset);
+  _spherical.phi = THREE.MathUtils.clamp(_spherical.phi, minPolar, maxPolar);
+  _spherical.makeSafe();
+  _offset.setFromSpherical(_spherical);
+  camera.position.copy(target).add(_offset);
+  camera.up.set(0, 1, 0);
+  camera.lookAt(target);
+}
+
 function applySphericalOrbitStep(
   camera: THREE.PerspectiveCamera,
   target: THREE.Vector3,
@@ -86,30 +108,52 @@ function applySphericalOrbitStep(
   camera.lookAt(target);
 }
 
-/** Screen-pixel drag → Y-up spherical orbit (OrbitControls-compatible signs). */
-function orbitCameraByScreenDelta(
+/**
+ * Incremental virtual trackball for off-disc drags. Uses the same geometry as
+ * the on-surface grab so speed and direction stay continuous at the limb.
+ */
+function orbitCameraByPointerDelta(
   camera: THREE.PerspectiveCamera,
   target: THREE.Vector3,
-  deltaX: number,
-  deltaY: number,
+  lastPointerUnit: THREE.Vector3,
+  clientX: number,
+  clientY: number,
   rect: DOMRect,
+  radius: number,
   minPolar: number,
   maxPolar: number,
 ): void {
-  if (deltaX === 0 && deltaY === 0) return;
+  if (
+    pointerGlobeUnit(
+      clientX,
+      clientY,
+      rect,
+      camera,
+      target,
+      radius,
+      _pointerUnit,
+      true,
+    ) === null
+  ) {
+    return;
+  }
 
-  const fovY = THREE.MathUtils.degToRad(camera.fov);
-  const fovX = 2 * Math.atan(Math.tan(fovY / 2) * Math.max(camera.aspect, 1e-6));
-  const dTheta = (-deltaX / rect.width) * fovX;
-  const dPhi = (deltaY / rect.height) * fovY;
-  applySphericalOrbitStep(camera, target, dTheta, dPhi, minPolar, maxPolar);
+  applyTrackballOrbit(
+    camera,
+    target,
+    lastPointerUnit,
+    _pointerUnit,
+    minPolar,
+    maxPolar,
+  );
+  lastPointerUnit.copy(_pointerUnit);
 }
 
 /**
  * Orbit a Y-up camera so `grabUnit` stays under the pointer.
  *
  * 1. Geometric trackball step when the pointer ray hits the sphere.
- * 2. Screen-space delta orbit when the pointer leaves the globe disc.
+ * 2. Incremental virtual trackball when the pointer leaves the globe disc.
  * 3. Snap to a Y-up spherical orbit (OrbitControls-compatible, no roll).
  * 4. Tiny clamped screen-space polish to cancel snap slip — gain is capped so
  *    close-ups cannot overshoot.
@@ -118,15 +162,31 @@ export function orbitCameraToKeepGrab(
   camera: THREE.PerspectiveCamera,
   target: THREE.Vector3,
   grabUnit: THREE.Vector3,
+  lastPointerUnit: THREE.Vector3,
   clientX: number,
   clientY: number,
   rect: DOMRect,
   radius = 1,
   minPolar = 0.01,
   maxPolar = Math.PI - 0.01,
-  deltaX = 0,
-  deltaY = 0,
+  /** Once the pointer leaves the disc, stay on incremental trackball for this drag. */
+  screenDragOnly = false,
 ): void {
+  if (screenDragOnly) {
+    orbitCameraByPointerDelta(
+      camera,
+      target,
+      lastPointerUnit,
+      clientX,
+      clientY,
+      rect,
+      radius,
+      minPolar,
+      maxPolar,
+    );
+    return;
+  }
+
   const pointerResult = pointerGlobeUnit(
     clientX,
     clientY,
@@ -138,35 +198,31 @@ export function orbitCameraToKeepGrab(
     false,
   );
 
-  if (pointerResult === "hit") {
-    // Camera orbit is the inverse of an object-trackball grab→pointer arc, so the
-    // grabbed surface point follows the finger (same direction as OrbitControls).
-    _quat.setFromUnitVectors(_pointerUnit, grabUnit);
-    _offset.copy(camera.position).sub(target).applyQuaternion(_quat);
-
-    _spherical.setFromVector3(_offset);
-    _spherical.phi = THREE.MathUtils.clamp(_spherical.phi, minPolar, maxPolar);
-    _spherical.makeSafe();
-    _offset.setFromSpherical(_spherical);
-    camera.position.copy(target).add(_offset);
-    camera.up.set(0, 1, 0);
-    camera.lookAt(target);
-    camera.updateMatrixWorld();
-  } else {
-    // Off the globe disc: pure screen-space orbit so direction reversals follow
-    // the cursor. Skip the grab-point polish — it keeps chasing the original
-    // grab and would override reverse motion while the pointer is in empty space.
-    orbitCameraByScreenDelta(
+  if (pointerResult !== "hit") {
+    orbitCameraByPointerDelta(
       camera,
       target,
-      deltaX,
-      deltaY,
+      lastPointerUnit,
+      clientX,
+      clientY,
       rect,
+      radius,
       minPolar,
       maxPolar,
     );
     return;
   }
+
+  applyTrackballOrbit(
+    camera,
+    target,
+    grabUnit,
+    _pointerUnit,
+    minPolar,
+    maxPolar,
+  );
+  camera.updateMatrixWorld();
+  lastPointerUnit.copy(_pointerUnit);
 
   // Polish: match OrbitControls drag signs, but clamp the step for close-ups.
   clientToNdc(clientX, clientY, rect, _ndc);

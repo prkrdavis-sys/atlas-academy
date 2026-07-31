@@ -264,6 +264,7 @@ export default function GlobeBackground({
           gl={{
             antialias: canvasGl.antialias,
             alpha: true,
+            premultipliedAlpha: false,
             powerPreference: canvasGl.powerPreference,
           }}
           style={{ touchAction: "none" }}

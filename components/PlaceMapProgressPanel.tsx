@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 import { getCountryName } from "@/lib/countries";
 import { buildLibraryDetailHref, LIBRARY_ICON } from "@/lib/library";
 import {
@@ -21,6 +22,7 @@ import {
   type GameScope,
   type MapProgressCategory,
   type MapProgressDifficulty,
+  type PlaceMasteryLevel,
   type Profile,
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -72,6 +74,31 @@ export function MapProgressDifficultySelector({
 
 const MAP_LEGEND_LEVELS = [0, ...MAP_PROGRESS_FILL_LEVELS] as const;
 
+function getMasteryLegendLabel(level: PlaceMasteryLevel): string {
+  if (level === 4) return "Mastered";
+  return `${level}/4`;
+}
+
+function MasteryLegendTooltip({ label, pinned }: { label: string; pinned: boolean }) {
+  return (
+    <span
+      role="tooltip"
+      className={cn(
+        "pointer-events-none absolute bottom-full left-1/2 z-10 mb-1.5 -translate-x-1/2 whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover/swatch:opacity-100 group-focus-visible/swatch:opacity-100",
+        pinned && "opacity-100",
+      )}
+    >
+      <span className="relative block rounded-md bg-slate-900 px-2 py-0.5 text-[10px] font-bold leading-none text-white shadow-md dark:bg-slate-100 dark:text-slate-900">
+        {label}
+        <span
+          aria-hidden
+          className="absolute left-1/2 top-full -translate-x-1/2 border-[4px] border-transparent border-t-slate-900 dark:border-t-slate-100"
+        />
+      </span>
+    </span>
+  );
+}
+
 export function MapProgressFillLegend({
   isDark,
   difficulty,
@@ -82,39 +109,67 @@ export function MapProgressFillLegend({
   className?: string;
 }) {
   const border = getProgressBorder(isDark);
+  const [pinnedLevel, setPinnedLevel] = useState<PlaceMasteryLevel | null>(null);
+  const legendRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (pinnedLevel === null) return;
+
+    function handlePointerDown(event: PointerEvent) {
+      if (legendRef.current?.contains(event.target as Node)) return;
+      setPinnedLevel(null);
+    }
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    return () => document.removeEventListener("pointerdown", handlePointerDown);
+  }, [pinnedLevel]);
 
   return (
     <div
-      className={cn("inline-flex items-center gap-2", className)}
-      role="img"
-      aria-label="Mastery colors from unstarted to complete"
+      ref={legendRef}
+      className={cn("pointer-events-auto inline-flex items-center gap-2", className)}
     >
       <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
         Mastery
       </span>
       <div
-        className="inline-flex overflow-hidden rounded-[5px] shadow-sm"
+        className="inline-flex rounded-[5px] shadow-sm"
         style={{ border: `1px solid ${border.stroke}` }}
+        role="group"
+        aria-label="Mastery colors from unstarted to complete"
       >
         {MAP_LEGEND_LEVELS.map((level, index) => {
           const fill = getProgressFillColor(level, isDark, difficulty);
           const isTop = level === 4;
+          const label = getMasteryLegendLabel(level);
+          const isPinned = pinnedLevel === level;
 
           return (
-            <span
+            <div
               key={level}
-              aria-hidden
-              className={cn(
-                "block h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4",
-                isTop && getMasteryTextureClass(difficulty),
-                index > 0 && "border-l",
-              )}
-              style={{
-                backgroundColor: isTop ? undefined : fill,
-                borderLeftColor: index > 0 ? border.stroke : undefined,
-                boxShadow: isDark ? "inset 0 0 0 1px rgb(255 255 255 / 0.06)" : undefined,
-              }}
-            />
+              className="group/swatch relative"
+            >
+              <button
+                type="button"
+                aria-label={level === 4 ? "Mastered" : `${level} of 4 categories completed`}
+                aria-pressed={isPinned}
+                onClick={() => setPinnedLevel((current) => (current === level ? null : level))}
+                className={cn(
+                  "block h-3.5 w-3.5 shrink-0 cursor-pointer sm:h-4 sm:w-4",
+                  isTop && getMasteryTextureClass(difficulty),
+                  index > 0 && "border-l",
+                  index === 0 && "rounded-l-[4px]",
+                  index === MAP_LEGEND_LEVELS.length - 1 && "rounded-r-[4px]",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-1 dark:focus-visible:ring-teal-400",
+                )}
+                style={{
+                  backgroundColor: isTop ? undefined : fill,
+                  borderLeftColor: index > 0 ? border.stroke : undefined,
+                  boxShadow: isDark ? "inset 0 0 0 1px rgb(255 255 255 / 0.06)" : undefined,
+                }}
+              />
+              <MasteryLegendTooltip label={label} pinned={isPinned} />
+            </div>
           );
         })}
       </div>

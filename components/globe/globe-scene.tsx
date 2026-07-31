@@ -124,12 +124,14 @@ export function useGlobeFrameloop(
   return { frameloop: "demand", bumpActivity };
 }
 
-/** DPR range and antialias settings for the current performance tier. */
+/** DPR range and GL settings for the current performance tier. */
 export function getGlobeCanvasGlSettings(tier: GlobePerfTier) {
   const dprCap = GLOBE_DPR_CAP_BY_TIER[tier];
   return {
     dpr: [1, dprCap] as [number, number],
-    antialias: tier !== "phone",
+    // MSAA breaks alpha compositing for the sun sprites over the transparent
+    // canvas in light mode (open-sky pixels stay invisible on desktop).
+    antialias: false,
     powerPreference: "high-performance" as const,
   };
 }
@@ -673,6 +675,8 @@ export function EarthshineLight({
 
 /** How far the visible sun sits from Earth's center (mesh-local units). */
 const DISTANT_SUN_DISTANCE = 56;
+/** Push the disk center past the limb so the bright core lands in open sky. */
+const SUN_DISK_OUTER_RADIUS = 14;
 
 /**
  * Designed luminous plate (AIA 171 disk + soft circular corona).
@@ -735,15 +739,14 @@ export function GlobeInitialInvalidate() {
 function ignoreRaycast() {}
 
 /**
- * Additive color blending that leaves the destination alpha untouched. The
- * R3F canvas is transparent over a CSS sky, so plain AdditiveBlending would
- * write the sprite's alpha into the framebuffer and let dark texels (the NASA
- * plate's limb) occlude the CSS backdrop as a dark ring. With destination
- * alpha preserved, sprites can only ever brighten what's behind them — in both
- * themes.
+ * Dark mode: additive RGB so the NASA plate's dark limb never rings space black.
+ * Light mode: normal alpha blending so the disk writes opacity over the
+ * transparent canvas — additive + preserved-alpha was hiding the sun outside the
+ * globe/atmosphere silhouette (desktop open sky looked empty).
  */
-const sunAdditive = {
+const sunAdditiveBlend = {
   transparent: true,
+  depthTest: false,
   depthWrite: false,
   blending: THREE.CustomBlending,
   blendEquation: THREE.AddEquation,
@@ -755,112 +758,111 @@ const sunAdditive = {
   toneMapped: false,
 } as const;
 
+const sunSkyBlend = {
+  transparent: true,
+  depthTest: false,
+  depthWrite: false,
+  side: THREE.DoubleSide,
+  toneMapped: false,
+} as const;
+
+/** Draw after the globe/atmosphere so the disk sits in open sky. */
+const SUN_RENDER_ORDER = 50;
+
 function DistantSunVisual({
   isDark,
-  perfTier = "desktop",
+  anchorRef,
 }: {
   isDark: boolean;
-  perfTier?: GlobePerfTier;
+  anchorRef: RefObject<THREE.Mesh | null>;
 }) {
   const groupRef = useRef<THREE.Group>(null);
   const pulseRef = useRef<THREE.Group>(null);
   const [plateMap, glowMap] = useTexture([SUN_TEXTURE_URL, SUN_GLOW_TEXTURE_URL]);
-  const simplified = perfTier === "phone";
+  const sunOffset = useMemo(() => new THREE.Vector3(), []);
 
   useLayoutEffect(() => {
     for (const texture of [plateMap, glowMap]) {
       texture.colorSpace = THREE.SRGBColorSpace;
-      texture.anisotropy = Math.min(simplified ? 1 : 8, texture.anisotropy || 1);
-      texture.premultiplyAlpha = true;
+      texture.anisotropy = 1;
+      texture.premultiplyAlpha = isDark;
     }
-  }, [plateMap, glowMap, simplified]);
+  }, [plateMap, glowMap, isDark]);
 
-  useFrame(({ clock }) => {
-    const group = groupRef.current;
-    if (!group) return;
-    const sun = subsolarDirection();
-    group.position.set(sun.x, sun.y, sun.z).multiplyScalar(DISTANT_SUN_DISTANCE);
-
-    const pulse = pulseRef.current;
-    if (pulse && !simplified) {
-      const breathe = 1 + Math.sin(clock.elapsedTime * 0.55) * 0.03;
-      pulse.scale.setScalar(breathe);
-    }
-  });
-
-  // Soft radial sprites — glow map alpha dies before the quad edge, so nothing
-  // reads as a square or hard ring in additive space. The blending preserves
-  // destination alpha, so the NASA plate is safe over the pale sky too.
   const wash = isDark ? 0.55 : 0.72;
   const bloom = isDark ? 0.65 : 0.85;
   const plate = isDark ? 0.92 : 1;
   const core = isDark ? 0.55 : 0.7;
 
+  useFrame(({ clock }) => {
+    const group = groupRef.current;
+    const anchor = anchorRef.current;
+    if (!group || !anchor) return;
+
+    const sun = subsolarDirection();
+    sunOffset
+      .set(sun.x, sun.y, sun.z)
+      .multiplyScalar(DISTANT_SUN_DISTANCE + SUN_DISK_OUTER_RADIUS);
+    anchor.updateWorldMatrix(true, false);
+    sunOffset.applyMatrix4(anchor.matrixWorld);
+    group.position.copy(sunOffset);
+
+    const pulse = pulseRef.current;
+    if (pulse) {
+      const breathe = 1 + Math.sin(clock.elapsedTime * 0.55) * 0.03;
+      pulse.scale.setScalar(breathe);
+    }
+  });
+
+  if (isDark) {
+    return (
+      <group ref={groupRef} frustumCulled={false} renderOrder={SUN_RENDER_ORDER}>
+        <Billboard follow>
+          <group ref={pulseRef}>
+            <mesh scale={12} raycast={ignoreRaycast} frustumCulled={false} renderOrder={SUN_RENDER_ORDER}>
+              <planeGeometry args={[2, 2]} />
+              <meshBasicMaterial map={glowMap} color="#fff1c2" opacity={wash * 0.38} {...sunAdditiveBlend} />
+            </mesh>
+            <mesh scale={7.2} raycast={ignoreRaycast} frustumCulled={false} renderOrder={SUN_RENDER_ORDER}>
+              <planeGeometry args={[2, 2]} />
+              <meshBasicMaterial map={glowMap} color="#ffe08a" opacity={bloom * 0.48} {...sunAdditiveBlend} />
+            </mesh>
+            <mesh scale={4.6} raycast={ignoreRaycast} frustumCulled={false} renderOrder={SUN_RENDER_ORDER}>
+              <planeGeometry args={[2, 2]} />
+              <meshBasicMaterial map={plateMap} color="#ffffff" opacity={plate * 0.85} {...sunAdditiveBlend} />
+            </mesh>
+            <mesh scale={1.1} raycast={ignoreRaycast} frustumCulled={false} renderOrder={SUN_RENDER_ORDER}>
+              <planeGeometry args={[2, 2]} />
+              <meshBasicMaterial map={glowMap} color="#ffffff" opacity={core * 0.72} {...sunAdditiveBlend} />
+            </mesh>
+          </group>
+        </Billboard>
+      </group>
+    );
+  }
+
+  // Light mode: normal alpha over the CSS sky (additive + preserved alpha hid the
+  // disk outside the globe silhouette on desktop).
   return (
-    <group ref={groupRef} frustumCulled={false}>
+    <group ref={groupRef} frustumCulled={false} renderOrder={SUN_RENDER_ORDER}>
       <Billboard follow>
         <group ref={pulseRef}>
-          {!simplified ? (
-            <>
-              <mesh scale={14} raycast={ignoreRaycast} frustumCulled={false}>
-                <planeGeometry args={[2, 2]} />
-                <meshBasicMaterial
-                  map={glowMap}
-                  color="#fff1c2"
-                  opacity={wash * 0.35}
-                  {...sunAdditive}
-                />
-              </mesh>
-              <mesh scale={9} raycast={ignoreRaycast} frustumCulled={false}>
-                <planeGeometry args={[2, 2]} />
-                <meshBasicMaterial
-                  map={glowMap}
-                  color="#ffc15a"
-                  opacity={bloom * 0.45}
-                  {...sunAdditive}
-                />
-              </mesh>
-            </>
-          ) : null}
-          <mesh scale={simplified ? 7 : 5.6} raycast={ignoreRaycast} frustumCulled={false}>
+          <mesh scale={14} raycast={ignoreRaycast} frustumCulled={false} renderOrder={SUN_RENDER_ORDER}>
             <planeGeometry args={[2, 2]} />
-            <meshBasicMaterial
-              map={glowMap}
-              color="#ffe08a"
-              opacity={bloom * (simplified ? 0.4 : 0.55)}
-              {...sunAdditive}
-            />
+            <meshBasicMaterial map={glowMap} color="#fff8e7" opacity={wash * 0.55} {...sunSkyBlend} />
           </mesh>
-
-          {/* Textured disk + baked corona — both themes (see blending note). */}
-          <mesh scale={simplified ? 4.2 : 5.4} raycast={ignoreRaycast} frustumCulled={false}>
+          <mesh scale={8.5} raycast={ignoreRaycast} frustumCulled={false} renderOrder={SUN_RENDER_ORDER}>
             <planeGeometry args={[2, 2]} />
-            <meshBasicMaterial map={plateMap} opacity={plate} {...sunAdditive} />
+            <meshBasicMaterial map={glowMap} color="#ffe08a" opacity={bloom * 0.75} {...sunSkyBlend} />
           </mesh>
-
-          {/* Soft white-hot core (same glow sprite, small). */}
-          {!simplified ? (
-            <>
-              <mesh scale={2.1} raycast={ignoreRaycast} frustumCulled={false}>
-                <planeGeometry args={[2, 2]} />
-                <meshBasicMaterial
-                  map={glowMap}
-                  color="#fffaf0"
-                  opacity={core * 0.55}
-                  {...sunAdditive}
-                />
-              </mesh>
-              <mesh scale={0.95} raycast={ignoreRaycast} frustumCulled={false}>
-                <planeGeometry args={[2, 2]} />
-                <meshBasicMaterial
-                  map={glowMap}
-                  color="#ffffff"
-                  opacity={core * 0.75}
-                  {...sunAdditive}
-                />
-              </mesh>
-            </>
-          ) : null}
+          <mesh scale={4.8} raycast={ignoreRaycast} frustumCulled={false} renderOrder={SUN_RENDER_ORDER}>
+            <planeGeometry args={[2, 2]} />
+            <meshBasicMaterial map={glowMap} color="#fff4d0" opacity={0.95} {...sunSkyBlend} />
+          </mesh>
+          <mesh scale={1.2} raycast={ignoreRaycast} frustumCulled={false} renderOrder={SUN_RENDER_ORDER}>
+            <planeGeometry args={[2, 2]} />
+            <meshBasicMaterial map={glowMap} color="#ffffff" opacity={core * 0.9} {...sunSkyBlend} />
+          </mesh>
         </group>
       </Billboard>
     </group>
@@ -869,21 +871,20 @@ function DistantSunVisual({
 
 /**
  * Bright distant sun in outer space, locked to the real subsolar direction.
- * Always mounted (independent of the day/night lighting toggle) as a child of
- * the earth mesh so it stays aligned with geography while the globe spins.
- * Both themes render the NASA SDO AIA 171 plate plus glow sprites; the custom
- * blending keeps the plate's dark limb from ringing against a pale sky.
+ * Sibling of the planet mesh (via anchorRef) so it renders after the atmosphere
+ * and stays aligned with geography while the globe spins.
  */
 export function DistantSun({
   isDark,
-  perfTier = "desktop",
+  anchorRef,
 }: {
   isDark: boolean;
   perfTier?: GlobePerfTier;
+  anchorRef: RefObject<THREE.Mesh | null>;
 }) {
   return (
     <Suspense fallback={null}>
-      <DistantSunVisual isDark={isDark} perfTier={perfTier} />
+      <DistantSunVisual isDark={isDark} anchorRef={anchorRef} />
     </Suspense>
   );
 }
@@ -1029,6 +1030,8 @@ export function GlobePlanet({
   meshRef,
   meshProps,
 }: GlobePlanetProps) {
+  const internalMeshRef = useRef<THREE.Mesh>(null);
+  const planetMeshRef = meshRef ?? internalMeshRef;
   const { map, metalnessMap, roughnessMap, normalMap } = useGlobeTexture(profile, {
     difficulty,
     usMode,
@@ -1040,7 +1043,7 @@ export function GlobePlanet({
 
   return (
     <>
-      <mesh ref={meshRef} {...meshProps}>
+      <mesh ref={planetMeshRef} {...meshProps}>
         <sphereGeometry args={[1, segments, segments]} />
         <GlobeSurfaceMaterial
           map={map}
@@ -1050,11 +1053,11 @@ export function GlobePlanet({
           perfTier={perfTier}
         />
         <GlobeCityLights dayNight={dayNight} perfTier={perfTier} />
-        <DistantSun isDark={isDark} perfTier={perfTier} />
         <EarthSunLight dayNight={dayNight} />
         <EarthshineLight isDark={isDark} dayNight={dayNight} />
       </mesh>
       <GlobeAtmosphere isDark={isDark} perfTier={perfTier} controlsRef={controlsRef} />
+      <DistantSun isDark={isDark} perfTier={perfTier} anchorRef={planetMeshRef} key={isDark ? "sun-dark" : "sun-light"} />
     </>
   );
 }

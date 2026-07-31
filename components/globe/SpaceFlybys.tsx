@@ -19,8 +19,8 @@ const METEOR_PATH_HALF_LEN = 4.5;
 const METEOR_STREAK_LEN = 0.55;
 const METEOR_STREAK_WIDTH = 0.012;
 
-const FLYBY_SPAWN_MIN_S = 90;
-const FLYBY_SPAWN_MAX_S = 180;
+const FLYBY_SPAWN_MIN_S = 60;
+const FLYBY_SPAWN_MAX_S = 120;
 const FLYBY_DURATION_MIN_S = 10;
 const FLYBY_DURATION_MAX_S = 16;
 const FLYBY_PERIAPSIS_MIN = 1.5;
@@ -151,10 +151,8 @@ type SpaceFlybysProps = {
 };
 
 /**
- * World-space meteors and a rare flyby — UFO in dark mode, a generic caped
- * hero in light mode. Mount as a sibling of the planet (not inside the Earth
- * spin group) so depth testing against the globe works and orbiting the camera
- * changes parallax.
+ * World-space meteors (dark mode only) and a rare flyby — UFO in dark mode, a
+ * generic caped hero in light mode.
  */
 export function SpaceFlybys({
   enabled,
@@ -199,8 +197,8 @@ export function SpaceFlybys({
   const elapsedRef = useRef(0);
   const wasEnabledRef = useRef(false);
 
-  const streakColor = isDark ? "#e8f4ff" : "#64748b";
-  const streakOpacityScale = isDark ? 0.95 : 0.45;
+  const streakColor = "#e8f4ff";
+  const streakOpacityScale = 0.95;
   const ufoBody = isDark ? "#9aa3b2" : "#788193";
   const ufoDome = isDark ? "#7dd3c7" : "#5b9a92";
   const ufoGlow = isDark ? "#a7f3d0" : "#6ee7b7";
@@ -214,13 +212,21 @@ export function SpaceFlybys({
       }
       if (flybyGroupRef.current) flybyGroupRef.current.visible = false;
     }
+    if (!isDark) {
+      for (const slot of meteorsRef.current) slot.active = false;
+      for (const mat of meteorMats.current) {
+        if (mat) mat.opacity = 0;
+      }
+    }
     if (enabled && !wasEnabledRef.current) {
       elapsedRef.current = 0;
-      nextMeteorAtRef.current = randRange(METEOR_SPAWN_MIN_S * 0.4, METEOR_SPAWN_MAX_S * 0.6);
+      if (isDark) {
+        nextMeteorAtRef.current = randRange(METEOR_SPAWN_MIN_S * 0.4, METEOR_SPAWN_MAX_S * 0.6);
+      }
       nextFlybyAtRef.current = randRange(FLYBY_SPAWN_MIN_S, FLYBY_SPAWN_MAX_S);
     }
     wasEnabledRef.current = enabled;
-  }, [enabled]);
+  }, [enabled, isDark]);
 
   useFrame((_, delta) => {
     if (!enabled) return;
@@ -229,8 +235,8 @@ export function SpaceFlybys({
     elapsedRef.current += dt;
     let anyActive = false;
 
-    // --- Meteor spawn ---
-    if (elapsedRef.current >= nextMeteorAtRef.current) {
+    // --- Meteor spawn (dark mode only) ---
+    if (isDark && elapsedRef.current >= nextMeteorAtRef.current) {
       const free = meteorsRef.current.find((m) => !m.active);
       if (free) {
         randomFlybyChord(
@@ -271,7 +277,8 @@ export function SpaceFlybys({
         elapsedRef.current + randRange(FLYBY_SPAWN_MIN_S, FLYBY_SPAWN_MAX_S);
     }
 
-    // --- Update meteors ---
+    // --- Update meteors (dark mode only) ---
+    if (isDark) {
     for (let i = 0; i < MAX_METEORS; i++) {
       const slot = meteorsRef.current[i];
       const mesh = meteorMeshes.current[i];
@@ -302,6 +309,7 @@ export function SpaceFlybys({
       const opacity = meteorOpacity(u) * streakOpacityScale;
       mat.opacity = opacity;
       mesh.visible = opacity > 0.01;
+    }
     }
 
     // --- Update flyby (UFO or hero) ---
@@ -366,7 +374,8 @@ export function SpaceFlybys({
 
   return (
     <group ref={groupRef}>
-      {Array.from({ length: MAX_METEORS }, (_, i) => (
+      {isDark
+        ? Array.from({ length: MAX_METEORS }, (_, i) => (
         <mesh
           key={i}
           ref={(node) => {
@@ -390,7 +399,8 @@ export function SpaceFlybys({
             toneMapped={false}
           />
         </mesh>
-      ))}
+      ))
+        : null}
 
       {isDark ? (
         <group ref={flybyGroupRef} visible={false} scale={flybyScale} frustumCulled={false}>
