@@ -9,9 +9,11 @@ import {
 } from "@/lib/map-colors";
 import { getMasterySolidColor } from "@/lib/map-mastery-fx";
 import {
+  createGoldPbrMapSet,
   createMasteryGoldPattern,
   MASTERY_GOLD_TILE_BASE_PX,
   MASTERY_GOLD_WARM_OVERLAY,
+  paintGoldPbrForPath,
 } from "@/lib/mastery-gold-texture";
 import { getPlaceMasteryLevel } from "@/lib/map-progress";
 import {
@@ -326,6 +328,15 @@ export type PaintCloseupOptions = {
   textureWidth?: number;
   /** Preloaded gold foil albedo so Normal mastery-4 keeps its texture up close. */
   goldColorImage?: HTMLImageElement | null;
+  goldRoughnessImage?: HTMLImageElement | null;
+  goldNormalImage?: HTMLImageElement | null;
+};
+
+export type CloseupPaintResult = {
+  color: HTMLCanvasElement;
+  metalnessCanvas: HTMLCanvasElement | null;
+  roughnessCanvas: HTMLCanvasElement | null;
+  normalCanvas: HTMLCanvasElement | null;
 };
 
 /** Grain scale cap so the tile never stretches into blur at extreme zoom. */
@@ -346,8 +357,10 @@ export function paintGlobeCloseupRegion(
     selectedCode = null,
     textureWidth = 2048,
     goldColorImage = null,
+    goldRoughnessImage = null,
+    goldNormalImage = null,
   }: PaintCloseupOptions = {},
-): HTMLCanvasElement {
+): CloseupPaintResult {
   const aspect = (window.halfY * 2) / Math.max(window.halfX * 2, 1e-6);
   const width = Math.max(64, Math.round(textureWidth));
   const height = Math.max(64, Math.round(width * aspect));
@@ -385,12 +398,37 @@ export function paintGlobeCloseupRegion(
       : null;
 
   const shapes = collectCloseupShapes(data, profile, difficulty, usMode, window);
+  const goldTilePx = Math.max(40, Math.round(MASTERY_GOLD_TILE_BASE_PX * effectiveScale));
+  const useGoldPbr =
+    difficulty === "medium" &&
+    goldRoughnessImage != null &&
+    shapes.some((shape) => shape.level === 4);
+
+  let metalnessCanvas: HTMLCanvasElement | null = null;
+  let roughnessCanvas: HTMLCanvasElement | null = null;
+  let normalCanvas: HTMLCanvasElement | null = null;
+  let pbrMaps: ReturnType<typeof createGoldPbrMapSet> | null = null;
+  if (useGoldPbr) {
+    pbrMaps = createGoldPbrMapSet(width, height);
+    metalnessCanvas = pbrMaps.metalnessCanvas;
+    roughnessCanvas = pbrMaps.roughnessCanvas;
+    normalCanvas = pbrMaps.normalCanvas;
+  }
 
   for (const shape of shapes) {
     const path = buildPatchPath(shape.rings, window, width, height);
     const level = shape.level as 0 | 1 | 2 | 3 | 4;
     if (level === 4) {
       ctx.fillStyle = goldPattern ?? getMasterySolidColor(difficulty);
+      if (pbrMaps) {
+        paintGoldPbrForPath(
+          pbrMaps,
+          path,
+          goldTilePx,
+          goldRoughnessImage,
+          goldNormalImage,
+        );
+      }
     } else {
       ctx.fillStyle = getProgressFillColor(level, isDark, difficulty);
     }
@@ -435,7 +473,12 @@ export function paintGlobeCloseupRegion(
   }
 
   applyEdgeFeather(ctx, width, height);
-  return canvas;
+  return {
+    color: canvas,
+    metalnessCanvas,
+    roughnessCanvas,
+    normalCanvas,
+  };
 }
 
 /**

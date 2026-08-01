@@ -5,6 +5,9 @@ import { useFrame, useThree } from "@react-three/fiber";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
 import {
+  globeGoldSurfaceProps,
+} from "@/components/globe/globe-scene";
+import {
   buildCloseupPatchGeometry,
   closeupWindowNeedsRebuild,
   disposeCloseupResources,
@@ -22,7 +25,7 @@ import {
   type GlobePerfTier,
 } from "@/lib/globe-performance";
 import type { GlobeUsMode } from "@/lib/globe-texture";
-import { loadMasteryGoldColorImage } from "@/lib/mastery-gold-texture";
+import { loadMasteryGoldPbrImages } from "@/lib/mastery-gold-texture";
 import type { MapProgressDifficulty, Profile } from "@/lib/types";
 
 type GlobeCloseupLayerProps = {
@@ -44,6 +47,7 @@ const FADE_SPEED = 5; // opacity units per second (~200ms 0→1)
 type PatchResources = {
   mesh: THREE.Mesh;
   texture: THREE.CanvasTexture;
+  pbrTextures: THREE.CanvasTexture[];
   geometry: THREE.BufferGeometry;
   material: THREE.MeshLambertMaterial | THREE.MeshStandardMaterial;
   window: CloseupWindow;
@@ -60,6 +64,8 @@ type PaintInputs = {
   forceActive: boolean;
   focusOnly: boolean;
   goldColorImage: HTMLImageElement | null;
+  goldRoughnessImage: HTMLImageElement | null;
+  goldNormalImage: HTMLImageElement | null;
 };
 
 function paintKeyOf(inputs: PaintInputs): string {
@@ -71,6 +77,7 @@ function paintKeyOf(inputs: PaintInputs): string {
     inputs.selectedCode ?? "",
     inputs.textureWidth,
     inputs.goldColorImage ? "gold" : "flat",
+    inputs.goldRoughnessImage ? "pbr" : "flat",
   ].join("|");
 }
 
@@ -107,21 +114,25 @@ export function GlobeCloseupLayer({
   const lookDirRef = useRef(new THREE.Vector3());
   const localCameraRef = useRef(new THREE.Vector3());
 
-  const [goldColorImage, setGoldColorImage] = useState<HTMLImageElement | null>(null);
+  const [goldMaps, setGoldMaps] = useState<{
+    color: HTMLImageElement | null;
+    roughness: HTMLImageElement | null;
+    normal: HTMLImageElement | null;
+  }>({ color: null, roughness: null, normal: null });
 
   useEffect(() => {
     if (difficulty !== "medium") {
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setGoldColorImage(null);
+      setGoldMaps({ color: null, roughness: null, normal: null });
       return;
     }
     let cancelled = false;
-    loadMasteryGoldColorImage()
-      .then((image) => {
-        if (!cancelled) setGoldColorImage(image);
+    loadMasteryGoldPbrImages()
+      .then((images) => {
+        if (!cancelled) setGoldMaps(images);
       })
       .catch(() => {
-        if (!cancelled) setGoldColorImage(null);
+        if (!cancelled) setGoldMaps({ color: null, roughness: null, normal: null });
       });
     return () => {
       cancelled = true;
@@ -137,7 +148,9 @@ export function GlobeCloseupLayer({
     textureWidth: GLOBE_CLOSEUP_TEXTURE_WIDTH_BY_TIER[perfTier],
     forceActive,
     focusOnly: isGlobeCloseupFocusOnly(perfTier),
-    goldColorImage,
+    goldColorImage: goldMaps.color,
+    goldRoughnessImage: goldMaps.roughness,
+    goldNormalImage: goldMaps.normal,
   });
   inputsRef.current = {
     profile,
@@ -148,7 +161,9 @@ export function GlobeCloseupLayer({
     textureWidth: GLOBE_CLOSEUP_TEXTURE_WIDTH_BY_TIER[perfTier],
     forceActive,
     focusOnly: isGlobeCloseupFocusOnly(perfTier),
-    goldColorImage,
+    goldColorImage: goldMaps.color,
+    goldRoughnessImage: goldMaps.roughness,
+    goldNormalImage: goldMaps.normal,
   };
 
   const clearDebounce = () => {
@@ -162,6 +177,9 @@ export function GlobeCloseupLayer({
     if (!patch) return;
     groupRef.current?.remove(patch.mesh);
     disposeCloseupResources(patch.texture, patch.geometry, patch.material);
+    for (const pbrTexture of patch.pbrTextures) {
+      pbrTexture.dispose();
+    }
   };
 
   const ensureData = () => {
@@ -173,21 +191,34 @@ export function GlobeCloseupLayer({
     });
   };
 
+  const configurePbrTexture = (canvas: HTMLCanvasElement) => {
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.colorSpace = THREE.NoColorSpace;
+    texture.generateMipmaps = false;
+    texture.minFilter = THREE.LinearFilter;
+    texture.magFilter = THREE.LinearFilter;
+    texture.anisotropy = Math.min(4, gl.capabilities.getMaxAnisotropy());
+    texture.needsUpdate = true;
+    return texture;
+  };
+
   const buildPatch = (window: CloseupWindow): PatchResources | null => {
     const data = dataRef.current;
     if (!data) return null;
     const inputs = inputsRef.current;
 
-    const canvas = paintGlobeCloseupRegion(data, inputs.profile, window, {
+    const painted = paintGlobeCloseupRegion(data, inputs.profile, window, {
       difficulty: inputs.difficulty,
       usMode: inputs.usMode,
       isDark: inputs.isDark,
       selectedCode: inputs.selectedCode,
       textureWidth: inputs.textureWidth,
       goldColorImage: inputs.goldColorImage,
+      goldRoughnessImage: inputs.goldRoughnessImage,
+      goldNormalImage: inputs.goldNormalImage,
     });
 
-    const texture = new THREE.CanvasTexture(canvas);
+    const texture = new THREE.CanvasTexture(painted.color);
     texture.colorSpace = THREE.SRGBColorSpace;
     texture.generateMipmaps = false;
     texture.minFilter = THREE.LinearFilter;
@@ -195,12 +226,26 @@ export function GlobeCloseupLayer({
     texture.anisotropy = Math.min(4, gl.capabilities.getMaxAnisotropy());
     texture.needsUpdate = true;
 
+    const pbrTextures: THREE.CanvasTexture[] = [];
+    const hasMetalMaps = Boolean(painted.metalnessCanvas && painted.roughnessCanvas);
+    const metalnessMap = painted.metalnessCanvas
+      ? configurePbrTexture(painted.metalnessCanvas)
+      : null;
+    const roughnessMap = painted.roughnessCanvas
+      ? configurePbrTexture(painted.roughnessCanvas)
+      : null;
+    const normalMap = painted.normalCanvas ? configurePbrTexture(painted.normalCanvas) : null;
+    if (metalnessMap) pbrTextures.push(metalnessMap);
+    if (roughnessMap) pbrTextures.push(roughnessMap);
+    if (normalMap) pbrTextures.push(normalMap);
+
     const geometry = buildCloseupPatchGeometry(window);
+    const goldProps = globeGoldSurfaceProps(hasMetalMaps);
     // Lit material matching the planet surface for this tier, so the patch
     // shades exactly like the globe beneath it — zooming across the activation
     // distance must not shift tone.
     const material =
-      perfTier === "phone"
+      perfTier === "phone" && !hasMetalMaps
         ? new THREE.MeshLambertMaterial({
             map: texture,
             transparent: true,
@@ -210,8 +255,16 @@ export function GlobeCloseupLayer({
           })
         : new THREE.MeshStandardMaterial({
             map: texture,
-            roughness: 0.72,
-            metalness: 0.04,
+            metalnessMap: metalnessMap ?? undefined,
+            roughnessMap: roughnessMap ?? undefined,
+            normalMap: normalMap ?? undefined,
+            normalScale: goldProps.normalScale,
+            emissiveMap: hasMetalMaps ? metalnessMap! : undefined,
+            emissive: goldProps.emissive,
+            emissiveIntensity: goldProps.emissiveIntensity,
+            envMapIntensity: goldProps.envMapIntensity,
+            roughness: goldProps.roughness,
+            metalness: goldProps.metalness,
             transparent: true,
             opacity: 0,
             depthWrite: false,
@@ -224,6 +277,7 @@ export function GlobeCloseupLayer({
     return {
       mesh,
       texture,
+      pbrTextures,
       geometry,
       material,
       window,

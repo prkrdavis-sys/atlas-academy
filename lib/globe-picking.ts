@@ -1,8 +1,13 @@
+import * as THREE from "three";
+import { clientToNdc } from "@/lib/globe-grab";
 import {
   GLOBE_TEXTURE_DATA,
   type GlobeCountryShape,
   type GlobeUsMode,
 } from "@/lib/globe-texture";
+
+const _pickNdc = new THREE.Vector2();
+const _pickRaycaster = new THREE.Raycaster();
 
 type ShapeBounds = {
   shape: GlobeCountryShape;
@@ -99,4 +104,20 @@ export function pickGlobePlaceAtUv(
   }
 
   return null;
+}
+
+/** Raycast the globe mesh at client coordinates and resolve a place code. */
+export function pickGlobePlaceAtClient(
+  clientX: number,
+  clientY: number,
+  rect: DOMRect,
+  camera: THREE.Camera,
+  mesh: THREE.Object3D,
+  usMode: GlobeUsMode,
+): string | null {
+  clientToNdc(clientX, clientY, rect, _pickNdc);
+  _pickRaycaster.setFromCamera(_pickNdc, camera);
+  const hit = _pickRaycaster.intersectObject(mesh, false)[0];
+  if (!hit?.uv) return null;
+  return pickGlobePlaceAtUv(hit.uv.x, hit.uv.y, usMode);
 }

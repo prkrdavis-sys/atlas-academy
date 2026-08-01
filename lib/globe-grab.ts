@@ -75,8 +75,6 @@ function applyTrackballOrbit(
   minPolar: number,
   maxPolar: number,
 ): void {
-  // Same convention as the on-surface grab: rotate the camera by the sphere
-  // arc from `fromUnit` toward `toUnit`.
   _quat.setFromUnitVectors(toUnit, fromUnit);
   _offset.copy(camera.position).sub(target).applyQuaternion(_quat);
 
@@ -108,55 +106,29 @@ function applySphericalOrbitStep(
   camera.lookAt(target);
 }
 
-/**
- * Incremental virtual trackball for off-disc drags. Uses the same geometry as
- * the on-surface grab so speed and direction stay continuous at the limb.
- */
-function orbitCameraByPointerDelta(
+/** Screen-pixel drag while off the disc — matches on-surface grab signs via polish. */
+function orbitCameraByScreenDelta(
   camera: THREE.PerspectiveCamera,
   target: THREE.Vector3,
-  lastPointerUnit: THREE.Vector3,
-  clientX: number,
-  clientY: number,
+  deltaX: number,
+  deltaY: number,
   rect: DOMRect,
-  radius: number,
   minPolar: number,
   maxPolar: number,
 ): void {
-  if (
-    pointerGlobeUnit(
-      clientX,
-      clientY,
-      rect,
-      camera,
-      target,
-      radius,
-      _pointerUnit,
-      true,
-    ) === null
-  ) {
-    return;
-  }
+  if (deltaX === 0 && deltaY === 0) return;
 
-  applyTrackballOrbit(
-    camera,
-    target,
-    lastPointerUnit,
-    _pointerUnit,
-    minPolar,
-    maxPolar,
-  );
-  lastPointerUnit.copy(_pointerUnit);
+  const fovY = THREE.MathUtils.degToRad(camera.fov);
+  const fovX = 2 * Math.atan(Math.tan(fovY / 2) * Math.max(camera.aspect, 1e-6));
+  const dTheta = (-deltaX / rect.width) * fovX;
+  const dPhi = (deltaY / rect.height) * fovY;
+  applySphericalOrbitStep(camera, target, dTheta, dPhi, minPolar, maxPolar);
 }
 
 /**
- * Orbit a Y-up camera so `grabUnit` stays under the pointer.
- *
- * 1. Geometric trackball step when the pointer ray hits the sphere.
- * 2. Incremental virtual trackball when the pointer leaves the globe disc.
- * 3. Snap to a Y-up spherical orbit (OrbitControls-compatible, no roll).
- * 4. Tiny clamped screen-space polish to cancel snap slip — gain is capped so
- *    close-ups cannot overshoot.
+ * Orbit a Y-up camera so `grabUnit` stays under the pointer on the disc, and
+ * follow cursor/finger motion with screen deltas once the pointer leaves the
+ * disc (latched for the rest of the drag).
  */
 export function orbitCameraToKeepGrab(
   camera: THREE.PerspectiveCamera,
@@ -169,18 +141,17 @@ export function orbitCameraToKeepGrab(
   radius = 1,
   minPolar = 0.01,
   maxPolar = Math.PI - 0.01,
-  /** Once the pointer leaves the disc, stay on incremental trackball for this drag. */
   screenDragOnly = false,
+  deltaX = 0,
+  deltaY = 0,
 ): void {
   if (screenDragOnly) {
-    orbitCameraByPointerDelta(
+    orbitCameraByScreenDelta(
       camera,
       target,
-      lastPointerUnit,
-      clientX,
-      clientY,
+      deltaX,
+      deltaY,
       rect,
-      radius,
       minPolar,
       maxPolar,
     );
@@ -199,14 +170,12 @@ export function orbitCameraToKeepGrab(
   );
 
   if (pointerResult !== "hit") {
-    orbitCameraByPointerDelta(
+    orbitCameraByScreenDelta(
       camera,
       target,
-      lastPointerUnit,
-      clientX,
-      clientY,
+      deltaX,
+      deltaY,
       rect,
-      radius,
       minPolar,
       maxPolar,
     );
@@ -224,7 +193,6 @@ export function orbitCameraToKeepGrab(
   camera.updateMatrixWorld();
   lastPointerUnit.copy(_pointerUnit);
 
-  // Polish: match OrbitControls drag signs, but clamp the step for close-ups.
   clientToNdc(clientX, clientY, rect, _ndc);
   _grabWorld.copy(grabUnit).multiplyScalar(radius).add(target);
   _grabProjected.copy(_grabWorld).project(camera);

@@ -15,7 +15,6 @@ import * as THREE from "three";
 import {
   GLOBE_IDLE_RESET_MS,
   GLOBE_ROTATION_SPEED,
-  GLOBE_TAP_TRAVEL_THRESHOLD,
   getGlobeCanvasGlSettings,
   getGlobeStarCount,
   GlobeAssetPreloader,
@@ -23,6 +22,7 @@ import {
   GlobeFillLights,
   globeFillDistance,
   GlobeInitialInvalidate,
+  GlobeMetalReflection,
   GlobePlanet,
   GlobeRecoveryReset,
   useGlobeCanvasKey,
@@ -37,7 +37,7 @@ import { MapScrollDownButton } from "@/components/MapScrollDownButton";
 import { MapZoomControls } from "@/components/MapZoomControls";
 import { ProgressMapContainer } from "@/components/ProgressMapOverlays";
 import { MapProgressFillLegend } from "@/components/PlaceMapProgressPanel";
-import { pickGlobePlaceAtUv } from "@/lib/globe-picking";
+import { pickGlobePlaceAtClient } from "@/lib/globe-picking";
 import {
   GLOBE_DEFAULT_POLAR,
   GLOBE_MESH_Y_ROTATION,
@@ -455,8 +455,6 @@ function KeepFrameloopAlive({
   return null;
 }
 
-type TapState = { pointerId: number; lastX: number; lastY: number; traveled: number };
-
 type GlobeSceneProps = {
   profile: Profile | null;
   difficulty: MapProgressDifficulty;
@@ -468,6 +466,8 @@ type GlobeSceneProps = {
   spinGroupRef: RefObject<THREE.Group | null>;
   controlsRef: RefObject<OrbitControlsImpl | null>;
   onPickPlace: (code: string | null) => void;
+  onGrabStart?: () => void;
+  onPointerDownOnGlobe?: () => void;
 };
 
 /** The planet mesh with tap-to-select picking via texture UVs. */
@@ -482,13 +482,12 @@ function PickableGlobe({
   spinGroupRef,
   controlsRef,
   onPickPlace,
+  onGrabStart,
+  onPointerDownOnGlobe,
 }: GlobeSceneProps) {
   const gl = useThree((state) => state.gl);
   const camera = useThree((state) => state.camera);
   const globeMeshRef = useRef<THREE.Mesh | null>(null);
-  const tapRef = useRef<TapState | null>(null);
-  const raycasterRef = useRef(new THREE.Raycaster());
-  const ndcRef = useRef(new THREE.Vector2());
 
   // No declarative rotation on the spin group — R3F prop updates fight place-focus.
   // Seed the default Europe-facing yaw once the group exists.
@@ -497,68 +496,23 @@ function PickableGlobe({
     if (group) group.rotation.set(0, GLOBE_MESH_Y_ROTATION, 0);
   }, [spinGroupRef]);
 
-  useEffect(() => {
-    const el = gl.domElement;
-
-    const onPointerDown = (event: PointerEvent) => {
-      if (event.pointerType === "mouse" && event.button !== 0) return;
-      tapRef.current = {
-        pointerId: event.pointerId,
-        lastX: event.clientX,
-        lastY: event.clientY,
-        traveled: 0,
-      };
-    };
-
-    const onPointerMove = (event: PointerEvent) => {
-      const tap = tapRef.current;
-      if (!tap || tap.pointerId !== event.pointerId) return;
-      tap.traveled +=
-        Math.abs(event.clientX - tap.lastX) + Math.abs(event.clientY - tap.lastY);
-      tap.lastX = event.clientX;
-      tap.lastY = event.clientY;
-    };
-
-    const onPointerUp = (event: PointerEvent) => {
-      const tap = tapRef.current;
-      if (!tap || tap.pointerId !== event.pointerId) return;
-      tapRef.current = null;
-      if (tap.traveled >= GLOBE_TAP_TRAVEL_THRESHOLD) return;
-
+  const handleTap = useCallback(
+    (clientX: number, clientY: number) => {
       const mesh = globeMeshRef.current;
       if (!mesh) return;
-
-      const rect = el.getBoundingClientRect();
-      ndcRef.current.set(
-        ((event.clientX - rect.left) / rect.width) * 2 - 1,
-        -((event.clientY - rect.top) / rect.height) * 2 + 1,
+      const rect = gl.domElement.getBoundingClientRect();
+      const code = pickGlobePlaceAtClient(
+        clientX,
+        clientY,
+        rect,
+        camera,
+        mesh,
+        usMode,
       );
-      raycasterRef.current.setFromCamera(ndcRef.current, camera);
-      const hit = raycasterRef.current.intersectObject(mesh, false)[0];
-      if (!hit?.uv) {
-        onPickPlace(null);
-        return;
-      }
-      onPickPlace(pickGlobePlaceAtUv(hit.uv.x, hit.uv.y, usMode));
-    };
-
-    const onPointerCancel = (event: PointerEvent) => {
-      const tap = tapRef.current;
-      if (tap?.pointerId === event.pointerId) tapRef.current = null;
-    };
-
-    el.addEventListener("pointerdown", onPointerDown);
-    el.addEventListener("pointermove", onPointerMove);
-    el.addEventListener("pointerup", onPointerUp);
-    el.addEventListener("pointercancel", onPointerCancel);
-
-    return () => {
-      el.removeEventListener("pointerdown", onPointerDown);
-      el.removeEventListener("pointermove", onPointerMove);
-      el.removeEventListener("pointerup", onPointerUp);
-      el.removeEventListener("pointercancel", onPointerCancel);
-    };
-  }, [camera, gl, onPickPlace, usMode]);
+      onPickPlace(code);
+    },
+    [camera, gl, onPickPlace, usMode],
+  );
 
   return (
     <group ref={spinGroupRef}>
@@ -572,6 +526,12 @@ function PickableGlobe({
         perfTier={perfTier}
         controlsRef={controlsRef}
         meshRef={globeMeshRef}
+      />
+      <GlobeGrabOrbit
+        controlsRef={controlsRef}
+        onGrabStart={onGrabStart}
+        onPointerDownOnGlobe={onPointerDownOnGlobe}
+        onTap={handleTap}
       />
       <GlobeCloseupLayer
         profile={profile}
@@ -687,7 +647,16 @@ export default function InteractiveGlobe({
     setAutoSpin(false);
     bumpActivity();
     armIdleReset();
+    const controls = controlsRef.current;
+    if (controls) controls.enabled = true;
   }, [bumpActivity, armIdleReset]);
+
+  const ensureControlsReady = useCallback(() => {
+    setSettleMode(null);
+    setIntroCancelled(true);
+    const controls = controlsRef.current;
+    if (controls) controls.enabled = true;
+  }, []);
 
   useEffect(() => () => clearIdleResetTimer(), [clearIdleResetTimer]);
 
@@ -778,6 +747,7 @@ export default function InteractiveGlobe({
             <GlobeAssetPreloader />
             <GlobeInitialInvalidate />
             <GlobeFillLights isDark={isDark} dayNight={dayNight} />
+            <GlobeMetalReflection perfTier={perfTier} />
             {isDark ? (
               <Stars
                 radius={60}
@@ -799,6 +769,8 @@ export default function InteractiveGlobe({
               perfTier={perfTier}
               spinGroupRef={spinGroupRef}
               controlsRef={controlsRef}
+              onGrabStart={noteUserInteraction}
+              onPointerDownOnGlobe={ensureControlsReady}
               onPickPlace={(code) => {
                 if (code && code === highlightedCode) {
                   bumpActivity();
@@ -815,11 +787,6 @@ export default function InteractiveGlobe({
               isDark={isDark}
               perfTier={perfTier}
               onActivity={bumpActivity}
-            />
-            <GlobeGrabOrbit
-              controlsRef={controlsRef}
-              radius={GLOBE_RADIUS}
-              onGrabStart={noteUserInteraction}
             />
             <SyncOuterSpaceVisible
               controlsRef={controlsRef}

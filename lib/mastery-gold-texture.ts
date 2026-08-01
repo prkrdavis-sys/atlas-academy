@@ -11,6 +11,89 @@ export const MASTERY_GOLD_WARM_OVERLAY = "rgba(255, 120, 20, 0.58)";
 /** Tile width at 2048px texture width; smaller repeats = finer crinkle. */
 export const MASTERY_GOLD_TILE_BASE_PX = 64;
 
+/** Matte land/ocean roughness (high value = low specular). */
+export const GOLD_PBR_BASE_ROUGHNESS = "#c8c8c8";
+/** Brushed gold roughness fallback when the image is missing (low = shinier). */
+export const GOLD_PBR_GOLD_ROUGHNESS = "#383838";
+/** Flat tangent-space normal for non-gold areas (OpenGL +Y). */
+export const GOLD_PBR_FLAT_NORMAL = "#8080ff";
+
+export type GoldPbrMapSet = {
+  metalnessCanvas: HTMLCanvasElement;
+  roughnessCanvas: HTMLCanvasElement;
+  normalCanvas: HTMLCanvasElement;
+  metalCtx: CanvasRenderingContext2D;
+  roughCtx: CanvasRenderingContext2D;
+  normalCtx: CanvasRenderingContext2D;
+};
+
+/** Initializes metal / roughness / normal canvases for a gold-vs-matte PBR mask. */
+export function createGoldPbrMapSet(width: number, height: number): GoldPbrMapSet {
+  const metalnessCanvas = document.createElement("canvas");
+  metalnessCanvas.width = width;
+  metalnessCanvas.height = height;
+  const metalCtx = metalnessCanvas.getContext("2d")!;
+  metalCtx.fillStyle = "#000000";
+  metalCtx.fillRect(0, 0, width, height);
+
+  const roughnessCanvas = document.createElement("canvas");
+  roughnessCanvas.width = width;
+  roughnessCanvas.height = height;
+  const roughCtx = roughnessCanvas.getContext("2d")!;
+  roughCtx.fillStyle = GOLD_PBR_BASE_ROUGHNESS;
+  roughCtx.fillRect(0, 0, width, height);
+
+  const normalCanvas = document.createElement("canvas");
+  normalCanvas.width = width;
+  normalCanvas.height = height;
+  const normalCtx = normalCanvas.getContext("2d")!;
+  normalCtx.fillStyle = GOLD_PBR_FLAT_NORMAL;
+  normalCtx.fillRect(0, 0, width, height);
+
+  return {
+    metalnessCanvas,
+    roughnessCanvas,
+    normalCanvas,
+    metalCtx,
+    roughCtx,
+    normalCtx,
+  };
+}
+
+/** Paints brushed-metal PBR response into the map set for one country path. */
+export function paintGoldPbrForPath(
+  maps: GoldPbrMapSet,
+  path: Path2D,
+  goldTilePx: number,
+  goldRoughnessImage: HTMLImageElement | null,
+  goldNormalImage: HTMLImageElement | null,
+): void {
+  const { metalCtx, roughCtx, normalCtx } = maps;
+  const tilePx = Math.max(32, goldTilePx);
+
+  metalCtx.fillStyle = "#ffffff";
+  metalCtx.fill(path, "evenodd");
+
+  const roughPattern =
+    goldRoughnessImage != null
+      ? createMasteryGoldPattern(roughCtx, goldRoughnessImage, tilePx)
+      : null;
+  const normalPattern =
+    goldNormalImage != null
+      ? createMasteryGoldPattern(normalCtx, goldNormalImage, tilePx)
+      : null;
+
+  roughCtx.save();
+  roughCtx.fillStyle = roughPattern ?? GOLD_PBR_GOLD_ROUGHNESS;
+  roughCtx.fill(path, "evenodd");
+  roughCtx.restore();
+
+  normalCtx.save();
+  normalCtx.fillStyle = normalPattern ?? GOLD_PBR_FLAT_NORMAL;
+  normalCtx.fill(path, "evenodd");
+  normalCtx.restore();
+}
+
 let colorImagePromise: Promise<HTMLImageElement> | null = null;
 let roughnessImagePromise: Promise<HTMLImageElement> | null = null;
 let normalImagePromise: Promise<HTMLImageElement> | null = null;

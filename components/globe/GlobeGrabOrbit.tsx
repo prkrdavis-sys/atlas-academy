@@ -16,17 +16,22 @@ type GlobeGrabOrbitProps = {
   /** Globe mesh radius (unit sphere). */
   radius?: number;
   onGrabStart?: () => void;
+  /** Cancel settle animations and re-enable controls without treating as a drag. */
+  onPointerDownOnGlobe?: () => void;
+  /** Short press release without enough travel to count as a drag. */
+  onTap?: (clientX: number, clientY: number) => void;
 };
 
 /**
- * Finger/cursor stick grab: the surface point under the pointer stays under it
- * while dragging. Pair with OrbitControls `enableRotate={false}` — zoom/dolly
- * still work; this drives orbit from raycasts instead of pixel-scaled rotateSpeed.
+ * Unified globe pointer handler: tap-to-select vs drag-to-orbit, including
+ * off-disc screen tracking for the rest of a drag.
  */
 export function GlobeGrabOrbit({
   controlsRef,
   radius = 1,
   onGrabStart,
+  onPointerDownOnGlobe,
+  onTap,
 }: GlobeGrabOrbitProps) {
   const { gl, invalidate } = useThree();
 
@@ -36,13 +41,14 @@ export function GlobeGrabOrbit({
     const lastPointerUnit = new THREE.Vector3();
     const probeUnit = new THREE.Vector3();
     let pointerId: number | null = null;
-    let activePointers = 0;
-    /** Pointer went down on the globe but hasn't moved enough to count as a drag. */
+    const pressedPointers = new Set<number>();
     let pendingGrab = false;
-    /** Latched on first ray miss — avoids trackball re-entry at the limb. */
+    let dragActivated = false;
     let screenDragOnly = false;
     let startClientX = 0;
     let startClientY = 0;
+    let lastClientX = 0;
+    let lastClientY = 0;
     let windowListenersAttached = false;
 
     const detachWindowListeners = () => {
@@ -53,6 +59,14 @@ export function GlobeGrabOrbit({
       windowListenersAttached = false;
     };
 
+    const attachWindowListeners = () => {
+      detachWindowListeners();
+      window.addEventListener("pointermove", onPointerMove);
+      window.addEventListener("pointerup", onPointerUp);
+      window.addEventListener("pointercancel", onPointerUp);
+      windowListenersAttached = true;
+    };
+
     const resetPointerSession = () => {
       detachWindowListeners();
       if (pointerId !== null) {
@@ -60,12 +74,22 @@ export function GlobeGrabOrbit({
       }
       pointerId = null;
       pendingGrab = false;
+      dragActivated = false;
       screenDragOnly = false;
     };
 
+    const healStalePointerState = () => {
+      if (pointerId === null) {
+        pressedPointers.clear();
+      }
+    };
+
     const activateGrab = (controls: OrbitControlsImpl) => {
-      if (pointerId === null) return;
+      if (pointerId === null || dragActivated) return;
+      dragActivated = true;
       pendingGrab = false;
+      lastClientX = startClientX;
+      lastClientY = startClientY;
       trySetPointerCapture(el, pointerId);
       controls.autoRotate = false;
       onGrabStart?.();
@@ -74,7 +98,8 @@ export function GlobeGrabOrbit({
     const onPointerMove = (event: PointerEvent) => {
       if (pointerId === null || event.pointerId !== pointerId) return;
       const controls = controlsRef.current;
-      if (!controls || !controls.enabled) return;
+      if (!controls) return;
+      controls.enabled = true;
 
       const camera = controls.object;
       if (!(camera instanceof THREE.PerspectiveCamera)) return;
@@ -85,6 +110,11 @@ export function GlobeGrabOrbit({
         if (travel < GLOBE_TAP_TRAVEL_THRESHOLD) return;
         activateGrab(controls);
       }
+
+      const deltaX = event.clientX - lastClientX;
+      const deltaY = event.clientY - lastClientY;
+      lastClientX = event.clientX;
+      lastClientY = event.clientY;
 
       const rect = el.getBoundingClientRect();
       if (
@@ -101,6 +131,7 @@ export function GlobeGrabOrbit({
       ) {
         screenDragOnly = true;
       }
+
       orbitCameraToKeepGrab(
         camera,
         controls.target,
@@ -113,29 +144,37 @@ export function GlobeGrabOrbit({
         controls.minPolarAngle,
         controls.maxPolarAngle,
         screenDragOnly,
+        deltaX,
+        deltaY,
       );
       controls.update();
       invalidate();
     };
 
     const onPointerUp = (event: PointerEvent) => {
-      activePointers = Math.max(0, activePointers - 1);
-      if (pointerId !== null && event.pointerId === pointerId) {
-        resetPointerSession();
+      pressedPointers.delete(event.pointerId);
+      if (pointerId === null || event.pointerId !== pointerId) return;
+
+      if (!dragActivated) {
+        onTap?.(event.clientX, event.clientY);
       }
+      resetPointerSession();
     };
 
     const onPointerDown = (event: PointerEvent) => {
-      activePointers += 1;
-      // Second finger is pinch-zoom — don't fight OrbitControls dolly.
-      if (activePointers > 1) {
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+
+      healStalePointerState();
+      pressedPointers.add(event.pointerId);
+
+      if (pressedPointers.size > 1) {
         resetPointerSession();
         return;
       }
-      if (event.pointerType === "mouse" && event.button !== 0) return;
 
       const controls = controlsRef.current;
-      if (!controls || !controls.enabled) return;
+      if (!controls) return;
+      controls.enabled = true;
 
       const camera = controls.object;
       if (!(camera instanceof THREE.PerspectiveCamera)) return;
@@ -155,26 +194,55 @@ export function GlobeGrabOrbit({
         return;
       }
 
+      resetPointerSession();
+      pressedPointers.add(event.pointerId);
+
       pointerId = event.pointerId;
       pendingGrab = true;
+      dragActivated = false;
       screenDragOnly = false;
       startClientX = event.clientX;
       startClientY = event.clientY;
+      lastClientX = event.clientX;
+      lastClientY = event.clientY;
       lastPointerUnit.copy(grabUnit);
-      window.addEventListener("pointermove", onPointerMove);
-      window.addEventListener("pointerup", onPointerUp);
-      window.addEventListener("pointercancel", onPointerUp);
-      windowListenersAttached = true;
+      attachWindowListeners();
+      onPointerDownOnGlobe?.();
       invalidate();
     };
 
+    const onLostPointerCapture = (event: PointerEvent) => {
+      if (pointerId === event.pointerId) {
+        resetPointerSession();
+      }
+    };
+
+    const onWindowBlur = () => {
+      resetPointerSession();
+      pressedPointers.clear();
+    };
+
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "hidden") {
+        resetPointerSession();
+        pressedPointers.clear();
+      }
+    };
+
     el.addEventListener("pointerdown", onPointerDown);
+    el.addEventListener("lostpointercapture", onLostPointerCapture);
+    window.addEventListener("blur", onWindowBlur);
+    document.addEventListener("visibilitychange", onVisibilityChange);
 
     return () => {
       resetPointerSession();
+      pressedPointers.clear();
       el.removeEventListener("pointerdown", onPointerDown);
+      el.removeEventListener("lostpointercapture", onLostPointerCapture);
+      window.removeEventListener("blur", onWindowBlur);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
     };
-  }, [controlsRef, gl, invalidate, onGrabStart, radius]);
+  }, [controlsRef, gl, invalidate, onGrabStart, onPointerDownOnGlobe, onTap, radius]);
 
   return null;
 }

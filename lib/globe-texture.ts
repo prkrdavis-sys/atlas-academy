@@ -20,10 +20,12 @@ import {
   sampleGradientColor,
 } from "@/lib/map-mastery-fx";
 import {
+  createGoldPbrMapSet,
   createMasteryGoldPattern,
   MASTERY_GOLD_ALBEDO_FALLBACK,
   MASTERY_GOLD_TILE_BASE_PX,
   MASTERY_GOLD_WARM_OVERLAY,
+  paintGoldPbrForPath,
 } from "@/lib/mastery-gold-texture";
 import { getPlaceMasteryLevel } from "@/lib/map-progress";
 import type { MapProgressDifficulty, PlaceMasteryLevel, Profile } from "@/lib/types";
@@ -582,53 +584,20 @@ export function createGlobeTexturePaint(
   let normalCanvas: HTMLCanvasElement | null = null;
 
   if (useMetalMaps) {
-    metalnessCanvas = document.createElement("canvas");
-    metalnessCanvas.width = width;
-    metalnessCanvas.height = height;
-    const metalCtx = metalnessCanvas.getContext("2d")!;
-    metalCtx.fillStyle = "#050505";
-    metalCtx.fillRect(0, 0, width, height);
-
-    roughnessCanvas = document.createElement("canvas");
-    roughnessCanvas.width = width;
-    roughnessCanvas.height = height;
-    const roughCtx = roughnessCanvas.getContext("2d")!;
-    // Default land/ocean stay fairly matte (high roughness).
-    roughCtx.fillStyle = "#c4c4c4";
-    roughCtx.fillRect(0, 0, width, height);
-
-    normalCanvas = document.createElement("canvas");
-    normalCanvas.width = width;
-    normalCanvas.height = height;
-    const normalCtx = normalCanvas.getContext("2d")!;
-    // Flat tangent normal (#8080ff) everywhere until gold mastery paints grain.
-    normalCtx.fillStyle = "#8080ff";
-    normalCtx.fillRect(0, 0, width, height);
-
-    const roughPattern =
-      goldRoughnessImage != null
-        ? createMasteryGoldPattern(roughCtx, goldRoughnessImage, goldTilePx)
-        : null;
-    const normalPattern =
-      goldNormalImage != null
-        ? createMasteryGoldPattern(normalCtx, goldNormalImage, goldTilePx)
-        : null;
+    const pbrMaps = createGoldPbrMapSet(width, height);
+    metalnessCanvas = pbrMaps.metalnessCanvas;
+    roughnessCanvas = pbrMaps.roughnessCanvas;
+    normalCanvas = pbrMaps.normalCanvas;
 
     for (const shape of mastery4Shapes) {
       const path = pathFor(shape.code, shape.rings);
-      // White mask — material.metalness factor sets how metallic (keeps diffuse gold).
-      metalCtx.fillStyle = "#ffffff";
-      metalCtx.fill(path, "evenodd");
-
-      roughCtx.save();
-      roughCtx.fillStyle = roughPattern ?? "#7a7a7a";
-      roughCtx.fill(path, "evenodd");
-      roughCtx.restore();
-
-      normalCtx.save();
-      normalCtx.fillStyle = normalPattern ?? "#8080ff";
-      normalCtx.fill(path, "evenodd");
-      normalCtx.restore();
+      paintGoldPbrForPath(
+        pbrMaps,
+        path,
+        goldTilePx,
+        goldRoughnessImage,
+        goldNormalImage,
+      );
     }
   }
 

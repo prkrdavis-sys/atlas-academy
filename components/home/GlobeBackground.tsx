@@ -18,6 +18,7 @@ import {
   GlobeContextRecovery,
   GlobeFillLights,
   GlobeInitialInvalidate,
+  GlobeMetalReflection,
   GlobePlanet,
   GlobeRecoveryReset,
   tryReleasePointerCapture,
@@ -277,6 +278,7 @@ export default function GlobeBackground({
           <GlobeAssetPreloader />
           <GlobeInitialInvalidate />
           <GlobeFillLights isDark={isDark} dayNight={dayNight} />
+          <GlobeMetalReflection perfTier={perfTier} />
           {isDark ? (
             <Stars
               radius={60}
