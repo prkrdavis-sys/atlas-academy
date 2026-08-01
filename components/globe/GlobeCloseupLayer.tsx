@@ -24,6 +24,8 @@ import {
   isGlobeCloseupFocusOnly,
   type GlobePerfTier,
 } from "@/lib/globe-performance";
+import { loadOceanDepthImage } from "@/lib/globe-ocean-depth";
+import { loadLandColorImage } from "@/lib/globe-land-color";
 import type { GlobeUsMode } from "@/lib/globe-texture";
 import { loadMasteryGoldPbrImages } from "@/lib/mastery-gold-texture";
 import type { MapProgressDifficulty, Profile } from "@/lib/types";
@@ -63,6 +65,8 @@ type PaintInputs = {
   textureWidth: number;
   forceActive: boolean;
   focusOnly: boolean;
+  oceanDepthImage: HTMLImageElement | null;
+  landColorImage: HTMLImageElement | null;
   goldColorImage: HTMLImageElement | null;
   goldRoughnessImage: HTMLImageElement | null;
   goldNormalImage: HTMLImageElement | null;
@@ -76,6 +80,8 @@ function paintKeyOf(inputs: PaintInputs): string {
     inputs.isDark ? "d" : "l",
     inputs.selectedCode ?? "",
     inputs.textureWidth,
+    inputs.oceanDepthImage ? "depth" : "flat",
+    inputs.landColorImage ? "terrain" : "flat",
     inputs.goldColorImage ? "gold" : "flat",
     inputs.goldRoughnessImage ? "pbr" : "flat",
   ].join("|");
@@ -120,6 +126,38 @@ export function GlobeCloseupLayer({
     normal: HTMLImageElement | null;
   }>({ color: null, roughness: null, normal: null });
 
+  const [oceanDepthImage, setOceanDepthImage] = useState<HTMLImageElement | null>(null);
+  const [landColorImage, setLandColorImage] = useState<HTMLImageElement | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    loadOceanDepthImage()
+      .then((image) => {
+        if (!cancelled) setOceanDepthImage(image);
+      })
+      .catch(() => {
+        // Flat ocean fill remains the fallback.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    loadLandColorImage()
+      .then((image) => {
+        if (!cancelled) setLandColorImage(image);
+      })
+      .catch(() => {
+        // Flat land fill remains the fallback.
+        if (!cancelled) setLandColorImage(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   useEffect(() => {
     if (difficulty !== "medium") {
       // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -148,6 +186,8 @@ export function GlobeCloseupLayer({
     textureWidth: GLOBE_CLOSEUP_TEXTURE_WIDTH_BY_TIER[perfTier],
     forceActive,
     focusOnly: isGlobeCloseupFocusOnly(perfTier),
+    oceanDepthImage,
+    landColorImage,
     goldColorImage: goldMaps.color,
     goldRoughnessImage: goldMaps.roughness,
     goldNormalImage: goldMaps.normal,
@@ -161,6 +201,8 @@ export function GlobeCloseupLayer({
     textureWidth: GLOBE_CLOSEUP_TEXTURE_WIDTH_BY_TIER[perfTier],
     forceActive,
     focusOnly: isGlobeCloseupFocusOnly(perfTier),
+    oceanDepthImage,
+    landColorImage,
     goldColorImage: goldMaps.color,
     goldRoughnessImage: goldMaps.roughness,
     goldNormalImage: goldMaps.normal,
@@ -213,6 +255,8 @@ export function GlobeCloseupLayer({
       isDark: inputs.isDark,
       selectedCode: inputs.selectedCode,
       textureWidth: inputs.textureWidth,
+      oceanDepthImage: inputs.oceanDepthImage,
+      landColorImage: inputs.landColorImage,
       goldColorImage: inputs.goldColorImage,
       goldRoughnessImage: inputs.goldRoughnessImage,
       goldNormalImage: inputs.goldNormalImage,

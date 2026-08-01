@@ -1,6 +1,7 @@
 import closestMainlandData from "@/data/closest-mainland.json";
 import countriesData from "@/data/countries.json";
 import statesData from "@/data/states.json";
+import { isFlagCropEligible } from "@/lib/flag-crop";
 import {
   CONTINENTS,
   CORE_QUESTION_TYPES,
@@ -85,8 +86,18 @@ export function filterCountries(options: FilterOptions): Country[] {
     pool = pool.filter((c) => c.hasShape);
   }
 
-  if (options.mode === "flag-to-country" || options.mode === "country-to-flag") {
+  if (
+    options.mode === "flag-to-country" ||
+    options.mode === "flag-crop-to-country" ||
+    options.mode === "country-to-flag" ||
+    options.mode === "inverted-flag-to-country" ||
+    options.mode === "inverted-country-to-flag"
+  ) {
     pool = pool.filter((c) => c.hasFlag);
+  }
+
+  if (options.mode === "flag-crop-to-country") {
+    pool = pool.filter((c) => isFlagCropEligible(c.code));
   }
 
   if (options.mode === "capital-to-country") {

@@ -1,0 +1,2148 @@
+{
+  "displayAspectRatio": 1.6,
+  "records": {
+    "AD": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 14,
+      "reviewed": true
+    },
+    "AE": {
+      "x": 44,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 3,
+      "reviewed": true
+    },
+    "AF": {
+      "x": 56,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 17,
+      "reviewed": true
+    },
+    "AG": {
+      "x": 32,
+      "y": 32,
+      "zoom": 3.1,
+      "colors": 5,
+      "reviewed": true
+    },
+    "AI": {
+      "x": 80,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 8,
+      "reviewed": true
+    },
+    "AL": {
+      "x": 44,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 8,
+      "reviewed": true
+    },
+    "AM": {
+      "x": 44,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "AO": {
+      "x": 44,
+      "y": 68,
+      "zoom": 3.1,
+      "colors": 5,
+      "reviewed": true
+    },
+    "AQ": {
+      "x": 32,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "AR": {
+      "x": 44,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 10,
+      "reviewed": true
+    },
+    "AS": {
+      "x": 80,
+      "y": 56,
+      "zoom": 2.9,
+      "colors": 14,
+      "reviewed": true
+    },
+    "AT": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "AU": {
+      "x": 44,
+      "y": 32,
+      "zoom": 3.1,
+      "colors": 5,
+      "reviewed": true
+    },
+    "AW": {
+      "x": 20,
+      "y": 32,
+      "zoom": 3.1,
+      "colors": 3,
+      "reviewed": true
+    },
+    "AX": {
+      "x": 32,
+      "y": 20,
+      "zoom": 2.9,
+      "colors": 7,
+      "reviewed": true
+    },
+    "AZ": {
+      "x": 56,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 4,
+      "reviewed": true
+    },
+    "BA": {
+      "x": 32,
+      "y": 32,
+      "zoom": 3.1,
+      "colors": 4,
+      "reviewed": true
+    },
+    "BB": {
+      "x": 56,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 4,
+      "reviewed": true
+    },
+    "BD": {
+      "x": 56,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "BE": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "BF": {
+      "x": 44,
+      "y": 56,
+      "zoom": 2.7,
+      "colors": 4,
+      "reviewed": true
+    },
+    "BG": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "BH": {
+      "x": 32,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "BI": {
+      "x": 56,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 3,
+      "reviewed": true
+    },
+    "BJ": {
+      "x": 56,
+      "y": 56,
+      "zoom": 2.9,
+      "colors": 3,
+      "reviewed": true
+    },
+    "BL": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "BM": {
+      "x": 80,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 9,
+      "reviewed": true
+    },
+    "BN": {
+      "x": 56,
+      "y": 68,
+      "zoom": 3.1,
+      "colors": 13,
+      "reviewed": true
+    },
+    "BO": {
+      "x": 44,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 10,
+      "reviewed": true
+    },
+    "BQ": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "BR": {
+      "x": 56,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 5,
+      "reviewed": true
+    },
+    "BS": {
+      "x": 56,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 4,
+      "reviewed": true
+    },
+    "BT": {
+      "x": 68,
+      "y": 32,
+      "zoom": 3.1,
+      "colors": 8,
+      "reviewed": true
+    },
+    "BV": {
+      "x": 56,
+      "y": 56,
+      "zoom": 2.7,
+      "colors": 6,
+      "reviewed": true
+    },
+    "BW": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 4,
+      "reviewed": true
+    },
+    "BY": {
+      "x": 20,
+      "y": 80,
+      "zoom": 2.9,
+      "colors": 6,
+      "reviewed": true
+    },
+    "BZ": {
+      "x": 56,
+      "y": 32,
+      "zoom": 3.1,
+      "colors": 12,
+      "reviewed": true
+    },
+    "CA": {
+      "x": 68,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 3,
+      "reviewed": true
+    },
+    "CC": {
+      "x": 20,
+      "y": 32,
+      "zoom": 3.1,
+      "colors": 5,
+      "reviewed": true
+    },
+    "CD": {
+      "x": 44,
+      "y": 44,
+      "zoom": 2.7,
+      "colors": 3,
+      "reviewed": true
+    },
+    "CF": {
+      "x": 32,
+      "y": 20,
+      "zoom": 3.1,
+      "colors": 5,
+      "reviewed": true
+    },
+    "CG": {
+      "x": 44,
+      "y": 56,
+      "zoom": 2.7,
+      "colors": 3,
+      "reviewed": true
+    },
+    "CH": {
+      "x": 44,
+      "y": 44,
+      "zoom": 2.7,
+      "colors": 2,
+      "reviewed": true
+    },
+    "CI": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 3,
+      "reviewed": true
+    },
+    "CK": {
+      "x": 32,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 5,
+      "reviewed": true
+    },
+    "CL": {
+      "x": 32,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 3,
+      "reviewed": true
+    },
+    "CM": {
+      "x": 44,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 4,
+      "reviewed": true
+    },
+    "CN": {
+      "x": 32,
+      "y": 20,
+      "zoom": 3.1,
+      "colors": 4,
+      "reviewed": true
+    },
+    "CO": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "CR": {
+      "x": 44,
+      "y": 20,
+      "zoom": 2.9,
+      "colors": 5,
+      "reviewed": true
+    },
+    "CU": {
+      "x": 56,
+      "y": 68,
+      "zoom": 3.1,
+      "colors": 5,
+      "reviewed": true
+    },
+    "CV": {
+      "x": 44,
+      "y": 56,
+      "zoom": 2.7,
+      "colors": 7,
+      "reviewed": true
+    },
+    "CW": {
+      "x": 44,
+      "y": 68,
+      "zoom": 3.1,
+      "colors": 4,
+      "reviewed": true
+    },
+    "CX": {
+      "x": 56,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 4,
+      "reviewed": true
+    },
+    "CY": {
+      "x": 44,
+      "y": 68,
+      "zoom": 3.1,
+      "colors": 5,
+      "reviewed": true
+    },
+    "CZ": {
+      "x": 56,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 3,
+      "reviewed": true
+    },
+    "DE": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "DJ": {
+      "x": 68,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 4,
+      "reviewed": true
+    },
+    "DK": {
+      "x": 56,
+      "y": 44,
+      "zoom": 2.9,
+      "colors": 3,
+      "reviewed": true
+    },
+    "DM": {
+      "x": 44,
+      "y": 44,
+      "zoom": 2.9,
+      "colors": 9,
+      "reviewed": true
+    },
+    "DO": {
+      "x": 56,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 4,
+      "reviewed": true
+    },
+    "DZ": {
+      "x": 56,
+      "y": 56,
+      "zoom": 2.9,
+      "colors": 3,
+      "reviewed": true
+    },
+    "EC": {
+      "x": 44,
+      "y": 68,
+      "zoom": 3.1,
+      "colors": 14,
+      "reviewed": true
+    },
+    "EE": {
+      "x": 44,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "EG": {
+      "x": 44,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 10,
+      "reviewed": true
+    },
+    "EH": {
+      "x": 56,
+      "y": 44,
+      "zoom": 2.7,
+      "colors": 4,
+      "reviewed": true
+    },
+    "ER": {
+      "x": 32,
+      "y": 32,
+      "zoom": 3.1,
+      "colors": 9,
+      "reviewed": true
+    },
+    "ES": {
+      "x": 32,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 15,
+      "reviewed": true
+    },
+    "ET": {
+      "x": 44,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 8,
+      "reviewed": true
+    },
+    "FI": {
+      "x": 44,
+      "y": 20,
+      "zoom": 2.9,
+      "colors": 4,
+      "reviewed": true
+    },
+    "FJ": {
+      "x": 80,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 12,
+      "reviewed": true
+    },
+    "FK": {
+      "x": 80,
+      "y": 68,
+      "zoom": 3.1,
+      "colors": 14,
+      "reviewed": true
+    },
+    "FM": {
+      "x": 44,
+      "y": 20,
+      "zoom": 3.1,
+      "colors": 3,
+      "reviewed": true
+    },
+    "FO": {
+      "x": 44,
+      "y": 20,
+      "zoom": 3.1,
+      "colors": 7,
+      "reviewed": true
+    },
+    "FR": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "GA": {
+      "x": 44,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "GB": {
+      "x": 68,
+      "y": 32,
+      "zoom": 3.1,
+      "colors": 5,
+      "reviewed": true
+    },
+    "GD": {
+      "x": 56,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 4,
+      "reviewed": true
+    },
+    "GE": {
+      "x": 32,
+      "y": 68,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "GF": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "GG": {
+      "x": 44,
+      "y": 44,
+      "zoom": 2.9,
+      "colors": 4,
+      "reviewed": true
+    },
+    "GH": {
+      "x": 56,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 3,
+      "reviewed": true
+    },
+    "GI": {
+      "x": 44,
+      "y": 68,
+      "zoom": 3.1,
+      "colors": 10,
+      "reviewed": true
+    },
+    "GL": {
+      "x": 56,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "GM": {
+      "x": 44,
+      "y": 68,
+      "zoom": 3.1,
+      "colors": 4,
+      "reviewed": true
+    },
+    "GN": {
+      "x": 56,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "GP": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "GQ": {
+      "x": 44,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 6,
+      "reviewed": true
+    },
+    "GR": {
+      "x": 56,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "GS": {
+      "x": 80,
+      "y": 68,
+      "zoom": 3.1,
+      "colors": 19,
+      "reviewed": true
+    },
+    "GT": {
+      "x": 56,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 12,
+      "reviewed": true
+    },
+    "GU": {
+      "x": 56,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 10,
+      "reviewed": true
+    },
+    "GW": {
+      "x": 20,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 5,
+      "reviewed": true
+    },
+    "GY": {
+      "x": 44,
+      "y": 32,
+      "zoom": 3.1,
+      "colors": 5,
+      "reviewed": true
+    },
+    "HK": {
+      "x": 44,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 9,
+      "reviewed": true
+    },
+    "HM": {
+      "x": 44,
+      "y": 32,
+      "zoom": 3.1,
+      "colors": 5,
+      "reviewed": true
+    },
+    "HN": {
+      "x": 56,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "HR": {
+      "x": 56,
+      "y": 32,
+      "zoom": 3.1,
+      "colors": 8,
+      "reviewed": true
+    },
+    "HT": {
+      "x": 44,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 9,
+      "reviewed": true
+    },
+    "HU": {
+      "x": 44,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "ID": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "IE": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "IL": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 3,
+      "reviewed": true
+    },
+    "IM": {
+      "x": 56,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 11,
+      "reviewed": true
+    },
+    "IN": {
+      "x": 44,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 10,
+      "reviewed": true
+    },
+    "IO": {
+      "x": 68,
+      "y": 32,
+      "zoom": 3.1,
+      "colors": 12,
+      "reviewed": true
+    },
+    "IQ": {
+      "x": 56,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 8,
+      "reviewed": true
+    },
+    "IR": {
+      "x": 44,
+      "y": 68,
+      "zoom": 3.1,
+      "colors": 8,
+      "reviewed": true
+    },
+    "IS": {
+      "x": 56,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 3,
+      "reviewed": true
+    },
+    "IT": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "JE": {
+      "x": 44,
+      "y": 20,
+      "zoom": 3.1,
+      "colors": 8,
+      "reviewed": true
+    },
+    "JM": {
+      "x": 56,
+      "y": 44,
+      "zoom": 2.7,
+      "colors": 3,
+      "reviewed": true
+    },
+    "JO": {
+      "x": 56,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 3,
+      "reviewed": true
+    },
+    "JP": {
+      "x": 44,
+      "y": 68,
+      "zoom": 2.9,
+      "colors": 2,
+      "reviewed": true
+    },
+    "KE": {
+      "x": 56,
+      "y": 68,
+      "zoom": 3.1,
+      "colors": 5,
+      "reviewed": true
+    },
+    "KG": {
+      "x": 56,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 8,
+      "reviewed": true
+    },
+    "KH": {
+      "x": 44,
+      "y": 56,
+      "zoom": 2.7,
+      "colors": 8,
+      "reviewed": true
+    },
+    "KI": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 7,
+      "reviewed": true
+    },
+    "KM": {
+      "x": 32,
+      "y": 32,
+      "zoom": 3.1,
+      "colors": 4,
+      "reviewed": true
+    },
+    "KN": {
+      "x": 44,
+      "y": 56,
+      "zoom": 2.7,
+      "colors": 5,
+      "reviewed": true
+    },
+    "KP": {
+      "x": 32,
+      "y": 32,
+      "zoom": 2.7,
+      "colors": 5,
+      "reviewed": true
+    },
+    "KR": {
+      "x": 32,
+      "y": 68,
+      "zoom": 2.9,
+      "colors": 4,
+      "reviewed": true
+    },
+    "KW": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 3,
+      "reviewed": true
+    },
+    "KY": {
+      "x": 68,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 15,
+      "reviewed": true
+    },
+    "KZ": {
+      "x": 56,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 9,
+      "reviewed": true
+    },
+    "LA": {
+      "x": 56,
+      "y": 68,
+      "zoom": 3.1,
+      "colors": 4,
+      "reviewed": true
+    },
+    "LB": {
+      "x": 56,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 5,
+      "reviewed": true
+    },
+    "LC": {
+      "x": 44,
+      "y": 80,
+      "zoom": 2.9,
+      "colors": 5,
+      "reviewed": true
+    },
+    "LI": {
+      "x": 32,
+      "y": 20,
+      "zoom": 3.1,
+      "colors": 11,
+      "reviewed": true
+    },
+    "LK": {
+      "x": 68,
+      "y": 44,
+      "zoom": 2.9,
+      "colors": 12,
+      "reviewed": true
+    },
+    "LR": {
+      "x": 44,
+      "y": 32,
+      "zoom": 2.9,
+      "colors": 6,
+      "reviewed": true
+    },
+    "LS": {
+      "x": 56,
+      "y": 56,
+      "zoom": 2.9,
+      "colors": 4,
+      "reviewed": true
+    },
+    "LT": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 3,
+      "reviewed": true
+    },
+    "LU": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "LV": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "LY": {
+      "x": 56,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 3,
+      "reviewed": true
+    },
+    "MA": {
+      "x": 56,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 4,
+      "reviewed": true
+    },
+    "MC": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "MD": {
+      "x": 56,
+      "y": 44,
+      "zoom": 2.9,
+      "colors": 13,
+      "reviewed": true
+    },
+    "ME": {
+      "x": 56,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 10,
+      "reviewed": true
+    },
+    "MF": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "MG": {
+      "x": 44,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 3,
+      "reviewed": true
+    },
+    "MH": {
+      "x": 32,
+      "y": 44,
+      "zoom": 2.9,
+      "colors": 6,
+      "reviewed": true
+    },
+    "MK": {
+      "x": 56,
+      "y": 56,
+      "zoom": 2.9,
+      "colors": 3,
+      "reviewed": true
+    },
+    "ML": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 3,
+      "reviewed": true
+    },
+    "MM": {
+      "x": 56,
+      "y": 56,
+      "zoom": 2.7,
+      "colors": 3,
+      "reviewed": true
+    },
+    "MN": {
+      "x": 20,
+      "y": 68,
+      "zoom": 3.1,
+      "colors": 6,
+      "reviewed": true
+    },
+    "MO": {
+      "x": 44,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 8,
+      "reviewed": true
+    },
+    "MP": {
+      "x": 44,
+      "y": 20,
+      "zoom": 3.1,
+      "colors": 12,
+      "reviewed": true
+    },
+    "MQ": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 3,
+      "reviewed": true
+    },
+    "MR": {
+      "x": 44,
+      "y": 20,
+      "zoom": 3.1,
+      "colors": 3,
+      "reviewed": true
+    },
+    "MS": {
+      "x": 80,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 12,
+      "reviewed": true
+    },
+    "MT": {
+      "x": 32,
+      "y": 32,
+      "zoom": 3.1,
+      "colors": 6,
+      "reviewed": true
+    },
+    "MU": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "MV": {
+      "x": 44,
+      "y": 32,
+      "zoom": 3.1,
+      "colors": 3,
+      "reviewed": true
+    },
+    "MW": {
+      "x": 56,
+      "y": 20,
+      "zoom": 2.9,
+      "colors": 8,
+      "reviewed": true
+    },
+    "MX": {
+      "x": 44,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 9,
+      "reviewed": true
+    },
+    "MY": {
+      "x": 56,
+      "y": 68,
+      "zoom": 3.1,
+      "colors": 6,
+      "reviewed": true
+    },
+    "MZ": {
+      "x": 32,
+      "y": 44,
+      "zoom": 2.9,
+      "colors": 6,
+      "reviewed": true
+    },
+    "NA": {
+      "x": 32,
+      "y": 32,
+      "zoom": 3.1,
+      "colors": 7,
+      "reviewed": true
+    },
+    "NC": {
+      "x": 44,
+      "y": 56,
+      "zoom": 2.7,
+      "colors": 5,
+      "reviewed": true
+    },
+    "NE": {
+      "x": 44,
+      "y": 56,
+      "zoom": 2.9,
+      "colors": 3,
+      "reviewed": true
+    },
+    "NF": {
+      "x": 56,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 12,
+      "reviewed": true
+    },
+    "NG": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "NI": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 8,
+      "reviewed": true
+    },
+    "NL": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "NO": {
+      "x": 56,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 5,
+      "reviewed": true
+    },
+    "NP": {
+      "x": 20,
+      "y": 80,
+      "zoom": 3.1,
+      "colors": 3,
+      "reviewed": true
+    },
+    "NR": {
+      "x": 32,
+      "y": 68,
+      "zoom": 2.9,
+      "colors": 4,
+      "reviewed": true
+    },
+    "NU": {
+      "x": 32,
+      "y": 32,
+      "zoom": 3.1,
+      "colors": 6,
+      "reviewed": true
+    },
+    "NZ": {
+      "x": 32,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 5,
+      "reviewed": true
+    },
+    "OM": {
+      "x": 20,
+      "y": 20,
+      "zoom": 3.1,
+      "colors": 6,
+      "reviewed": true
+    },
+    "PA": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 4,
+      "reviewed": true
+    },
+    "PE": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "PF": {
+      "x": 56,
+      "y": 44,
+      "zoom": 2.9,
+      "colors": 12,
+      "reviewed": true
+    },
+    "PG": {
+      "x": 68,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 5,
+      "reviewed": true
+    },
+    "PH": {
+      "x": 32,
+      "y": 44,
+      "zoom": 2.7,
+      "colors": 9,
+      "reviewed": true
+    },
+    "PK": {
+      "x": 32,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 3,
+      "reviewed": true
+    },
+    "PL": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "PM": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "PN": {
+      "x": 80,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 10,
+      "reviewed": true
+    },
+    "PR": {
+      "x": 56,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 3,
+      "reviewed": true
+    },
+    "PS": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 3,
+      "reviewed": true
+    },
+    "PT": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 14,
+      "reviewed": true
+    },
+    "PW": {
+      "x": 56,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "PY": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 6,
+      "reviewed": true
+    },
+    "QA": {
+      "x": 44,
+      "y": 44,
+      "zoom": 2.7,
+      "colors": 2,
+      "reviewed": true
+    },
+    "RE": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "RO": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "RS": {
+      "x": 32,
+      "y": 68,
+      "zoom": 3.1,
+      "colors": 14,
+      "reviewed": true
+    },
+    "RU": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "RW": {
+      "x": 80,
+      "y": 32,
+      "zoom": 3.1,
+      "colors": 8,
+      "reviewed": true
+    },
+    "SA": {
+      "x": 44,
+      "y": 32,
+      "zoom": 3.1,
+      "colors": 10,
+      "reviewed": true
+    },
+    "SB": {
+      "x": 56,
+      "y": 56,
+      "zoom": 2.7,
+      "colors": 4,
+      "reviewed": true
+    },
+    "SC": {
+      "x": 20,
+      "y": 80,
+      "zoom": 2.9,
+      "colors": 5,
+      "reviewed": true
+    },
+    "SD": {
+      "x": 44,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 3,
+      "reviewed": true
+    },
+    "SE": {
+      "x": 56,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "SG": {
+      "x": 20,
+      "y": 32,
+      "zoom": 3.1,
+      "colors": 5,
+      "reviewed": true
+    },
+    "SH": {
+      "x": 68,
+      "y": 32,
+      "zoom": 3.1,
+      "colors": 5,
+      "reviewed": true
+    },
+    "SI": {
+      "x": 20,
+      "y": 32,
+      "zoom": 3.1,
+      "colors": 4,
+      "reviewed": true
+    },
+    "SJ": {
+      "x": 56,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 5,
+      "reviewed": true
+    },
+    "SK": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 5,
+      "reviewed": true
+    },
+    "SL": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 3,
+      "reviewed": true
+    },
+    "SM": {
+      "x": 56,
+      "y": 56,
+      "zoom": 2.7,
+      "colors": 17,
+      "reviewed": true
+    },
+    "SN": {
+      "x": 56,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 3,
+      "reviewed": true
+    },
+    "SO": {
+      "x": 44,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "SR": {
+      "x": 56,
+      "y": 56,
+      "zoom": 2.9,
+      "colors": 4,
+      "reviewed": true
+    },
+    "SS": {
+      "x": 44,
+      "y": 44,
+      "zoom": 2.7,
+      "colors": 5,
+      "reviewed": true
+    },
+    "ST": {
+      "x": 44,
+      "y": 68,
+      "zoom": 2.9,
+      "colors": 5,
+      "reviewed": true
+    },
+    "SV": {
+      "x": 56,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 8,
+      "reviewed": true
+    },
+    "SX": {
+      "x": 20,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 10,
+      "reviewed": true
+    },
+    "SY": {
+      "x": 44,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 4,
+      "reviewed": true
+    },
+    "SZ": {
+      "x": 32,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 11,
+      "reviewed": true
+    },
+    "TC": {
+      "x": 80,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 11,
+      "reviewed": true
+    },
+    "TD": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 3,
+      "reviewed": true
+    },
+    "TF": {
+      "x": 80,
+      "y": 68,
+      "zoom": 2.9,
+      "colors": 4,
+      "reviewed": true
+    },
+    "TG": {
+      "x": 56,
+      "y": 32,
+      "zoom": 3.1,
+      "colors": 5,
+      "reviewed": true
+    },
+    "TH": {
+      "x": 44,
+      "y": 20,
+      "zoom": 2.9,
+      "colors": 4,
+      "reviewed": true
+    },
+    "TJ": {
+      "x": 56,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 8,
+      "reviewed": true
+    },
+    "TK": {
+      "x": 32,
+      "y": 68,
+      "zoom": 3.1,
+      "colors": 4,
+      "reviewed": true
+    },
+    "TL": {
+      "x": 32,
+      "y": 56,
+      "zoom": 2.7,
+      "colors": 4,
+      "reviewed": true
+    },
+    "TM": {
+      "x": 20,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 16,
+      "reviewed": true
+    },
+    "TN": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 3,
+      "reviewed": true
+    },
+    "TO": {
+      "x": 32,
+      "y": 20,
+      "zoom": 2.9,
+      "colors": 4,
+      "reviewed": true
+    },
+    "TR": {
+      "x": 44,
+      "y": 44,
+      "zoom": 2.7,
+      "colors": 2,
+      "reviewed": true
+    },
+    "TT": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 3,
+      "reviewed": true
+    },
+    "TV": {
+      "x": 32,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 6,
+      "reviewed": true
+    },
+    "TW": {
+      "x": 32,
+      "y": 20,
+      "zoom": 3.1,
+      "colors": 6,
+      "reviewed": true
+    },
+    "TZ": {
+      "x": 44,
+      "y": 56,
+      "zoom": 2.7,
+      "colors": 4,
+      "reviewed": true
+    },
+    "UA": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "UG": {
+      "x": 44,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 8,
+      "reviewed": true
+    },
+    "UM": {
+      "x": 44,
+      "y": 32,
+      "zoom": 3.1,
+      "colors": 7,
+      "reviewed": true
+    },
+    "US": {
+      "x": 44,
+      "y": 32,
+      "zoom": 3.1,
+      "colors": 7,
+      "reviewed": true
+    },
+    "US-AK": {
+      "x": 44,
+      "y": 68,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "US-AL": {
+      "x": 56,
+      "y": 44,
+      "zoom": 2.7,
+      "colors": 2,
+      "reviewed": true
+    },
+    "US-AR": {
+      "x": 44,
+      "y": 56,
+      "zoom": 2.7,
+      "colors": 8,
+      "reviewed": true
+    },
+    "US-AZ": {
+      "x": 44,
+      "y": 32,
+      "zoom": 3.1,
+      "colors": 8,
+      "reviewed": true
+    },
+    "US-CA": {
+      "x": 56,
+      "y": 68,
+      "zoom": 2.9,
+      "colors": 12,
+      "reviewed": true
+    },
+    "US-CO": {
+      "x": 68,
+      "y": 56,
+      "zoom": 2.9,
+      "colors": 5,
+      "reviewed": true
+    },
+    "US-CT": {
+      "x": 44,
+      "y": 32,
+      "zoom": 3.1,
+      "colors": 12,
+      "reviewed": true
+    },
+    "US-DE": {
+      "x": 56,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 19,
+      "reviewed": true
+    },
+    "US-FL": {
+      "x": 56,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 21,
+      "reviewed": true
+    },
+    "US-GA": {
+      "x": 32,
+      "y": 32,
+      "zoom": 3.1,
+      "colors": 11,
+      "reviewed": true
+    },
+    "US-HI": {
+      "x": 32,
+      "y": 32,
+      "zoom": 2.7,
+      "colors": 5,
+      "reviewed": true
+    },
+    "US-IA": {
+      "x": 56,
+      "y": 44,
+      "zoom": 2.7,
+      "colors": 19,
+      "reviewed": true
+    },
+    "US-ID": {
+      "x": 56,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 20,
+      "reviewed": true
+    },
+    "US-IL": {
+      "x": 44,
+      "y": 44,
+      "zoom": 2.9,
+      "colors": 16,
+      "reviewed": true
+    },
+    "US-IN": {
+      "x": 44,
+      "y": 32,
+      "zoom": 3.1,
+      "colors": 8,
+      "reviewed": true
+    },
+    "US-KS": {
+      "x": 56,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 13,
+      "reviewed": true
+    },
+    "US-KY": {
+      "x": 44,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 13,
+      "reviewed": true
+    },
+    "US-LA": {
+      "x": 56,
+      "y": 56,
+      "zoom": 2.7,
+      "colors": 9,
+      "reviewed": true
+    },
+    "US-MA": {
+      "x": 56,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 10,
+      "reviewed": true
+    },
+    "US-MD": {
+      "x": 56,
+      "y": 32,
+      "zoom": 2.9,
+      "colors": 5,
+      "reviewed": true
+    },
+    "US-ME": {
+      "x": 56,
+      "y": 56,
+      "zoom": 2.9,
+      "colors": 18,
+      "reviewed": true
+    },
+    "US-MI": {
+      "x": 56,
+      "y": 68,
+      "zoom": 3.1,
+      "colors": 21,
+      "reviewed": true
+    },
+    "US-MN": {
+      "x": 32,
+      "y": 44,
+      "zoom": 2.7,
+      "colors": 3,
+      "reviewed": true
+    },
+    "US-MO": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 14,
+      "reviewed": true
+    },
+    "US-MS": {
+      "x": 56,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 8,
+      "reviewed": true
+    },
+    "US-MT": {
+      "x": 44,
+      "y": 56,
+      "zoom": 2.9,
+      "colors": 15,
+      "reviewed": true
+    },
+    "US-NC": {
+      "x": 20,
+      "y": 68,
+      "zoom": 3.1,
+      "colors": 7,
+      "reviewed": true
+    },
+    "US-ND": {
+      "x": 44,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 17,
+      "reviewed": true
+    },
+    "US-NE": {
+      "x": 56,
+      "y": 32,
+      "zoom": 3.1,
+      "colors": 16,
+      "reviewed": true
+    },
+    "US-NH": {
+      "x": 56,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 18,
+      "reviewed": true
+    },
+    "US-NJ": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 19,
+      "reviewed": true
+    },
+    "US-NM": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 4,
+      "reviewed": true
+    },
+    "US-NV": {
+      "x": 20,
+      "y": 32,
+      "zoom": 3.1,
+      "colors": 15,
+      "reviewed": true
+    },
+    "US-NY": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 20,
+      "reviewed": true
+    },
+    "US-OH": {
+      "x": 20,
+      "y": 68,
+      "zoom": 3.1,
+      "colors": 5,
+      "reviewed": true
+    },
+    "US-OK": {
+      "x": 44,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 12,
+      "reviewed": true
+    },
+    "US-OR": {
+      "x": 56,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 11,
+      "reviewed": true
+    },
+    "US-PA": {
+      "x": 56,
+      "y": 56,
+      "zoom": 2.7,
+      "colors": 18,
+      "reviewed": true
+    },
+    "US-RI": {
+      "x": 44,
+      "y": 20,
+      "zoom": 2.7,
+      "colors": 5,
+      "reviewed": true
+    },
+    "US-SC": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 11,
+      "reviewed": true
+    },
+    "US-SD": {
+      "x": 56,
+      "y": 68,
+      "zoom": 3.1,
+      "colors": 18,
+      "reviewed": true
+    },
+    "US-TN": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 4,
+      "reviewed": true
+    },
+    "US-TX": {
+      "x": 20,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 3,
+      "reviewed": true
+    },
+    "US-UT": {
+      "x": 44,
+      "y": 56,
+      "zoom": 2.9,
+      "colors": 9,
+      "reviewed": true
+    },
+    "US-VA": {
+      "x": 44,
+      "y": 68,
+      "zoom": 3.1,
+      "colors": 16,
+      "reviewed": true
+    },
+    "US-VT": {
+      "x": 44,
+      "y": 68,
+      "zoom": 3.1,
+      "colors": 19,
+      "reviewed": true
+    },
+    "US-WA": {
+      "x": 56,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 16,
+      "reviewed": true
+    },
+    "US-WI": {
+      "x": 44,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 20,
+      "reviewed": true
+    },
+    "US-WV": {
+      "x": 44,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 15,
+      "reviewed": true
+    },
+    "US-WY": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 14,
+      "reviewed": true
+    },
+    "UY": {
+      "x": 20,
+      "y": 32,
+      "zoom": 3.1,
+      "colors": 13,
+      "reviewed": true
+    },
+    "UZ": {
+      "x": 44,
+      "y": 20,
+      "zoom": 2.9,
+      "colors": 5,
+      "reviewed": true
+    },
+    "VA": {
+      "x": 68,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 9,
+      "reviewed": true
+    },
+    "VC": {
+      "x": 32,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 4,
+      "reviewed": true
+    },
+    "VE": {
+      "x": 56,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 3,
+      "reviewed": true
+    },
+    "VG": {
+      "x": 80,
+      "y": 68,
+      "zoom": 3.1,
+      "colors": 11,
+      "reviewed": true
+    },
+    "VI": {
+      "x": 32,
+      "y": 56,
+      "zoom": 2.9,
+      "colors": 18,
+      "reviewed": true
+    },
+    "VN": {
+      "x": 56,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 3,
+      "reviewed": true
+    },
+    "VU": {
+      "x": 20,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 6,
+      "reviewed": true
+    },
+    "WF": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "WS": {
+      "x": 32,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 3,
+      "reviewed": true
+    },
+    "XK": {
+      "x": 56,
+      "y": 32,
+      "zoom": 2.9,
+      "colors": 3,
+      "reviewed": true
+    },
+    "YE": {
+      "x": 44,
+      "y": 56,
+      "zoom": 2.9,
+      "colors": 2,
+      "reviewed": true
+    },
+    "YT": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "ZA": {
+      "x": 44,
+      "y": 56,
+      "zoom": 2.7,
+      "colors": 5,
+      "reviewed": true
+    },
+    "ZM": {
+      "x": 80,
+      "y": 20,
+      "zoom": 3.1,
+      "colors": 11,
+      "reviewed": true
+    },
+    "ZW": {
+      "x": 20,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 7,
+      "reviewed": true
+    }
+  },
+  "duplicateGroups": [
+    [
+      "AU",
+      "HM"
+    ],
+    [
+      "BL",
+      "FR",
+      "GF",
+      "GP",
+      "MF",
+      "PM",
+      "RE",
+      "WF",
+      "YT"
+    ],
+    [
+      "BQ",
+      "NL"
+    ],
+    [
+      "GB",
+      "SH"
+    ],
+    [
+      "UM",
+      "US"
+    ]
+  ],
+  "excludedCodes": [
+    "HM",
+    "BL",
+    "GF",
+    "GP",
+    "MF",
+    "PM",
+    "RE",
+    "WF",
+    "YT",
+    "BQ",
+    "SH",
+    "UM"
+  ]
+}

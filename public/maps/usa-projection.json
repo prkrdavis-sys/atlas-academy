@@ -1,0 +1,10 @@
+{
+  "mapWidth": 10000,
+  "mapHeight": 7000,
+  "projection": "albersUsa",
+  "scale": 12350.341148956522,
+  "translate": [
+    5358.9878669320715,
+    3454.656098304476
+  ]
+}

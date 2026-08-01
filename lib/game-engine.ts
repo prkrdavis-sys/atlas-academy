@@ -366,20 +366,38 @@ export class GameEngine {
 
     switch (mode) {
       case "flag-to-country":
+      case "flag-crop-to-country":
+      case "inverted-flag-to-country":
       case "marathon":
       case "weak-spots": {
         const mc =
           this.difficulty !== "hard"
             ? buildNameMcOptions(country, this.pool, this.difficulty, undefined, 4, this.random)
             : undefined;
+        const resolvedMode =
+          mode === "marathon" || mode === "weak-spots"
+            ? mode
+            : mode === "flag-crop-to-country"
+              ? "flag-crop-to-country"
+              : mode === "inverted-flag-to-country"
+                ? "inverted-flag-to-country"
+                : "flag-to-country";
         return {
           id,
-          mode: mode === "marathon" || mode === "weak-spots" ? mode : "flag-to-country",
+          mode: resolvedMode,
           countryCode: country.code,
-          prompt: placeText("Which country does this flag belong to?", this.scope, country),
+          prompt: placeText(
+            mode === "flag-crop-to-country"
+              ? "Which country does this flag fragment belong to?"
+              : mode === "inverted-flag-to-country"
+                ? "Which country does this inverted flag belong to?"
+                : "Which country does this flag belong to?",
+            this.scope,
+            country,
+          ),
           correctAnswer: country.name,
           correctCode: country.code,
-          displayType: "flag",
+          displayType: mode === "flag-crop-to-country" ? "flag-crop" : "flag",
           ...mc,
         };
       }
@@ -457,7 +475,8 @@ export class GameEngine {
           ...mc,
         };
       }
-      case "country-to-flag": {
+      case "country-to-flag":
+      case "inverted-country-to-flag": {
         const optionCount = this.difficulty === "hard" ? 6 : 4;
         const mc = buildNameMcOptions(country, this.pool, this.difficulty, undefined, optionCount, this.random);
         return {

@@ -6,6 +6,11 @@ import type { Country } from "../lib/types";
 
 const NATURAL_EARTH_COUNTRIES_URL =
   "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_admin_0_countries.geojson";
+/** Same coverage but with large lakes clipped out (e.g. Great Lakes) — used by the globe pipeline. */
+const NATURAL_EARTH_COUNTRIES_LAKES_URL =
+  "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_admin_0_countries_lakes.geojson";
+// No "_lakes" variant exists for map units; they only back small places where
+// uncut lakes don't matter.
 const NATURAL_EARTH_MAP_UNITS_URL =
   "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_admin_0_map_units.geojson";
 const GEOBOUNDARIES_API_URL = "https://www.geoboundaries.org/api/current/gbOpen";
@@ -271,9 +276,13 @@ async function mapPool<T, R>(
   return results;
 }
 
-export async function loadNaturalEarthFeatures(): Promise<NaturalEarthFeature[]> {
+export async function loadNaturalEarthFeatures(
+  { clipLakes = false }: { clipLakes?: boolean } = {},
+): Promise<NaturalEarthFeature[]> {
   const [countryFeatures, mapUnitFeatures] = await Promise.all([
-    fetchFeatureCollection(NATURAL_EARTH_COUNTRIES_URL),
+    fetchFeatureCollection(
+      clipLakes ? NATURAL_EARTH_COUNTRIES_LAKES_URL : NATURAL_EARTH_COUNTRIES_URL,
+    ),
     fetchFeatureCollection(NATURAL_EARTH_MAP_UNITS_URL),
   ]);
 

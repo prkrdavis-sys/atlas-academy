@@ -61,14 +61,15 @@ const DARK_MAP_PALETTE: MapPalette = {
 };
 
 const LIGHT_SUBTLE_NEIGHBOR: MapPathStyle = {
-  fill: "#bdcfd2",
-  stroke: "#94a3b8",
+  // Dusty clay — warm land tone, clear of teal highlight and sky ocean.
+  fill: "#e0b49a",
+  stroke: "#b07e62",
   strokeWidth: 0.35,
 };
 
 const DARK_SUBTLE_NEIGHBOR: MapPathStyle = {
-  fill: "#405b60",
-  stroke: "#64748b",
+  fill: "#7a4f3c",
+  stroke: "#c49278",
   strokeWidth: 0.35,
 };
 
@@ -108,6 +109,9 @@ export function fillSelectedMapPath(
 export function getSubtleNeighborMapStyle(isDark: boolean): MapPathStyle {
   return isDark ? DARK_SUBTLE_NEIGHBOR : LIGHT_SUBTLE_NEIGHBOR;
 }
+
+/** Solid black country outlines for Blue Marble / land-texture fills. */
+export const LAND_TEXTURE_BORDER_STROKE = "#000000";
 
 export function getMapPathRole(
   pathId: string,

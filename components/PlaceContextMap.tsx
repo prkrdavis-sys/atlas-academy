@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { MapMasteryFxDefs } from "@/components/MapMasteryFxDefs";
 import {
   countryHasContextMap,
@@ -19,11 +19,24 @@ import {
 import {
   getMapPalette,
   getMapPathRole,
+  getSubtleNeighborMapStyle,
+  LAND_TEXTURE_BORDER_STROKE,
   parseMapViewBox,
   sortMapPathsForRender,
   type MapPathStyle,
 } from "@/lib/map-colors";
 import { attachMapPlaceTapHandlers } from "@/lib/map-interaction";
+import {
+  contextMapSupportsLandTexture,
+  getMapLandTextureBrightness,
+  getMapLandTextureWashOpacity,
+  MAP_LAND_HIGHLIGHT_TINT_OPACITY,
+  MAP_LAND_NEIGHBOR_TINT_OPACITY,
+  MAP_LAND_TEXTURE_HEIGHT,
+  MAP_LAND_TEXTURE_PATH,
+  MAP_LAND_TEXTURE_WIDTH,
+} from "@/lib/map-land-texture";
+import { renderMapSurfaceTextureCrop } from "@/lib/map-land-texture-runtime";
 import { isStateCode } from "@/lib/scope";
 import type { Country } from "@/lib/types";
 import { useIsDark } from "@/lib/use-is-dark";
@@ -114,6 +127,12 @@ type ContextMapSvgProps = {
   pathStyleResolver?: (pathId: string) => MapPathStyle | null;
   /** Include animated gold/legendary gradient defs for progress-map fills. */
   includeMasteryFxDefs?: boolean;
+  /**
+   * Fill land with Natural Earth–projected Blue Marble topography (Learn /
+   * Library). Off for progress maps that need opaque mastery paints.
+   */
+  landTexture?: boolean;
+  mapTemplateKey?: string;
   onPathClick?: (pathId: string) => void;
   onPathHover?: (pathId: string | null) => void;
   onBackgroundClick?: () => void;
@@ -124,11 +143,17 @@ function strokeWidthForViewBox(
   viewBoxWidth: number,
   viewBoxHeight: number,
   scaleWithMap: boolean,
+  landTexture: boolean,
 ): number {
-  if (!scaleWithMap) return baseWidth;
+  if (!scaleWithMap) {
+    // non-scaling-stroke is roughly CSS px — thicken on terrain so borders read.
+    return landTexture ? Math.max(baseWidth * 2.4, 1.1) : baseWidth;
+  }
   const diagonal = Math.hypot(viewBoxWidth, viewBoxHeight);
-  // Thin map-space strokes so Natural Earth coastlines stay sharp when zoomed.
-  return Math.max(diagonal * 0.00045 * (baseWidth / 0.35), diagonal * 0.00028);
+  // Flat fills can use hairlines; Blue Marble needs a heavier black outline.
+  const scale = landTexture ? 0.0017 : 0.00045;
+  const floor = landTexture ? 0.0011 : 0.00028;
+  return Math.max(diagonal * scale * (baseWidth / 0.35), diagonal * floor);
 }
 
 export function ContextMapSvg({
@@ -143,6 +168,8 @@ export function ContextMapSvg({
   scaleStrokesWithMap = false,
   pathStyleResolver,
   includeMasteryFxDefs = false,
+  landTexture = false,
+  mapTemplateKey = "world",
   onPathClick,
   onPathHover,
   onBackgroundClick,
@@ -150,6 +177,9 @@ export function ContextMapSvg({
   const svgRef = useRef<SVGSVGElement>(null);
   const onPathClickRef = useRef(onPathClick);
   const onBackgroundClickRef = useRef(onBackgroundClick);
+  const reactId = useId().replace(/:/g, "");
+  const landPatternId = `map-land-${reactId}`;
+  const oceanPatternId = `map-ocean-${reactId}`;
   const palette = getMapPalette(isDark);
   const activeViewBox = viewBox ?? map.viewBox;
   const [viewBoxX, viewBoxY, viewBoxWidth, viewBoxHeight] = parseMapViewBox(activeViewBox);
@@ -157,6 +187,13 @@ export function ContextMapSvg({
     () => sortMapPathsForRender(map.paths, highlightIds, neighborIds),
     [map.paths, highlightIds, neighborIds],
   );
+  const landWashOpacity = getMapLandTextureWashOpacity(isDark);
+  const landBrightness = getMapLandTextureBrightness(isDark);
+  /** Sharp viewBox crop; null while generating — fall back to overview bake. */
+  const [surfaceCrop, setSurfaceCrop] = useState<{
+    landHref: string;
+    oceanHref: string;
+  } | null>(null);
 
   useEffect(() => {
     onPathClickRef.current = onPathClick;
@@ -176,6 +213,63 @@ export function ContextMapSvg({
     });
   }, [interactive, onPathClick, onBackgroundClick]);
 
+  useEffect(() => {
+    if (!landTexture) return;
+
+    let cancelled = false;
+    renderMapSurfaceTextureCrop({
+      templateKey: mapTemplateKey,
+      viewBoxX,
+      viewBoxY,
+      viewBoxWidth,
+      viewBoxHeight,
+      isDark,
+    })
+      .then((crop) => {
+        if (!cancelled) setSurfaceCrop(crop);
+      })
+      .catch(() => {
+        // Keep the overview bake if the sharp crop fails.
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [landTexture, mapTemplateKey, viewBoxX, viewBoxY, viewBoxWidth, viewBoxHeight, isDark]);
+
+  const vectorEffect = scaleStrokesWithMap ? undefined : "non-scaling-stroke";
+  const styledPaths = orderedPaths.map((path) => {
+    const resolvedStyle = pathStyleResolver?.(path.id);
+    const role = getMapPathRole(path.id, highlightIds, neighborIds);
+    const style: MapPathStyle = resolvedStyle ?? palette[role];
+    const strokeWidth = strokeWidthForViewBox(
+      style.strokeWidth,
+      viewBoxWidth,
+      viewBoxHeight,
+      scaleStrokesWithMap,
+      landTexture,
+    );
+    const tintOpacity =
+      !landTexture
+        ? 0
+        : resolvedStyle
+          ? 0.46
+          : role === "highlight"
+            ? MAP_LAND_HIGHLIGHT_TINT_OPACITY
+            : role === "neighbor"
+              ? MAP_LAND_NEIGHBOR_TINT_OPACITY
+              : 0;
+
+    return {
+      path,
+      style,
+      strokeWidth,
+      stroke: landTexture ? LAND_TEXTURE_BORDER_STROKE : style.stroke,
+      fill: landTexture ? `url(#${landPatternId})` : style.fill,
+      tintOpacity,
+    };
+  });
+
   return (
     <svg
       ref={svgRef}
@@ -186,45 +280,155 @@ export function ContextMapSvg({
       shapeRendering="geometricPrecision"
     >
       {includeMasteryFxDefs ? <MapMasteryFxDefs /> : null}
+      {landTexture ? (
+        <defs>
+          {surfaceCrop ? (
+            <>
+            <pattern
+              id={landPatternId}
+              patternUnits="userSpaceOnUse"
+              x={viewBoxX}
+              y={viewBoxY}
+              width={viewBoxWidth}
+              height={viewBoxHeight}
+            >
+              <image
+                href={surfaceCrop.landHref}
+                width={viewBoxWidth}
+                height={viewBoxHeight}
+                preserveAspectRatio="none"
+              />
+            </pattern>
+            <pattern
+              id={oceanPatternId}
+              patternUnits="userSpaceOnUse"
+              x={viewBoxX}
+              y={viewBoxY}
+              width={viewBoxWidth}
+              height={viewBoxHeight}
+            >
+              <image
+                href={surfaceCrop.oceanHref}
+                width={viewBoxWidth}
+                height={viewBoxHeight}
+                preserveAspectRatio="none"
+              />
+            </pattern>
+            </>
+          ) : (
+            <pattern
+              id={landPatternId}
+              patternUnits="userSpaceOnUse"
+              width={MAP_LAND_TEXTURE_WIDTH}
+              height={MAP_LAND_TEXTURE_HEIGHT}
+            >
+              <image
+                href={MAP_LAND_TEXTURE_PATH}
+                width={MAP_LAND_TEXTURE_WIDTH}
+                height={MAP_LAND_TEXTURE_HEIGHT}
+                preserveAspectRatio="none"
+                style={
+                  landBrightness < 1
+                    ? { filter: `brightness(${landBrightness})` }
+                    : undefined
+                }
+              />
+              <rect
+                width={MAP_LAND_TEXTURE_WIDTH}
+                height={MAP_LAND_TEXTURE_HEIGHT}
+                fill="#ffffff"
+                opacity={landWashOpacity}
+              />
+            </pattern>
+          )}
+        </defs>
+      ) : null}
       <rect
         x={viewBoxX}
         y={viewBoxY}
         width={viewBoxWidth}
         height={viewBoxHeight}
-        fill={palette.ocean}
+        fill={surfaceCrop ? `url(#${oceanPatternId})` : palette.ocean}
       />
-      {orderedPaths.map((path) => {
-        const resolvedStyle = pathStyleResolver?.(path.id);
-        const role = getMapPathRole(path.id, highlightIds, neighborIds);
-        const style: MapPathStyle = resolvedStyle ?? palette[role];
-        const strokeWidth = strokeWidthForViewBox(
-          style.strokeWidth,
-          viewBoxWidth,
-          viewBoxHeight,
-          scaleStrokesWithMap,
-        );
-
-        return (
-          <path
-            key={path.id}
-            id={path.id}
-            d={path.d}
-            data-map-place={interactive ? path.id : undefined}
-            fill={style.fill}
-            stroke={style.stroke}
-            strokeWidth={strokeWidth}
-            vectorEffect={scaleStrokesWithMap ? undefined : "non-scaling-stroke"}
-            strokeLinejoin="round"
-            strokeLinecap="round"
-            className={cn(
-              interactive && "cursor-pointer transition-[fill,stroke] duration-150",
-              style.className,
-            )}
-            onMouseEnter={interactive && onPathHover ? () => onPathHover(path.id) : undefined}
-            onMouseLeave={interactive && onPathHover ? () => onPathHover(null) : undefined}
-          />
-        );
-      })}
+      {landTexture ? (
+        <>
+          {styledPaths.map(({ path, style, fill }) => (
+            <path
+              key={`fill-${path.id}`}
+              id={path.id}
+              d={path.d}
+              data-map-place={interactive ? path.id : undefined}
+              fill={fill}
+              stroke="none"
+              className={cn(
+                interactive && "cursor-pointer transition-[fill,stroke] duration-150",
+                style.className,
+              )}
+              onMouseEnter={interactive && onPathHover ? () => onPathHover(path.id) : undefined}
+              onMouseLeave={interactive && onPathHover ? () => onPathHover(null) : undefined}
+            />
+          ))}
+          {styledPaths.map(({ path, style, tintOpacity }) =>
+            tintOpacity > 0 ? (
+              <path
+                key={`tint-${path.id}`}
+                d={path.d}
+                fill={style.fill}
+                fillOpacity={tintOpacity}
+                stroke="none"
+                style={{ pointerEvents: "none" }}
+                aria-hidden
+              />
+            ) : null,
+          )}
+          {styledPaths.map(({ path, stroke, strokeWidth }) => (
+            <path
+              key={`stroke-${path.id}`}
+              d={path.d}
+              fill="none"
+              stroke={stroke}
+              strokeWidth={strokeWidth}
+              vectorEffect={vectorEffect}
+              strokeLinejoin="round"
+              strokeLinecap="round"
+              style={{ pointerEvents: "none" }}
+              aria-hidden
+            />
+          ))}
+        </>
+      ) : (
+        styledPaths.map(({ path, style, fill, stroke, strokeWidth, tintOpacity }) => (
+          <g key={path.id}>
+            <path
+              id={path.id}
+              d={path.d}
+              data-map-place={interactive ? path.id : undefined}
+              fill={fill}
+              stroke={stroke}
+              strokeWidth={strokeWidth}
+              vectorEffect={vectorEffect}
+              strokeLinejoin="round"
+              strokeLinecap="round"
+              className={cn(
+                interactive && "cursor-pointer transition-[fill,stroke] duration-150",
+                style.className,
+              )}
+              onMouseEnter={interactive && onPathHover ? () => onPathHover(path.id) : undefined}
+              onMouseLeave={interactive && onPathHover ? () => onPathHover(null) : undefined}
+            />
+            {tintOpacity > 0 ? (
+              <path
+                d={path.d}
+                fill={style.fill}
+                fillOpacity={tintOpacity}
+                stroke="none"
+                style={{ pointerEvents: "none" }}
+                aria-hidden
+              />
+            ) : null}
+          </g>
+        ))
+      )}
     </svg>
   );
 }
@@ -254,6 +458,19 @@ export function PlaceContextMap({
     const neighbors = getNeighborContextMapPathIds(country);
     return new Set(neighbors.filter((id) => !highlightIds.has(id)));
   }, [country, highlightIds, highlightNeighbors]);
+
+  // Learn-card neighbors use a muted cool tone so they don't compete with the
+  // teal highlight (the default neighbor palette is the same teal family).
+  const pathStyleResolver = useMemo(() => {
+    if (!highlightNeighbors) return undefined;
+    const subtleNeighbor = getSubtleNeighborMapStyle(isDark);
+    return (pathId: string): MapPathStyle | null => {
+      if (neighborIds.has(pathId) && !highlightIds.has(pathId)) {
+        return subtleNeighbor;
+      }
+      return null;
+    };
+  }, [highlightNeighbors, highlightIds, neighborIds, isDark]);
 
   const visiblePaths = useMemo(() => {
     if (!map) return [];
@@ -299,6 +516,7 @@ export function PlaceContextMap({
   }
 
   const ariaLabel = getContextMapAriaLabel(country, isState);
+  const landTexture = contextMapSupportsLandTexture(templateKey);
 
   return (
     <div
@@ -318,10 +536,13 @@ export function PlaceContextMap({
           map={{ ...map, paths: visiblePaths }}
           highlightIds={highlightIds}
           neighborIds={neighborIds}
+          pathStyleResolver={pathStyleResolver}
           ariaLabel={ariaLabel}
           isDark={isDark}
           viewBox={focusedViewBox}
           scaleStrokesWithMap={variant === "learn" || variant === "hero"}
+          landTexture={landTexture}
+          mapTemplateKey={templateKey}
         />
       ) : loadFailed ? (
         <div className="flex h-full items-center justify-center px-4 text-center text-xs font-semibold text-slate-500 dark:text-slate-400">

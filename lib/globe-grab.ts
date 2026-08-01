@@ -107,7 +107,7 @@ function applySphericalOrbitStep(
 }
 
 /** Screen-pixel drag while off the disc — matches on-surface grab signs via polish. */
-function orbitCameraByScreenDelta(
+export function orbitCameraByScreenDelta(
   camera: THREE.PerspectiveCamera,
   target: THREE.Vector3,
   deltaX: number,
@@ -120,8 +120,9 @@ function orbitCameraByScreenDelta(
 
   const fovY = THREE.MathUtils.degToRad(camera.fov);
   const fovX = 2 * Math.atan(Math.tan(fovY / 2) * Math.max(camera.aspect, 1e-6));
+  // OrbitControls / grab-polish signs: drag right → −θ, drag down → −φ.
   const dTheta = (-deltaX / rect.width) * fovX;
-  const dPhi = (deltaY / rect.height) * fovY;
+  const dPhi = (-deltaY / rect.height) * fovY;
   applySphericalOrbitStep(camera, target, dTheta, dPhi, minPolar, maxPolar);
 }
 

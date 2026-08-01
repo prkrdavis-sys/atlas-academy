@@ -21,6 +21,8 @@ type FlagImageProps = {
   /** Tile fills container width using the flag's true aspect ratio. */
   layout?: FlagLayout;
   priority?: boolean;
+  /** CSS color invert for inverted-flag quiz modes. */
+  inverted?: boolean;
 };
 
 const RECT_FRAME_STYLES: Record<Exclude<FlagFrameVariant, "none">, string> = {
@@ -45,6 +47,13 @@ type FlagImgProps = {
   priority?: boolean;
   clipPath?: string;
 };
+
+/** Combines optional invert with an existing Tailwind arbitrary filter class. */
+function withInvertFilter(baseFilterClass: string | undefined, inverted: boolean) {
+  if (!inverted) return baseFilterClass;
+  if (!baseFilterClass) return "[filter:invert(1)]";
+  return baseFilterClass.replace("[filter:", "[filter:invert(1)_");
+}
 
 function FlagImg({
   code,
@@ -112,6 +121,7 @@ export function FlagImage({
   constrainedAxis = "width",
   layout = "intrinsic",
   priority,
+  inverted = false,
 }: FlagImageProps) {
   const shaped = isShapedFlag(code);
   const clipPath = getFlagClipPath(code);
@@ -119,6 +129,7 @@ export function FlagImage({
 
   const shapedFrameClass =
     shaped && frame !== "none" ? SHAPED_FRAME_STYLES[frame] : undefined;
+  const flagFilterClass = withInvertFilter(shapedFrameClass, inverted);
   const imgClipPath = shaped ? clipPath : undefined;
 
   const image =
@@ -129,7 +140,7 @@ export function FlagImage({
           alt={alt}
           priority={priority}
           clipPath={imgClipPath}
-          className={cn("h-full w-full object-contain", shapedFrameClass)}
+          className={cn("h-full w-full object-contain", flagFilterClass)}
           constrainedAxis="width"
         />
       </span>
@@ -142,7 +153,7 @@ export function FlagImage({
         className={cn(
           isHeightConstrained ? "block w-auto max-w-full" : "h-auto w-full",
           className,
-          shapedFrameClass,
+          flagFilterClass,
         )}
         constrainedAxis={constrainedAxis}
       />
@@ -157,16 +168,25 @@ export function FlagImage({
   return wrapWithFrame(image, code, frame, outerClassName);
 }
 
-export function FlagDisplay({ code, size = "lg" }: { code: string; size?: "sm" | "md" | "lg" }) {
+export function FlagDisplay({
+  code,
+  size = "lg",
+  inverted = false,
+}: {
+  code: string;
+  size?: "sm" | "md" | "lg";
+  inverted?: boolean;
+}) {
   const width = size === "lg" ? 320 : size === "md" ? 240 : 120;
   return (
     <div className="flex justify-center">
       <FlagImage
         code={code}
-        alt={`Flag of ${code}`}
+        alt={inverted ? `Inverted flag of ${code}` : `Flag of ${code}`}
         width={width}
         frame="md"
         className={size === "lg" ? "w-80" : size === "md" ? "w-60" : "w-[7.5rem]"}
+        inverted={inverted}
         priority
       />
     </div>
@@ -223,6 +243,7 @@ export function FlagGrid({
   revealed = false,
   selectedCode = null,
   correctCode,
+  inverted = false,
 }: {
   codes: string[];
   onSelect: (code: string) => void;
@@ -230,6 +251,7 @@ export function FlagGrid({
   revealed?: boolean;
   selectedCode?: string | null;
   correctCode?: string;
+  inverted?: boolean;
 }) {
   const flagWidth = revealed ? 120 : compact ? 160 : 200;
   const gridCols = codes.length >= 6 ? "grid-cols-3" : "grid-cols-2";
@@ -237,17 +259,19 @@ export function FlagGrid({
     codes.length >= 6
       ? "max-w-[min(100cqw,22rem)] md:max-w-[min(100cqw,40rem)] lg:max-w-[min(100cqw,44rem)]"
       : "max-w-[min(100cqw,22rem)] md:max-w-[min(100cqw,34rem)] lg:max-w-[min(100cqw,38rem)]";
+  // Leave room for tile borders, row gaps, and the 2px bottom shadow so overflow
+  // parents don't clip the bottom edge of the revealed answer grid.
   const revealedGridWidth =
     codes.length >= 6
-      ? "w-[min(100cqw,28rem,calc(100cqh*2.05))]"
-      : "w-[min(100cqw,22rem,calc(100cqh*1.35))]";
+      ? "w-[min(100cqw,28rem,calc((100cqh-0.75rem)*1.75))]"
+      : "w-[min(100cqw,22rem,calc((100cqh-0.5rem)*1.15))]";
   const tileRadius = revealed ? "rounded-lg" : "rounded-xl";
 
   return (
     <div
       className={cn(
         "flex h-full w-full min-h-0 items-center justify-center",
-        revealed ? "[container-type:size]" : "md:py-4",
+        revealed ? "[container-type:size] pb-0.5" : "md:py-4",
       )}
     >
       <div
@@ -271,9 +295,10 @@ export function FlagGrid({
           const flag = (
             <FlagImage
               code={code}
-              alt={`Flag option ${code}`}
+              alt={inverted ? `Inverted flag option ${code}` : `Flag option ${code}`}
               width={flagWidth}
               className="h-auto w-full"
+              inverted={inverted}
             />
           );
 

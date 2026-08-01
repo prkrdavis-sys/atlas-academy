@@ -20,6 +20,8 @@ type ProgressMapContainerProps = ProgressMapOverlayProps & {
   /** Class for the outer flex wrapper (e.g. to absolutely fill a section). */
   wrapperClassName?: string;
   inlinePanelClassName?: string;
+  /** Extra classes for the sm+ overlay panel (e.g. to clear the app header). */
+  overlayPanelClassName?: string;
   onDismissSelection?: () => void;
   children: ReactNode;
 };
@@ -49,6 +51,7 @@ export function ProgressMapContainer({
   difficulty,
   scope,
   inlinePanelClassName,
+  overlayPanelClassName,
   onDismissSelection,
   children,
 }: ProgressMapContainerProps) {
@@ -64,7 +67,7 @@ export function ProgressMapContainer({
             difficulty={difficulty}
             scope={scope}
             variant="overlay"
-            className={cn(PANZOOM_EXCLUDE_CLASS, "max-sm:hidden")}
+            className={cn(PANZOOM_EXCLUDE_CLASS, "max-sm:hidden", overlayPanelClassName)}
           />
         ) : null}
       </div>

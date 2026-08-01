@@ -6,8 +6,12 @@ import { STREAK_SNUFF_MIN } from "@/lib/streak-tier";
  * are short envelope-shaped tones so they feel game-like without being loud.
  *
  * AudioContext starts suspended under browser autoplay rules and can re-suspend
- * after backgrounding. Lifecycle (gesture prime, shared resume, keep-alive) is
+ * after backgrounding. Lifecycle (gesture prime, resume, mobile keep-alive) is
  * owned here so cues stay audible without relying on React timing.
+ *
+ * Important: `AudioContext.resume()` must run on a user-gesture call stack.
+ * Background focus/visibility handlers must not start a shared resume that
+ * later gesture code reuses — that pattern silently breaks desktop Safari.
  */
 export type SoundKind = "tap" | "play" | "correct" | "incorrect" | "streak" | "complete";
 
@@ -19,7 +23,6 @@ export type PlaySoundOptions = {
 };
 
 let audioContext: AudioContext | null = null;
-let resumePromise: Promise<boolean> | null = null;
 let gesturesInstalled = false;
 let keepAliveInstalled = false;
 /** Set when the tab backgrounds or the context suspends — iOS can report "running" but stay silent until re-primed on a gesture. */
@@ -33,6 +36,14 @@ function getAudioContextConstructor(): typeof AudioContext | null {
     (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext ??
     null
   );
+}
+
+/** Touch phones/tablets benefit from a silent keep-alive; desktop should not. */
+function prefersMobileAudioKeepAlive(): boolean {
+  if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+    return false;
+  }
+  return window.matchMedia("(pointer: coarse)").matches;
 }
 
 function getAudioContext(): AudioContext | null {
@@ -50,16 +61,10 @@ function getAudioContext(): AudioContext | null {
       audioContext.addEventListener("statechange", () => {
         if (!audioContext || audioContext.state === "closed") return;
 
+        // Only flag recovery — never resume() from statechange. That stack is
+        // not a user gesture and can poison later unlock attempts.
         if (audioContext.state === "suspended" || audioContext.state === "interrupted") {
           markNeedsGestureUnlock();
-        }
-
-        if (
-          audioContext.state !== "running" &&
-          document.visibilityState === "visible"
-        ) {
-          primeAudioGraph(audioContext);
-          void resumeContext(audioContext);
         }
       });
     }
@@ -77,7 +82,6 @@ function markNeedsGestureUnlock(): void {
 function resetAudioContext(): void {
   stopSessionKeepAlive();
   audioContext = null;
-  resumePromise = null;
 }
 
 function needsAudioRecovery(ctx: AudioContext): boolean {
@@ -86,7 +90,7 @@ function needsAudioRecovery(ctx: AudioContext): boolean {
 
 /** Near-silent oscillator keeps the media session warm so mobile OSes suspend less often. */
 function startSessionKeepAlive(ctx: AudioContext): void {
-  if (sessionKeepAlive) return;
+  if (sessionKeepAlive || !prefersMobileAudioKeepAlive()) return;
 
   try {
     const gain = ctx.createGain();
@@ -113,20 +117,20 @@ function stopSessionKeepAlive(): void {
   sessionKeepAlive = null;
 }
 
-/** Re-resume after tab focus; browsers often suspend the context while hidden. */
+/**
+ * After backgrounding, mark that the next gesture must re-prime. Do not call
+ * resume() here — desktop browsers often ignore non-gesture resumes, and a
+ * shared in-flight resume can block the real click unlock.
+ */
 function installKeepAlive() {
   if (keepAliveInstalled || typeof document === "undefined") return;
   keepAliveInstalled = true;
 
-  const tryResumeOnForeground = () => {
+  const markForegroundRecovery = () => {
     const ctx = audioContext;
     if (!ctx || ctx.state === "closed") return;
-
     if (needsGestureUnlock || ctx.state !== "running") {
-      primeAudioGraph(ctx);
-    }
-    if (ctx.state !== "running") {
-      void resumeContext(ctx);
+      markNeedsGestureUnlock();
     }
   };
 
@@ -135,10 +139,10 @@ function installKeepAlive() {
       markNeedsGestureUnlock();
       return;
     }
-    tryResumeOnForeground();
+    markForegroundRecovery();
   });
-  window.addEventListener("pageshow", tryResumeOnForeground);
-  window.addEventListener("focus", tryResumeOnForeground);
+  window.addEventListener("pageshow", markForegroundRecovery);
+  window.addEventListener("focus", markForegroundRecovery);
 }
 
 /**
@@ -155,29 +159,26 @@ export function installAudioGestures(): void {
   };
 
   // Capture phase so unlock runs before any target handler that plays a cue.
-  // Prefer Pointer Events (covers mouse + touch). Fall back for older WebKit.
-  if (typeof window.PointerEvent === "function") {
-    document.addEventListener("pointerdown", onGesture, { capture: true });
-  } else {
-    document.addEventListener("touchstart", onGesture, { capture: true });
-    document.addEventListener("mousedown", onGesture, { capture: true });
-  }
+  // Use mousedown/touchstart/keydown (not pointerdown alone): Safari desktop
+  // often rejects pointerdown as an AudioContext unlock gesture.
+  document.addEventListener("pointerdown", onGesture, { capture: true });
+  document.addEventListener("mousedown", onGesture, { capture: true });
+  document.addEventListener("touchstart", onGesture, { capture: true });
   document.addEventListener("keydown", onGesture, { capture: true });
 }
 
+/**
+ * Always invoke resume() on this call. Never coalesce with a prior promise —
+ * a focus/visibility resume started off-gesture must not satisfy a later click.
+ */
 function resumeContext(ctx: AudioContext): Promise<boolean> {
   if (ctx.state === "running") return Promise.resolve(true);
   if (ctx.state === "closed") return Promise.resolve(false);
 
-  resumePromise ??= ctx
+  return ctx
     .resume()
     .then(() => ctx.state === "running")
-    .catch(() => false)
-    .finally(() => {
-      resumePromise = null;
-    });
-
-  return resumePromise;
+    .catch(() => false);
 }
 
 /** Prime, resume, and recreate the context if the browser left it in a bad state. */
@@ -187,6 +188,7 @@ async function ensureAudioReady(ctx: AudioContext): Promise<AudioContext | null>
     return ctx;
   }
 
+  // resume() is started synchronously here so callers on a gesture stack unlock.
   primeAudioGraph(ctx);
   let running = await resumeContext(ctx);
 
@@ -197,9 +199,10 @@ async function ensureAudioReady(ctx: AudioContext): Promise<AudioContext | null>
   }
 
   // Resume failed — recreate (common after long background on mobile Safari).
+  // Do not await close(): a fresh resume() must still start on this gesture stack.
   try {
     if (ctx.state !== "closed") {
-      await ctx.close();
+      void ctx.close();
     }
   } catch {
     // Ignore close errors on already-dead contexts.

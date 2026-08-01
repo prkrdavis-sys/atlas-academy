@@ -33,10 +33,8 @@ import { GlobeCloseupLayer } from "@/components/globe/GlobeCloseupLayer";
 import { GlobeGrabOrbit } from "@/components/globe/GlobeGrabOrbit";
 import { SpaceBackdrop, StaticStarfield } from "@/components/globe/SpaceBackdrop";
 import { SpaceFlybys } from "@/components/globe/SpaceFlybys";
-import { MapScrollDownButton } from "@/components/MapScrollDownButton";
-import { MapZoomControls } from "@/components/MapZoomControls";
 import { ProgressMapContainer } from "@/components/ProgressMapOverlays";
-import { MapProgressFillLegend } from "@/components/PlaceMapProgressPanel";
+import { orbitCameraByScreenDelta } from "@/lib/globe-grab";
 import { pickGlobePlaceAtClient } from "@/lib/globe-picking";
 import {
   GLOBE_DEFAULT_POLAR,
@@ -73,13 +71,203 @@ const PLACE_FOCUS_DURATION_S = 2.8;
 const RESET_HOME_DURATION_S = 1.8;
 /** Damping for idle polar-angle leveling before auto-spin resumes. */
 const IDLE_POLAR_RETURN_DAMP = 2.4;
-/** Camera-distance multiplier for one zoom button press. */
+/**
+ * Altitude multiplier for one zoom button press. Applied to height above the
+ * unit sphere (not center-distance) so close-in steps stay readable.
+ */
 const ZOOM_BUTTON_FACTOR = 0.75;
 /** Unit sphere radius for the map globe mesh. */
 const GLOBE_RADIUS = 1;
+/**
+ * OrbitControls base zoomSpeed — interpreted as the per-notch altitude scale
+ * (`0.95 ** speed`), then remapped onto center-distance so near-surface zoom
+ * does not slam into the min-distance floor.
+ */
+const BASE_ZOOM_SPEED = 0.7;
+/** Typical mouse-wheel notch → OrbitControls normalizedDelta (|deltaY| * 0.01). */
+const WHEEL_NOTCH_NORMALIZED_DELTA = 1;
 
 /** Extra zoom-out required before shooting stars return (avoids edge flicker). */
 const SPACE_VISIBLE_HYSTERESIS = 1.06;
+/** Float slack when deciding the orbit camera is already at a zoom stop. */
+const ZOOM_LIMIT_EPSILON = 1e-3;
+
+/** Hard ceiling for the responsive rest distance on very narrow viewports. */
+const ABSOLUTE_MAX_CAMERA_DISTANCE = 8;
+/** Fraction of the vertical FOV the resting globe may fill. */
+const GLOBE_FIT_VERTICAL = 0.72;
+/** Fraction of the horizontal FOV the resting globe may fill (phones). */
+const GLOBE_FIT_HORIZONTAL = 0.78;
+/**
+ * The planet sits slightly above viewport center (fraction of viewport
+ * height). Constant across home/map modes so mode changes never move it.
+ */
+const GLOBE_RAISE_VIEWPORT_FRACTION = 0.05;
+
+/**
+ * Resting camera distance that fits the globe within the viewport on any
+ * aspect ratio. Home and map share this framing so the planet stays perfectly
+ * still while the page UI slides between the two modes.
+ */
+function getGlobeRestDistance(aspect: number, fovDeg: number): number {
+  const verticalHalf = THREE.MathUtils.degToRad(fovDeg / 2);
+  const horizontalHalf = Math.atan(Math.tan(verticalHalf) * Math.max(aspect, 0.05));
+  const maxAngularRadius = Math.min(
+    GLOBE_FIT_VERTICAL * verticalHalf,
+    GLOBE_FIT_HORIZONTAL * horizontalHalf,
+  );
+  const distance =
+    GLOBE_RADIUS / Math.sin(THREE.MathUtils.clamp(maxAngularRadius, 0.01, Math.PI / 2 - 0.01));
+  return THREE.MathUtils.clamp(distance, CINEMATIC_REST_DISTANCE, ABSOLUTE_MAX_CAMERA_DISTANCE);
+}
+
+/**
+ * Keeps the shared framing in sync with the viewport: responsive rest
+ * distance, a raised projection offset, and (once, before the first frame) a
+ * start distance for the intro zoom that always eases inward.
+ */
+function GlobeFraming({
+  restDistanceRef,
+  onMaxDistanceChange,
+}: {
+  restDistanceRef: RefObject<number>;
+  onMaxDistanceChange: (maxDistance: number) => void;
+}) {
+  const camera = useThree((s) => s.camera);
+  const size = useThree((s) => s.size);
+  const invalidate = useThree((s) => s.invalidate);
+  const initializedRef = useRef(false);
+
+  useLayoutEffect(() => {
+    if (!(camera instanceof THREE.PerspectiveCamera)) return;
+    const rest = getGlobeRestDistance(size.width / Math.max(size.height, 1), camera.fov);
+    restDistanceRef.current = rest;
+    onMaxDistanceChange(Math.max(MAX_CAMERA_DISTANCE, rest));
+
+    if (!initializedRef.current) {
+      initializedRef.current = true;
+      // Start the intro slightly beyond rest so the open always zooms in.
+      const start = Math.min(Math.max(INITIAL_CAMERA_DISTANCE, rest * 1.25), ABSOLUTE_MAX_CAMERA_DISTANCE);
+      if (camera.position.lengthSq() > 1e-6) camera.position.setLength(start);
+    }
+
+    camera.setViewOffset(
+      size.width,
+      size.height,
+      0,
+      size.height * GLOBE_RAISE_VIEWPORT_FRACTION,
+      size.width,
+      size.height,
+    );
+    camera.updateProjectionMatrix();
+    invalidate();
+  }, [camera, size, restDistanceRef, onMaxDistanceChange, invalidate]);
+
+  return null;
+}
+
+/**
+ * Remap OrbitControls.zoomSpeed so each wheel/pinch step multiplies *altitude*
+ * (distance above the unit sphere) instead of distance from the globe center.
+ */
+function altitudeAwareZoomSpeed(
+  distance: number,
+  baseZoomSpeed = BASE_ZOOM_SPEED,
+): number {
+  const altitude = Math.max(distance - GLOBE_RADIUS, 1e-6);
+  const altitudeFactor = Math.pow(
+    0.95,
+    baseZoomSpeed * WHEEL_NOTCH_NORMALIZED_DELTA,
+  );
+  const distanceFactor =
+    (GLOBE_RADIUS + altitude * altitudeFactor) / Math.max(distance, 1e-6);
+  // Float noise near the surface can push the factor to ~1; treat as no zoom.
+  if (distanceFactor >= 1 - 1e-9) return 0;
+  return (
+    Math.log(distanceFactor) /
+    (Math.log(0.95) * WHEEL_NOTCH_NORMALIZED_DELTA)
+  );
+}
+
+/** Zoom by scaling height above the globe surface, then clamp to orbit limits. */
+function zoomDistanceByAltitudeFactor(
+  distance: number,
+  factor: number,
+  maxDistance = MAX_CAMERA_DISTANCE,
+): number {
+  const minAltitude = MIN_CAMERA_DISTANCE - GLOBE_RADIUS;
+  const altitude = Math.max(distance - GLOBE_RADIUS, minAltitude);
+  return THREE.MathUtils.clamp(
+    GLOBE_RADIUS + altitude * factor,
+    MIN_CAMERA_DISTANCE,
+    maxDistance,
+  );
+}
+
+/**
+ * Keeps OrbitControls.zoomSpeed matched to current altitude so close-in wheel
+ * and pinch zoom stay proportional to what is on screen.
+ */
+function AltitudeAwareZoomSpeed({
+  controlsRef,
+}: {
+  controlsRef: RefObject<OrbitControlsImpl | null>;
+}) {
+  useFrame(() => {
+    const controls = controlsRef.current;
+    if (!controls) return;
+    controls.zoomSpeed = altitudeAwareZoomSpeed(controls.getDistance());
+  });
+
+  return null;
+}
+
+/**
+ * On desktop, once wheel-zoom hits min/max distance, stop OrbitControls from
+ * swallowing the event so the page can scroll instead of trapping the user.
+ */
+function WheelZoomPageScrollHandoff({
+  controlsRef,
+  minDistance,
+  maxDistance,
+}: {
+  controlsRef: RefObject<OrbitControlsImpl | null>;
+  minDistance: number;
+  maxDistance: number;
+}) {
+  const gl = useThree((s) => s.gl);
+
+  useEffect(() => {
+    const el = gl.domElement;
+    const finePointer = window.matchMedia("(pointer: fine)");
+
+    const onWheel = (event: WheelEvent) => {
+      if (!finePointer.matches || event.deltaY === 0) return;
+
+      const controls = controlsRef.current;
+      if (!controls?.enabled || !controls.enableZoom) return;
+
+      const distance = controls.getDistance();
+      const atMaxOut = distance >= maxDistance - ZOOM_LIMIT_EPSILON;
+      const atMaxIn = distance <= minDistance + ZOOM_LIMIT_EPSILON;
+      // OrbitControls: positive deltaY dollies out (zoom out).
+      const wantsOut = event.deltaY > 0;
+      const wantsIn = event.deltaY < 0;
+
+      if ((wantsOut && atMaxOut) || (wantsIn && atMaxIn)) {
+        // Block OrbitControls' wheel handler so it can't preventDefault.
+        event.stopImmediatePropagation();
+      }
+    };
+
+    el.addEventListener("wheel", onWheel, { capture: true, passive: true });
+    return () => {
+      el.removeEventListener("wheel", onWheel, { capture: true });
+    };
+  }, [gl, controlsRef, minDistance, maxDistance]);
+
+  return null;
+}
 
 /**
  * Reports when the orbit camera is still far enough that outer space shows in
@@ -125,12 +313,14 @@ function SyncOuterSpaceVisible({
  */
 function CinematicIntroZoom({
   controlsRef,
+  restDistanceRef,
   enabled,
   cancelled,
   onComplete,
   onActivity,
 }: {
   controlsRef: RefObject<OrbitControlsImpl | null>;
+  restDistanceRef: RefObject<number>;
   enabled: boolean;
   cancelled: boolean;
   onComplete: () => void;
@@ -138,6 +328,7 @@ function CinematicIntroZoom({
 }) {
   const elapsedRef = useRef(0);
   const finishedRef = useRef(false);
+  const startDistanceRef = useRef<number | null>(null);
   const offsetRef = useRef(new THREE.Vector3());
 
   useFrame((_, delta) => {
@@ -147,22 +338,33 @@ function CinematicIntroZoom({
       onComplete();
       return;
     }
+    const controls = controlsRef.current;
+    if (!controls) return;
+
     if (!enabled) {
+      // Reduced motion: land on the rest framing immediately.
+      const camera = controls.object;
+      const offset = offsetRef.current;
+      offset.copy(camera.position).sub(controls.target);
+      offset.setLength(restDistanceRef.current);
+      camera.position.copy(controls.target).add(offset);
+      controls.saveState();
       finishedRef.current = true;
       onComplete();
       return;
     }
-    const controls = controlsRef.current;
-    if (!controls) return;
 
     onActivity?.();
     elapsedRef.current += delta;
+    if (startDistanceRef.current === null) {
+      startDistanceRef.current = controls.getDistance();
+    }
     const t = Math.min(1, elapsedRef.current / CINEMATIC_ZOOM_DURATION_S);
     // Ease-out cubic: quick enough to notice, soft settle at the end.
     const eased = 1 - (1 - t) ** 3;
     const distance = THREE.MathUtils.lerp(
-      INITIAL_CAMERA_DISTANCE,
-      CINEMATIC_REST_DISTANCE,
+      startDistanceRef.current,
+      restDistanceRef.current,
       eased,
     );
 
@@ -208,6 +410,7 @@ function PlaceFocusIntro({
 }) {
   const elapsedRef = useRef(0);
   const finishedRef = useRef(false);
+  const startDistanceRef = useRef<number | null>(null);
   const offsetRef = useRef(new THREE.Vector3());
   const sphericalRef = useRef(new THREE.Spherical());
 
@@ -234,6 +437,11 @@ function PlaceFocusIntro({
 
     onActivity?.();
 
+    if (startDistanceRef.current === null) {
+      startDistanceRef.current = controls.getDistance();
+    }
+    const startDistance = startDistanceRef.current;
+
     const applyFocus = (progress: number) => {
       const rotationY = lerpAngle(
         GLOBE_MESH_Y_ROTATION,
@@ -255,7 +463,7 @@ function PlaceFocusIntro({
         progress,
       );
       spherical.radius = THREE.MathUtils.lerp(
-        INITIAL_CAMERA_DISTANCE,
+        startDistance,
         focusTarget.cameraDistance,
         progress,
       );
@@ -302,6 +510,7 @@ type ViewSettleMode = "idle" | "home";
 function ViewSettleAnimation({
   controlsRef,
   spinGroupRef,
+  restDistanceRef,
   mode,
   reducedMotion,
   onComplete,
@@ -309,6 +518,7 @@ function ViewSettleAnimation({
 }: {
   controlsRef: RefObject<OrbitControlsImpl | null>;
   spinGroupRef: RefObject<THREE.Group | null>;
+  restDistanceRef: RefObject<number>;
   mode: ViewSettleMode;
   reducedMotion: boolean;
   onComplete: () => void;
@@ -397,7 +607,7 @@ function ViewSettleAnimation({
     const applyHome = (progress: number) => {
       const theta = lerpAngle(start.theta, 0, progress);
       const phi = THREE.MathUtils.lerp(start.phi, GLOBE_DEFAULT_POLAR, progress);
-      const radius = THREE.MathUtils.lerp(start.radius, CINEMATIC_REST_DISTANCE, progress);
+      const radius = THREE.MathUtils.lerp(start.radius, restDistanceRef.current, progress);
       const spinY = lerpAngle(start.spinY, GLOBE_MESH_Y_ROTATION, progress);
 
       spherical.set(radius, phi, theta);
@@ -526,6 +736,9 @@ function PickableGlobe({
         perfTier={perfTier}
         controlsRef={controlsRef}
         meshRef={globeMeshRef}
+        // Keep the mesh in R3F's interaction list so Canvas onPointerMissed
+        // does not fire after GlobeGrabOrbit selects on pointerup (click follows).
+        meshProps={{ onClick: () => {} }}
       />
       <GlobeGrabOrbit
         controlsRef={controlsRef}
@@ -547,35 +760,59 @@ function PickableGlobe({
   );
 }
 
+/**
+ * Imperative controls for page chrome that sits above the canvas (the home
+ * drag zone and the map pane's floating zoom chips).
+ */
+export type GlobeHandle = {
+  /** Spin the globe by a pointer movement in pixels (any direction). */
+  spinByPixels: (deltaX: number, deltaY?: number) => void;
+  /** Pause/resume auto-spin while an external drag is in progress. */
+  setDragging: (dragging: boolean) => void;
+  zoomIn: () => void;
+  zoomOut: () => void;
+  resetView: () => void;
+};
+
+export type GlobeExperienceMode = "home" | "map";
+
 type InteractiveGlobeProps = {
   profile: Profile | null;
   difficulty: MapProgressDifficulty;
   usMode: GlobeUsMode;
+  /**
+   * "home": backdrop for the play hero (overlays drive it via the handle).
+   * "map": full interactive progress globe with picking + zoom.
+   */
+  mode: GlobeExperienceMode;
+  /** Hidden + frameloop parked while a 2D map view covers the page. */
+  active?: boolean;
   selectedCode: string | null;
   /** Place code from ?place= — highlights immediately and triggers fly-to. */
   initialPlaceCode?: string | null;
   onSelectPlace: (code: string | null) => void;
   className?: string;
-  /** When set, shows a scroll-down control beside the fill legend. */
-  statsScrollTargetId?: string;
+  handleRef?: RefObject<GlobeHandle | null>;
 };
 
 /**
- * The map page's full-bleed 3D globe: outer-space scenery in the foreground
- * with orbit + zoom camera controls, tap-to-select countries and states, a
- * mastery legend, and zoom buttons. Auto-spins gently until the player
- * interacts; idle levels tilt and resumes spin in place, while reset eases
- * back to the Europe-facing rest pose.
+ * The shared full-screen 3D globe behind both the home hero and the map view:
+ * outer-space scenery with orbit + zoom camera controls, tap-to-select
+ * countries and states (map mode), and gentle auto-spin until the player
+ * interacts. It stays mounted (and perfectly still) while the page UI slides
+ * between home and map so the planet never reloads or jumps.
  */
 export default function InteractiveGlobe({
   profile,
   difficulty,
   usMode,
+  mode,
+  active = true,
   selectedCode,
   initialPlaceCode = null,
   onSelectPlace,
   className,
-  statsScrollTargetId,
+  handleRef,
 }: InteractiveGlobeProps) {
   const { webglOk, reducedMotion, pageVisible, perfTier } = useGlobeSceneEnvironment();
   const { canvasKey, remountCanvas, resetRecoveryAttempts } = useGlobeCanvasKey();
@@ -602,12 +839,16 @@ export default function InteractiveGlobe({
     ? !introCancelled && !focusIntroComplete
     : !introCancelled && !cinematicIntroComplete;
   const settleRunning = settleMode !== null;
-  const { frameloop, bumpActivity } = useGlobeFrameloop(pageVisible, {
+  // Park the frameloop entirely while a 2D map view covers the globe.
+  const { frameloop, bumpActivity } = useGlobeFrameloop(pageVisible && active, {
     forceAlways:
       (autoSpin && !reducedMotion && !usePlaceFocus) || introRunning || settleRunning,
   });
   const canvasGl = getGlobeCanvasGlSettings(perfTier);
   const starCount = getGlobeStarCount(perfTier);
+  /** Responsive rest framing shared by home and map (set by GlobeFraming). */
+  const restDistanceRef = useRef(CINEMATIC_REST_DISTANCE);
+  const [maxCameraDistance, setMaxCameraDistance] = useState(MAX_CAMERA_DISTANCE);
 
   const clearIdleResetTimer = useCallback(() => {
     if (idleResetTimerRef.current) {
@@ -682,37 +923,73 @@ export default function InteractiveGlobe({
       if (!controls) return;
       const camera = controls.object;
       const offset = camera.position.clone().sub(controls.target);
-      const distance = THREE.MathUtils.clamp(
-        offset.length() * factor,
-        MIN_CAMERA_DISTANCE,
-        MAX_CAMERA_DISTANCE,
-      );
+      const distance = zoomDistanceByAltitudeFactor(offset.length(), factor, maxCameraDistance);
       offset.setLength(distance);
       camera.position.copy(controls.target).add(offset);
       controls.update();
     },
-    [noteUserInteraction],
+    [noteUserInteraction, maxCameraDistance],
   );
-  const panelScope = highlightedCode && isStateCode(highlightedCode) ? "usa" : "world";
 
-  const globeBottomPanelClass =
-    "flex items-center rounded-xl border border-slate-200/60 bg-white/85 shadow-sm backdrop-blur dark:border-slate-700/60 dark:bg-slate-900/75";
+  // Imperative controls for chrome above the canvas: the home drag zone spins
+  // the planet, and the map pane's floating chips drive zoom/reset.
+  useEffect(() => {
+    if (!handleRef) return;
+    handleRef.current = {
+      spinByPixels: (deltaX, deltaY = 0) => {
+        const controls = controlsRef.current;
+        const container = containerRef.current;
+        if (!controls || !container) return;
+        const camera = controls.object;
+        if (!(camera instanceof THREE.PerspectiveCamera)) return;
+        bumpActivity();
+        orbitCameraByScreenDelta(
+          camera,
+          controls.target,
+          deltaX,
+          deltaY,
+          container.getBoundingClientRect(),
+          controls.minPolarAngle,
+          controls.maxPolarAngle,
+        );
+        controls.update();
+      },
+      setDragging: (dragging) => {
+        if (dragging) {
+          noteUserInteraction();
+          return;
+        }
+        bumpActivity();
+        armIdleReset();
+      },
+      zoomIn: () => zoomBy(ZOOM_BUTTON_FACTOR),
+      zoomOut: () => zoomBy(1 / ZOOM_BUTTON_FACTOR),
+      resetView,
+    };
+    return () => {
+      handleRef.current = null;
+    };
+  }, [handleRef, bumpActivity, noteUserInteraction, armIdleReset, zoomBy, resetView]);
+
+  const panelScope = highlightedCode && isStateCode(highlightedCode) ? "usa" : "world";
 
   return (
     <SpaceBackdrop
       isDark={isDark}
-      className={cn("relative", className)}
+      className={cn("relative", !active && "invisible", className)}
     >
       <ProgressMapContainer
         containerRef={containerRef}
         wrapperClassName="absolute inset-0"
         className="relative h-full w-full touch-none"
         hoverLabel={null}
-        selectedCode={highlightedCode}
+        selectedCode={mode === "map" ? highlightedCode : null}
         profile={profile}
         difficulty={difficulty}
         scope={panelScope}
-        inlinePanelClassName="absolute inset-x-4 bottom-16 z-10 sm:hidden"
+        inlinePanelClassName="absolute inset-x-4 bottom-[calc(8rem+env(safe-area-inset-bottom))] z-10 sm:hidden"
+        // Sit below the floating Globe/World/USA toggle in GlobeExperience.
+        overlayPanelClassName="left-3 top-[calc(var(--app-header-offset)+4rem)]"
         onDismissSelection={() => {
           bumpActivity();
           onSelectPlace(null);
@@ -744,6 +1021,10 @@ export default function InteractiveGlobe({
           >
             <GlobeContextRecovery onContextLost={remountCanvas} />
             <GlobeRecoveryReset onStable={resetRecoveryAttempts} />
+            <GlobeFraming
+              restDistanceRef={restDistanceRef}
+              onMaxDistanceChange={setMaxCameraDistance}
+            />
             <GlobeAssetPreloader />
             <GlobeInitialInvalidate />
             <GlobeFillLights isDark={isDark} dayNight={dayNight} />
@@ -805,9 +1086,10 @@ export default function InteractiveGlobe({
                 !(usePlaceFocus && !focusIntroComplete && !introCancelled) && !settleRunning
               }
               dampingFactor={0.08}
-              zoomSpeed={0.7}
+              zoomSpeed={BASE_ZOOM_SPEED}
+              enableZoom={mode === "map"}
               minDistance={MIN_CAMERA_DISTANCE}
-              maxDistance={MAX_CAMERA_DISTANCE}
+              maxDistance={maxCameraDistance}
               autoRotate={autoSpin && !reducedMotion && !usePlaceFocus && !settleRunning}
               // OrbitControls speed 1.0 ≈ 0.1 rad/s; match the home globe's gentle spin.
               autoRotateSpeed={GLOBE_ROTATION_SPEED * 10}
@@ -819,11 +1101,18 @@ export default function InteractiveGlobe({
                 if (idleResetTimerRef.current) armIdleReset();
               }}
             />
+            <AltitudeAwareZoomSpeed controlsRef={controlsRef} />
+            <WheelZoomPageScrollHandoff
+              controlsRef={controlsRef}
+              minDistance={MIN_CAMERA_DISTANCE}
+              maxDistance={maxCameraDistance}
+            />
             {settleMode ? (
               <ViewSettleAnimation
                 key={`settle-${settleKey}`}
                 controlsRef={controlsRef}
                 spinGroupRef={spinGroupRef}
+                restDistanceRef={restDistanceRef}
                 mode={settleMode}
                 reducedMotion={reducedMotion}
                 onComplete={() => {
@@ -848,6 +1137,7 @@ export default function InteractiveGlobe({
             ) : (
               <CinematicIntroZoom
                 controlsRef={controlsRef}
+                restDistanceRef={restDistanceRef}
                 enabled={!reducedMotion}
                 cancelled={introCancelled || settleRunning}
                 onComplete={() => setCinematicIntroComplete(true)}
@@ -857,31 +1147,6 @@ export default function InteractiveGlobe({
           </Canvas>
         ) : webglOk === false && isDark ? (
           <StaticStarfield isDark />
-        ) : null}
-
-        <MapZoomControls
-          variant="overlay"
-          className="absolute right-3 top-3 z-10"
-          onZoomIn={() => zoomBy(ZOOM_BUTTON_FACTOR)}
-          onZoomOut={() => zoomBy(1 / ZOOM_BUTTON_FACTOR)}
-          onReset={resetView}
-        />
-
-        {ready ? (
-          <div className="pointer-events-none absolute inset-x-0 bottom-3 z-20 flex items-end justify-center gap-2 px-4">
-            <div className={cn(globeBottomPanelClass, "pointer-events-auto px-2.5 py-1.5")}>
-              <MapProgressFillLegend isDark={isDark} difficulty={difficulty} />
-            </div>
-            {statsScrollTargetId ? (
-              <div className={cn(globeBottomPanelClass, "pointer-events-auto")}>
-                <MapScrollDownButton
-                  targetId={statsScrollTargetId}
-                  reducedMotion={reducedMotion}
-                  className="size-8 rounded-xl"
-                />
-              </div>
-            ) : null}
-          </div>
         ) : null}
       </ProgressMapContainer>
     </SpaceBackdrop>

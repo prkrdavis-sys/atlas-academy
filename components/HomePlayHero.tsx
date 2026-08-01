@@ -14,7 +14,7 @@ import { DailyCalendarIcon } from "@/components/DailyCalendarIcon";
 import { HomeHeroTaglineContent } from "@/components/HomeHeroTaglineContent";
 import { ProfileRequiredDialog } from "@/components/ProfileRequiredDialog";
 import { GLOBE_TAP_TRAVEL_THRESHOLD } from "@/components/globe/globe-scene";
-import type { GlobeHandle } from "@/components/home/GlobeBackground";
+import type { GlobeHandle } from "@/components/globe/InteractiveGlobe";
 import { getActiveGameSummaryParts, getMainPlayMode, resolvePlayMode } from "@/lib/game-setup";
 import { hasPlayedDailyToday } from "@/lib/game-engine";
 import { GLOBE_MAP_HREF } from "@/lib/navigation";
@@ -23,6 +23,11 @@ import { playSound } from "@/lib/sound";
 import { recordModeSelection, updateProfileSettings } from "@/lib/storage";
 import type { GameMode, GameScope, GlobalStreakSnapshot, Profile } from "@/lib/types";
 import { cn } from "@/lib/utils";
+
+/** Time a tip stays fully visible so it can be read comfortably. */
+const PRO_TIP_DWELL_MS = 11_000;
+/** Fade-out / fade-in duration for tip swaps. */
+const PRO_TIP_FADE_MS = 400;
 
 type HomePlayHeroProps = {
   profile: Profile | null;
@@ -61,6 +66,9 @@ export function HomePlayHero({
     : false;
 
   const [heroTagline, setHeroTagline] = useState<string | null>(null);
+  const [tipVisible, setTipVisible] = useState(true);
+  const tipBusyRef = useRef(false);
+  const tipTimersRef = useRef<number[]>([]);
 
   const taglineContext = useMemo<HomeHeroTaglineContext | null>(
     () =>
@@ -78,23 +86,64 @@ export function HomePlayHero({
     [profile, scope, streak, todayBest, storedTodayBest, dailyRun, dailyCompletedToday],
   );
 
+  const clearTipTimers = useCallback(() => {
+    for (const id of tipTimersRef.current) window.clearTimeout(id);
+    tipTimersRef.current = [];
+  }, []);
+
   useEffect(() => {
     // Tagline is randomized client-side after mount to avoid hydration mismatch.
+    tipBusyRef.current = false;
+    clearTipTimers();
+    setTipVisible(true);
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setHeroTagline(
       taglineContext
         ? pickHomeHeroTagline(taglineContext)
         : getGuestHomeHeroTagline(scope),
     );
-  }, [taglineContext, scope]);
+  }, [taglineContext, scope, clearTipTimers]);
 
-  const rerollTagline = useCallback(() => {
-    setHeroTagline((current) =>
-      taglineContext
-        ? pickHomeHeroTaglineExcluding(taglineContext, current ?? undefined)
-        : getGuestHomeHeroTaglineExcluding(scope, current ?? undefined),
-    );
-  }, [taglineContext, scope]);
+  useEffect(() => () => clearTipTimers(), [clearTipTimers]);
+
+  const advanceTagline = useCallback(() => {
+    if (tipBusyRef.current) return;
+    tipBusyRef.current = true;
+    clearTipTimers();
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const fadeMs = reduceMotion ? 0 : PRO_TIP_FADE_MS;
+
+    setTipVisible(false);
+
+    const swapId = window.setTimeout(() => {
+      setHeroTagline((current) =>
+        taglineContext
+          ? pickHomeHeroTaglineExcluding(taglineContext, current ?? undefined)
+          : getGuestHomeHeroTaglineExcluding(scope, current ?? undefined),
+      );
+
+      // Let the browser paint the new text at opacity 0 before fading in.
+      const showId = window.setTimeout(() => {
+        setTipVisible(true);
+        tipBusyRef.current = false;
+      }, reduceMotion ? 0 : 32);
+      tipTimersRef.current.push(showId);
+    }, fadeMs);
+    tipTimersRef.current.push(swapId);
+  }, [taglineContext, scope, clearTipTimers]);
+
+  // Auto-cycle the pro tip while the signed-in home hero is showing.
+  useEffect(() => {
+    if (!profile || !heroTagline || !tipVisible) return;
+
+    const id = window.setInterval(() => {
+      if (document.visibilityState === "hidden") return;
+      advanceTagline();
+    }, PRO_TIP_DWELL_MS);
+
+    return () => window.clearInterval(id);
+  }, [profile, heroTagline, tipVisible, advanceTagline]);
 
   const hideProfileDialog = useCallback(() => setShowProfileDialog(false), []);
 
@@ -166,7 +215,7 @@ export function HomePlayHero({
 
               <button
                 type="button"
-                onClick={rerollTagline}
+                onClick={advanceTagline}
                 aria-label="Show another pro tip"
                 className="group/protip w-full rounded-2xl border border-slate-900/10 bg-white/60 px-4 py-3 text-left text-sm leading-relaxed text-slate-600 backdrop-blur-md transition-colors hover:border-slate-900/25 hover:bg-white/80 dark:border-white/10 dark:bg-white/[0.05] dark:text-slate-300 dark:hover:border-white/25 dark:hover:bg-white/10"
               >
@@ -179,7 +228,15 @@ export function HomePlayHero({
                   </span>
                   Pro tip:
                 </span>{" "}
-                <span key={heroTagline ?? "loading"} className="[animation:hero-tip-in_0.2s_ease-out]">
+                <span
+                  aria-live="polite"
+                  className={cn(
+                    "inline transition-[opacity,transform] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
+                    tipVisible
+                      ? "translate-y-0 opacity-100"
+                      : "translate-y-1 opacity-0",
+                  )}
+                >
                   {heroTagline ? (
                     <HomeHeroTaglineContent text={heroTagline} scope={scope} />
                   ) : (

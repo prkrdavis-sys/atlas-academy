@@ -1,0 +1,25 @@
+{
+  "width": 4000,
+  "height": 2000,
+  "mapWidth": 10000,
+  "mapHeight": 5000,
+  "scale": 0.4,
+  "source": "/globe/land-color.jpg",
+  "projection": "naturalEarth1",
+  "projectionParams": {
+    "scale": 1785.067040128928,
+    "translate": [
+      4981.604028887083,
+      2460.937588242929
+    ],
+    "center": [
+      0,
+      0
+    ],
+    "rotate": [
+      0,
+      0,
+      0
+    ]
+  }
+}

@@ -254,17 +254,6 @@ input:focus-visible {
   }
 }
 
-@keyframes hero-tip-in {
-  0% {
-    opacity: 0;
-    transform: translateY(2px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 @keyframes learn-card-pop-in {
   0% {
     transform: scale(0.97);
@@ -555,7 +544,7 @@ input:focus-visible {
 }
 
 .mastery-texture-gold {
-  background-image: url("/textures/mastery-gold-brushed.jpg");
+  background-image: url("/textures/mastery-gold-color.jpg");
   background-size: cover;
   background-position: center;
 }

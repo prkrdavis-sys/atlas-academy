@@ -252,6 +252,9 @@ export function normalizeProfile(profile: Profile): Profile {
   if (!normalized.dailyChallengeCompletions) {
     normalized.dailyChallengeCompletions = [];
   }
+  if (!normalized.activityByDate) {
+    normalized.activityByDate = {};
+  }
   if (!normalized.todayBestStreaks) {
     normalized.todayBestStreaks = {};
   } else if (!("world" in normalized.todayBestStreaks) && !("usa" in normalized.todayBestStreaks)) {
@@ -431,6 +434,11 @@ export function recordAnswer(
   const stats = profile.stats[scope][mode][difficulty];
   const globalStreak = profile.globalStreaks[scope][difficulty];
   stats.totalPlayed += 1;
+
+  const activityDateKey = getDailyDateKey();
+  if (!profile.activityByDate) profile.activityByDate = {};
+  profile.activityByDate[activityDateKey] =
+    (profile.activityByDate[activityDateKey] ?? 0) + 1;
 
   if (correct && !skipped) {
     stats.totalCorrect += 1;

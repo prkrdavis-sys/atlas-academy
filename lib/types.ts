@@ -51,10 +51,10 @@ export const DIFFICULTY_LABELS: Record<Difficulty, string> = {
 
 export const ROUND_QUESTION_OPTIONS = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50] as const;
 export type RoundQuestionCount = (typeof ROUND_QUESTION_OPTIONS)[number];
-export const DEFAULT_ROUND_QUESTION_COUNT: RoundQuestionCount = 10;
-export const DAILY_CHALLENGE_QUESTION_COUNT: RoundQuestionCount = 10;
 export const ROUND_ALL_QUESTIONS = "all" as const;
 export type RoundQuestionSetting = RoundQuestionCount | typeof ROUND_ALL_QUESTIONS;
+export const DEFAULT_ROUND_QUESTION_COUNT: RoundQuestionSetting = ROUND_ALL_QUESTIONS;
+export const DAILY_CHALLENGE_QUESTION_COUNT: RoundQuestionCount = 10;
 
 export function normalizeRoundQuestionSetting(
   value: RoundQuestionSetting | number | string | undefined,
@@ -130,10 +130,13 @@ export type SpeedRoundQuestionType = CoreQuestionType | typeof SPEED_ROUND_ALL_T
 
 export type GameMode =
   | "flag-to-country"
+  | "flag-crop-to-country"
   | "shape-to-country"
   | "capital-to-country"
   | "country-to-capital"
   | "country-to-flag"
+  | "inverted-flag-to-country"
+  | "inverted-country-to-flag"
   | "country-to-language"
   | "neighbor-quiz"
   | "population-showdown"
@@ -193,6 +196,8 @@ export const DEFAULT_SELECTED_MODE: GameMode = "mixed";
 
 const TYPE_IN_HARD_MODES: GameMode[] = [
   "flag-to-country",
+  "flag-crop-to-country",
+  "inverted-flag-to-country",
   "shape-to-country",
   "capital-to-country",
   "country-to-capital",
@@ -225,7 +230,9 @@ export function getDifficultyHint(mode: GameMode, level: Difficulty): string {
     case "medium":
       return " - multiple choice";
     case "hard":
-      if (mode === "country-to-flag") return " - pick from 6 flags";
+      if (mode === "country-to-flag" || mode === "inverted-country-to-flag") {
+        return " - pick from 6 flags";
+      }
       if (TYPE_IN_HARD_MODES.includes(mode)) return " - type your answer";
       return " - multiple choice";
   }
@@ -334,6 +341,8 @@ export type Profile = {
   dailyChallengePlayedDates?: string[];
   /** EST date keys (YYYY-MM-DD) when the daily challenge was fully completed */
   dailyChallengeCompletions?: string[];
+  /** Questions answered per EST date key (YYYY-MM-DD), across scopes and difficulties. */
+  activityByDate?: Record<string, number>;
   /** Highest global streak reached today, per scope and difficulty (resets each EST day) */
   todayBestStreaks?: Partial<
     Record<GameScope, Partial<Record<Difficulty, { dateKey: string; value: number }>>>
@@ -364,7 +373,7 @@ export type Question = {
   correctCode?: string;
   options?: string[];
   optionCodes?: string[];
-  displayType?: "flag" | "shape" | "capital" | "text" | "flags-grid" | "population" | "atlasle";
+  displayType?: "flag" | "flag-crop" | "shape" | "capital" | "text" | "flags-grid" | "population" | "atlasle";
   secondaryCountryCode?: string;
   /** Atlasle: whether the puzzle answer is a place name or a capital. */
   atlasleTarget?: AtlasleGuessTarget;
@@ -384,7 +393,10 @@ export const PRACTICE_MODES: GameMode[] = ["weak-spots"];
 
 /** Phase-2 quiz modes shown on the game setup page (not core Play or Practice). */
 export const EXTRA_QUIZ_MODES: GameMode[] = [
+  "flag-crop-to-country",
   "country-to-flag",
+  "inverted-flag-to-country",
+  "inverted-country-to-flag",
   "country-to-language",
   "neighbor-quiz",
   "population-showdown",
@@ -408,6 +420,13 @@ export const GAME_MODES: {
     description: "Identify each country by its flag",
     icon: "🏳️",
     phase: 1,
+  },
+  {
+    id: "flag-crop-to-country",
+    title: "Flag Close-Up",
+    description: "Identify the country from one carefully chosen fragment of its flag",
+    icon: "🔎",
+    phase: 2,
   },
   {
     id: "shape-to-country",
@@ -435,6 +454,20 @@ export const GAME_MODES: {
     title: "Flags from countries",
     description: "See a country name, pick its flag — Hard adds two more choices",
     icon: "🎌",
+    phase: 2,
+  },
+  {
+    id: "inverted-flag-to-country",
+    title: "Countries from inverted flags",
+    description: "Identify each country by its color-inverted flag",
+    icon: "🪞",
+    phase: 2,
+  },
+  {
+    id: "inverted-country-to-flag",
+    title: "Inverted flags from countries",
+    description: "See a country name, pick its color-inverted flag — Hard adds two more choices",
+    icon: "🔮",
     phase: 2,
   },
   {

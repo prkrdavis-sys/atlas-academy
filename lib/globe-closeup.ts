@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { normalizedToLocalDirection } from "@/lib/globe-focus";
+import { getOceanDepthCanvas } from "@/lib/globe-ocean-depth";
 import { isGlobeFxConstrained } from "@/lib/globe-performance";
 import {
   fillSelectedMapPath,
@@ -12,14 +13,16 @@ import {
   createGoldPbrMapSet,
   createMasteryGoldPattern,
   MASTERY_GOLD_TILE_BASE_PX,
-  MASTERY_GOLD_WARM_OVERLAY,
   paintGoldPbrForPath,
 } from "@/lib/mastery-gold-texture";
+import { getLandColorCanvas } from "@/lib/globe-land-color";
 import { getPlaceMasteryLevel } from "@/lib/map-progress";
 import {
   applyGlobeSurfaceGrain,
   GLOBE_BASE_TEXTURE_SIZE,
+  GLOBE_OCEAN_MOTTLE_ENABLED,
   getGlobePalette,
+  MASTERY_TINT_ALPHA,
   type GlobeCountryShape,
   type GlobeUsMode,
 } from "@/lib/globe-texture";
@@ -243,33 +246,58 @@ function collectCloseupShapes(
 }
 
 /**
- * Maps a normalized equirectangular point into patch pixel space. Points that
- * need an antimeridian unwrap pick the shift that lands inside the window.
+ * Adds one ring to the patch path. The ring is first unwrapped continuously
+ * (each vertex relative to the previous one) so antimeridian-crossing shapes
+ * with a wide longitudinal span — Russia, the US with the Aleutians, Fiji —
+ * stay contiguous instead of tearing into a full-width band. The whole ring
+ * is then shifted as a unit onto whichever wrap copies overlap the window.
  */
-function toPatchPoint(
-  nx: number,
-  ny: number,
+function addRingToPath(
+  path: Path2D,
+  ring: number[],
   window: CloseupWindow,
   width: number,
   height: number,
-): [number, number] {
+): void {
+  const pointCount = ring.length / 2;
+  const xs = new Float64Array(pointCount);
+  let ringMinX = Infinity;
+  let ringMaxX = -Infinity;
+
+  let prevX = ring[0];
+  xs[0] = prevX;
+  ringMinX = ringMaxX = prevX;
+  for (let i = 1; i < pointCount; i += 1) {
+    let x = ring[i * 2];
+    // Continuous unwrap: pick the copy of x nearest the previous vertex.
+    x -= Math.round(x - prevX);
+    xs[i] = x;
+    prevX = x;
+    if (x < ringMinX) ringMinX = x;
+    if (x > ringMaxX) ringMaxX = x;
+  }
+
   const minX = window.centerX - window.halfX;
+  const maxX = window.centerX + window.halfX;
   const minY = window.centerY - window.halfY;
   const spanX = window.halfX * 2;
   const spanY = window.halfY * 2;
 
-  let bestX = nx;
-  let bestDist = Infinity;
-  for (const shift of [0, -1, 1, -2, 2]) {
-    const sx = nx + shift;
-    const dist = Math.abs(sx - window.centerX);
-    if (dist < bestDist) {
-      bestDist = dist;
-      bestX = sx;
+  // Emit the ring at every integer shift whose bbox overlaps the window
+  // (a very wide ring plus a wide window can be visible at two shifts).
+  for (let shift = Math.ceil(minX - ringMaxX); shift <= Math.floor(maxX - ringMinX); shift += 1) {
+    path.moveTo(
+      ((xs[0] + shift - minX) / spanX) * width,
+      ((ring[1] - minY) / spanY) * height,
+    );
+    for (let i = 1; i < pointCount; i += 1) {
+      path.lineTo(
+        ((xs[i] + shift - minX) / spanX) * width,
+        ((ring[i * 2 + 1] - minY) / spanY) * height,
+      );
     }
+    path.closePath();
   }
-
-  return [((bestX - minX) / spanX) * width, ((ny - minY) / spanY) * height];
 }
 
 function buildPatchPath(
@@ -281,13 +309,7 @@ function buildPatchPath(
   const path = new Path2D();
   for (const ring of rings) {
     if (ring.length < 6) continue;
-    const [x0, y0] = toPatchPoint(ring[0], ring[1], window, width, height);
-    path.moveTo(x0, y0);
-    for (let i = 2; i < ring.length; i += 2) {
-      const [x, y] = toPatchPoint(ring[i], ring[i + 1], window, width, height);
-      path.lineTo(x, y);
-    }
-    path.closePath();
+    addRingToPath(path, ring, window, width, height);
   }
   return path;
 }
@@ -319,6 +341,46 @@ function applyEdgeFeather(ctx: CanvasRenderingContext2D, width: number, height: 
   ctx.restore();
 }
 
+/**
+ * Paints a world-anchored equirectangular source for the close-up window,
+ * splitting the source rect in two when the window crosses the antimeridian
+ * (mirroring the ring unwrap logic used for land shapes). Because sampling is
+ * tied to world coordinates, rebuilt patches paint identical pixels — panning
+ * never makes the surface visibly re-anchor.
+ */
+function drawWorldImageForWindow(
+  ctx: CanvasRenderingContext2D,
+  source: HTMLCanvasElement,
+  window: CloseupWindow,
+  width: number,
+  height: number,
+): void {
+  const dw = source.width;
+  const dh = source.height;
+
+  // Wrap the window's left edge into [0, 1); spans are capped below 1.
+  let minX = window.centerX - window.halfX;
+  minX -= Math.floor(minX);
+  const spanX = window.halfX * 2;
+  const minY = Math.max(0, window.centerY - window.halfY);
+  const maxY = Math.min(1, window.centerY + window.halfY);
+
+  const sx = minX * dw;
+  const sw = spanX * dw;
+  const sy = minY * dh;
+  const sh = Math.max(1e-3, (maxY - minY) * dh);
+
+  if (sx + sw <= dw) {
+    ctx.drawImage(source, sx, sy, sw, sh, 0, 0, width, height);
+    return;
+  }
+  // Window straddles the antimeridian — draw the two halves side by side.
+  const firstW = dw - sx;
+  const destSplit = (firstW / sw) * width;
+  ctx.drawImage(source, sx, sy, firstW, sh, 0, 0, destSplit, height);
+  ctx.drawImage(source, 0, sy, sw - firstW, sh, destSplit, 0, width - destSplit, height);
+}
+
 export type PaintCloseupOptions = {
   difficulty?: MapProgressDifficulty;
   usMode?: GlobeUsMode;
@@ -326,6 +388,10 @@ export type PaintCloseupOptions = {
   selectedCode?: string | null;
   /** Target texture width; height follows the window aspect. */
   textureWidth?: number;
+  /** Preloaded grayscale bathymetry map — real ocean depth shading. */
+  oceanDepthImage?: HTMLImageElement | null;
+  /** Preloaded Blue Marble natural-color land imagery. */
+  landColorImage?: HTMLImageElement | null;
   /** Preloaded gold foil albedo so Normal mastery-4 keeps its texture up close. */
   goldColorImage?: HTMLImageElement | null;
   goldRoughnessImage?: HTMLImageElement | null;
@@ -356,6 +422,8 @@ export function paintGlobeCloseupRegion(
     isDark = true,
     selectedCode = null,
     textureWidth = 2048,
+    oceanDepthImage = null,
+    landColorImage = null,
     goldColorImage = null,
     goldRoughnessImage = null,
     goldNormalImage = null,
@@ -378,14 +446,33 @@ export function paintGlobeCloseupRegion(
   const effectiveScale =
     width / Math.max(window.halfX * 2, 1e-6) / GLOBE_BASE_TEXTURE_SIZE;
 
+  // World-anchored grain origin: how far (in canvas px) this patch's origin
+  // sits from world (0, 0), so grain stays pinned to the planet across
+  // rebuilds instead of re-anchoring to each new patch.
+  const grainOrigin: [number, number] = [
+    ((window.centerX - window.halfX) * width) / Math.max(window.halfX * 2, 1e-6),
+    ((window.centerY - window.halfY) * height) / Math.max(window.halfY * 2, 1e-6),
+  ];
+
+  // Flat fill stays as the fallback until the bathymetry image is available.
   ctx.fillStyle = palette.ocean;
   ctx.fillRect(0, 0, width, height);
+  if (oceanDepthImage) {
+    drawWorldImageForWindow(
+      ctx,
+      getOceanDepthCanvas(oceanDepthImage, isDark),
+      window,
+      width,
+      height,
+    );
+  }
   applyGlobeSurfaceGrain(
     ctx,
     width,
     height,
     Math.min(effectiveScale, CLOSEUP_GRAIN_SCALE_CAP),
     "ocean",
+    grainOrigin,
   );
 
   const goldPattern =
@@ -398,6 +485,34 @@ export function paintGlobeCloseupRegion(
       : null;
 
   const shapes = collectCloseupShapes(data, profile, difficulty, usMode, window);
+  const shapePaths = shapes.map((shape) => ({
+    shape,
+    path: buildPatchPath(shape.rings, window, width, height),
+  }));
+
+  // Combined land silhouette (non-state shapes never overlap, so even-odd
+  // only carves genuine holes) — clips the imagery and the land grain pass.
+  const landPath = new Path2D();
+  for (const { shape, path } of shapePaths) {
+    if (!shape.isState) landPath.addPath(path);
+  }
+
+  const hasLandImagery = landColorImage != null;
+  if (landColorImage) {
+    // Real natural-color terrain clipped to land, sampled at world
+    // coordinates so panning never shifts it.
+    ctx.save();
+    ctx.clip(landPath, "evenodd");
+    drawWorldImageForWindow(
+      ctx,
+      getLandColorCanvas(landColorImage, isDark),
+      window,
+      width,
+      height,
+    );
+    ctx.restore();
+  }
+
   const goldTilePx = Math.max(40, Math.round(MASTERY_GOLD_TILE_BASE_PX * effectiveScale));
   const useGoldPbr =
     difficulty === "medium" &&
@@ -415,10 +530,10 @@ export function paintGlobeCloseupRegion(
     normalCanvas = pbrMaps.normalCanvas;
   }
 
-  for (const shape of shapes) {
-    const path = buildPatchPath(shape.rings, window, width, height);
+  for (const { shape, path } of shapePaths) {
     const level = shape.level as 0 | 1 | 2 | 3 | 4;
     if (level === 4) {
+      // Gold / legendary stays fully opaque over the imagery.
       ctx.fillStyle = goldPattern ?? getMasterySolidColor(difficulty);
       if (pbrMaps) {
         paintGoldPbrForPath(
@@ -429,18 +544,24 @@ export function paintGlobeCloseupRegion(
           goldNormalImage,
         );
       }
-    } else {
-      ctx.fillStyle = getProgressFillColor(level, isDark, difficulty);
-    }
-    ctx.fill(path, "evenodd");
-
-    // Warm the gold foil like the base texture does.
-    if (level === 4 && goldPattern) {
-      ctx.save();
-      ctx.globalCompositeOperation = "overlay";
-      ctx.fillStyle = MASTERY_GOLD_WARM_OVERLAY;
       ctx.fill(path, "evenodd");
-      ctx.restore();
+    } else if (level === 0) {
+      // Unstarted land is the imagery itself; flat fill only as fallback.
+      if (!hasLandImagery) {
+        ctx.fillStyle = getProgressFillColor(level, isDark, difficulty);
+        ctx.fill(path, "evenodd");
+      }
+    } else {
+      // Mastery 1–3 tints stay translucent so the terrain reads through.
+      ctx.fillStyle = getProgressFillColor(level, isDark, difficulty);
+      if (hasLandImagery) {
+        ctx.save();
+        ctx.globalAlpha = MASTERY_TINT_ALPHA;
+        ctx.fill(path, "evenodd");
+        ctx.restore();
+      } else {
+        ctx.fill(path, "evenodd");
+      }
     }
 
     ctx.lineWidth = shape.isState ? strokeWidth * 0.85 : strokeWidth;
@@ -448,13 +569,22 @@ export function paintGlobeCloseupRegion(
     ctx.stroke(path);
   }
 
+  // With the painted mottle off, keep the water as pure bathymetry: clip the
+  // land grain pass to the land shapes instead of washing the whole patch.
+  const clipGrainToLand = !GLOBE_OCEAN_MOTTLE_ENABLED;
+  if (clipGrainToLand) {
+    ctx.save();
+    ctx.clip(landPath, "evenodd");
+  }
   applyGlobeSurfaceGrain(
     ctx,
     width,
     height,
     Math.min(effectiveScale, CLOSEUP_GRAIN_SCALE_CAP),
     "land",
+    grainOrigin,
   );
+  if (clipGrainToLand) ctx.restore();
 
   if (selectedCode) {
     const selected = shapes.find((shape) => shape.code === selectedCode);

@@ -1,15 +1,17 @@
-/** Paths and helpers for the Normal mastery-4 ornate gold PBR set (CC0). */
+/**
+ * Paths and helpers for the Normal mastery-4 gold PBR set. The maps are
+ * procedurally generated from a synthetic worked-metal height field (hammered
+ * dents, scratches, polish waviness) — see scripts/generate-mastery-gold-pbr.ts.
+ */
 
-export const MASTERY_GOLD_TEXTURE_PATH = "/textures/mastery-gold-brushed.jpg";
+export const MASTERY_GOLD_TEXTURE_PATH = "/textures/mastery-gold-color.jpg";
 export const MASTERY_GOLD_ROUGHNESS_PATH = "/textures/mastery-gold-roughness.jpg";
-export const MASTERY_GOLD_NORMAL_PATH = "/textures/mastery-gold-normal.jpg";
+export const MASTERY_GOLD_NORMAL_PATH = "/textures/mastery-gold-normal.webp";
 
 /** Classic yellow-gold solid fallback (not orange). */
 export const MASTERY_GOLD_ALBEDO_FALLBACK = "#d4af37";
-/** Canvas overlay — pushes cool scans toward warm crinkled foil. */
-export const MASTERY_GOLD_WARM_OVERLAY = "rgba(255, 120, 20, 0.58)";
-/** Tile width at 2048px texture width; smaller repeats = finer crinkle. */
-export const MASTERY_GOLD_TILE_BASE_PX = 64;
+/** Tile width at 1024px texture width; large enough that dents/scratches read. */
+export const MASTERY_GOLD_TILE_BASE_PX = 128;
 
 /** Matte land/ocean roughness (high value = low specular). */
 export const GOLD_PBR_BASE_ROUGHNESS = "#c8c8c8";

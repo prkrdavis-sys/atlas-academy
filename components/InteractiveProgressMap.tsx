@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Panzoom from "@panzoom/panzoom";
+import { MapStatsButton } from "@/components/MapStatsButton";
 import { MapZoomControls } from "@/components/MapZoomControls";
 import { ProgressMapContainer } from "@/components/ProgressMapOverlays";
 import {
@@ -39,6 +40,8 @@ type InteractiveProgressMapProps = {
   initialPlaceCode?: string | null;
   profile: Profile | null;
   difficulty: MapProgressDifficulty;
+  /** Shows the double-chevron button beside the legend that pulls up map stats. */
+  onOpenStats?: () => void;
 };
 
 const SCOPE_COPY: Record<
@@ -72,6 +75,7 @@ export function InteractiveProgressMap({
   initialPlaceCode = null,
   profile,
   difficulty,
+  onOpenStats,
 }: InteractiveProgressMapProps) {
   const copy = SCOPE_COPY[scope];
   const containerRef = useRef<HTMLDivElement>(null);
@@ -165,8 +169,22 @@ export function InteractiveProgressMap({
     hasInitialFocusRef.current = false;
 
     const container = containerRef.current;
+    const finePointer = window.matchMedia("(pointer: fine)");
     const onWheel = (event: WheelEvent) => {
       if (!panzoomRef.current) return;
+
+      // Desktop: at min/max scale, let the wheel scroll the page instead of
+      // trapping the cursor over a map that can't zoom further.
+      if (finePointer.matches && event.deltaY !== 0) {
+        const scale = panzoomRef.current.getScale();
+        const eps = 1e-3;
+        const atMin = scale <= MAP_PANZOOM_OPTIONS.minScale + eps;
+        const atMax = scale >= MAP_PANZOOM_OPTIONS.maxScale - eps;
+        const wantsOut = event.deltaY > 0;
+        const wantsIn = event.deltaY < 0;
+        if ((wantsOut && atMin) || (wantsIn && atMax)) return;
+      }
+
       panzoomRef.current.zoomWithWheel(event);
     };
     container?.addEventListener("wheel", onWheel, { passive: false });
@@ -241,11 +259,15 @@ export function InteractiveProgressMap({
             {activePlace ? activePlace.name : copy.emptyPrompt}
           </p>
           {ready ? (
-            <MapProgressFillLegend
-              isDark={isDark}
-              difficulty={difficulty}
-              className="mt-1.5"
-            />
+            <div className="mt-1.5 flex items-center gap-2">
+              <MapProgressFillLegend isDark={isDark} difficulty={difficulty} />
+              {onOpenStats ? (
+                <MapStatsButton
+                  onClick={onOpenStats}
+                  className="size-7 rounded-lg border border-slate-200/80 dark:border-slate-600/80"
+                />
+              ) : null}
+            </div>
           ) : null}
         </div>
         <MapZoomControls
@@ -283,6 +305,8 @@ export function InteractiveProgressMap({
               isDark={isDark}
               interactive
               includeMasteryFxDefs
+              landTexture
+              mapTemplateKey={copy.templateKey}
               pathStyleResolver={pathStyleResolver}
               onPathClick={handlePathClick}
               onPathHover={setHoveredPathId}

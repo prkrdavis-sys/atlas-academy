@@ -12,6 +12,7 @@ import { resolveMapProgressCategory, wouldCountTowardMapProgress } from "../lib/
 import { normalizeAnswerText } from "../lib/answer-matcher";
 import { countries, getCountryByCode, usStates } from "../lib/countries";
 import { CONTEXT_MAP_TEMPLATES } from "../lib/context-maps";
+import flagCropData from "../data/flag-crops.json";
 import { MIN_SHAPE_VIEWBOX, shapeViewBoxTooSmall } from "./map-path-utils";
 import {
   CONTINENTS,
@@ -49,6 +50,24 @@ for (const c of [...countries, ...usStates]) {
     fail(`${c.name}: hasCapitalImage but capital image missing`);
   }
   if (c.shapeQuizEligible && !c.hasShape) fail(`${c.name}: shapeQuizEligible without shape`);
+  if (c.hasFlag) {
+    const crop = flagCropData.records[c.code as keyof typeof flagCropData.records];
+    if (!crop) {
+      fail(`${c.name}: missing reviewed flag crop`);
+    } else {
+      if (crop.colors < 2) fail(`${c.name}: flag crop has fewer than two substantial colors`);
+      if (!crop.reviewed) fail(`${c.name}: flag crop has not been reviewed`);
+      if (crop.zoom < 2.6) fail(`${c.name}: flag crop is not challenging enough`);
+    }
+  }
+}
+
+const excludedFlagCropCodes = new Set(flagCropData.excludedCodes);
+for (const duplicateGroup of flagCropData.duplicateGroups) {
+  const eligibleCodes = duplicateGroup.filter((code) => !excludedFlagCropCodes.has(code));
+  if (eligibleCodes.length !== 1) {
+    fail(`Duplicate flag group must keep exactly one crop: ${duplicateGroup.join(", ")}`);
+  }
 }
 
 for (const template of CONTEXT_MAP_TEMPLATES) {
@@ -63,10 +82,13 @@ if (!existsSync(join("public", "maps", "bounds.json"))) {
 
 const MODES: GameMode[] = [
   "flag-to-country",
+  "flag-crop-to-country",
   "shape-to-country",
   "capital-to-country",
   "country-to-capital",
   "country-to-flag",
+  "inverted-flag-to-country",
+  "inverted-country-to-flag",
   "country-to-language",
   "neighbor-quiz",
   "population-showdown",
@@ -83,8 +105,9 @@ const SCOPE_SETUPS: { scope: GameScope; regions: Region[] }[] = [
 
 for (const { scope, regions } of SCOPE_SETUPS) {
 for (const mode of MODES) {
+  const isFlagPickMode = mode === "country-to-flag" || mode === "inverted-country-to-flag";
   const difficulties: ("easy" | "medium" | "hard")[] =
-    mode === "country-to-flag" ? ["easy", "medium", "hard"] : ["easy", "medium"];
+    isFlagPickMode ? ["easy", "medium", "hard"] : ["easy", "medium"];
   for (const difficulty of difficulties) {
     for (let run = 0; run < RUNS; run += 1) {
       const engine = new GameEngine(mode, regions, difficulty, undefined, run, "all", true, scope);
@@ -97,10 +120,10 @@ for (const mode of MODES) {
           continue;
         }
 
-        if (mode === "country-to-flag" && difficulty === "hard" && options.length !== 6) {
+        if (isFlagPickMode && difficulty === "hard" && options.length !== 6) {
           fail(`${mode}: hard mode must offer 6 flag choices (got ${options.length})`);
         }
-        if (mode === "country-to-flag" && difficulty !== "hard" && options.length !== 4) {
+        if (isFlagPickMode && difficulty !== "hard" && options.length !== 4) {
           fail(`${mode}: easy/medium must offer 4 flag choices (got ${options.length})`);
         }
 
@@ -252,6 +275,16 @@ const countryToLanguageQuestion: Question = {
   displayType: "flag",
 };
 
+const invertedFlagToCountryQuestion: Question = {
+  id: "inverted-flag-to-country",
+  mode: "inverted-flag-to-country",
+  countryCode: "FR",
+  prompt: "",
+  correctAnswer: "France",
+  correctCode: "FR",
+  displayType: "flag",
+};
+
 if (resolveMapProgressCategory(flagToCountryQuestion) !== "flag") {
   fail("Countries from flags should count toward Flag map progress");
 }
@@ -260,6 +293,9 @@ if (resolveMapProgressCategory(countryToFlagQuestion) !== "flag") {
 }
 if (resolveMapProgressCategory(countryToFlagQuestion, "country-to-flag") !== "flag") {
   fail("Flags from countries stats mode should count toward Flag map progress");
+}
+if (resolveMapProgressCategory(invertedFlagToCountryQuestion) !== "flag") {
+  fail("Countries from inverted flags should count toward Flag map progress");
 }
 if (resolveMapProgressCategory(countryToLanguageQuestion) !== "trivia") {
   fail("Languages from countries should count toward Trivia map progress");

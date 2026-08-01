@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { ExplorerRankBadge } from "@/components/ExplorerRankBadge";
+import { StatsActivityHeatmap } from "@/components/StatsActivityHeatmap";
 import { StatsMapProgressSummary } from "@/components/StatsMapProgressSummary";
 import { StatsDifficultySelector, StatsScopeToggle } from "@/components/StatsControls";
 import { StatsModeChart, type StatsChartMetric } from "@/components/StatsModeChart";
@@ -237,6 +238,8 @@ export default function StatsPage() {
               hint={`${difficultyLabel} only`}
             />
           </div>
+
+          <StatsActivityHeatmap profile={profile} />
 
           <StatsModeChart
             rows={modeRows}

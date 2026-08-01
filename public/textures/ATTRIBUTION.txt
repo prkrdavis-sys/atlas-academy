@@ -1,11 +1,10 @@
-mastery-gold-brushed.jpg / mastery-gold-roughness.jpg / mastery-gold-normal.jpg
+mastery-gold-color.jpg / mastery-gold-roughness.jpg / mastery-gold-normal.webp
 
-Source: TextureCan Metal 0046 — Circular Flat Gold Chainmail (CC0 / public domain).
-https://www.texturecan.com/details/437/
-License: CC0 — free for commercial use (TextureCan CC0 textures)
-
-Derived for Atlas Academy Normal mastery-4:
-- Color: remapped to readable yellow-gold while preserving ring relief structure
-- Roughness: contrast-stretched into a mid-polish ornate band
-- Normal: OpenGL normal map with amplified relief so lighting casts textured shadows
-  across the interlocking ring pattern
+Source: procedurally generated in-repo (scripts/generate-mastery-gold-pbr.ts).
+No external assets — a synthetic worked-gold height field (hammered planish
+facets, dents, scratches, polish waviness) is built from seeded tileable
+simplex noise, then:
+- Normal: derived from the actual height gradients (OpenGL tangent space)
+- Roughness: polished base with scattering scratches and duller dent bowls
+- Color: near-uniform gold with gentle cavity shading and bright scratch lines
+Regenerate with: npm run generate-gold-pbr

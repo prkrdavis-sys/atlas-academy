@@ -24,12 +24,15 @@ import {
   type NaturalEarthFeature,
 } from "./natural-earth-map-data";
 
+// The "_lakes" variants clip large lakes out of the polygons. Without them,
+// admin boundaries follow legal water borders (e.g. Michigan extends to the
+// middle of the Great Lakes), which looks wrong painted on the globe.
 const NATURAL_EARTH_50M_COUNTRIES_URL =
-  "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_admin_0_countries.geojson";
+  "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_admin_0_countries_lakes.geojson";
 const NATURAL_EARTH_50M_STATES_URL =
-  "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_admin_1_states_provinces.geojson";
+  "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_admin_1_states_provinces_lakes.geojson";
 const NATURAL_EARTH_10M_STATES_URL =
-  "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_admin_1_states_provinces.geojson";
+  "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_admin_1_states_provinces_lakes.geojson";
 
 /** Decimal places for the base texture rings (~0.6px at an 8192-wide texture). */
 const COORD_PRECISION = 5;
@@ -308,7 +311,7 @@ async function buildDetailCountries(
     `Building high-detail overlays for ${candidates.length} small/low-detail places...`,
   );
 
-  const features = await loadNaturalEarthFeatures();
+  const features = await loadNaturalEarthFeatures({ clipLakes: true });
   const featureByCode = new Map<string, NaturalEarthFeature>();
   for (const country of candidates) {
     const feature = findFeatureForCountry(features, country);
@@ -345,7 +348,7 @@ async function buildDetailCountries(
 async function buildCloseupCountries(): Promise<GlobeCountryShape[]> {
   console.log(`Building close-up rings for ${countries.length} places...`);
 
-  const features = await loadNaturalEarthFeatures();
+  const features = await loadNaturalEarthFeatures({ clipLakes: true });
   const featureByCode = new Map<string, NaturalEarthFeature>();
   for (const country of countries) {
     const feature = findFeatureForCountry(features, country);

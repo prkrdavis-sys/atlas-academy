@@ -24,9 +24,10 @@ import {
   createMasteryGoldPattern,
   MASTERY_GOLD_ALBEDO_FALLBACK,
   MASTERY_GOLD_TILE_BASE_PX,
-  MASTERY_GOLD_WARM_OVERLAY,
   paintGoldPbrForPath,
 } from "@/lib/mastery-gold-texture";
+import { getOceanDepthCanvas } from "@/lib/globe-ocean-depth";
+import { getLandColorCanvas } from "@/lib/globe-land-color";
 import { getPlaceMasteryLevel } from "@/lib/map-progress";
 import type { MapProgressDifficulty, PlaceMasteryLevel, Profile } from "@/lib/types";
 
@@ -220,9 +221,27 @@ function getLandGrainTile(): HTMLCanvasElement {
 export type GlobeGrainKind = "ocean" | "land";
 
 /**
+ * Alpha for mastery 1–3 fills painted over the real land imagery — opaque
+ * enough that the ladder reads at a glance, translucent enough that the
+ * Blue Marble terrain still shows through. Mastery 4 (gold / legendary)
+ * stays fully opaque.
+ */
+export const MASTERY_TINT_ALPHA = 0.62;
+
+/**
+ * Painted-water mottle over the ocean. Disabled while evaluating the pure
+ * bathymetry look — the mottle also pinches into radial streaks at the poles.
+ * Flip to true to bring the splotchy overlay back.
+ */
+export const GLOBE_OCEAN_MOTTLE_ENABLED = false;
+
+/**
  * Overlays tactile grain across the canvas. `pixelScale` keeps the grain the
  * same physical size regardless of texture resolution; close-up patches pass
  * their own effective scale so grain detail grows as the player zooms in.
+ * `originPx` is the canvas origin's world offset (in canvas pixels) so
+ * close-up patches keep the grain world-anchored — rebuilt patches paint the
+ * same grain instead of re-anchoring it (which reads as a texture "jump").
  */
 export function applyGlobeSurfaceGrain(
   ctx: CanvasRenderingContext2D,
@@ -230,11 +249,17 @@ export function applyGlobeSurfaceGrain(
   height: number,
   pixelScale: number,
   kind: GlobeGrainKind,
+  originPx: readonly [number, number] = [0, 0],
 ): void {
+  if (kind === "ocean" && !GLOBE_OCEAN_MOTTLE_ENABLED) return;
   const tile = kind === "ocean" ? getOceanMottleTile() : getLandGrainTile();
   const pattern = ctx.createPattern(tile, "repeat");
   if (!pattern) return;
-  pattern.setTransform(new DOMMatrix().scale(Math.max(0.25, pixelScale)));
+  pattern.setTransform(
+    new DOMMatrix()
+      .translate(-originPx[0], -originPx[1])
+      .scale(Math.max(0.25, pixelScale)),
+  );
 
   ctx.save();
   ctx.globalCompositeOperation = "overlay";
@@ -370,6 +395,7 @@ function drawShapeFill(
     phase,
     allowCanvasGlow,
     goldPattern,
+    hasLandImagery,
   }: {
     isDark: boolean;
     difficulty: MapProgressDifficulty;
@@ -379,8 +405,12 @@ function drawShapeFill(
     phase: number;
     allowCanvasGlow: boolean;
     goldPattern: CanvasPattern | null;
+    hasLandImagery: boolean;
   },
 ) {
+  // With real land imagery underneath, unstarted land is the imagery itself.
+  if (level === 0 && hasLandImagery) return;
+
   const glow = MASTERY_GLOW_BY_LEVEL[level];
   const solid = getProgressFillColor(level, isDark, difficulty);
 
@@ -408,17 +438,11 @@ function drawShapeFill(
       goldPattern,
     );
   } else {
+    // Mastery 1–3 tints stay translucent over the imagery so terrain reads.
+    if (hasLandImagery) ctx.globalAlpha = MASTERY_TINT_ALPHA;
     ctx.fillStyle = solid;
   }
   ctx.fill(path, "evenodd");
-
-  // Warm the metal texture toward rich foil gold (the source scan is cool).
-  if (level === 4 && difficulty === "medium" && goldPattern) {
-    ctx.shadowBlur = 0;
-    ctx.globalCompositeOperation = "overlay";
-    ctx.fillStyle = MASTERY_GOLD_WARM_OVERLAY;
-    ctx.fill(path, "evenodd");
-  }
   ctx.restore();
 }
 
@@ -448,6 +472,10 @@ export type GlobeTextureOptions = {
   allowCanvasGlow?: boolean;
   /** When false, mastery-4 paints a static mid-phase sample. */
   allowMastery4Animation?: boolean;
+  /** Preloaded grayscale bathymetry map — real ocean depth shading. */
+  oceanDepthImage?: HTMLImageElement | null;
+  /** Preloaded Blue Marble natural-color land imagery. */
+  landColorImage?: HTMLImageElement | null;
   /** Preloaded brushed-gold albedo (Normal mastery 4). */
   goldColorImage?: HTMLImageElement | null;
   /** Preloaded brushed-gold roughness (Normal mastery 4 specular response). */
@@ -494,6 +522,8 @@ export function createGlobeTexturePaint(
     phase = masteryFxPhaseFromTime(0),
     allowCanvasGlow = !isGlobeFxConstrained(),
     allowMastery4Animation = !isGlobeFxConstrained(),
+    oceanDepthImage = null,
+    landColorImage = null,
     goldColorImage = null,
     goldRoughnessImage = null,
     goldNormalImage = null,
@@ -525,18 +555,24 @@ export function createGlobeTexturePaint(
   base.height = height;
   const baseCtx = base.getContext("2d")!;
 
-  // ~96px tiles at 2048 width — big enough that the foil crinkle reads.
+  // ~192px tiles at 2048 width — big enough that dents and scratches read.
   const goldTilePx = Math.max(40, Math.round(MASTERY_GOLD_TILE_BASE_PX * pixelScale));
   const goldPattern =
     difficulty === "medium" && goldColorImage
       ? createMasteryGoldPattern(baseCtx, goldColorImage, goldTilePx)
       : null;
 
+  // Flat fill stays as the fallback until the bathymetry image is available.
   baseCtx.fillStyle = palette.ocean;
   baseCtx.fillRect(0, 0, width, height);
+  if (oceanDepthImage) {
+    // Real depth shading: shallow shelves lighter, abyssal water darker.
+    baseCtx.drawImage(getOceanDepthCanvas(oceanDepthImage, isDark), 0, 0, width, height);
+  }
   // Painted-water mottle beneath the land shapes.
   applyGlobeSurfaceGrain(baseCtx, width, height, pixelScale, "ocean");
 
+  const hasLandImagery = landColorImage != null;
   const drawOpts = {
     isDark,
     difficulty,
@@ -546,31 +582,55 @@ export function createGlobeTexturePaint(
     phase: 0.35,
     allowCanvasGlow,
     goldPattern,
+    hasLandImagery,
   };
 
-  {
-    const extrasPath = buildPath(GLOBE_TEXTURE_DATA.extras, width, height);
-    drawShapeFill(baseCtx, extrasPath, 0, drawOpts);
-    strokeShape(baseCtx, extrasPath, false, palette, pixelScale);
+  // Combined land silhouette (extras + countries; NE features never overlap,
+  // so even-odd only carves genuine holes) — clips the Blue Marble imagery
+  // and the land grain pass to land.
+  const extrasPath = buildPath(GLOBE_TEXTURE_DATA.extras, width, height);
+  const landPath = new Path2D();
+  landPath.addPath(extrasPath);
+  for (const shape of shapes) {
+    if (!shape.isState) landPath.addPath(pathFor(shape.code, shape.rings));
   }
 
+  if (landColorImage) {
+    // Real natural-color terrain under every land shape, world-anchored.
+    baseCtx.save();
+    baseCtx.clip(landPath, "evenodd");
+    baseCtx.drawImage(getLandColorCanvas(landColorImage, isDark), 0, 0, width, height);
+    baseCtx.restore();
+  }
+
+  drawShapeFill(baseCtx, extrasPath, 0, drawOpts);
+  strokeShape(baseCtx, extrasPath, false, palette, pixelScale);
+
   for (const shape of shapes) {
+    const path = pathFor(shape.code, shape.rings);
     if (shape.level === 4) {
-      // Leave a neutral underlay so borders still read when the overlay animates.
-      const path = pathFor(shape.code, shape.rings);
-      baseCtx.fillStyle = getProgressFillColor(0, isDark, difficulty);
-      baseCtx.fill(path, "evenodd");
+      // Imagery is the underlay when present; otherwise leave a neutral flat
+      // fill so borders still read when the overlay animates.
+      if (!hasLandImagery) {
+        baseCtx.fillStyle = getProgressFillColor(0, isDark, difficulty);
+        baseCtx.fill(path, "evenodd");
+      }
       strokeShape(baseCtx, path, shape.isState, palette, pixelScale);
       continue;
     }
-    const path = pathFor(shape.code, shape.rings);
     drawShapeFill(baseCtx, path, shape.level, drawOpts);
     strokeShape(baseCtx, path, shape.isState, palette, pixelScale);
   }
 
   // Stone/paper tooth over the finished base so land feels touchable (the
   // whisper it adds over the ocean mottle keeps the whole surface cohesive).
+  const clipGrainToLand = !GLOBE_OCEAN_MOTTLE_ENABLED;
+  if (clipGrainToLand) {
+    baseCtx.save();
+    baseCtx.clip(landPath, "evenodd");
+  }
   applyGlobeSurfaceGrain(baseCtx, width, height, pixelScale, "land");
+  if (clipGrainToLand) baseCtx.restore();
 
   const canvas = document.createElement("canvas");
   canvas.width = width;

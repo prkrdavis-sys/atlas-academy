@@ -13,6 +13,7 @@ import { AnswerTypeIn } from "@/components/AnswerTypeIn";
 import { AchievementToast } from "@/components/AchievementToast";
 import { CapitalDisplay } from "@/components/CapitalDisplay";
 import { FlagDisplay, FlagGrid } from "@/components/FlagDisplay";
+import { FlagCropDisplay } from "@/components/FlagCropDisplay";
 import { GameMapProgressSummary } from "@/components/GameMapProgressSummary";
 import { LearnCard } from "@/components/LearnCard";
 import { NeighborCountryDisplay } from "@/components/NeighborCountryDisplay";
@@ -528,10 +529,16 @@ export function GameBoard({
             />
           )}
           <div className="mt-6 flex flex-col gap-3">
-            {onPlayAgain && (
-              <GameActionButton icon={SCOPE_INFO[scope].icon} onClick={onPlayAgain}>
-                Play again
+            {exitedEarly ? (
+              <GameActionButton icon="🏠" onClick={() => router.push("/")}>
+                Home
               </GameActionButton>
+            ) : (
+              onPlayAgain && (
+                <GameActionButton icon={SCOPE_INFO[scope].icon} onClick={onPlayAgain}>
+                  Play again
+                </GameActionButton>
+              )
             )}
             <div className="grid grid-cols-2 gap-2 sm:gap-3">
               <Button
@@ -545,20 +552,33 @@ export function GameBoard({
                 </span>
                 View map
               </Button>
-              <Button
-                size="lg"
-                className="w-full gap-2.5 px-6 text-lg max-sm:gap-1.5 max-sm:px-2.5 max-sm:whitespace-nowrap"
-                onClick={() => router.push("/")}
-              >
-                <img
-                  src="/icons/home.svg"
-                  alt=""
-                  aria-hidden
-                  className="size-7 shrink-0 max-sm:size-6"
-                  draggable={false}
-                />
-                Back home
-              </Button>
+              {exitedEarly && onPlayAgain ? (
+                <Button
+                  size="lg"
+                  className="w-full gap-2.5 px-6 text-lg max-sm:gap-1.5 max-sm:px-2.5 max-sm:whitespace-nowrap"
+                  onClick={onPlayAgain}
+                >
+                  <span className="text-2xl leading-none max-sm:text-xl" aria-hidden>
+                    {SCOPE_INFO[scope].icon}
+                  </span>
+                  Play again
+                </Button>
+              ) : (
+                <Button
+                  size="lg"
+                  className="w-full gap-2.5 px-6 text-lg max-sm:gap-1.5 max-sm:px-2.5 max-sm:whitespace-nowrap"
+                  onClick={() => router.push("/")}
+                >
+                  <img
+                    src="/icons/home.svg"
+                    alt=""
+                    aria-hidden
+                    className="size-7 shrink-0 max-sm:size-6"
+                    draggable={false}
+                  />
+                  Back home
+                </Button>
+              )}
             </div>
           </div>
         </div>
@@ -590,6 +610,9 @@ export function GameBoard({
     (question.mode === "capital-to-country" && question.displayType === "text") ||
     question.mode === "fact-to-country";
   const isAtlasleRound = question.displayType === "atlasle";
+  const isInvertedFlagRound =
+    question.mode === "inverted-flag-to-country" ||
+    question.mode === "inverted-country-to-flag";
   const isMultipleChoiceRound =
     !isAtlasleRound &&
     (question.displayType === "flags-grid" ||
@@ -802,7 +825,7 @@ export function GameBoard({
                 {inlineLearnCard}
               </div>
               {question.displayType === "flags-grid" && question.optionCodes && (
-                <div className="flex min-h-0 w-full min-w-0 flex-1 items-center justify-center">
+                <div className="flex min-h-0 w-full min-w-0 flex-1 items-center justify-center overflow-hidden pb-0.5">
                   <FlagGrid
                     codes={question.optionCodes.filter((c) => !hiddenOptions.includes(c))}
                     onSelect={(code) => handleAnswer(code, code)}
@@ -810,6 +833,7 @@ export function GameBoard({
                     revealed
                     selectedCode={lastSelectedCode}
                     correctCode={question.correctCode ?? question.countryCode}
+                    inverted={isInvertedFlagRound}
                   />
                 </div>
               )}
@@ -841,7 +865,14 @@ export function GameBoard({
               }`}
             >
               {question.displayType === "flag" && (
-                <FlagDisplay code={question.countryCode} size="md" />
+                <FlagDisplay
+                  code={question.countryCode}
+                  size="md"
+                  inverted={isInvertedFlagRound}
+                />
+              )}
+              {question.displayType === "flag-crop" && (
+                <FlagCropDisplay code={question.countryCode} />
               )}
               {question.displayType === "shape" && (
                 <ShapeDisplay code={question.countryCode} compact />
@@ -860,13 +891,17 @@ export function GameBoard({
                   codes={question.optionCodes.filter((c) => !hiddenOptions.includes(c))}
                   onSelect={(code) => handleAnswer(code, code)}
                   compact
+                  inverted={isInvertedFlagRound}
                 />
               )}
             </div>
           ) : null}
 
           {/* Hard mode: keep the type-in field high so it stays visible above the keyboard. */}
-          {!showLearnCard && difficulty === "hard" && !isAtlasleRound && (
+          {!showLearnCard &&
+            difficulty === "hard" &&
+            !isAtlasleRound &&
+            question.displayType !== "flags-grid" && (
             <>
               <div className="mx-auto w-full max-w-2xl shrink-0 px-1 pt-2 sm:pt-3">
                 <AnswerTypeIn

@@ -21,6 +21,8 @@ import {
   resolveGlobeTextureSize,
   type GlobeUsMode,
 } from "@/lib/globe-texture";
+import { loadOceanDepthImage } from "@/lib/globe-ocean-depth";
+import { loadLandColorImage } from "@/lib/globe-land-color";
 import {
   loadMasteryGoldPbrImages,
 } from "@/lib/mastery-gold-texture";
@@ -249,6 +251,38 @@ export function useGlobeTexture(
     normal: HTMLImageElement | null;
   }>({ color: null, roughness: null, normal: null });
 
+  const [oceanDepthImage, setOceanDepthImage] = useState<HTMLImageElement | null>(null);
+  const [landColorImage, setLandColorImage] = useState<HTMLImageElement | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    loadOceanDepthImage()
+      .then((image) => {
+        if (!cancelled) setOceanDepthImage(image);
+      })
+      .catch(() => {
+        // Flat ocean fill remains the fallback.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    loadLandColorImage()
+      .then((image) => {
+        if (!cancelled) setLandColorImage(image);
+      })
+      .catch(() => {
+        // Flat land fill remains the fallback.
+        if (!cancelled) setLandColorImage(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   useEffect(() => {
     if (difficulty !== "medium") {
       setGoldMaps({ color: null, roughness: null, normal: null });
@@ -278,11 +312,13 @@ export function useGlobeTexture(
         phase: MASTERY_FX_STATIC_PHASE,
         allowCanvasGlow: !fxConstrained,
         allowMastery4Animation: !fxConstrained,
+        oceanDepthImage,
+        landColorImage,
         goldColorImage: goldMaps.color,
         goldRoughnessImage: goldMaps.roughness,
         goldNormalImage: goldMaps.normal,
       }),
-    [profile, difficulty, usMode, isDark, size, fxConstrained, goldMaps],
+    [profile, difficulty, usMode, isDark, size, fxConstrained, goldMaps, oceanDepthImage, landColorImage],
   );
 
   const maps = useMemo(() => {
@@ -470,24 +506,24 @@ export function GlobeAtmosphere({
  *
  * Day/night OFF: bright, even "studio" lighting — a readable base with a soft
  * key light for surface relief, stable at every camera distance.
- * Day/night ON: dimmer base so the real-time sun casts a clear terminator,
- * but the ambient floor + earthshine keep the night side fully readable.
+ * Day/night ON: low ambient so the real-time sun casts a deep night shadow and
+ * a sharp terminator; a thin earthshine wash keeps land faintly readable.
  */
 function globeAmbientIntensity(isDark: boolean, dayNight: boolean): number {
-  if (dayNight) return isDark ? 0.78 : 0.72;
+  if (dayNight) return isDark ? 0.28 : 0.24;
   return isDark ? 1.12 : 1.02;
 }
 
 function globeHemisphereIntensity(dayNight: boolean): number {
-  return dayNight ? 0.3 : 0.52;
+  return dayNight ? 0.12 : 0.52;
 }
 
 function globeSunIntensity(dayNight: boolean): number {
-  return dayNight ? 1.25 : 0.5;
+  return dayNight ? 1.55 : 0.5;
 }
 
 function globeEarthshineIntensity(): number {
-  return 0.5;
+  return 0.22;
 }
 
 /**
@@ -507,15 +543,19 @@ export function globeFillDistance(
   return radius / sinCorner;
 }
 
-/** Brushed gold normal intensity — ring relief and grain catch sunlight. */
-const GOLD_NORMAL_SCALE = new THREE.Vector2(4.2, 4.2);
+/**
+ * Worked-gold normal intensity — the map is baked from a real height field
+ * (hammered dents + scratches), so slopes are already physical; this just
+ * compensates for mip softening at globe scale so sun glints stay crisp.
+ */
+const GOLD_NORMAL_SCALE = new THREE.Vector2(2.4, 2.4);
 
 /** PBR tuning for Normal mastery-4 gold vs the matte globe surface. */
-export const GLOBE_GOLD_METALNESS = 0.92;
+export const GLOBE_GOLD_METALNESS = 0.96;
 export const GLOBE_GOLD_ROUGHNESS = 1;
 export const GLOBE_GOLD_EMISSIVE = "#c4921a";
 export const GLOBE_GOLD_EMISSIVE_INTENSITY = 0.07;
-export const GLOBE_GOLD_ENV_MAP_INTENSITY = 1.25;
+export const GLOBE_GOLD_ENV_MAP_INTENSITY = 1.35;
 export const GLOBE_MATTE_METALNESS = 0.04;
 export const GLOBE_MATTE_ROUGHNESS = 0.72;
 export const GLOBE_MATTE_ENV_MAP_INTENSITY = 0.15;
@@ -551,7 +591,8 @@ export function GlobeMetalReflection({ perfTier = "desktop" }: { perfTier?: Glob
  *
  * Day/night does NOT use the color map as emissiveMap — that turned borders and
  * selection glow into a globe-wide lit grid whenever the texture updated.
- * Night-side readability comes from ambient + earthshine instead.
+ * Night stays dark via low ambient; a thin earthshine wash keeps land faintly
+ * readable without washing out the terminator.
  */
 export function GlobeSurfaceMaterial({
   map,
@@ -598,9 +639,9 @@ export function GlobeSurfaceMaterial({
 
 /**
  * Scene fill lights for the globe: an ambient base plus a soft hemisphere
- * bounce so the sphere always reads as a lit object. Day/night on: dimmer so
- * the real-time sun casts a clear terminator (the ambient floor keeps the
- * night side readable). One rig for every surface and zoom level.
+ * bounce so the sphere always reads as a lit object. Day/night on: low fill
+ * so the night hemisphere stays clearly in shadow. One rig for every surface
+ * and zoom level.
  */
 export function GlobeFillLights({
   isDark,
@@ -871,30 +912,41 @@ function DistantSunVisual({
     );
   }
 
-  // Light mode: phone-sized additive stack — NASA plate + glow, alpha accumulates.
+  // Light mode: glow-only stack — the NASA plate's dark limb rings the sunset sky.
+  const wash = 0.72;
+
   return (
     <group ref={groupRef} frustumCulled={false}>
       <Billboard follow>
         <group ref={pulseRef}>
-          <mesh scale={7} raycast={ignoreRaycast} frustumCulled={false}>
+          <mesh scale={14} raycast={ignoreRaycast} frustumCulled={false}>
+            <planeGeometry args={[2, 2]} />
+            <meshBasicMaterial
+              map={glowMap}
+              color="#fff8e7"
+              opacity={wash * 0.55}
+              {...sunLightBlend}
+            />
+          </mesh>
+          <mesh scale={8.5} raycast={ignoreRaycast} frustumCulled={false}>
             <planeGeometry args={[2, 2]} />
             <meshBasicMaterial
               map={glowMap}
               color="#ffe08a"
-              opacity={bloom * 0.4}
+              opacity={bloom * 0.75}
               {...sunLightBlend}
             />
           </mesh>
-          <mesh scale={4.2} raycast={ignoreRaycast} frustumCulled={false}>
+          <mesh scale={4.8} raycast={ignoreRaycast} frustumCulled={false}>
             <planeGeometry args={[2, 2]} />
-            <meshBasicMaterial map={plateMap} opacity={plate} {...sunLightBlend} />
+            <meshBasicMaterial map={glowMap} color="#fff4d0" opacity={0.95} {...sunLightBlend} />
           </mesh>
-          <mesh scale={1.1} raycast={ignoreRaycast} frustumCulled={false}>
+          <mesh scale={1.2} raycast={ignoreRaycast} frustumCulled={false}>
             <planeGeometry args={[2, 2]} />
             <meshBasicMaterial
               map={glowMap}
               color="#ffffff"
-              opacity={core * 0.72}
+              opacity={core * 0.9}
               {...sunLightBlend}
             />
           </mesh>
@@ -906,10 +958,8 @@ function DistantSunVisual({
 
 /**
  * Bright distant sun in outer space, locked to the real subsolar direction.
- * Always mounted (independent of the day/night lighting toggle) as a child of
- * the earth mesh so it stays aligned with geography while the globe spins.
- * Both themes render the NASA SDO AIA 171 plate plus glow sprites; the custom
- * blending keeps the plate's dark limb from ringing against a pale sky.
+ * Dark mode uses the NASA plate plus glow; light mode is glow-only so the
+ * plate's dark limb never rings the CSS sunset sky.
  */
 export function DistantSun({
   isDark,

@@ -6,12 +6,17 @@ const OUTPUT_PATH = path.join(process.cwd(), "data/flag-display.json");
 
 /** Flags whose outline is not a plain rectangle — borders clip to this shape. */
 const SHAPED_FLAGS: Record<string, string> = {
-  NP: "polygon(1.6% 96.7%, 92.6% 96.7%, 33% 48.6%, 94.9% 48.7%, 1.6% 1.2%)",
+  NP: "polygon(1% 100%, 60.2% 100%, 21.5% 49.6%, 61.7% 49.7%, 1% 1%)",
   "US-OH": "polygon(0% 100%, 0% 0%, 100% 18.75%, 76.92% 50%, 100% 81.25%)",
 };
 
 function parseAspectRatio(svg: string): number | null {
-  const viewBoxMatch = svg.match(/viewBox=["']([^"']+)["']/);
+  // Only inspect the root <svg>. Some Wikimedia assets contain nested
+  // viewBoxes before the root dimensions in serialized metadata or children.
+  const rootSvg = svg.match(/<svg\b[^>]*>/i)?.[0];
+  if (!rootSvg) return null;
+
+  const viewBoxMatch = rootSvg.match(/\bviewBox=["']([^"']+)["']/i);
   if (viewBoxMatch) {
     const parts = viewBoxMatch[1].trim().split(/[\s,]+/).map(Number);
     const width = parts[2];
@@ -19,8 +24,8 @@ function parseAspectRatio(svg: string): number | null {
     if (width > 0 && height > 0) return width / height;
   }
 
-  const widthMatch = svg.match(/\bwidth=["']([\d.]+)/);
-  const heightMatch = svg.match(/\bheight=["']([\d.]+)/);
+  const widthMatch = rootSvg.match(/\bwidth=["']([\d.]+)/i);
+  const heightMatch = rootSvg.match(/\bheight=["']([\d.]+)/i);
   if (widthMatch && heightMatch) {
     const width = Number(widthMatch[1]);
     const height = Number(heightMatch[1]);

@@ -21,5 +21,29 @@ License: Public domain (U.S. government work / NASA imagery)
 
 ---
 
+land-color.jpg — real natural-color land imagery for the globe surface.
+
+Source imagery: NASA Blue Marble: Next Generation with topography and
+bathymetry shading, July 2004 monthly composite (Terra MODIS),
+5400x2700 equirectangular.
+Source: https://visibleearth.nasa.gov/images/73751
+License: Public domain (U.S. government work / NASA imagery)
+
+Derived: public/maps/land-color-ne.jpg — same Blue Marble composite, warped
+into the Natural Earth projection used by Learn/Library context-map SVGs
+(scripts/generate-map-land-texture.ts).
+
+---
+
+ocean-depth.png — grayscale GEBCO bathymetry map used for ocean depth
+shading (recolored at runtime).
+
+Source imagery: NASA Earth Observations (NEO) bathymetry (GEBCO),
+2048x1024 equirectangular, gray 0 = deepest, 255 = shallowest.
+Source: https://neo.gsfc.nasa.gov/view.php?datasetId=GEBCO_BATHY
+License: Public domain (U.S. government work / NASA imagery)
+
+---
+
 sky-sunset.jpg — AI-generated painted sunset cloudscape used as the
 light-mode backdrop behind the globe. Original artwork for Atlas Academy.

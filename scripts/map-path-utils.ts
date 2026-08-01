@@ -6,8 +6,9 @@ import getPathBounds from "svg-path-bounds";
 
 export type PathBounds = [left: number, top: number, right: number, bottom: number];
 
-/** Matches the Natural Earth fitSize width in natural-earth-map-data.ts. */
+/** Matches the Natural Earth fitSize canvas in natural-earth-map-data.ts. */
 export const MAP_WIDTH = 10000;
+export const MAP_HEIGHT = 5000;
 
 /** Target canvas for library/quiz silhouette SVGs (local coords, not map space). */
 export const SHAPE_OUTPUT_CANVAS = 1000;

@@ -209,10 +209,13 @@ export function getQuestionTaskLabel(
 
   switch (effectiveMode) {
     case "flag-to-country":
+    case "flag-crop-to-country":
+    case "inverted-flag-to-country":
     case "shape-to-country":
     case "capital-to-country":
       return getNamePlaceTaskLabel(scope, isTerritory);
     case "country-to-flag":
+    case "inverted-country-to-flag":
       return isTerritory ? "Pick the territory's flag" : "Pick the flag";
     case "neighbor-quiz":
       return isTerritory ? "Find the neighboring territory" : "Find the neighbor";

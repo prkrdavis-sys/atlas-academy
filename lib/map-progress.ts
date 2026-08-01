@@ -18,8 +18,14 @@ import type {
 } from "@/lib/types";
 import { MAP_PROGRESS_CATEGORIES } from "@/lib/types";
 
-/** Both flag quiz modes share one map-progress category. */
-export const FLAG_MAP_PROGRESS_MODES = ["flag-to-country", "country-to-flag"] as const satisfies readonly GameMode[];
+/** Flag quiz modes share one map-progress category. */
+export const FLAG_MAP_PROGRESS_MODES = [
+  "flag-to-country",
+  "flag-crop-to-country",
+  "country-to-flag",
+  "inverted-flag-to-country",
+  "inverted-country-to-flag",
+] as const satisfies readonly GameMode[];
 
 export const MAP_PROGRESS_CATEGORY_INFO: Record<
   MapProgressCategory,
@@ -101,6 +107,7 @@ export function resolveMapProgressCategory(
 
   switch (question.displayType) {
     case "flag":
+    case "flag-crop":
     case "flags-grid":
       return "flag";
     case "shape":
