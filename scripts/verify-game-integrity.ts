@@ -16,6 +16,7 @@ import flagCropData from "../data/flag-crops.json";
 import { MIN_SHAPE_VIEWBOX, shapeViewBoxTooSmall } from "./map-path-utils";
 import {
   CONTINENTS,
+  FLAG_CROP_ORIENTATIONS,
   US_REGIONS,
   type GameMode,
   type GameScope,
@@ -114,6 +115,13 @@ for (const mode of MODES) {
       let q: Question | null;
       while ((q = engine.nextQuestion())) {
         questionsChecked += 1;
+        if (
+          mode === "flag-crop-to-country" &&
+          (!q.flagCropOrientation ||
+            !FLAG_CROP_ORIENTATIONS.includes(q.flagCropOrientation))
+        ) {
+          fail(`${mode}: question missing a valid randomized orientation`);
+        }
         const { options, optionCodes, correctCode, countryCode, correctAnswer, mode: questionMode } = q;
         if (!options) {
           fail(`${mode}: question missing options`);

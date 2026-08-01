@@ -191,6 +191,7 @@ function PlayPageInner() {
         <QuickStartOverlay
           mode={isDailyChallenge ? "daily-challenge" : mode}
           scope={scope}
+          continents={gameProps.continents}
           challengeModifier={isDailyChallenge ? "none" : activeChallengeModifier}
           difficulty={isDailyChallenge ? dailyDifficulty : draft.difficulty}
           roundQuestionCount={

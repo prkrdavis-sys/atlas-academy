@@ -16,6 +16,7 @@ import {
   DAILY_CHALLENGE_QUESTION_COUNT,
   DAILY_CHALLENGE_QUESTION_TYPES,
   DEFAULT_ROUND_QUESTION_COUNT,
+  FLAG_CROP_ORIENTATIONS,
   resolveRoundQuestionLimit,
   type ChallengeModifier,
   type Country,
@@ -347,6 +348,19 @@ export class GameEngine {
     return this.buildNextQuestionForCountry(country);
   }
 
+  /** Next place in the round without advancing — used to warm learn-card maps. */
+  peekNextCountry(): Country | null {
+    if (this.pool.length === 0) return null;
+
+    if (this.mode === "daily-challenge") {
+      const question = this.dailyQuestions[this.questionIndex];
+      if (!question) return null;
+      return getCountryByCode(question.countryCode) ?? null;
+    }
+
+    return this.roundCountries[this.questionIndex] ?? null;
+  }
+
   private buildNextQuestionForCountry(country: Country): Question {
     let questionMode: GameMode;
     if (this.mode === "mixed") {
@@ -398,6 +412,10 @@ export class GameEngine {
           correctAnswer: country.name,
           correctCode: country.code,
           displayType: mode === "flag-crop-to-country" ? "flag-crop" : "flag",
+          flagCropOrientation:
+            mode === "flag-crop-to-country"
+              ? pickFromPool([...FLAG_CROP_ORIENTATIONS], this.random)
+              : undefined,
           ...mc,
         };
       }

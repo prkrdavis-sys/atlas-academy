@@ -17,6 +17,7 @@ import { FlagCropDisplay } from "@/components/FlagCropDisplay";
 import { GameMapProgressSummary } from "@/components/GameMapProgressSummary";
 import { LearnCard } from "@/components/LearnCard";
 import { NeighborCountryDisplay } from "@/components/NeighborCountryDisplay";
+import { preloadLearnCardMap } from "@/components/PlaceContextMap";
 import { PopulationMatchupDisplay } from "@/components/PopulationMatchupDisplay";
 import { ShapeDisplay } from "@/components/ShapeDisplay";
 import { StreakCounter } from "@/components/StreakCounter";
@@ -43,9 +44,16 @@ import {
 import { buildLibraryDetailHref, LIBRARY_ICON } from "@/lib/library";
 import { getQuestionTaskLabel, getTypeInPlacePlaceholder, isStateCode, scopeText, SCOPE_INFO } from "@/lib/scope";
 import { getStatsMode } from "@/lib/game-setup";
+import { useIsDark } from "@/lib/use-is-dark";
 import { setStoredMapProgressDifficulty } from "@/lib/use-map-progress-difficulty";
 import type { ChallengeModifier, Difficulty, GameMode, GameScope, Question, Region, RoundQuestionSetting } from "@/lib/types";
 import { cn } from "@/lib/utils";
+
+function learnCardCountryCodeForQuestion(question: Question): string {
+  return question.mode === "neighbor-quiz"
+    ? question.correctCode ?? question.countryCode
+    : question.countryCode;
+}
 
 type GameBoardProps = {
   mode: GameMode;
@@ -83,6 +91,7 @@ export function GameBoard({
   const router = useRouter();
   const { refresh } = useProfiles();
   const activeProfile = useRequiredProfile();
+  const { isDark, ready: themeReady } = useIsDark();
   const statsMode = getStatsMode(mode, challengeModifier);
   const mapProgressDifficulty = toMapProgressDifficulty(difficulty);
   const tracksMapProgress = countStats && mapProgressDifficulty !== null && mode !== "weak-spots";
@@ -246,6 +255,37 @@ export function GameBoard({
     hasFinishedQuestions ||
     hasReachedQuestionLimit;
   const showSummary = roundEnded && !showLearnCard;
+
+  // Warm learn-card maps while the player answers / reads, so the terrain crop
+  // is already cached when PlaceContextMap mounts.
+  useEffect(() => {
+    if (!question || !themeReady || showSummary) return;
+
+    let cancelled = false;
+
+    void (async () => {
+      await preloadLearnCardMap(learnCardCountryCodeForQuestion(question), isDark);
+      if (cancelled || showLearnCard) return;
+
+      const nextCountry = engine.peekNextCountry();
+      if (!cancelled && nextCountry) {
+        await preloadLearnCardMap(nextCountry.code, isDark);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [question, themeReady, isDark, engine, showSummary, showLearnCard]);
+
+  useEffect(() => {
+    if (!showLearnCard || !themeReady || showSummary) return;
+
+    const nextCountry = engine.peekNextCountry();
+    if (!nextCountry) return;
+
+    void preloadLearnCardMap(nextCountry.code, isDark);
+  }, [showLearnCard, themeReady, isDark, engine, showSummary]);
 
   useEffect(() => {
     if (!showSummary || !countStats || summaryAchievementsCheckedRef.current || questionCount === 0) {
@@ -618,10 +658,7 @@ export function GameBoard({
     (question.displayType === "flags-grid" ||
       Boolean(question.options && difficulty !== "hard"));
   const showChoiceReveal = showLearnCard && isMultipleChoiceRound;
-  const learnCardCountryCode =
-    question.mode === "neighbor-quiz"
-      ? question.correctCode ?? question.countryCode
-      : question.countryCode;
+  const learnCardCountryCode = learnCardCountryCodeForQuestion(question);
   const learnCardHeading =
     question.mode === "neighbor-quiz" ? (
       <>
@@ -683,8 +720,8 @@ export function GameBoard({
       )}
 
       <div className="relative z-50 shrink-0 px-0.5 py-1.5 sm:px-1 sm:py-2">
-        <div className="flex items-center justify-between gap-1.5 sm:grid sm:grid-cols-[auto_minmax(0,1fr)_minmax(0,auto)] sm:items-center sm:gap-2">
-          <div className="flex shrink-0 items-center gap-1.5">
+        <div className="flex items-center justify-between gap-1.5 sm:grid sm:grid-cols-[1fr_auto_1fr] sm:items-center sm:gap-2">
+          <div className="flex min-w-0 items-center gap-1.5">
             <Button
               variant="secondary"
               size="sm"
@@ -715,7 +752,7 @@ export function GameBoard({
           <div className="hidden min-w-0 px-1 text-center leading-tight sm:block">
             {roundTitlePanel}
           </div>
-          <div className="flex min-w-0 shrink-0 items-stretch justify-end gap-1 sm:gap-1.5">
+          <div className="flex min-w-0 items-stretch justify-end gap-1 sm:gap-1.5">
             <StreakCounter streak={streak} compact />
             <div className="shrink-0 rounded-xl border-2 border-emerald-200 bg-emerald-50/90 px-1.5 py-1 text-center dark:border-emerald-800 dark:bg-emerald-950/40 sm:rounded-2xl sm:px-3 sm:py-1.5">
               <p className="game-stat-label text-[9px] font-semibold uppercase text-emerald-600 dark:text-emerald-400">Correct</p>
@@ -872,7 +909,10 @@ export function GameBoard({
                 />
               )}
               {question.displayType === "flag-crop" && (
-                <FlagCropDisplay code={question.countryCode} />
+                <FlagCropDisplay
+                  code={question.countryCode}
+                  orientation={question.flagCropOrientation}
+                />
               )}
               {question.displayType === "shape" && (
                 <ShapeDisplay code={question.countryCode} compact />

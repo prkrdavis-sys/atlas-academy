@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { getChallengeModifierLabel, getRoundCountLabel } from "@/lib/game-setup";
+import { formatMapProgressAreaLabel } from "@/lib/map-progress";
 import { getScopedModeInfo, scopeText, SCOPE_INFO } from "@/lib/scope";
 import { getTodayBestStreakDisplay, getTodayBestStreakOrZero } from "@/lib/stats-helpers";
 import {
@@ -11,6 +12,7 @@ import {
   type GameMode,
   type GameScope,
   type Profile,
+  type Region,
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -19,6 +21,7 @@ const OVERLAY_DURATION_MS = 3000;
 type QuickStartOverlayProps = {
   mode: GameMode;
   scope: GameScope;
+  continents: Region[];
   challengeModifier?: ChallengeModifier;
   difficulty: Difficulty;
   roundQuestionCount: Profile["settings"]["roundQuestionCount"];
@@ -32,6 +35,7 @@ type QuickStartOverlayProps = {
 export function QuickStartOverlay({
   mode,
   scope,
+  continents,
   challengeModifier = "none",
   difficulty,
   roundQuestionCount,
@@ -45,6 +49,7 @@ export function QuickStartOverlay({
   const [progress, setProgress] = useState(0);
   const modeInfo = getScopedModeInfo(mode, scope);
   const scopeInfo = SCOPE_INFO[scope];
+  const areaLabel = formatMapProgressAreaLabel(scope, continents);
   const isDaily = mode === "daily-challenge";
   const modifierLabel = getChallengeModifierLabel(challengeModifier);
 
@@ -138,7 +143,7 @@ export function QuickStartOverlay({
                 {getRoundCountLabel(mode, roundQuestionCount, challengeModifier)}
               </span>
               <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-200">
-                {scopeInfo.icon} {scopeInfo.shortLabel}
+                {scopeInfo.icon} {areaLabel}
               </span>
             </div>
             {statLine ? (

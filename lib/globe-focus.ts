@@ -5,8 +5,11 @@ import { isStateCode } from "@/lib/scope";
 /** Y rotation that faces Europe toward the camera — keep in sync with home globe. */
 export const GLOBE_MESH_Y_ROTATION = -1.65;
 
-/** Camera polar angle when the camera sits on the +Z axis at default zoom. */
-export const GLOBE_DEFAULT_POLAR = Math.PI / 2;
+/**
+ * Resting camera polar angle for idle auto-spin / home reset.
+ * Equator is π/2; ~20% toward the north pole so more landmass stays in frame.
+ */
+export const GLOBE_DEFAULT_POLAR = (Math.PI / 2) * 0.8;
 
 /**
  * How much of the vertical FOV the place should fill (half-angle).

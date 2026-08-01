@@ -32,6 +32,7 @@ import { buildUsaProgressFillMap, buildWorldProgressFillMap } from "@/lib/map-pr
 import { MAP_PANZOOM_OPTIONS, MAP_ZOOM_BUTTON_STEP } from "@/lib/map-panzoom";
 import type { Country, GameScope, MapProgressDifficulty, Profile } from "@/lib/types";
 import { useIsDark } from "@/lib/use-is-dark";
+import { useShowMapProgress } from "@/lib/use-show-map-progress";
 import { cn } from "@/lib/utils";
 import { focusWorldMapOnPaths } from "@/lib/world-map-focus";
 
@@ -89,6 +90,7 @@ export function InteractiveProgressMap({
   const [selectedPlace, setSelectedPlace] = useState<Country | null>(null);
   const [hoveredPathId, setHoveredPathId] = useState<string | null>(null);
   const { isDark, ready } = useIsDark();
+  const { enabled: showMapProgress } = useShowMapProgress();
 
   const resolveCodeFromPath = useCallback(
     (pathId: string) =>
@@ -98,12 +100,12 @@ export function InteractiveProgressMap({
 
   const fillMap = useMemo(() => {
     if (!map) return new Map<string, 0 | 1 | 2 | 3 | 4>();
-    if (!profile) {
+    if (!profile || !showMapProgress) {
       return new Map(map.paths.map((path) => [path.id, 0 as const]));
     }
     const buildFillMap = scope === "usa" ? buildUsaProgressFillMap : buildWorldProgressFillMap;
     return buildFillMap(profile, difficulty, map.paths.map((path) => path.id));
-  }, [map, profile, difficulty, scope]);
+  }, [map, profile, difficulty, scope, showMapProgress]);
 
   const pathStyleResolver = useMemo(
     () =>
@@ -260,7 +262,9 @@ export function InteractiveProgressMap({
           </p>
           {ready ? (
             <div className="mt-1.5 flex items-center gap-2">
-              <MapProgressFillLegend isDark={isDark} difficulty={difficulty} />
+              {showMapProgress ? (
+                <MapProgressFillLegend isDark={isDark} difficulty={difficulty} />
+              ) : null}
               {onOpenStats ? (
                 <MapStatsButton
                   onClick={onOpenStats}

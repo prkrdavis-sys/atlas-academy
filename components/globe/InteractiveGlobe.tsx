@@ -51,6 +51,7 @@ import { isStateCode } from "@/lib/scope";
 import type { MapProgressDifficulty, Profile } from "@/lib/types";
 import { useGlobeDayNight } from "@/lib/use-globe-day-night";
 import { useIsDark } from "@/lib/use-is-dark";
+import { useShowMapProgress } from "@/lib/use-show-map-progress";
 import { cn } from "@/lib/utils";
 
 /** Floor matches place-focus so microstate zooms aren't yanked back out. */
@@ -99,10 +100,27 @@ const GLOBE_FIT_VERTICAL = 0.72;
 /** Fraction of the horizontal FOV the resting globe may fill (phones). */
 const GLOBE_FIT_HORIZONTAL = 0.78;
 /**
- * The planet sits slightly above viewport center (fraction of viewport
- * height). Constant across home/map modes so mode changes never move it.
+ * Compositional raise above the center of the *visible* band below the app
+ * header (fraction of canvas height). Constant across home/map modes so mode
+ * changes never move the planet. The canvas is full-bleed under the header, so
+ * {@link GlobeFraming} subtracts half the header height before applying this.
  */
-const GLOBE_RAISE_VIEWPORT_FRACTION = 0.05;
+const GLOBE_RAISE_VIEWPORT_FRACTION = 0.02;
+
+/** Fallback when `--app-header-offset` cannot be measured (matches globals.css). */
+const APP_HEADER_OFFSET_FALLBACK_PX = 56;
+
+/** Resolved `--app-header-offset` in CSS pixels (canvas is fixed under the header). */
+function readAppHeaderOffsetPx(): number {
+  if (typeof document === "undefined") return APP_HEADER_OFFSET_FALLBACK_PX;
+  const probe = document.createElement("div");
+  probe.style.cssText =
+    "position:absolute;visibility:hidden;pointer-events:none;height:var(--app-header-offset)";
+  document.documentElement.appendChild(probe);
+  const px = probe.offsetHeight;
+  probe.remove();
+  return px > 0 ? px : APP_HEADER_OFFSET_FALLBACK_PX;
+}
 
 /**
  * Resting camera distance that fits the globe within the viewport on any
@@ -151,14 +169,11 @@ function GlobeFraming({
       if (camera.position.lengthSq() > 1e-6) camera.position.setLength(start);
     }
 
-    camera.setViewOffset(
-      size.width,
-      size.height,
-      0,
-      size.height * GLOBE_RAISE_VIEWPORT_FRACTION,
-      size.width,
-      size.height,
-    );
+    // Positive offsetY raises the planet. Bias down by half the header so the
+    // sphere + atmosphere sit in the visible band instead of under the chrome.
+    const offsetY =
+      size.height * GLOBE_RAISE_VIEWPORT_FRACTION - readAppHeaderOffsetPx() * 0.5;
+    camera.setViewOffset(size.width, size.height, 0, offsetY, size.width, size.height);
     camera.updateProjectionMatrix();
     invalidate();
   }, [camera, size, restDistanceRef, onMaxDistanceChange, invalidate]);
@@ -818,6 +833,9 @@ export default function InteractiveGlobe({
   const { canvasKey, remountCanvas, resetRecoveryAttempts } = useGlobeCanvasKey();
   const { isDark, ready } = useIsDark();
   const { enabled: dayNight } = useGlobeDayNight();
+  const { enabled: showMapProgress } = useShowMapProgress();
+  /** Null profile → natural land texture (no mastery fills) on the planet surface. */
+  const paintProfile = showMapProgress ? profile : null;
   const containerRef = useRef<HTMLDivElement>(null);
   const controlsRef = useRef<OrbitControlsImpl | null>(null);
   const spinGroupRef = useRef<THREE.Group | null>(null);
@@ -999,7 +1017,12 @@ export default function InteractiveGlobe({
           <Canvas
             key={canvasKey}
             camera={{
-              position: [0, 0, INITIAL_CAMERA_DISTANCE],
+              // Match idle auto-spin tilt (slightly north of equator) from the first frame.
+              position: [
+                0,
+                INITIAL_CAMERA_DISTANCE * Math.cos(GLOBE_DEFAULT_POLAR),
+                INITIAL_CAMERA_DISTANCE * Math.sin(GLOBE_DEFAULT_POLAR),
+              ],
               fov: 45,
               // Tight near plane so microstate place-focus can sit close to the surface.
               near: 0.001,
@@ -1041,7 +1064,7 @@ export default function InteractiveGlobe({
               />
             ) : null}
             <PickableGlobe
-              profile={profile}
+              profile={paintProfile}
               difficulty={difficulty}
               usMode={usMode}
               isDark={isDark}

@@ -343,14 +343,7 @@ export function formatMapProgressAreaLabel(
   if (isFullScope) {
     return scope === "world" ? "World" : "USA";
   }
-  if (selected.length === 1) {
-    return selected[0]!;
-  }
-  if (selected.length === 2) {
-    return `${selected[0]} · ${selected[1]}`;
-  }
-  const regionWord = scope === "world" ? "continents" : "regions";
-  return `${selected.length} ${regionWord}`;
+  return selected.join(" · ");
 }
 
 export function isFullMapProgressSelection(

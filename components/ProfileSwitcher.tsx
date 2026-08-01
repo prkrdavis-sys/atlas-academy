@@ -7,13 +7,15 @@ import { GlobeDayNightToggle } from "@/components/GlobeDayNightToggle";
 import { GlobeUsModeToggle } from "@/components/GlobeUsModeToggle";
 import { HapticsToggle } from "@/components/HapticsToggle";
 import { useProfiles } from "@/components/ProfileProvider";
+import { ShowMapProgressToggle } from "@/components/ShowMapProgressToggle";
 import { SoundToggle } from "@/components/SoundToggle";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { cn } from "@/lib/utils";
 
 /**
  * The "main menu": the header profile dropdown that holds app-wide toggles
- * (appearance, sound, vibration, globe day/night, USA globe mode) alongside profile switching.
+ * (appearance, sound, vibration, map progress, globe day/night, USA globe mode)
+ * alongside profile switching.
  */
 export function ProfileSwitcher({ compact = false }: { compact?: boolean }) {
   const pathname = usePathname();
@@ -140,6 +142,7 @@ export function ProfileSwitcher({ compact = false }: { compact?: boolean }) {
             <ThemeToggle variant="menu" />
             <SoundToggle />
             <HapticsToggle />
+            <ShowMapProgressToggle />
             <GlobeDayNightToggle />
             <GlobeUsModeToggle />
           </div>

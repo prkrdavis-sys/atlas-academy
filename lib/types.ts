@@ -364,6 +364,15 @@ export type AppState = {
 
 export type AtlasleGuessTarget = "name" | "capital";
 
+export const FLAG_CROP_ORIENTATIONS = [
+  "upright",
+  "upside-down",
+  "mirrored",
+  "mirrored-upside-down",
+] as const;
+
+export type FlagCropOrientation = (typeof FLAG_CROP_ORIENTATIONS)[number];
+
 export type Question = {
   id: string;
   mode: GameMode;
@@ -374,6 +383,8 @@ export type Question = {
   options?: string[];
   optionCodes?: string[];
   displayType?: "flag" | "flag-crop" | "shape" | "capital" | "text" | "flags-grid" | "population" | "atlasle";
+  /** Flag Close-Up: randomized presentation without changing the selected crop. */
+  flagCropOrientation?: FlagCropOrientation;
   secondaryCountryCode?: string;
   /** Atlasle: whether the puzzle answer is a place name or a capital. */
   atlasleTarget?: AtlasleGuessTarget;

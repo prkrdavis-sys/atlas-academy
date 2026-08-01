@@ -3,30 +3,26 @@
 import Link from "next/link";
 import { subtleBackLinkClass } from "@/lib/utils";
 import { GameModeTile } from "@/components/GameModeTile";
-import { ScopeSelector } from "@/components/ScopeSelector";
 import { useGameScope } from "@/lib/use-game-scope";
 import { CORE_QUESTION_TYPES, EXTRA_QUIZ_MODES, PRACTICE_MODES } from "@/lib/types";
 
 const MORE_MODES = [...PRACTICE_MODES, ...EXTRA_QUIZ_MODES];
 
 export function GameSetupPageContent() {
-  const { scope, selectScope } = useGameScope();
+  const { scope } = useGameScope();
 
   return (
     <div className="space-y-6 sm:space-y-7">
-      <header className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <Link href="/" className={subtleBackLinkClass}>
-            ← Back home
-          </Link>
-          <h1 className="mt-3 font-display text-2xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 sm:text-3xl">
-            Choose a mode
-          </h1>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400 sm:text-base">
-            Which way do you like to play?
-          </p>
-        </div>
-        <ScopeSelector scope={scope} onSelect={selectScope} />
+      <header>
+        <Link href="/" className={subtleBackLinkClass}>
+          ← Back home
+        </Link>
+        <h1 className="mt-3 font-display text-2xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 sm:text-3xl">
+          Choose a mode
+        </h1>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400 sm:text-base">
+          Which way do you like to play?
+        </p>
       </header>
 
       <GameModeTile mode="mixed" scope={scope} variant="featured" />

@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { HomeExploreSection } from "@/components/HomeExploreSection";
 import { HomePlayHero } from "@/components/HomePlayHero";
 import { MapStatsButton } from "@/components/MapStatsButton";
 import { MapStatsSheet } from "@/components/MapStatsSheet";
@@ -27,6 +28,7 @@ import { useGameScope } from "@/lib/use-game-scope";
 import { useGlobeUsMode } from "@/lib/use-globe-us-mode";
 import { useIsDark } from "@/lib/use-is-dark";
 import { useMapProgressDifficulty } from "@/lib/use-map-progress-difficulty";
+import { useShowMapProgress } from "@/lib/use-show-map-progress";
 import { cn } from "@/lib/utils";
 import { supportsWebGL } from "@/lib/webgl";
 
@@ -155,6 +157,7 @@ export function GlobeExperience() {
   const [statsOpen, setStatsOpen] = useState(false);
   const { usMode } = useGlobeUsMode();
   const { mapDifficulty, setMapDifficulty } = useMapProgressDifficulty();
+  const { enabled: showMapProgress } = useShowMapProgress();
   const { isDark, ready: themeReady } = useIsDark();
   const globeHandleRef = useRef<GlobeHandle | null>(null);
   const heroRef = useRef<HTMLElement>(null);
@@ -346,43 +349,50 @@ export function GlobeExperience() {
               </div>
             ) : null}
 
-            {/* Map surface nav (left) + progress-track filter (right) — corners keep the globe clear. */}
-            <div className="pointer-events-auto absolute left-3 top-3 z-10">
+            {/* Map surface nav + progress-track filter. One wrapping row so the
+                chips don't collide on narrow phones; corners stay clear on wider screens. */}
+            <div className="pointer-events-auto absolute inset-x-3 top-3 z-10 flex flex-wrap items-start justify-between gap-2">
               <MapViewToggle view={view ?? "globe"} views={availableViews} onSelect={setView} />
-            </div>
-            <div className="pointer-events-auto absolute right-3 top-3 z-10 flex flex-col items-end gap-2">
-              <MapProgressDifficultySelector
-                value={mapDifficulty}
-                onChange={setMapDifficulty}
-                className={cn(FLOATING_PANEL_CLASS, "rounded-2xl")}
-              />
-              {!is2dView ? (
-                <MapZoomControls
-                  variant="overlay"
-                  className="flex-col"
-                  onZoomIn={() => globeHandleRef.current?.zoomIn()}
-                  onZoomOut={() => globeHandleRef.current?.zoomOut()}
-                  onReset={() => globeHandleRef.current?.resetView()}
-                />
-              ) : null}
+              <div className="ml-auto flex flex-col items-end gap-2">
+                {showMapProgress ? (
+                  <MapProgressDifficultySelector
+                    value={mapDifficulty}
+                    onChange={setMapDifficulty}
+                    className={cn(FLOATING_PANEL_CLASS, "rounded-2xl")}
+                  />
+                ) : null}
+                {!is2dView ? (
+                  <MapZoomControls
+                    variant="overlay"
+                    className="flex-col"
+                    onZoomIn={() => globeHandleRef.current?.zoomIn()}
+                    onZoomOut={() => globeHandleRef.current?.zoomOut()}
+                    onReset={() => globeHandleRef.current?.resetView()}
+                  />
+                ) : null}
+              </div>
             </div>
 
             {!is2dView ? (
               <>
                 <p className="pointer-events-none absolute bottom-4 left-4 z-10 hidden max-w-44 text-xs font-medium leading-relaxed text-slate-600 drop-shadow-sm dark:text-slate-400 lg:block">
-                  Drag to spin · scroll or pinch to zoom · tap a country or state for progress
+                  {showMapProgress
+                    ? "Drag to spin · scroll or pinch to zoom · tap a country or state for progress"
+                    : "Drag to spin · scroll or pinch to zoom · tap a country or state"}
                 </p>
 
                 {themeReady ? (
                   <div className="pointer-events-none absolute inset-x-0 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-10 flex items-end justify-center gap-2 px-4 sm:bottom-4">
-                    <div
-                      className={cn(
-                        FLOATING_PANEL_CLASS,
-                        "flex items-center px-2.5 py-1.5",
-                      )}
-                    >
-                      <MapProgressFillLegend isDark={isDark} difficulty={mapDifficulty} />
-                    </div>
+                    {showMapProgress ? (
+                      <div
+                        className={cn(
+                          FLOATING_PANEL_CLASS,
+                          "flex items-center px-2.5 py-1.5",
+                        )}
+                      >
+                        <MapProgressFillLegend isDark={isDark} difficulty={mapDifficulty} />
+                      </div>
+                    ) : null}
                     <div className={cn(FLOATING_PANEL_CLASS, "flex items-center")}>
                       <MapStatsButton onClick={openStats} className="size-8 rounded-xl" />
                     </div>
@@ -393,10 +403,11 @@ export function GlobeExperience() {
           </section>
 
           {/* ---- Home pane ---- */}
+          {/* Default hero fills the first viewport; explore scrolls in below. */}
           <section
             aria-label="Play"
             inert={mode !== "home" || undefined}
-            className="pointer-events-auto relative flex h-full w-full shrink-0 flex-col overflow-hidden px-4 pb-[calc(6.5rem+env(safe-area-inset-bottom))] pt-5 sm:pb-8 sm:pt-8"
+            className="pointer-events-auto relative h-full w-full shrink-0 overflow-y-auto overscroll-contain px-4 pb-[calc(6.5rem+env(safe-area-inset-bottom))] pt-5 sm:pb-8 sm:pt-8"
           >
             <HomePlayHero
               profile={profile}
@@ -409,6 +420,16 @@ export function GlobeExperience() {
               dailyCompletedToday={dailyCompletedToday}
               globeHandleRef={globeHandleRef}
               heroRef={heroRef}
+            />
+            <HomeExploreSection
+              profile={profile}
+              scope={scope}
+              streak={globalStreak}
+              todayBest={todayBest}
+              dailyRun={dailyRun}
+              dailyCompletedToday={dailyCompletedToday}
+              active={mode === "home"}
+              onRefresh={refresh}
             />
           </section>
         </div>

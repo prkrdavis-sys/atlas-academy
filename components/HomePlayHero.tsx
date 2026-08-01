@@ -183,23 +183,28 @@ export function HomePlayHero({
         </div>
       ) : null}
 
-      <section ref={heroRef} className={cn("flex min-h-0 flex-1 flex-col", className)}>
+      <section
+        ref={heroRef}
+        data-home-default
+        className={cn("relative flex min-h-full flex-col", className)}
+      >
         {profile ? (
           <>
-            <header className="shrink-0 text-center">
+            {/* Welcome sits over the globe so the upper ~60% stays open. */}
+            <header className="pointer-events-none absolute inset-x-0 top-0 z-10 shrink-0 text-center">
               <h1 className="font-display text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white dark:drop-shadow-[0_2px_12px_rgb(0_0_0_/_0.6)] sm:text-3xl">
                 Welcome back, {profile.name}!
               </h1>
             </header>
 
-            {/* Grows to fill leftover viewport height so the stack below sits at the bottom. */}
             <GlobeDragZone href={GLOBE_MAP_HREF} globeHandleRef={globeHandleRef} />
 
-            <div className="mx-auto flex w-full max-w-xl shrink-0 flex-col gap-3 sm:gap-4">
+            {/* Hero actions stay in the lower 40% so more of the globe shows. */}
+            <div className="mx-auto flex h-[40%] min-h-0 w-full max-w-xl shrink-0 flex-col justify-end gap-2 overflow-y-auto overscroll-contain sm:gap-2.5">
               <button
                 type="button"
                 onClick={startPlay}
-                className="play-glow-button relative flex min-h-16 w-full items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-b from-emerald-400 to-teal-600 px-8 py-4 font-display text-xl font-extrabold text-white transition-transform hover:scale-[1.02] active:scale-[0.97] sm:min-h-[4.5rem] sm:text-2xl"
+                className="play-glow-button relative flex min-h-14 w-full items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-b from-emerald-400 to-teal-600 px-8 py-3.5 font-display text-xl font-extrabold text-white transition-transform hover:scale-[1.02] active:scale-[0.97] sm:min-h-16 sm:text-2xl"
               >
                 <span aria-hidden>▶</span>
                 Play
@@ -217,7 +222,7 @@ export function HomePlayHero({
                 type="button"
                 onClick={advanceTagline}
                 aria-label="Show another pro tip"
-                className="group/protip w-full rounded-2xl border border-slate-900/10 bg-white/60 px-4 py-3 text-left text-sm leading-relaxed text-slate-600 backdrop-blur-md transition-colors hover:border-slate-900/25 hover:bg-white/80 dark:border-white/10 dark:bg-white/[0.05] dark:text-slate-300 dark:hover:border-white/25 dark:hover:bg-white/10"
+                className="group/protip w-full rounded-2xl border border-slate-900/10 bg-white/60 px-3.5 py-2.5 text-left text-sm leading-snug text-slate-600 backdrop-blur-md transition-colors hover:border-slate-900/25 hover:bg-white/80 dark:border-white/10 dark:bg-white/[0.05] dark:text-slate-300 dark:hover:border-white/25 dark:hover:bg-white/10"
               >
                 <span className="font-bold text-slate-800 dark:text-slate-100">
                   <span
@@ -248,11 +253,11 @@ export function HomePlayHero({
           </>
         ) : (
           <>
-            <header className="shrink-0 text-center">
+            <header className="pointer-events-none absolute inset-x-0 top-0 z-10 shrink-0 text-center">
               <h1 className="font-display text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white dark:drop-shadow-[0_2px_12px_rgb(0_0_0_/_0.6)] sm:text-5xl">
                 Learn world geography
               </h1>
-              <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-slate-600 dark:text-slate-300 sm:text-base">
+              <p className="pointer-events-auto mx-auto mt-3 max-w-xl text-sm leading-relaxed text-slate-600 dark:text-slate-300 sm:text-base">
                 {heroTagline ? (
                   <HomeHeroTaglineContent text={heroTagline} scope={scope} />
                 ) : (
@@ -263,7 +268,7 @@ export function HomePlayHero({
 
             <GlobeDragZone href={GLOBE_MAP_HREF} globeHandleRef={globeHandleRef} />
 
-            <div className="mx-auto w-full max-w-xl shrink-0">
+            <div className="mx-auto flex h-[40%] w-full max-w-xl shrink-0 flex-col justify-end">
               <Link
                 href="/profiles"
                 className="play-glow-button flex min-h-14 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-b from-emerald-400 to-teal-600 px-6 py-3.5 font-display text-base font-extrabold text-white transition-transform hover:scale-[1.02] active:scale-[0.97] sm:text-lg"
@@ -383,7 +388,7 @@ function ModeLoadoutRow({ profile, mode, scope }: ModeLoadoutRowProps) {
     <Link
       href={`/play/setup${scopeQuery(getStoredScope())}`}
       aria-label={`Current game: ${summary}. Change game mode and settings.`}
-      className="flex min-h-12 w-full items-center gap-3 rounded-[1.25rem] border border-slate-900/10 bg-white/60 px-4 py-2.5 backdrop-blur-md transition-colors hover:border-slate-900/25 hover:bg-white/80 active:bg-white/90 dark:border-white/15 dark:bg-white/[0.07] dark:hover:border-white/40 dark:hover:bg-white/15 dark:active:bg-white/20"
+      className="flex min-h-11 w-full items-center gap-3 rounded-[1.25rem] border border-slate-900/10 bg-white/60 px-3.5 py-2 backdrop-blur-md transition-colors hover:border-slate-900/25 hover:bg-white/80 active:bg-white/90 dark:border-white/15 dark:bg-white/[0.07] dark:hover:border-white/40 dark:hover:bg-white/15 dark:active:bg-white/20"
     >
       <span aria-hidden className="shrink-0 text-base">
         ⚙️
@@ -405,41 +410,34 @@ type DailyChallengeCardProps = {
   playedToday: boolean;
 };
 
-/** Daily challenge as a distinct quest card with its own streak and clear CTA. */
+/** Compact daily-challenge row — title + streak + CTA, no subtitle. */
 function DailyChallengeCard({ scope, dailyRun, playedToday }: DailyChallengeCardProps) {
   return (
     <Link
       href={scopedHref("/play/daily-challenge", scope, { autostart: "1" })}
       aria-label={`Daily challenge. ${playedToday ? "Completed today — review your results." : "Play today's challenge."} Daily run: ${dailyRun} ${dailyRun === 1 ? "day" : "days"}.`}
-      className="group flex items-center gap-3.5 rounded-2xl border border-amber-500/30 bg-white/60 p-4 backdrop-blur-md transition-all hover:-translate-y-0.5 hover:border-amber-500/60 hover:bg-white/80 dark:border-amber-300/25 dark:bg-white/[0.07] dark:hover:border-amber-300/60 dark:hover:bg-white/10 sm:p-5"
+      className="group flex min-h-11 items-center gap-2.5 rounded-2xl border border-amber-500/30 bg-white/60 px-3 py-2 backdrop-blur-md transition-all hover:border-amber-500/60 hover:bg-white/80 dark:border-amber-300/25 dark:bg-white/[0.07] dark:hover:border-amber-300/60 dark:hover:bg-white/10"
     >
       <DailyCalendarIcon
         variant="solid"
-        className="w-12 shrink-0 drop-shadow-sm transition-transform group-hover:scale-105 sm:w-14"
+        className="w-9 shrink-0 drop-shadow-sm transition-transform group-hover:scale-105"
       />
-      <div className="min-w-0 flex-1">
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-          <h2 className="font-display text-base font-extrabold text-slate-900 dark:text-white sm:text-lg">
-            Daily Challenge
-          </h2>
-          {dailyRun > 0 ? (
-            <span className="inline-flex items-center gap-0.5 rounded-full bg-orange-400/20 px-2 py-0.5 text-xs font-extrabold tabular-nums text-orange-600 dark:text-orange-300">
-              <span aria-hidden>🔥</span> {dailyRun}
-            </span>
-          ) : null}
-        </div>
-        <p className="mt-0.5 truncate text-xs text-slate-600 dark:text-slate-300 sm:text-sm">
-          {playedToday
-            ? "Done for today — see how you stacked up"
-            : "A fresh round of questions every day"}
-        </p>
+      <div className="flex min-w-0 flex-1 items-center gap-2">
+        <h2 className="truncate font-display text-sm font-extrabold text-slate-900 dark:text-white sm:text-base">
+          Daily Challenge
+        </h2>
+        {dailyRun > 0 ? (
+          <span className="inline-flex shrink-0 items-center gap-0.5 rounded-full bg-orange-400/20 px-1.5 py-0.5 text-[0.7rem] font-extrabold tabular-nums text-orange-600 dark:text-orange-300">
+            <span aria-hidden>🔥</span> {dailyRun}
+          </span>
+        ) : null}
       </div>
       <span
         className={cn(
-          "flex min-h-10 shrink-0 items-center justify-center rounded-xl px-4 font-display text-sm font-extrabold transition-transform group-hover:scale-105",
+          "flex min-h-8 shrink-0 items-center justify-center rounded-lg px-3 font-display text-xs font-extrabold transition-transform group-hover:scale-105 sm:text-sm",
           playedToday
-            ? "border-2 border-amber-500/40 bg-white/70 text-amber-700 dark:border-amber-300/40 dark:bg-white/10 dark:text-amber-200"
-            : "bg-amber-500 text-white shadow-[0_3px_0_var(--color-amber-600)]",
+            ? "border border-amber-500/40 bg-white/70 text-amber-700 dark:border-amber-300/40 dark:bg-white/10 dark:text-amber-200"
+            : "bg-amber-500 text-white shadow-[0_2px_0_var(--color-amber-600)]",
         )}
       >
         {playedToday ? "Review" : "Play"}

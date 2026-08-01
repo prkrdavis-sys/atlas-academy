@@ -98,7 +98,7 @@ function buildUxProTips(scope: GameScope): string[] {
     "After finishing today's Daily Challenge, tap Review to walk through every answer again.",
 
     `World and ${otherScopeInfo.shortLabel} have separate streaks, stats, and daily runs.`,
-    `Switch between World and ${otherScopeInfo.shortLabel} from game setup or the scope toggle.`,
+    `Switch between World and ${otherScopeInfo.shortLabel} on a mode's settings page.`,
 
     "Your profile menu has sound, dark mode, and globe appearance toggles.",
     "Turn on Globe day/night in the profile menu for real-time sunlight on the 3D globe.",

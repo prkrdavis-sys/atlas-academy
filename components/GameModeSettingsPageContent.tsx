@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { GameActionButton } from "@/components/GameActionButton";
 import { GameSetupPanel } from "@/components/GameSetupPanel";
+import { ScopeSelector } from "@/components/ScopeSelector";
 import { useProfiles, useRequiredProfile } from "@/components/ProfileProvider";
 import type { GameSetupDraft } from "@/lib/game-setup";
 import {
@@ -12,11 +13,23 @@ import {
   createSetupDraftFromProfile,
   getPlayablePoolForDraft,
 } from "@/lib/game-setup";
-import { getScopedModeInfo, scopedHref, scopeQuery, scopeText, SCOPE_INFO } from "@/lib/scope";
+import {
+  getScopedModeInfo,
+  scopedHref,
+  scopeQuery,
+  scopeText,
+  setStoredScope,
+  SCOPE_INFO,
+} from "@/lib/scope";
 import { getCommonlyMissedCountries } from "@/lib/stats-helpers";
 import { recordModeSelection, updateProfileSettings } from "@/lib/storage";
 import { useResolvedGameScope } from "@/lib/use-game-scope";
-import { clampRoundQuestionSetting, type ChallengeModifier, type GameMode } from "@/lib/types";
+import {
+  clampRoundQuestionSetting,
+  type ChallengeModifier,
+  type GameMode,
+  type GameScope,
+} from "@/lib/types";
 import { cn, subtleBackLinkClass } from "@/lib/utils";
 
 type GameModeSettingsPageContentProps = {
@@ -25,6 +38,7 @@ type GameModeSettingsPageContentProps = {
 
 export function GameModeSettingsPageContent({ mode }: GameModeSettingsPageContentProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const { refresh } = useProfiles();
   const profile = useRequiredProfile();
@@ -131,6 +145,20 @@ export function GameModeSettingsPageContent({ mode }: GameModeSettingsPageConten
     router.push(scopedHref(`/play/${mode}`, scope, { autostart: "1" }));
   };
 
+  const handleScopeSelect = (next: GameScope) => {
+    if (!scope || next === scope) return;
+    persistCurrentDraft();
+    setStoredScope(next);
+    const params = new URLSearchParams(searchParams.toString());
+    if (next === "usa") {
+      params.set("scope", "usa");
+    } else {
+      params.delete("scope");
+    }
+    const query = params.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname);
+  };
+
   if (!modeInfo || !scopeInfo) {
     return (
       <div className="space-y-4">
@@ -151,18 +179,21 @@ export function GameModeSettingsPageContent({ mode }: GameModeSettingsPageConten
         >
           ← Back to modes
         </Link>
-        <div className="mt-3 flex items-start gap-3">
-          <span className="text-3xl" aria-hidden>
-            {modeInfo.icon}
-          </span>
-          <div>
-            <h1 className="font-display text-2xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 sm:text-3xl">
-              {scopeText(modeInfo.title, scope)}
-            </h1>
-            <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-              {scopeText(modeInfo.description, scope)}
-            </p>
+        <div className="mt-3 flex flex-wrap items-start justify-between gap-3">
+          <div className="flex min-w-0 items-start gap-3">
+            <span className="text-3xl" aria-hidden>
+              {modeInfo.icon}
+            </span>
+            <div className="min-w-0">
+              <h1 className="font-display text-2xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 sm:text-3xl">
+                {scopeText(modeInfo.title, scope)}
+              </h1>
+              <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+                {scopeText(modeInfo.description, scope)}
+              </p>
+            </div>
           </div>
+          <ScopeSelector scope={scope} onSelect={handleScopeSelect} />
         </div>
       </header>
 

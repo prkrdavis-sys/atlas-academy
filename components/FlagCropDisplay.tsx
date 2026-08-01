@@ -2,8 +2,23 @@
 
 import { getFlagPath } from "@/lib/countries";
 import { FLAG_CROP_DISPLAY_ASPECT_RATIO, getFlagCropStyle } from "@/lib/flag-crop";
+import type { FlagCropOrientation } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
-export function FlagCropDisplay({ code }: { code: string }) {
+const ORIENTATION_CLASSES: Record<FlagCropOrientation, string> = {
+  upright: "",
+  "upside-down": "rotate-180",
+  mirrored: "-scale-x-100",
+  "mirrored-upside-down": "-scale-y-100",
+};
+
+export function FlagCropDisplay({
+  code,
+  orientation = "upright",
+}: {
+  code: string;
+  orientation?: FlagCropOrientation;
+}) {
   const cropStyle = getFlagCropStyle(code);
 
   return (
@@ -15,7 +30,10 @@ export function FlagCropDisplay({ code }: { code: string }) {
         style={{ aspectRatio: FLAG_CROP_DISPLAY_ASPECT_RATIO }}
       >
         <div
-          className="absolute inset-0 bg-no-repeat"
+          className={cn(
+            "absolute inset-0 bg-no-repeat transform-gpu",
+            ORIENTATION_CLASSES[orientation],
+          )}
           style={{
             backgroundImage: `url("${getFlagPath(code)}")`,
             ...cropStyle,

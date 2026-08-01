@@ -37,6 +37,7 @@ import {
   MAP_LAND_TEXTURE_WIDTH,
 } from "@/lib/map-land-texture";
 import { renderMapSurfaceTextureCrop } from "@/lib/map-land-texture-runtime";
+import { getCountryByCode } from "@/lib/countries";
 import { isStateCode } from "@/lib/scope";
 import type { Country } from "@/lib/types";
 import { useIsDark } from "@/lib/use-is-dark";
@@ -101,6 +102,72 @@ export async function loadContextMapTemplate(templateKey: string): Promise<Parse
   const parsed = { viewBox, paths };
   templateCache.set(templateKey, parsed);
   return parsed;
+}
+
+const learnCardPreloadInFlight = new Map<string, Promise<void>>();
+
+/**
+ * Warm the learn-card context map (SVG template, bounds, and terrain crop)
+ * so PlaceContextMap can render without a loading pulse.
+ */
+export function preloadLearnCardMap(countryCode: string, isDark: boolean): Promise<void> {
+  const key = `${countryCode.toUpperCase()}:${isDark ? "d" : "l"}`;
+  const existing = learnCardPreloadInFlight.get(key);
+  if (existing) return existing;
+
+  const promise = (async () => {
+    const country = getCountryByCode(countryCode);
+    if (!country || !countryHasContextMap(country)) return;
+
+    const templateKey = getContextMapTemplateKey(country);
+    const [, bounds] = await Promise.all([
+      loadContextMapTemplate(templateKey),
+      loadMapBoundsManifest(),
+      // Overview bake is the first-paint fallback before the sharp crop lands.
+      preloadImageElement(MAP_LAND_TEXTURE_PATH),
+    ]);
+    boundsCache.data = bounds;
+
+    if (!contextMapSupportsLandTexture(templateKey)) return;
+
+    const template = bounds[templateKey];
+    if (!template) return;
+
+    const focusedViewBox = computeFocusedViewBox(template, getContextMapPathIds(country), {
+      ...CROP_OPTIONS.learn,
+      neighborPathIds: getNeighborContextMapPathIds(country),
+    });
+    if (!focusedViewBox) return;
+
+    const [viewBoxX, viewBoxY, viewBoxWidth, viewBoxHeight] = parseMapViewBox(focusedViewBox);
+    await renderMapSurfaceTextureCrop({
+      templateKey,
+      viewBoxX,
+      viewBoxY,
+      viewBoxWidth,
+      viewBoxHeight,
+      isDark,
+    });
+  })()
+    .catch(() => {
+      // Preload is best-effort; PlaceContextMap still loads on demand.
+    })
+    .finally(() => {
+      learnCardPreloadInFlight.delete(key);
+    });
+
+  learnCardPreloadInFlight.set(key, promise);
+  return promise;
+}
+
+function preloadImageElement(src: string): Promise<void> {
+  if (typeof Image === "undefined") return Promise.resolve();
+  return new Promise((resolve) => {
+    const image = new Image();
+    image.onload = () => resolve();
+    image.onerror = () => resolve();
+    image.src = src;
+  });
 }
 
 type PlaceContextMapProps = {

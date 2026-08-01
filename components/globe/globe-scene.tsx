@@ -664,9 +664,9 @@ export function GlobeFillLights({
 
 /**
  * Real-time sunlight for the planet mesh. Mount as a child of the earth mesh
- * so the day/night terminator stays locked to geographic longitude while the
- * globe spins or the camera orbits. With day/night off it stays a soft key
- * light that gives the surface relief without a visible terminator.
+ * so the beam stays locked to geographic longitude while the globe spins or
+ * the camera orbits. Direction is always the real-time subsolar angle — the
+ * day/night toggle only changes intensity (strong terminator vs soft key).
  */
 export function EarthSunLight({ dayNight }: { dayNight: boolean }) {
   const lightRef = useRef<THREE.DirectionalLight>(null);
@@ -829,6 +829,11 @@ const SUN_RENDER_ORDER = 50;
 
 function DistantSunVisual({
   isDark,
+  /**
+   * When set, the sun is a spin-group sibling of the planet (dark mode) and
+   * draws after the atmosphere. Position stays mesh-local either way — never
+   * write world coords into a parented local transform.
+   */
   anchorRef,
 }: {
   isDark: boolean;
@@ -838,7 +843,6 @@ function DistantSunVisual({
   const groupRef = useRef<THREE.Group>(null);
   const pulseRef = useRef<THREE.Group>(null);
   const [plateMap, glowMap] = useTexture([SUN_TEXTURE_URL, SUN_GLOW_TEXTURE_URL]);
-  const sunOffset = useMemo(() => new THREE.Vector3(), []);
 
   useLayoutEffect(() => {
     for (const texture of [plateMap, glowMap]) {
@@ -851,17 +855,10 @@ function DistantSunVisual({
   useFrame(({ clock }) => {
     const group = groupRef.current;
     if (!group) return;
+    // Mesh-local / spin-local subsolar — same frame as EarthSunLight, whether
+    // this group is a child of the planet mesh or a sibling under the spin group.
     const sun = subsolarDirection();
-    sunOffset.set(sun.x, sun.y, sun.z).multiplyScalar(DISTANT_SUN_DISTANCE);
-
-    const anchor = anchorRef?.current;
-    if (anchor) {
-      anchor.updateWorldMatrix(true, false);
-      sunOffset.applyMatrix4(anchor.matrixWorld);
-      group.position.copy(sunOffset);
-    } else {
-      group.position.copy(sunOffset);
-    }
+    group.position.set(sun.x, sun.y, sun.z).multiplyScalar(DISTANT_SUN_DISTANCE);
 
     const pulse = pulseRef.current;
     if (pulse) {
@@ -958,8 +955,10 @@ function DistantSunVisual({
 
 /**
  * Bright distant sun in outer space, locked to the real subsolar direction.
- * Dark mode uses the NASA plate plus glow; light mode is glow-only so the
- * plate's dark limb never rings the CSS sunset sky.
+ * Always mounted — independent of the day/night lighting toggle — so the disk
+ * stays time-accurate whether the terminator is on or off. Dark mode uses the
+ * NASA plate plus glow; light mode is glow-only so the plate's dark limb never
+ * rings the CSS sunset sky.
  */
 export function DistantSun({
   isDark,
