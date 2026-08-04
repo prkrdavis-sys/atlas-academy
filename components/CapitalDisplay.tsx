@@ -22,7 +22,7 @@ export function CapitalDisplay({ code, compact = false, showLabel = true }: Capi
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={getCapitalPath(country.code)}
-          alt={`Skyline of ${country.capital}`}
+          alt={showLabel ? `Skyline of ${country.capital}` : "Capital city skyline"}
           className="h-full w-full object-cover"
         />
       </div>

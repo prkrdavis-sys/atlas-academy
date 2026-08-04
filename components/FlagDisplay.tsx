@@ -2,7 +2,12 @@
 
 import { type ReactNode } from "react";
 import { getFlagPath } from "@/lib/countries";
-import { getFlagAspectRatio, getFlagClipPath, isShapedFlag } from "@/lib/flag-display";
+import {
+  getFlagAspectRatio,
+  getFlagClipPath,
+  getFlagDisplayProfile,
+  isShapedFlag,
+} from "@/lib/flag-display";
 import { cn } from "@/lib/utils";
 
 export type FlagFrameVariant = "none" | "sm" | "md" | "lg" | "pill";
@@ -43,6 +48,7 @@ type FlagImgProps = {
   code: string;
   alt: string;
   className?: string;
+  objectFit?: "contain" | "fill";
   constrainedAxis?: "width" | "height";
   priority?: boolean;
   clipPath?: string;
@@ -59,26 +65,34 @@ function FlagImg({
   code,
   alt,
   className,
+  objectFit = "fill",
   constrainedAxis = "width",
   priority,
   clipPath,
 }: FlagImgProps) {
   return (
-    // Local SVG assets keep their intrinsic viewBox when rendered as a native image.
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src={getFlagPath(code)}
-      alt={alt}
-      decoding="async"
-      className={cn("block max-w-full", className)}
-      style={{
-        ...(constrainedAxis === "height"
-          ? { aspectRatio: getFlagAspectRatio(code), width: "auto" }
-          : { height: "auto" }),
-        ...(clipPath ? { clipPath } : null),
-      }}
-      {...(priority ? { fetchPriority: "high" as const } : {})}
-    />
+    <span
+      className={cn(
+        "relative max-w-full",
+        constrainedAxis === "height" ? "inline-block" : "block",
+        className,
+      )}
+      style={{ aspectRatio: getFlagAspectRatio(code) }}
+    >
+      {/* Local SVG assets are rendered directly so the complete flag remains visible. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={getFlagPath(code)}
+        alt={alt}
+        decoding="async"
+        className="block h-full w-full max-w-full"
+        style={{
+          objectFit,
+          ...(clipPath ? { clipPath } : null),
+        }}
+        {...(priority ? { fetchPriority: "high" as const } : {})}
+      />
+    </span>
   );
 }
 
@@ -89,9 +103,8 @@ function wrapWithFrame(
   className?: string,
 ) {
   const shaped = isShapedFlag(code);
-  const clipPath = getFlagClipPath(code);
 
-  if (shaped && clipPath) {
+  if (shaped) {
     return (
       <span className={cn("inline-block max-w-full leading-none", className)}>
         {image}
@@ -112,7 +125,7 @@ function wrapWithFrame(
   );
 }
 
-/** Renders a flag at its SVG aspect ratio without cropping or letterboxing. */
+/** Renders a complete flag at its display aspect ratio without cropping or letterboxing. */
 export function FlagImage({
   code,
   alt,
@@ -139,9 +152,10 @@ export function FlagImage({
           code={code}
           alt={alt}
           priority={priority}
+          constrainedAxis={constrainedAxis}
           clipPath={imgClipPath}
+          objectFit="contain"
           className={cn("h-full w-full object-contain", flagFilterClass)}
-          constrainedAxis="width"
         />
       </span>
     ) : (
@@ -149,13 +163,14 @@ export function FlagImage({
         code={code}
         alt={alt}
         priority={priority}
+        constrainedAxis={constrainedAxis}
         clipPath={imgClipPath}
+        objectFit="fill"
         className={cn(
-          isHeightConstrained ? "block w-auto max-w-full" : "h-auto w-full",
+          isHeightConstrained ? "max-w-full" : "h-auto w-full",
           className,
           flagFilterClass,
         )}
-        constrainedAxis={constrainedAxis}
       />
     );
 
@@ -168,6 +183,51 @@ export function FlagImage({
   return wrapWithFrame(image, code, frame, outerClassName);
 }
 
+function getFlagDisplaySizing(code: string, size: "sm" | "md" | "lg") {
+  const profile = getFlagDisplayProfile(code);
+
+  if (profile === "pennant") {
+    return {
+      constrainedAxis: "height" as const,
+      className:
+        size === "lg"
+          ? "h-[min(20rem,55cqh)]"
+          : size === "md"
+            ? "h-[min(14rem,38cqh)]"
+            : "h-[min(9rem,30cqh)]",
+    };
+  }
+
+  if (profile === "square") {
+    return {
+      constrainedAxis: "width" as const,
+      className:
+        size === "lg"
+          ? "w-[min(20rem,55cqh)]"
+          : size === "md"
+            ? "w-[min(15rem,38cqh)]"
+            : "w-[min(8rem,30cqh)]",
+    };
+  }
+
+  if (profile === "ultra-wide") {
+    return {
+      constrainedAxis: "width" as const,
+      className:
+        size === "lg"
+          ? "w-[min(32rem,100cqw)]"
+          : size === "md"
+            ? "w-[min(24rem,100cqw)]"
+            : "w-[min(18rem,100cqw)]",
+    };
+  }
+
+  return {
+    constrainedAxis: "width" as const,
+    className: size === "lg" ? "w-80" : size === "md" ? "w-60" : "w-[7.5rem]",
+  };
+}
+
 export function FlagDisplay({
   code,
   size = "lg",
@@ -178,6 +238,7 @@ export function FlagDisplay({
   inverted?: boolean;
 }) {
   const width = size === "lg" ? 320 : size === "md" ? 240 : 120;
+  const sizing = getFlagDisplaySizing(code, size);
   return (
     <div className="flex justify-center">
       <FlagImage
@@ -185,7 +246,8 @@ export function FlagDisplay({
         alt={inverted ? `Inverted flag of ${code}` : `Flag of ${code}`}
         width={width}
         frame="md"
-        className={size === "lg" ? "w-80" : size === "md" ? "w-60" : "w-[7.5rem]"}
+        constrainedAxis={sizing.constrainedAxis}
+        className={sizing.className}
         inverted={inverted}
         priority
       />

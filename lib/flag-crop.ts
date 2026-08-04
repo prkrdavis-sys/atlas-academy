@@ -53,9 +53,8 @@ export function getFlagCropStyle(code: string): {
 
   return {
     backgroundPosition: `${backgroundPositionForCenter(crop.x, widthScale)}% ${backgroundPositionForCenter(crop.y, heightScale)}%`,
-    backgroundSize:
-      flagRatio >= FLAG_CROP_DISPLAY_ASPECT_RATIO
-        ? `auto ${crop.zoom * 100}%`
-        : `${crop.zoom * 100}% auto`,
+    // Set both dimensions explicitly so corrected display ratios are applied
+    // even though the source flag SVGs use a normalized 4:3 viewBox.
+    backgroundSize: `${widthScale * 100}% ${heightScale * 100}%`,
   };
 }

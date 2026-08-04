@@ -51,8 +51,8 @@ export const GLOBE_DRAG_SPIN_FACTOR = 0.006;
 export const GLOBE_MAX_TILT = Math.PI * 0.45;
 /** Idle time after a drag before the globe eases back onto its default axis. */
 export const GLOBE_IDLE_RETURN_DELAY_MS = 2000;
-/** Idle time after map-globe interaction before leveling tilt and resuming auto-spin. */
-export const GLOBE_IDLE_RESET_MS = 7000;
+/** Idle time before the globe starts auto-spinning from its current perspective. */
+export const GLOBE_IDLE_AUTO_SPIN_MS = 8000;
 /** Damping factor for easing tilt back to the default axis (higher = snappier). */
 export const GLOBE_TILT_RETURN_DAMP = 2.4;
 

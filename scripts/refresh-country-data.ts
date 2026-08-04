@@ -1,6 +1,11 @@
 import { copyFileSync, existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { getCountryFact, getCountryFactQuestion } from "./place-facts";
+import {
+  getCountryFact,
+  getCountryFact2,
+  getCountryFactQuestion,
+  getCountryFactQuestion2,
+} from "./place-facts";
 import {
   attachUsdRate,
   fetchUsdExchangeRates,
@@ -8,6 +13,11 @@ import {
 } from "./currency-data";
 import { generateCountryShapes } from "./generate-country-shapes";
 import { getCountryAirport, getCountryTravelAccess } from "./airport-data";
+import { getCountryEmblems } from "./bird-plant-data";
+import { getCountryElevation } from "./elevation-data";
+import { getCountryEcosystem } from "./ecosystem-data";
+import { fetchCountryMedianHouseholdIncomeUsd } from "./income-data";
+import { fetchCountryMedianRentUsd } from "./rent-data";
 import { fetchSourceCountries, pickPrimaryTimezone } from "./timezone-data";
 
 type RawCountry = {
@@ -74,6 +84,7 @@ const DATA_DIR = join(ROOT, "data");
 const PUBLIC_FLAGS = join(ROOT, "public", "flags");
 const PUBLIC_SHAPES = join(ROOT, "public", "shapes");
 const PUBLIC_CAPITALS = join(ROOT, "public", "capitals");
+const FLAG_CDN_BASE_URL = "https://flagcdn.com";
 const FLAG_ICONS_DIR = join(ROOT, "node_modules", "flag-icons", "flags", "4x3");
 
 const ALIAS_MAP: Record<string, string[]> = {
@@ -143,6 +154,17 @@ function extractNativeName(
   return uniqueNames.length > 0 ? uniqueNames.join(" · ") : undefined;
 }
 
+async function fetchFlagSvg(code: string): Promise<string | null> {
+  try {
+    const response = await fetch(`${FLAG_CDN_BASE_URL}/${code.toLowerCase()}.svg`);
+    if (!response.ok) return null;
+    const svg = await response.text();
+    return /<svg\b/i.test(svg) ? svg : null;
+  } catch {
+    return null;
+  }
+}
+
 function extractLanguages(languages?: Record<string, string>): string {
   if (!languages) return "";
   return Object.values(languages)
@@ -162,6 +184,22 @@ function buildFactQuestion(code3: string, name: string): string {
   const question = getCountryFactQuestion(code3);
   if (!question) {
     throw new Error(`Missing curated fact question for ${name} (${code3})`);
+  }
+  return question;
+}
+
+function buildFact2(code3: string, name: string): string {
+  const fact = getCountryFact2(code3);
+  if (!fact) {
+    throw new Error(`Missing curated secondary fact for ${name} (${code3})`);
+  }
+  return fact;
+}
+
+function buildFactQuestion2(code3: string, name: string): string {
+  const question = getCountryFactQuestion2(code3);
+  if (!question) {
+    throw new Error(`Missing curated secondary fact question for ${name} (${code3})`);
   }
   return question;
 }
@@ -219,6 +257,13 @@ async function main() {
   const rawCountries = (await response.json()) as RawCountry[];
   const populationByCode3 = await fetchPopulationByCode3();
   const usdRates = await fetchUsdExchangeRates();
+  const incomeByCode3 = await fetchCountryMedianHouseholdIncomeUsd();
+  const rentByCode = await fetchCountryMedianRentUsd(
+    rawCountries.map((raw) => ({
+      code: raw.cca2.toUpperCase(),
+      name: raw.name.common,
+    })),
+  );
   const timezoneByCode = new Map(
     (await fetchSourceCountries()).flatMap((source) => {
       const timezone = pickPrimaryTimezone(source);
@@ -236,10 +281,19 @@ async function main() {
     const capital = raw.capital?.[0] ?? "";
     const continent = mapContinent(raw.region, raw.subregion);
     const flagSrc = join(FLAG_ICONS_DIR, `${code.toLowerCase()}.svg`);
-    const hasFlag = existsSync(flagSrc);
+    const flagPath = join(PUBLIC_FLAGS, `${code.toLowerCase()}.svg`);
+    const hasFlag = existsSync(flagPath) || existsSync(flagSrc);
 
     if (hasFlag) {
-      copyFileSync(flagSrc, join(PUBLIC_FLAGS, `${code.toLowerCase()}.svg`));
+      const flagSvg = await fetchFlagSvg(code);
+      if (flagSvg) {
+        writeFileSync(flagPath, flagSvg);
+      } else if (!existsSync(flagPath)) {
+        copyFileSync(flagSrc, flagPath);
+        console.warn(`FlagCDN unavailable for ${code}; copied the local fallback asset`);
+      } else {
+        console.warn(`FlagCDN unavailable for ${code}; kept the existing flag asset`);
+      }
       flagCount += 1;
     }
 
@@ -265,6 +319,11 @@ async function main() {
     const timezone = timezoneByCode.get(code);
     const largestAirport = getCountryAirport(code);
     const travelAccess = getCountryTravelAccess(code);
+    const elevation = getCountryElevation(code);
+    const ecosystem = getCountryEcosystem(code);
+    const emblems = getCountryEmblems(code);
+    const medianHouseholdIncomeUsd = incomeByCode3.get(code3);
+    const medianRentUsd = rentByCode.get(code);
 
     countries.push({
       code,
@@ -277,6 +336,12 @@ async function main() {
       ...(timezone ? { timezone } : {}),
       ...(largestAirport ? { largestAirport } : {}),
       ...(travelAccess ? { travelAccess } : {}),
+      ...(elevation ? { elevation } : {}),
+      ...(ecosystem ? { ecosystem } : {}),
+      ...(emblems?.bird ? { bird: emblems.bird } : {}),
+      ...(emblems?.plant ? { plant: emblems.plant } : {}),
+      ...(medianHouseholdIncomeUsd != null ? { medianHouseholdIncomeUsd } : {}),
+      ...(medianRentUsd != null ? { medianRentUsd } : {}),
       capital,
       continent,
       subregion: raw.subregion ?? "",
@@ -291,6 +356,8 @@ async function main() {
       isTerritory: raw.independent === false,
       fact: buildFact(code3, raw.name.common),
       factQuestion: buildFactQuestion(code3, raw.name.common),
+      fact2: buildFact2(code3, raw.name.common),
+      factQuestion2: buildFactQuestion2(code3, raw.name.common),
     });
   }
 

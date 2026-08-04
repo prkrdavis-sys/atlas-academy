@@ -9,8 +9,18 @@
  */
 import { existsSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { getStateFact, getStateFactQuestion } from "./place-facts";
+import {
+  getStateFact,
+  getStateFact2,
+  getStateFactQuestion,
+  getStateFactQuestion2,
+} from "./place-facts";
 import { getStateAirport } from "./airport-data";
+import { getStateEmblems } from "./bird-plant-data";
+import { getStateElevation } from "./elevation-data";
+import { getStateEcosystem } from "./ecosystem-data";
+import { getStateMedianHouseholdIncomeUsd } from "./income-data";
+import { getStateMedianRentUsd } from "./rent-data";
 import { STATE_TIMEZONES } from "./timezone-data";
 
 type StateRow = [
@@ -114,6 +124,26 @@ const states = STATE_ROWS.map(
     if (!largestAirport) {
       throw new Error(`Missing airport for ${name} (${postal})`);
     }
+    const elevation = getStateElevation(postal);
+    if (!elevation) {
+      throw new Error(`Missing elevation for ${name} (${postal})`);
+    }
+    const ecosystem = getStateEcosystem(postal);
+    if (!ecosystem) {
+      throw new Error(`Missing ecosystem for ${name} (${postal})`);
+    }
+    const emblems = getStateEmblems(postal);
+    if (!emblems?.bird || !emblems.plant) {
+      throw new Error(`Missing bird/plant for ${name} (${postal})`);
+    }
+    const medianHouseholdIncomeUsd = getStateMedianHouseholdIncomeUsd(postal);
+    if (medianHouseholdIncomeUsd == null) {
+      throw new Error(`Missing median household income for ${name} (${postal})`);
+    }
+    const medianRentUsd = getStateMedianRentUsd(postal);
+    if (medianRentUsd == null) {
+      throw new Error(`Missing median rent for ${name} (${postal})`);
+    }
 
     return {
       code,
@@ -122,6 +152,12 @@ const states = STATE_ROWS.map(
       officialName: `State of ${name}`,
       timezone,
       largestAirport,
+      elevation,
+      ecosystem,
+      bird: emblems.bird,
+      plant: emblems.plant,
+      medianHouseholdIncomeUsd,
+      medianRentUsd,
       capital,
       continent: region,
       subregion: division,
@@ -142,6 +178,16 @@ const states = STATE_ROWS.map(
       factQuestion: (() => {
         const question = getStateFactQuestion(code);
         if (!question) throw new Error(`Missing curated fact question for ${name} (${code})`);
+        return question;
+      })(),
+      fact2: (() => {
+        const fact = getStateFact2(code);
+        if (!fact) throw new Error(`Missing curated secondary fact for ${name} (${code})`);
+        return fact;
+      })(),
+      factQuestion2: (() => {
+        const question = getStateFactQuestion2(code);
+        if (!question) throw new Error(`Missing curated secondary fact question for ${name} (${code})`);
         return question;
       })(),
     };

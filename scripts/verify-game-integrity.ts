@@ -11,6 +11,7 @@ import { GameEngine } from "../lib/game-engine";
 import { resolveMapProgressCategory, wouldCountTowardMapProgress } from "../lib/map-progress";
 import { normalizeAnswerText } from "../lib/answer-matcher";
 import { countries, getCountryByCode, usStates } from "../lib/countries";
+import { PROFILE_AVATARS } from "../lib/profile-avatars";
 import { CONTEXT_MAP_TEMPLATES } from "../lib/context-maps";
 import flagCropData from "../data/flag-crops.json";
 import { MIN_SHAPE_VIEWBOX, shapeViewBoxTooSmall } from "./map-path-utils";
@@ -28,6 +29,47 @@ let failures = 0;
 function fail(message: string) {
   failures += 1;
   console.error(`FAIL: ${message}`);
+}
+
+function readWebpDimensions(asset: Buffer): { width: number; height: number } | null {
+  if (
+    asset.length < 30 ||
+    asset.toString("ascii", 0, 4) !== "RIFF" ||
+    asset.toString("ascii", 8, 12) !== "WEBP"
+  ) {
+    return null;
+  }
+
+  const chunkType = asset.toString("ascii", 12, 16);
+  const payloadOffset = 20;
+  if (chunkType === "VP8 " && asset.toString("hex", payloadOffset + 3, payloadOffset + 6) === "9d012a") {
+    return {
+      width: asset.readUInt16LE(payloadOffset + 6) & 0x3fff,
+      height: asset.readUInt16LE(payloadOffset + 8) & 0x3fff,
+    };
+  }
+  if (chunkType === "VP8X") {
+    return {
+      width:
+        1 +
+        asset[payloadOffset + 4] +
+        (asset[payloadOffset + 5] << 8) +
+        (asset[payloadOffset + 6] << 16),
+      height:
+        1 +
+        asset[payloadOffset + 7] +
+        (asset[payloadOffset + 8] << 8) +
+        (asset[payloadOffset + 9] << 16),
+    };
+  }
+  if (chunkType === "VP8L" && asset[payloadOffset] === 0x2f) {
+    const bits = asset.readUInt32LE(payloadOffset + 1);
+    return {
+      width: 1 + (bits & 0x3fff),
+      height: 1 + ((bits >>> 14) & 0x3fff),
+    };
+  }
+  return null;
 }
 
 // Asset checks
@@ -63,6 +105,40 @@ for (const c of [...countries, ...usStates]) {
   }
 }
 
+const avatarIds = new Set<string>();
+const avatarSources = new Set<string>();
+if (PROFILE_AVATARS.length !== 20) {
+  fail(`Expected exactly 20 profile portraits, found ${PROFILE_AVATARS.length}`);
+}
+for (const avatar of PROFILE_AVATARS) {
+  if (avatarIds.has(avatar.id)) fail(`Duplicate profile portrait ID: ${avatar.id}`);
+  avatarIds.add(avatar.id);
+  if (avatarSources.has(avatar.src)) fail(`Duplicate profile portrait asset: ${avatar.src}`);
+  avatarSources.add(avatar.src);
+  if (!getCountryByCode(avatar.flagCode)) {
+    fail(`${avatar.id}: unknown primary flag code ${avatar.flagCode}`);
+  }
+  if (!existsSync(join("public", "flags", `${avatar.flagCode.toLowerCase()}.svg`))) {
+    fail(`${avatar.id}: primary flag asset missing for ${avatar.flagCode}`);
+  }
+
+  const assetPath = join("public", avatar.src.replace(/^\//, ""));
+  if (!existsSync(assetPath)) {
+    fail(`${avatar.id}: profile portrait file missing (${assetPath})`);
+    continue;
+  }
+  const asset = readFileSync(assetPath);
+  const dimensions = readWebpDimensions(asset);
+  if (!dimensions) {
+    fail(`${avatar.id}: profile portrait is not a readable WebP`);
+    continue;
+  }
+  const { width, height } = dimensions;
+  if (width !== height || width < 128 || height < 128) {
+    fail(`${avatar.id}: profile portrait must be square and at least 128px (${width}x${height})`);
+  }
+}
+
 const excludedFlagCropCodes = new Set(flagCropData.excludedCodes);
 for (const duplicateGroup of flagCropData.duplicateGroups) {
   const eligibleCodes = duplicateGroup.filter((code) => !excludedFlagCropCodes.has(code));
@@ -84,6 +160,7 @@ if (!existsSync(join("public", "maps", "bounds.json"))) {
 const MODES: GameMode[] = [
   "flag-to-country",
   "flag-crop-to-country",
+  "inverted-flag-crop-to-country",
   "shape-to-country",
   "capital-to-country",
   "country-to-capital",
@@ -116,7 +193,8 @@ for (const mode of MODES) {
       while ((q = engine.nextQuestion())) {
         questionsChecked += 1;
         if (
-          mode === "flag-crop-to-country" &&
+          (mode === "flag-crop-to-country" ||
+            mode === "inverted-flag-crop-to-country") &&
           (!q.flagCropOrientation ||
             !FLAG_CROP_ORIENTATIONS.includes(q.flagCropOrientation))
         ) {
@@ -293,6 +371,17 @@ const invertedFlagToCountryQuestion: Question = {
   displayType: "flag",
 };
 
+const invertedFlagCropToCountryQuestion: Question = {
+  id: "inverted-flag-crop-to-country",
+  mode: "inverted-flag-crop-to-country",
+  countryCode: "FR",
+  prompt: "",
+  correctAnswer: "France",
+  correctCode: "FR",
+  displayType: "flag-crop",
+  flagCropOrientation: "mirrored",
+};
+
 if (resolveMapProgressCategory(flagToCountryQuestion) !== "flag") {
   fail("Countries from flags should count toward Flag map progress");
 }
@@ -304,6 +393,9 @@ if (resolveMapProgressCategory(countryToFlagQuestion, "country-to-flag") !== "fl
 }
 if (resolveMapProgressCategory(invertedFlagToCountryQuestion) !== "flag") {
   fail("Countries from inverted flags should count toward Flag map progress");
+}
+if (resolveMapProgressCategory(invertedFlagCropToCountryQuestion) !== "flag") {
+  fail("Inverted Flag Close-Up should count toward Flag map progress");
 }
 if (resolveMapProgressCategory(countryToLanguageQuestion) !== "trivia") {
   fail("Languages from countries should count toward Trivia map progress");

@@ -6,11 +6,13 @@ import { usePathname } from "next/navigation";
 import { GlobeDayNightToggle } from "@/components/GlobeDayNightToggle";
 import { GlobeUsModeToggle } from "@/components/GlobeUsModeToggle";
 import { HapticsToggle } from "@/components/HapticsToggle";
+import { ProfileAvatar } from "@/components/ProfileAvatar";
 import { useProfiles } from "@/components/ProfileProvider";
 import { ShowMapProgressToggle } from "@/components/ShowMapProgressToggle";
 import { SoundToggle } from "@/components/SoundToggle";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { cn } from "@/lib/utils";
+import { CurrencySelector } from "@/components/CurrencySelector";
 
 /**
  * The "main menu": the header profile dropdown that holds app-wide toggles
@@ -58,10 +60,11 @@ export function ProfileSwitcher({ compact = false }: { compact?: boolean }) {
         >
           {displayProfile?.name ?? "Menu"}
         </span>
-        <span
-          className="h-7 w-7 shrink-0 rounded-full ring-2 ring-white dark:ring-slate-800"
-          style={{ backgroundColor: displayProfile?.avatarColor ?? "#94a3b8" }}
-          aria-hidden
+        <ProfileAvatar
+          avatarId={displayProfile?.avatarId}
+          avatarColor={displayProfile?.avatarColor}
+          size="sm"
+          className="shrink-0 ring-2 ring-white dark:ring-slate-800"
         />
         <svg
           aria-hidden
@@ -89,9 +92,10 @@ export function ProfileSwitcher({ compact = false }: { compact?: boolean }) {
                   Active profile
                 </p>
                 <div className="mt-1 flex min-h-11 items-center gap-3 text-sm">
-                  <span
-                    className="h-8 w-8 rounded-full"
-                    style={{ backgroundColor: displayProfile.avatarColor }}
+                  <ProfileAvatar
+                    avatarId={displayProfile.avatarId}
+                    avatarColor={displayProfile.avatarColor}
+                    size="md"
                   />
                   <span className="font-medium">{displayProfile.name}</span>
                 </div>
@@ -130,7 +134,11 @@ export function ProfileSwitcher({ compact = false }: { compact?: boolean }) {
                     }}
                     className="flex min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-800"
                   >
-                    <span className="h-8 w-8 rounded-full" style={{ backgroundColor: profile.avatarColor }} />
+                    <ProfileAvatar
+                      avatarId={profile.avatarId}
+                      avatarColor={profile.avatarColor}
+                      size="md"
+                    />
                     <span className="font-medium">{profile.name}</span>
                   </button>
                 ))}
@@ -139,6 +147,7 @@ export function ProfileSwitcher({ compact = false }: { compact?: boolean }) {
           </div>
 
           <div className="border-b border-slate-100 dark:border-slate-800">
+            <CurrencySelector />
             <ThemeToggle variant="menu" />
             <SoundToggle />
             <HapticsToggle />

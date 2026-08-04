@@ -6,13 +6,34 @@ const ratioByCode = new Map(
   Object.entries(flagDisplayData.ratios).map(([code, ratio]) => [code.toLowerCase(), ratio]),
 );
 
+export type FlagDisplayProfile = "standard" | "square" | "pennant" | "ultra-wide" | "swallowtail";
+
+const profileByCode = new Map(
+  Object.entries(flagDisplayData.profiles).map(([code, profile]) => [
+    code.toUpperCase(),
+    profile as Exclude<FlagDisplayProfile, "standard">,
+  ]),
+);
+
 const shapedClipByCode = new Map(
   Object.entries(flagDisplayData.shaped).map(([code, clipPath]) => [code.toUpperCase(), clipPath]),
 );
 
-/** Width / height from the flag SVG viewBox (or width/height attributes). */
+/** Display width / height from the flag SVG's rendered viewport metadata. */
 export function getFlagAspectRatio(code: string): number {
   return ratioByCode.get(code.toLowerCase()) ?? DEFAULT_ASPECT_RATIO;
+}
+
+/** Returns the explicit geometry exception, or the profile implied by its ratio. */
+export function getFlagDisplayProfile(code: string): FlagDisplayProfile {
+  const explicitProfile = profileByCode.get(code.toUpperCase());
+  if (explicitProfile) return explicitProfile;
+
+  const ratio = getFlagAspectRatio(code);
+  if (ratio < 1) return "pennant";
+  if (Math.abs(ratio - 1) < 0.01) return "square";
+  if (ratio > 2.5) return "ultra-wide";
+  return "standard";
 }
 
 export function isShapedFlag(code: string): boolean {
@@ -20,5 +41,5 @@ export function isShapedFlag(code: string): boolean {
 }
 
 export function getFlagClipPath(code: string): string | undefined {
-  return shapedClipByCode.get(code.toUpperCase());
+  return shapedClipByCode.get(code.toUpperCase()) ?? undefined;
 }

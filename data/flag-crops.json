@@ -9,31 +9,31 @@
       "reviewed": true
     },
     "AE": {
-      "x": 44,
+      "x": 32,
       "y": 56,
       "zoom": 3.1,
       "colors": 3,
       "reviewed": true
     },
     "AF": {
-      "x": 56,
+      "x": 44,
       "y": 56,
-      "zoom": 3.1,
-      "colors": 17,
+      "zoom": 2.7,
+      "colors": 19,
       "reviewed": true
     },
     "AG": {
-      "x": 32,
-      "y": 32,
-      "zoom": 3.1,
-      "colors": 5,
+      "x": 56,
+      "y": 44,
+      "zoom": 2.7,
+      "colors": 6,
       "reviewed": true
     },
     "AI": {
       "x": 80,
-      "y": 56,
+      "y": 44,
       "zoom": 3.1,
-      "colors": 8,
+      "colors": 7,
       "reviewed": true
     },
     "AL": {
@@ -51,8 +51,8 @@
       "reviewed": true
     },
     "AO": {
-      "x": 44,
-      "y": 68,
+      "x": 56,
+      "y": 44,
       "zoom": 3.1,
       "colors": 5,
       "reviewed": true
@@ -66,62 +66,62 @@
     },
     "AR": {
       "x": 44,
-      "y": 56,
+      "y": 44,
       "zoom": 3.1,
-      "colors": 10,
+      "colors": 9,
       "reviewed": true
     },
     "AS": {
       "x": 80,
       "y": 56,
-      "zoom": 2.9,
-      "colors": 14,
+      "zoom": 3.1,
+      "colors": 13,
       "reviewed": true
     },
     "AT": {
       "x": 44,
       "y": 44,
       "zoom": 3.1,
-      "colors": 2,
+      "colors": 3,
       "reviewed": true
     },
     "AU": {
-      "x": 44,
-      "y": 32,
-      "zoom": 3.1,
-      "colors": 5,
+      "x": 32,
+      "y": 20,
+      "zoom": 2.9,
+      "colors": 3,
       "reviewed": true
     },
     "AW": {
-      "x": 20,
-      "y": 32,
+      "x": 44,
+      "y": 68,
+      "zoom": 2.9,
+      "colors": 4,
+      "reviewed": true
+    },
+    "AX": {
+      "x": 44,
+      "y": 20,
+      "zoom": 3.1,
+      "colors": 6,
+      "reviewed": true
+    },
+    "AZ": {
+      "x": 44,
+      "y": 44,
       "zoom": 3.1,
       "colors": 3,
       "reviewed": true
     },
-    "AX": {
-      "x": 32,
-      "y": 20,
-      "zoom": 2.9,
-      "colors": 7,
-      "reviewed": true
-    },
-    "AZ": {
-      "x": 56,
-      "y": 44,
-      "zoom": 3.1,
-      "colors": 4,
-      "reviewed": true
-    },
     "BA": {
-      "x": 32,
-      "y": 32,
+      "x": 68,
+      "y": 80,
       "zoom": 3.1,
-      "colors": 4,
+      "colors": 6,
       "reviewed": true
     },
     "BB": {
-      "x": 56,
+      "x": 44,
       "y": 44,
       "zoom": 3.1,
       "colors": 4,
@@ -142,9 +142,9 @@
       "reviewed": true
     },
     "BF": {
-      "x": 44,
+      "x": 56,
       "y": 56,
-      "zoom": 2.7,
+      "zoom": 3.1,
       "colors": 4,
       "reviewed": true
     },
@@ -156,16 +156,16 @@
       "reviewed": true
     },
     "BH": {
-      "x": 32,
+      "x": 44,
       "y": 44,
-      "zoom": 3.1,
+      "zoom": 2.7,
       "colors": 2,
       "reviewed": true
     },
     "BI": {
       "x": 56,
       "y": 44,
-      "zoom": 3.1,
+      "zoom": 2.7,
       "colors": 3,
       "reviewed": true
     },
@@ -178,21 +178,21 @@
     },
     "BL": {
       "x": 44,
-      "y": 44,
-      "zoom": 3.1,
-      "colors": 2,
+      "y": 68,
+      "zoom": 2.7,
+      "colors": 12,
       "reviewed": true
     },
     "BM": {
       "x": 80,
-      "y": 44,
+      "y": 56,
       "zoom": 3.1,
-      "colors": 9,
+      "colors": 12,
       "reviewed": true
     },
     "BN": {
-      "x": 56,
-      "y": 68,
+      "x": 44,
+      "y": 56,
       "zoom": 3.1,
       "colors": 13,
       "reviewed": true
@@ -201,77 +201,77 @@
       "x": 44,
       "y": 56,
       "zoom": 3.1,
-      "colors": 10,
+      "colors": 12,
       "reviewed": true
     },
     "BQ": {
-      "x": 44,
+      "x": 32,
       "y": 44,
-      "zoom": 3.1,
-      "colors": 2,
+      "zoom": 2.7,
+      "colors": 4,
       "reviewed": true
     },
     "BR": {
       "x": 56,
-      "y": 44,
-      "zoom": 3.1,
+      "y": 56,
+      "zoom": 2.7,
       "colors": 5,
       "reviewed": true
     },
     "BS": {
-      "x": 56,
+      "x": 44,
       "y": 44,
       "zoom": 3.1,
-      "colors": 4,
+      "colors": 3,
       "reviewed": true
     },
     "BT": {
       "x": 68,
       "y": 32,
       "zoom": 3.1,
-      "colors": 8,
+      "colors": 9,
       "reviewed": true
     },
     "BV": {
-      "x": 56,
-      "y": 56,
-      "zoom": 2.7,
-      "colors": 6,
+      "x": 44,
+      "y": 20,
+      "zoom": 2.9,
+      "colors": 7,
       "reviewed": true
     },
     "BW": {
       "x": 44,
       "y": 44,
-      "zoom": 3.1,
+      "zoom": 2.9,
       "colors": 4,
       "reviewed": true
     },
     "BY": {
       "x": 20,
-      "y": 80,
-      "zoom": 2.9,
-      "colors": 6,
+      "y": 56,
+      "zoom": 2.7,
+      "colors": 4,
       "reviewed": true
     },
     "BZ": {
-      "x": 56,
-      "y": 32,
+      "x": 44,
+      "y": 44,
       "zoom": 3.1,
-      "colors": 12,
+      "colors": 16,
       "reviewed": true
     },
     "CA": {
-      "x": 68,
-      "y": 44,
-      "zoom": 3.1,
-      "colors": 3,
+      "x": 44,
+      "y": 32,
+      "zoom": 2.9,
+      "colors": 2,
       "reviewed": true
     },
     "CC": {
       "x": 20,
-      "y": 32,
+      "y": 20,
       "zoom": 3.1,
-      "colors": 5,
+      "colors": 7,
       "reviewed": true
     },
     "CD": {
@@ -285,39 +285,39 @@
       "x": 32,
       "y": 20,
       "zoom": 3.1,
-      "colors": 5,
+      "colors": 4,
       "reviewed": true
     },
     "CG": {
       "x": 44,
-      "y": 56,
-      "zoom": 2.7,
+      "y": 44,
+      "zoom": 3.1,
       "colors": 3,
       "reviewed": true
     },
     "CH": {
       "x": 44,
-      "y": 44,
-      "zoom": 2.7,
-      "colors": 2,
-      "reviewed": true
-    },
-    "CI": {
-      "x": 44,
-      "y": 44,
+      "y": 32,
       "zoom": 3.1,
       "colors": 3,
       "reviewed": true
     },
-    "CK": {
-      "x": 32,
+    "CI": {
+      "x": 56,
       "y": 44,
       "zoom": 3.1,
-      "colors": 5,
+      "colors": 2,
+      "reviewed": true
+    },
+    "CK": {
+      "x": 44,
+      "y": 32,
+      "zoom": 3.1,
+      "colors": 4,
       "reviewed": true
     },
     "CL": {
-      "x": 32,
+      "x": 44,
       "y": 44,
       "zoom": 3.1,
       "colors": 3,
@@ -332,9 +332,9 @@
     },
     "CN": {
       "x": 32,
-      "y": 20,
+      "y": 32,
       "zoom": 3.1,
-      "colors": 4,
+      "colors": 3,
       "reviewed": true
     },
     "CO": {
@@ -345,22 +345,22 @@
       "reviewed": true
     },
     "CR": {
-      "x": 44,
-      "y": 20,
-      "zoom": 2.9,
-      "colors": 5,
+      "x": 32,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 6,
       "reviewed": true
     },
     "CU": {
-      "x": 56,
-      "y": 68,
+      "x": 20,
+      "y": 32,
       "zoom": 3.1,
-      "colors": 5,
+      "colors": 4,
       "reviewed": true
     },
     "CV": {
       "x": 44,
-      "y": 56,
+      "y": 68,
       "zoom": 2.7,
       "colors": 7,
       "reviewed": true
@@ -369,25 +369,25 @@
       "x": 44,
       "y": 68,
       "zoom": 3.1,
-      "colors": 4,
+      "colors": 2,
       "reviewed": true
     },
     "CX": {
-      "x": 56,
-      "y": 56,
-      "zoom": 3.1,
-      "colors": 4,
-      "reviewed": true
-    },
-    "CY": {
-      "x": 44,
-      "y": 68,
+      "x": 20,
+      "y": 20,
       "zoom": 3.1,
       "colors": 5,
       "reviewed": true
     },
-    "CZ": {
+    "CY": {
       "x": 56,
+      "y": 80,
+      "zoom": 3.1,
+      "colors": 6,
+      "reviewed": true
+    },
+    "CZ": {
+      "x": 44,
       "y": 44,
       "zoom": 3.1,
       "colors": 3,
@@ -395,29 +395,29 @@
     },
     "DE": {
       "x": 44,
-      "y": 44,
+      "y": 56,
       "zoom": 3.1,
       "colors": 2,
       "reviewed": true
     },
     "DJ": {
-      "x": 68,
-      "y": 44,
-      "zoom": 3.1,
+      "x": 44,
+      "y": 56,
+      "zoom": 2.7,
       "colors": 4,
       "reviewed": true
     },
     "DK": {
-      "x": 56,
-      "y": 44,
-      "zoom": 2.9,
-      "colors": 3,
+      "x": 44,
+      "y": 20,
+      "zoom": 3.1,
+      "colors": 4,
       "reviewed": true
     },
     "DM": {
-      "x": 44,
-      "y": 44,
-      "zoom": 2.9,
+      "x": 56,
+      "y": 56,
+      "zoom": 3.1,
       "colors": 9,
       "reviewed": true
     },
@@ -431,15 +431,15 @@
     "DZ": {
       "x": 56,
       "y": 56,
-      "zoom": 2.9,
+      "zoom": 3.1,
       "colors": 3,
       "reviewed": true
     },
     "EC": {
       "x": 44,
-      "y": 68,
-      "zoom": 3.1,
-      "colors": 14,
+      "y": 44,
+      "zoom": 2.9,
+      "colors": 12,
       "reviewed": true
     },
     "EE": {
@@ -453,70 +453,70 @@
       "x": 44,
       "y": 56,
       "zoom": 3.1,
-      "colors": 10,
+      "colors": 11,
       "reviewed": true
     },
     "EH": {
-      "x": 56,
+      "x": 44,
       "y": 44,
-      "zoom": 2.7,
+      "zoom": 3.1,
       "colors": 4,
       "reviewed": true
     },
     "ER": {
       "x": 32,
-      "y": 32,
-      "zoom": 3.1,
-      "colors": 9,
+      "y": 68,
+      "zoom": 2.9,
+      "colors": 8,
       "reviewed": true
     },
     "ES": {
       "x": 32,
       "y": 56,
       "zoom": 3.1,
-      "colors": 15,
+      "colors": 9,
       "reviewed": true
     },
     "ET": {
-      "x": 44,
+      "x": 56,
       "y": 56,
       "zoom": 3.1,
-      "colors": 8,
+      "colors": 10,
       "reviewed": true
     },
     "FI": {
-      "x": 44,
+      "x": 32,
       "y": 20,
-      "zoom": 2.9,
+      "zoom": 3.1,
       "colors": 4,
       "reviewed": true
     },
     "FJ": {
+      "x": 80,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 10,
+      "reviewed": true
+    },
+    "FK": {
       "x": 80,
       "y": 56,
       "zoom": 3.1,
       "colors": 12,
       "reviewed": true
     },
-    "FK": {
-      "x": 80,
+    "FM": {
+      "x": 56,
       "y": 68,
       "zoom": 3.1,
-      "colors": 14,
-      "reviewed": true
-    },
-    "FM": {
-      "x": 44,
-      "y": 20,
-      "zoom": 3.1,
-      "colors": 3,
+      "colors": 2,
       "reviewed": true
     },
     "FO": {
       "x": 44,
       "y": 20,
-      "zoom": 3.1,
-      "colors": 7,
+      "zoom": 2.9,
+      "colors": 6,
       "reviewed": true
     },
     "FR": {
@@ -534,37 +534,37 @@
       "reviewed": true
     },
     "GB": {
-      "x": 68,
-      "y": 32,
+      "x": 80,
+      "y": 80,
       "zoom": 3.1,
-      "colors": 5,
+      "colors": 7,
       "reviewed": true
     },
     "GD": {
       "x": 56,
-      "y": 56,
+      "y": 44,
       "zoom": 3.1,
       "colors": 4,
       "reviewed": true
     },
     "GE": {
-      "x": 32,
-      "y": 68,
-      "zoom": 3.1,
+      "x": 44,
+      "y": 44,
+      "zoom": 2.7,
       "colors": 2,
       "reviewed": true
     },
     "GF": {
-      "x": 44,
-      "y": 44,
+      "x": 56,
+      "y": 56,
       "zoom": 3.1,
-      "colors": 2,
+      "colors": 3,
       "reviewed": true
     },
     "GG": {
       "x": 44,
       "y": 44,
-      "zoom": 2.9,
+      "zoom": 3.1,
       "colors": 4,
       "reviewed": true
     },
@@ -572,28 +572,28 @@
       "x": 56,
       "y": 56,
       "zoom": 3.1,
-      "colors": 3,
+      "colors": 5,
       "reviewed": true
     },
     "GI": {
       "x": 44,
-      "y": 68,
+      "y": 20,
       "zoom": 3.1,
       "colors": 10,
       "reviewed": true
     },
     "GL": {
       "x": 56,
-      "y": 56,
+      "y": 44,
       "zoom": 3.1,
       "colors": 2,
       "reviewed": true
     },
     "GM": {
       "x": 44,
-      "y": 68,
+      "y": 56,
       "zoom": 3.1,
-      "colors": 4,
+      "colors": 5,
       "reviewed": true
     },
     "GN": {
@@ -604,52 +604,52 @@
       "reviewed": true
     },
     "GP": {
-      "x": 44,
+      "x": 32,
       "y": 44,
       "zoom": 3.1,
-      "colors": 2,
+      "colors": 8,
       "reviewed": true
     },
     "GQ": {
       "x": 44,
-      "y": 56,
+      "y": 44,
       "zoom": 3.1,
-      "colors": 6,
+      "colors": 7,
       "reviewed": true
     },
     "GR": {
-      "x": 56,
-      "y": 44,
+      "x": 44,
+      "y": 32,
       "zoom": 3.1,
-      "colors": 2,
+      "colors": 5,
       "reviewed": true
     },
     "GS": {
       "x": 80,
-      "y": 68,
+      "y": 56,
       "zoom": 3.1,
-      "colors": 19,
+      "colors": 15,
       "reviewed": true
     },
     "GT": {
-      "x": 56,
+      "x": 44,
       "y": 56,
       "zoom": 3.1,
-      "colors": 12,
+      "colors": 11,
       "reviewed": true
     },
     "GU": {
       "x": 56,
       "y": 56,
       "zoom": 3.1,
-      "colors": 10,
+      "colors": 8,
       "reviewed": true
     },
     "GW": {
-      "x": 20,
+      "x": 32,
       "y": 56,
       "zoom": 3.1,
-      "colors": 5,
+      "colors": 4,
       "reviewed": true
     },
     "GY": {
@@ -661,37 +661,37 @@
     },
     "HK": {
       "x": 44,
-      "y": 56,
+      "y": 44,
       "zoom": 3.1,
-      "colors": 9,
+      "colors": 8,
       "reviewed": true
     },
     "HM": {
-      "x": 44,
-      "y": 32,
-      "zoom": 3.1,
-      "colors": 5,
+      "x": 32,
+      "y": 20,
+      "zoom": 2.9,
+      "colors": 3,
       "reviewed": true
     },
     "HN": {
-      "x": 56,
+      "x": 44,
       "y": 44,
       "zoom": 3.1,
       "colors": 2,
       "reviewed": true
     },
     "HR": {
-      "x": 56,
-      "y": 32,
+      "x": 44,
+      "y": 44,
       "zoom": 3.1,
-      "colors": 8,
+      "colors": 10,
       "reviewed": true
     },
     "HT": {
       "x": 44,
       "y": 56,
       "zoom": 3.1,
-      "colors": 9,
+      "colors": 10,
       "reviewed": true
     },
     "HU": {
@@ -711,22 +711,22 @@
     "IE": {
       "x": 44,
       "y": 44,
-      "zoom": 3.1,
+      "zoom": 2.9,
       "colors": 2,
       "reviewed": true
     },
     "IL": {
-      "x": 44,
+      "x": 56,
       "y": 44,
       "zoom": 3.1,
-      "colors": 3,
+      "colors": 4,
       "reviewed": true
     },
     "IM": {
       "x": 56,
       "y": 44,
       "zoom": 3.1,
-      "colors": 11,
+      "colors": 9,
       "reviewed": true
     },
     "IN": {
@@ -737,31 +737,31 @@
       "reviewed": true
     },
     "IO": {
-      "x": 68,
+      "x": 80,
       "y": 32,
       "zoom": 3.1,
-      "colors": 12,
+      "colors": 11,
       "reviewed": true
     },
     "IQ": {
-      "x": 56,
-      "y": 44,
+      "x": 44,
+      "y": 56,
       "zoom": 3.1,
-      "colors": 8,
+      "colors": 7,
       "reviewed": true
     },
     "IR": {
-      "x": 44,
-      "y": 68,
-      "zoom": 3.1,
-      "colors": 8,
-      "reviewed": true
-    },
-    "IS": {
       "x": 56,
       "y": 44,
       "zoom": 3.1,
-      "colors": 3,
+      "colors": 9,
+      "reviewed": true
+    },
+    "IS": {
+      "x": 44,
+      "y": 20,
+      "zoom": 2.9,
+      "colors": 6,
       "reviewed": true
     },
     "IT": {
@@ -779,35 +779,35 @@
       "reviewed": true
     },
     "JM": {
-      "x": 56,
-      "y": 44,
-      "zoom": 2.7,
-      "colors": 3,
-      "reviewed": true
-    },
-    "JO": {
-      "x": 56,
-      "y": 44,
-      "zoom": 3.1,
-      "colors": 3,
-      "reviewed": true
-    },
-    "JP": {
       "x": 44,
-      "y": 68,
-      "zoom": 2.9,
-      "colors": 2,
-      "reviewed": true
-    },
-    "KE": {
-      "x": 56,
-      "y": 68,
+      "y": 32,
       "zoom": 3.1,
       "colors": 5,
       "reviewed": true
     },
-    "KG": {
+    "JO": {
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 5,
+      "reviewed": true
+    },
+    "JP": {
       "x": 56,
+      "y": 68,
+      "zoom": 3.1,
+      "colors": 2,
+      "reviewed": true
+    },
+    "KE": {
+      "x": 44,
+      "y": 68,
+      "zoom": 3.1,
+      "colors": 4,
+      "reviewed": true
+    },
+    "KG": {
+      "x": 44,
       "y": 44,
       "zoom": 3.1,
       "colors": 8,
@@ -815,113 +815,113 @@
     },
     "KH": {
       "x": 44,
-      "y": 56,
-      "zoom": 2.7,
-      "colors": 8,
+      "y": 68,
+      "zoom": 3.1,
+      "colors": 11,
       "reviewed": true
     },
     "KI": {
       "x": 44,
-      "y": 44,
+      "y": 20,
       "zoom": 3.1,
-      "colors": 7,
+      "colors": 9,
       "reviewed": true
     },
     "KM": {
       "x": 32,
-      "y": 32,
+      "y": 44,
       "zoom": 3.1,
       "colors": 4,
       "reviewed": true
     },
     "KN": {
-      "x": 44,
-      "y": 56,
-      "zoom": 2.7,
+      "x": 68,
+      "y": 32,
+      "zoom": 3.1,
       "colors": 5,
       "reviewed": true
     },
     "KP": {
       "x": 32,
-      "y": 32,
-      "zoom": 2.7,
+      "y": 56,
+      "zoom": 3.1,
       "colors": 5,
       "reviewed": true
     },
     "KR": {
       "x": 32,
       "y": 68,
-      "zoom": 2.9,
-      "colors": 4,
+      "zoom": 3.1,
+      "colors": 6,
       "reviewed": true
     },
     "KW": {
-      "x": 44,
+      "x": 32,
       "y": 44,
       "zoom": 3.1,
       "colors": 3,
       "reviewed": true
     },
     "KY": {
-      "x": 68,
-      "y": 44,
+      "x": 80,
+      "y": 68,
       "zoom": 3.1,
-      "colors": 15,
+      "colors": 12,
       "reviewed": true
     },
     "KZ": {
       "x": 56,
       "y": 56,
       "zoom": 3.1,
-      "colors": 9,
+      "colors": 12,
       "reviewed": true
     },
     "LA": {
       "x": 56,
-      "y": 68,
+      "y": 32,
       "zoom": 3.1,
-      "colors": 4,
+      "colors": 3,
       "reviewed": true
     },
     "LB": {
       "x": 56,
       "y": 44,
       "zoom": 3.1,
-      "colors": 5,
+      "colors": 4,
       "reviewed": true
     },
     "LC": {
       "x": 44,
       "y": 80,
-      "zoom": 2.9,
+      "zoom": 3.1,
       "colors": 5,
       "reviewed": true
     },
     "LI": {
-      "x": 32,
-      "y": 20,
+      "x": 20,
+      "y": 32,
       "zoom": 3.1,
       "colors": 11,
       "reviewed": true
     },
     "LK": {
       "x": 68,
-      "y": 44,
-      "zoom": 2.9,
-      "colors": 12,
+      "y": 32,
+      "zoom": 3.1,
+      "colors": 11,
       "reviewed": true
     },
     "LR": {
-      "x": 44,
-      "y": 32,
-      "zoom": 2.9,
-      "colors": 6,
+      "x": 20,
+      "y": 56,
+      "zoom": 2.7,
+      "colors": 7,
       "reviewed": true
     },
     "LS": {
-      "x": 56,
+      "x": 44,
       "y": 56,
-      "zoom": 2.9,
+      "zoom": 3.1,
       "colors": 4,
       "reviewed": true
     },
@@ -929,7 +929,7 @@
       "x": 44,
       "y": 44,
       "zoom": 3.1,
-      "colors": 3,
+      "colors": 2,
       "reviewed": true
     },
     "LU": {
@@ -942,13 +942,13 @@
     "LV": {
       "x": 44,
       "y": 44,
-      "zoom": 3.1,
+      "zoom": 2.9,
       "colors": 2,
       "reviewed": true
     },
     "LY": {
       "x": 56,
-      "y": 56,
+      "y": 68,
       "zoom": 3.1,
       "colors": 3,
       "reviewed": true
@@ -957,7 +957,7 @@
       "x": 56,
       "y": 56,
       "zoom": 3.1,
-      "colors": 4,
+      "colors": 8,
       "reviewed": true
     },
     "MC": {
@@ -969,9 +969,9 @@
     },
     "MD": {
       "x": 56,
-      "y": 44,
-      "zoom": 2.9,
-      "colors": 13,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 17,
       "reviewed": true
     },
     "ME": {
@@ -996,52 +996,52 @@
       "reviewed": true
     },
     "MH": {
-      "x": 32,
-      "y": 44,
-      "zoom": 2.9,
-      "colors": 6,
+      "x": 20,
+      "y": 32,
+      "zoom": 3.1,
+      "colors": 8,
       "reviewed": true
     },
     "MK": {
       "x": 56,
-      "y": 56,
-      "zoom": 2.9,
-      "colors": 3,
+      "y": 44,
+      "zoom": 2.7,
+      "colors": 6,
       "reviewed": true
     },
     "ML": {
       "x": 44,
       "y": 44,
       "zoom": 3.1,
-      "colors": 3,
+      "colors": 2,
       "reviewed": true
     },
     "MM": {
-      "x": 56,
-      "y": 56,
-      "zoom": 2.7,
-      "colors": 3,
+      "x": 44,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 5,
       "reviewed": true
     },
     "MN": {
       "x": 20,
-      "y": 68,
-      "zoom": 3.1,
-      "colors": 6,
+      "y": 32,
+      "zoom": 2.9,
+      "colors": 5,
       "reviewed": true
     },
     "MO": {
       "x": 44,
       "y": 56,
       "zoom": 3.1,
-      "colors": 8,
+      "colors": 7,
       "reviewed": true
     },
     "MP": {
       "x": 44,
-      "y": 20,
+      "y": 32,
       "zoom": 3.1,
-      "colors": 12,
+      "colors": 11,
       "reviewed": true
     },
     "MQ": {
@@ -1052,24 +1052,24 @@
       "reviewed": true
     },
     "MR": {
-      "x": 44,
-      "y": 20,
+      "x": 56,
+      "y": 68,
       "zoom": 3.1,
       "colors": 3,
       "reviewed": true
     },
     "MS": {
-      "x": 80,
-      "y": 56,
-      "zoom": 3.1,
-      "colors": 12,
+      "x": 68,
+      "y": 44,
+      "zoom": 2.9,
+      "colors": 10,
       "reviewed": true
     },
     "MT": {
-      "x": 32,
-      "y": 32,
+      "x": 20,
+      "y": 20,
       "zoom": 3.1,
-      "colors": 6,
+      "colors": 5,
       "reviewed": true
     },
     "MU": {
@@ -1080,7 +1080,7 @@
       "reviewed": true
     },
     "MV": {
-      "x": 44,
+      "x": 56,
       "y": 32,
       "zoom": 3.1,
       "colors": 3,
@@ -1089,63 +1089,63 @@
     "MW": {
       "x": 56,
       "y": 20,
-      "zoom": 2.9,
-      "colors": 8,
+      "zoom": 3.1,
+      "colors": 7,
       "reviewed": true
     },
     "MX": {
-      "x": 44,
+      "x": 56,
       "y": 56,
       "zoom": 3.1,
-      "colors": 9,
+      "colors": 11,
       "reviewed": true
     },
     "MY": {
       "x": 56,
-      "y": 68,
+      "y": 56,
       "zoom": 3.1,
-      "colors": 6,
+      "colors": 7,
       "reviewed": true
     },
     "MZ": {
-      "x": 32,
-      "y": 44,
-      "zoom": 2.9,
-      "colors": 6,
+      "x": 20,
+      "y": 56,
+      "zoom": 3.1,
+      "colors": 7,
       "reviewed": true
     },
     "NA": {
-      "x": 32,
+      "x": 20,
       "y": 32,
       "zoom": 3.1,
-      "colors": 7,
+      "colors": 6,
       "reviewed": true
     },
     "NC": {
       "x": 44,
       "y": 56,
       "zoom": 2.7,
-      "colors": 5,
+      "colors": 6,
       "reviewed": true
     },
     "NE": {
-      "x": 44,
+      "x": 56,
       "y": 56,
-      "zoom": 2.9,
-      "colors": 3,
+      "zoom": 3.1,
+      "colors": 4,
       "reviewed": true
     },
     "NF": {
       "x": 56,
       "y": 56,
-      "zoom": 3.1,
-      "colors": 12,
+      "zoom": 2.7,
+      "colors": 10,
       "reviewed": true
     },
     "NG": {
       "x": 44,
       "y": 44,
-      "zoom": 3.1,
+      "zoom": 2.9,
       "colors": 2,
       "reviewed": true
     },
@@ -1153,63 +1153,63 @@
       "x": 44,
       "y": 44,
       "zoom": 3.1,
-      "colors": 8,
+      "colors": 6,
       "reviewed": true
     },
     "NL": {
       "x": 44,
       "y": 44,
       "zoom": 3.1,
-      "colors": 2,
+      "colors": 3,
       "reviewed": true
     },
     "NO": {
-      "x": 56,
-      "y": 44,
-      "zoom": 3.1,
-      "colors": 5,
+      "x": 44,
+      "y": 20,
+      "zoom": 2.9,
+      "colors": 7,
       "reviewed": true
     },
     "NP": {
       "x": 20,
-      "y": 80,
-      "zoom": 3.1,
-      "colors": 3,
-      "reviewed": true
-    },
-    "NR": {
-      "x": 32,
-      "y": 68,
+      "y": 44,
       "zoom": 2.9,
       "colors": 4,
       "reviewed": true
     },
-    "NU": {
-      "x": 32,
-      "y": 32,
+    "NR": {
+      "x": 20,
+      "y": 68,
       "zoom": 3.1,
-      "colors": 6,
+      "colors": 4,
+      "reviewed": true
+    },
+    "NU": {
+      "x": 20,
+      "y": 32,
+      "zoom": 2.9,
+      "colors": 5,
       "reviewed": true
     },
     "NZ": {
-      "x": 32,
-      "y": 44,
+      "x": 44,
+      "y": 32,
       "zoom": 3.1,
-      "colors": 5,
+      "colors": 4,
       "reviewed": true
     },
     "OM": {
       "x": 20,
       "y": 20,
       "zoom": 3.1,
-      "colors": 6,
+      "colors": 8,
       "reviewed": true
     },
     "PA": {
       "x": 44,
       "y": 44,
       "zoom": 3.1,
-      "colors": 4,
+      "colors": 3,
       "reviewed": true
     },
     "PE": {
@@ -1220,31 +1220,31 @@
       "reviewed": true
     },
     "PF": {
-      "x": 56,
+      "x": 44,
       "y": 44,
-      "zoom": 2.9,
-      "colors": 12,
+      "zoom": 3.1,
+      "colors": 13,
       "reviewed": true
     },
     "PG": {
       "x": 68,
       "y": 44,
       "zoom": 3.1,
-      "colors": 5,
+      "colors": 8,
       "reviewed": true
     },
     "PH": {
-      "x": 32,
+      "x": 20,
       "y": 44,
-      "zoom": 2.7,
+      "zoom": 3.1,
       "colors": 9,
       "reviewed": true
     },
     "PK": {
-      "x": 32,
+      "x": 56,
       "y": 44,
-      "zoom": 3.1,
-      "colors": 3,
+      "zoom": 2.9,
+      "colors": 2,
       "reviewed": true
     },
     "PL": {
@@ -1255,28 +1255,28 @@
       "reviewed": true
     },
     "PM": {
-      "x": 44,
-      "y": 44,
+      "x": 56,
+      "y": 32,
       "zoom": 3.1,
-      "colors": 2,
+      "colors": 15,
       "reviewed": true
     },
     "PN": {
       "x": 80,
       "y": 44,
       "zoom": 3.1,
-      "colors": 10,
+      "colors": 11,
       "reviewed": true
     },
     "PR": {
       "x": 56,
       "y": 44,
-      "zoom": 3.1,
+      "zoom": 2.7,
       "colors": 3,
       "reviewed": true
     },
     "PS": {
-      "x": 44,
+      "x": 32,
       "y": 44,
       "zoom": 3.1,
       "colors": 3,
@@ -1286,35 +1286,35 @@
       "x": 44,
       "y": 44,
       "zoom": 3.1,
-      "colors": 14,
+      "colors": 12,
       "reviewed": true
     },
     "PW": {
-      "x": 56,
-      "y": 56,
-      "zoom": 3.1,
+      "x": 44,
+      "y": 68,
+      "zoom": 2.7,
       "colors": 2,
       "reviewed": true
     },
     "PY": {
       "x": 44,
-      "y": 44,
+      "y": 56,
       "zoom": 3.1,
       "colors": 6,
       "reviewed": true
     },
     "QA": {
-      "x": 44,
+      "x": 32,
       "y": 44,
-      "zoom": 2.7,
-      "colors": 2,
+      "zoom": 3.1,
+      "colors": 3,
       "reviewed": true
     },
     "RE": {
-      "x": 44,
+      "x": 56,
       "y": 44,
       "zoom": 3.1,
-      "colors": 2,
+      "colors": 4,
       "reviewed": true
     },
     "RO": {
@@ -1326,36 +1326,36 @@
     },
     "RS": {
       "x": 32,
-      "y": 68,
-      "zoom": 3.1,
-      "colors": 14,
+      "y": 44,
+      "zoom": 2.9,
+      "colors": 13,
       "reviewed": true
     },
     "RU": {
       "x": 44,
       "y": 44,
       "zoom": 3.1,
-      "colors": 2,
+      "colors": 3,
       "reviewed": true
     },
     "RW": {
       "x": 80,
       "y": 32,
       "zoom": 3.1,
-      "colors": 8,
+      "colors": 9,
       "reviewed": true
     },
     "SA": {
       "x": 44,
       "y": 32,
-      "zoom": 3.1,
-      "colors": 10,
+      "zoom": 2.9,
+      "colors": 12,
       "reviewed": true
     },
     "SB": {
-      "x": 56,
+      "x": 32,
       "y": 56,
-      "zoom": 2.7,
+      "zoom": 3.1,
       "colors": 4,
       "reviewed": true
     },
@@ -1367,7 +1367,7 @@
       "reviewed": true
     },
     "SD": {
-      "x": 44,
+      "x": 32,
       "y": 56,
       "zoom": 3.1,
       "colors": 3,
@@ -1376,7 +1376,7 @@
     "SE": {
       "x": 56,
       "y": 44,
-      "zoom": 3.1,
+      "zoom": 2.9,
       "colors": 2,
       "reviewed": true
     },
@@ -1384,34 +1384,34 @@
       "x": 20,
       "y": 32,
       "zoom": 3.1,
-      "colors": 5,
-      "reviewed": true
-    },
-    "SH": {
-      "x": 68,
-      "y": 32,
-      "zoom": 3.1,
-      "colors": 5,
-      "reviewed": true
-    },
-    "SI": {
-      "x": 20,
-      "y": 32,
-      "zoom": 3.1,
       "colors": 4,
       "reviewed": true
     },
-    "SJ": {
-      "x": 56,
-      "y": 44,
+    "SH": {
+      "x": 80,
+      "y": 56,
       "zoom": 3.1,
-      "colors": 5,
+      "colors": 11,
+      "reviewed": true
+    },
+    "SI": {
+      "x": 32,
+      "y": 56,
+      "zoom": 2.9,
+      "colors": 3,
+      "reviewed": true
+    },
+    "SJ": {
+      "x": 44,
+      "y": 20,
+      "zoom": 2.9,
+      "colors": 7,
       "reviewed": true
     },
     "SK": {
-      "x": 44,
+      "x": 32,
       "y": 44,
-      "zoom": 3.1,
+      "zoom": 2.9,
       "colors": 5,
       "reviewed": true
     },
@@ -1423,10 +1423,10 @@
       "reviewed": true
     },
     "SM": {
-      "x": 56,
+      "x": 44,
       "y": 56,
-      "zoom": 2.7,
-      "colors": 17,
+      "zoom": 3.1,
+      "colors": 24,
       "reviewed": true
     },
     "SN": {
@@ -1437,7 +1437,7 @@
       "reviewed": true
     },
     "SO": {
-      "x": 44,
+      "x": 56,
       "y": 56,
       "zoom": 3.1,
       "colors": 2,
@@ -1446,34 +1446,34 @@
     "SR": {
       "x": 56,
       "y": 56,
-      "zoom": 2.9,
+      "zoom": 3.1,
       "colors": 4,
       "reviewed": true
     },
     "SS": {
-      "x": 44,
+      "x": 32,
       "y": 44,
       "zoom": 2.7,
-      "colors": 5,
+      "colors": 6,
       "reviewed": true
     },
     "ST": {
-      "x": 44,
-      "y": 68,
-      "zoom": 2.9,
+      "x": 56,
+      "y": 56,
+      "zoom": 3.1,
       "colors": 5,
       "reviewed": true
     },
     "SV": {
       "x": 56,
-      "y": 56,
+      "y": 44,
       "zoom": 3.1,
-      "colors": 8,
+      "colors": 7,
       "reviewed": true
     },
     "SX": {
       "x": 20,
-      "y": 56,
+      "y": 44,
       "zoom": 3.1,
       "colors": 10,
       "reviewed": true
@@ -1482,53 +1482,53 @@
       "x": 44,
       "y": 56,
       "zoom": 3.1,
-      "colors": 4,
+      "colors": 5,
       "reviewed": true
     },
     "SZ": {
-      "x": 32,
+      "x": 44,
       "y": 44,
-      "zoom": 3.1,
-      "colors": 11,
+      "zoom": 2.9,
+      "colors": 9,
       "reviewed": true
     },
     "TC": {
       "x": 80,
-      "y": 56,
-      "zoom": 3.1,
-      "colors": 11,
+      "y": 44,
+      "zoom": 2.9,
+      "colors": 12,
       "reviewed": true
     },
     "TD": {
       "x": 44,
       "y": 44,
       "zoom": 3.1,
-      "colors": 3,
+      "colors": 2,
       "reviewed": true
     },
     "TF": {
-      "x": 80,
-      "y": 68,
-      "zoom": 2.9,
+      "x": 44,
+      "y": 32,
+      "zoom": 3.1,
       "colors": 4,
       "reviewed": true
     },
     "TG": {
-      "x": 56,
-      "y": 32,
-      "zoom": 3.1,
-      "colors": 5,
+      "x": 32,
+      "y": 44,
+      "zoom": 2.9,
+      "colors": 6,
       "reviewed": true
     },
     "TH": {
       "x": 44,
-      "y": 20,
+      "y": 32,
       "zoom": 2.9,
-      "colors": 4,
+      "colors": 5,
       "reviewed": true
     },
     "TJ": {
-      "x": 56,
+      "x": 44,
       "y": 56,
       "zoom": 3.1,
       "colors": 8,
@@ -1536,43 +1536,43 @@
     },
     "TK": {
       "x": 32,
-      "y": 68,
-      "zoom": 3.1,
+      "y": 80,
+      "zoom": 2.9,
       "colors": 4,
       "reviewed": true
     },
     "TL": {
-      "x": 32,
-      "y": 56,
-      "zoom": 2.7,
-      "colors": 4,
+      "x": 20,
+      "y": 32,
+      "zoom": 3.1,
+      "colors": 5,
       "reviewed": true
     },
     "TM": {
-      "x": 20,
-      "y": 56,
-      "zoom": 3.1,
+      "x": 32,
+      "y": 44,
+      "zoom": 2.7,
       "colors": 16,
       "reviewed": true
     },
     "TN": {
       "x": 44,
-      "y": 44,
+      "y": 56,
       "zoom": 3.1,
       "colors": 3,
       "reviewed": true
     },
     "TO": {
       "x": 32,
-      "y": 20,
-      "zoom": 2.9,
-      "colors": 4,
+      "y": 44,
+      "zoom": 3.1,
+      "colors": 3,
       "reviewed": true
     },
     "TR": {
       "x": 44,
       "y": 44,
-      "zoom": 2.7,
+      "zoom": 2.9,
       "colors": 2,
       "reviewed": true
     },
@@ -1584,17 +1584,17 @@
       "reviewed": true
     },
     "TV": {
-      "x": 32,
-      "y": 44,
+      "x": 44,
+      "y": 32,
       "zoom": 3.1,
-      "colors": 6,
+      "colors": 5,
       "reviewed": true
     },
     "TW": {
       "x": 32,
       "y": 20,
       "zoom": 3.1,
-      "colors": 6,
+      "colors": 4,
       "reviewed": true
     },
     "TZ": {
@@ -1615,21 +1615,21 @@
       "x": 44,
       "y": 56,
       "zoom": 3.1,
-      "colors": 8,
+      "colors": 7,
       "reviewed": true
     },
     "UM": {
-      "x": 44,
+      "x": 20,
       "y": 32,
-      "zoom": 3.1,
-      "colors": 7,
+      "zoom": 2.9,
+      "colors": 8,
       "reviewed": true
     },
     "US": {
-      "x": 44,
+      "x": 20,
       "y": 32,
-      "zoom": 3.1,
-      "colors": 7,
+      "zoom": 2.9,
+      "colors": 8,
       "reviewed": true
     },
     "US-AK": {
@@ -1986,35 +1986,35 @@
       "x": 20,
       "y": 32,
       "zoom": 3.1,
-      "colors": 13,
+      "colors": 11,
       "reviewed": true
     },
     "UZ": {
-      "x": 44,
+      "x": 20,
       "y": 20,
-      "zoom": 2.9,
-      "colors": 5,
+      "zoom": 3.1,
+      "colors": 7,
       "reviewed": true
     },
     "VA": {
-      "x": 68,
+      "x": 80,
       "y": 44,
       "zoom": 3.1,
-      "colors": 9,
+      "colors": 14,
       "reviewed": true
     },
     "VC": {
       "x": 32,
-      "y": 44,
-      "zoom": 3.1,
-      "colors": 4,
+      "y": 56,
+      "zoom": 2.9,
+      "colors": 3,
       "reviewed": true
     },
     "VE": {
       "x": 56,
       "y": 44,
       "zoom": 3.1,
-      "colors": 3,
+      "colors": 5,
       "reviewed": true
     },
     "VG": {
@@ -2025,7 +2025,7 @@
       "reviewed": true
     },
     "VI": {
-      "x": 32,
+      "x": 44,
       "y": 56,
       "zoom": 2.9,
       "colors": 18,
@@ -2033,8 +2033,8 @@
     },
     "VN": {
       "x": 56,
-      "y": 44,
-      "zoom": 3.1,
+      "y": 56,
+      "zoom": 2.9,
       "colors": 3,
       "reviewed": true
     },
@@ -2046,17 +2046,17 @@
       "reviewed": true
     },
     "WF": {
-      "x": 44,
+      "x": 68,
       "y": 44,
       "zoom": 3.1,
-      "colors": 2,
+      "colors": 4,
       "reviewed": true
     },
     "WS": {
-      "x": 32,
-      "y": 44,
+      "x": 20,
+      "y": 32,
       "zoom": 3.1,
-      "colors": 3,
+      "colors": 4,
       "reviewed": true
     },
     "XK": {
@@ -2069,15 +2069,15 @@
     "YE": {
       "x": 44,
       "y": 56,
-      "zoom": 2.9,
-      "colors": 2,
+      "zoom": 3.1,
+      "colors": 3,
       "reviewed": true
     },
     "YT": {
       "x": 44,
-      "y": 44,
-      "zoom": 3.1,
-      "colors": 2,
+      "y": 56,
+      "zoom": 2.9,
+      "colors": 11,
       "reviewed": true
     },
     "ZA": {
@@ -2090,41 +2090,27 @@
     "ZM": {
       "x": 80,
       "y": 20,
-      "zoom": 3.1,
-      "colors": 11,
+      "zoom": 2.7,
+      "colors": 9,
       "reviewed": true
     },
     "ZW": {
-      "x": 20,
-      "y": 44,
-      "zoom": 3.1,
-      "colors": 7,
+      "x": 32,
+      "y": 32,
+      "zoom": 2.7,
+      "colors": 8,
       "reviewed": true
     }
   },
   "duplicateGroups": [
     [
-      "AU",
-      "HM"
+      "BV",
+      "NO",
+      "SJ"
     ],
     [
-      "BL",
       "FR",
-      "GF",
-      "GP",
-      "MF",
-      "PM",
-      "RE",
-      "WF",
-      "YT"
-    ],
-    [
-      "BQ",
-      "NL"
-    ],
-    [
-      "GB",
-      "SH"
+      "MF"
     ],
     [
       "UM",
@@ -2132,17 +2118,9 @@
     ]
   ],
   "excludedCodes": [
-    "HM",
-    "BL",
-    "GF",
-    "GP",
+    "NO",
+    "SJ",
     "MF",
-    "PM",
-    "RE",
-    "WF",
-    "YT",
-    "BQ",
-    "SH",
     "UM"
   ]
 }

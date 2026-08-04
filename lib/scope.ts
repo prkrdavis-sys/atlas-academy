@@ -210,6 +210,7 @@ export function getQuestionTaskLabel(
   switch (effectiveMode) {
     case "flag-to-country":
     case "flag-crop-to-country":
+    case "inverted-flag-crop-to-country":
     case "inverted-flag-to-country":
     case "shape-to-country":
     case "capital-to-country":

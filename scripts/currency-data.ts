@@ -47,22 +47,30 @@ export function pickPrimaryCurrency(
 }
 
 export async function fetchUsdExchangeRates(): Promise<Map<string, number>> {
-  const response = await fetch("https://open.er-api.com/v6/latest/USD");
+  const response = await fetch("https://api.frankfurter.dev/v2/rates?base=USD");
   if (!response.ok) throw new Error("Failed to fetch USD exchange rates");
 
-  const payload = (await response.json()) as {
-    result?: string;
-    rates?: Record<string, number>;
-  };
-
-  if (payload.result !== "success" || !payload.rates) {
+  const payload = (await response.json()) as Array<{
+    base?: unknown;
+    quote?: unknown;
+    rate?: unknown;
+  }>;
+  if (!Array.isArray(payload)) {
     throw new Error("Unexpected exchange rate response");
   }
 
   const rates = new Map<string, number>([["USD", 1]]);
 
-  for (const [code, rate] of Object.entries(payload.rates)) {
-    rates.set(code, rate);
+  for (const item of payload) {
+    if (
+      item.base === "USD" &&
+      typeof item.quote === "string" &&
+      typeof item.rate === "number" &&
+      Number.isFinite(item.rate) &&
+      item.rate > 0
+    ) {
+      rates.set(item.quote, item.rate);
+    }
   }
 
   for (const [code, rate] of Object.entries(USD_RATE_OVERRIDES)) {

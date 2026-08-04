@@ -286,7 +286,10 @@ export class GameEngine {
         case "country-to-capital":
           return country.capital.length > 0;
         case "fact-to-country":
-          return country.factQuestion.trim().length > 0;
+          return (
+            country.factQuestion.trim().length > 0 ||
+            country.factQuestion2.trim().length > 0
+          );
         default: {
           const _exhaustive: never = type;
           return _exhaustive;
@@ -381,6 +384,7 @@ export class GameEngine {
     switch (mode) {
       case "flag-to-country":
       case "flag-crop-to-country":
+      case "inverted-flag-crop-to-country":
       case "inverted-flag-to-country":
       case "marathon":
       case "weak-spots": {
@@ -388,34 +392,39 @@ export class GameEngine {
           this.difficulty !== "hard"
             ? buildNameMcOptions(country, this.pool, this.difficulty, undefined, 4, this.random)
             : undefined;
+        const isFlagCrop =
+          mode === "flag-crop-to-country" || mode === "inverted-flag-crop-to-country";
         const resolvedMode =
           mode === "marathon" || mode === "weak-spots"
             ? mode
             : mode === "flag-crop-to-country"
               ? "flag-crop-to-country"
-              : mode === "inverted-flag-to-country"
-                ? "inverted-flag-to-country"
-                : "flag-to-country";
+              : mode === "inverted-flag-crop-to-country"
+                ? "inverted-flag-crop-to-country"
+                : mode === "inverted-flag-to-country"
+                  ? "inverted-flag-to-country"
+                  : "flag-to-country";
         return {
           id,
           mode: resolvedMode,
           countryCode: country.code,
           prompt: placeText(
-            mode === "flag-crop-to-country"
-              ? "Which country does this flag fragment belong to?"
-              : mode === "inverted-flag-to-country"
-                ? "Which country does this inverted flag belong to?"
-                : "Which country does this flag belong to?",
+            mode === "inverted-flag-crop-to-country"
+              ? "Which country does this inverted flag fragment belong to?"
+              : mode === "flag-crop-to-country"
+                ? "Which country does this flag fragment belong to?"
+                : mode === "inverted-flag-to-country"
+                  ? "Which country does this inverted flag belong to?"
+                  : "Which country does this flag belong to?",
             this.scope,
             country,
           ),
           correctAnswer: country.name,
           correctCode: country.code,
-          displayType: mode === "flag-crop-to-country" ? "flag-crop" : "flag",
-          flagCropOrientation:
-            mode === "flag-crop-to-country"
-              ? pickFromPool([...FLAG_CROP_ORIENTATIONS], this.random)
-              : undefined,
+          displayType: isFlagCrop ? "flag-crop" : "flag",
+          flagCropOrientation: isFlagCrop
+            ? pickFromPool([...FLAG_CROP_ORIENTATIONS], this.random)
+            : undefined,
           ...mc,
         };
       }
@@ -453,7 +462,7 @@ export class GameEngine {
           prompt: buildCapitalPrompt(country, this.scope),
           correctAnswer: country.capital,
           correctCode: country.code,
-          displayType: country.hasFlag ? "flag" : "text",
+          displayType: country.hasCapitalImage ? "capital" : "text",
           ...mc,
         };
       }
@@ -554,10 +563,14 @@ export class GameEngine {
           this.difficulty !== "hard"
             ? buildNameMcOptions(country, this.pool, this.difficulty, undefined, 4, this.random)
             : undefined;
+        const triviaPrompts = [country.factQuestion, country.factQuestion2].filter(
+          (prompt) => prompt.trim().length > 0,
+        );
+        const factQuestion = pickFromPool(triviaPrompts, this.random);
         const prompt =
           this.scope === "usa"
-            ? scopeText(country.factQuestion, this.scope)
-            : placeText(country.factQuestion, this.scope, country);
+            ? scopeText(factQuestion, this.scope)
+            : placeText(factQuestion, this.scope, country);
         return {
           id,
           mode,

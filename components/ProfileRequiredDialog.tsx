@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useEffect } from "react";
+import { ProfileAvatar } from "@/components/ProfileAvatar";
 import { Button } from "@/components/ui/Button";
-import { PROFILE_EMOJI } from "@/lib/types";
+import { AVATAR_COLORS } from "@/lib/types";
 
 type ProfileRequiredDialogProps = {
   open: boolean;
@@ -45,11 +46,8 @@ export function ProfileRequiredDialog({ open, onClose }: ProfileRequiredDialogPr
         aria-describedby="profile-required-description"
         className="relative w-full max-w-md overflow-hidden rounded-[1.75rem] border-2 border-teal-200 bg-white p-6 shadow-[0_24px_60px_rgb(15_23_42_/_0.35)] dark:border-teal-800 dark:bg-slate-900 sm:p-8"
       >
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -right-6 -top-6 text-[6rem] opacity-15"
-        >
-          {PROFILE_EMOJI}
+        <div aria-hidden className="pointer-events-none absolute -right-2 -top-2 opacity-20">
+          <ProfileAvatar avatarColor={AVATAR_COLORS[0]} size="xl" />
         </div>
         <p className="text-xs font-black uppercase tracking-[0.16em] text-teal-700 dark:text-teal-300">
           Before you play
@@ -65,7 +63,7 @@ export function ProfileRequiredDialog({ open, onClose }: ProfileRequiredDialogPr
           className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-300"
         >
           Atlas Academy saves your streaks, stats, and daily challenge progress on this device.
-          Pick a name and color to get started — it only takes a few seconds.
+          Pick a name and avatar to get started — it only takes a few seconds.
         </p>
         <div className="mt-6 flex flex-col gap-3 sm:flex-row">
           <Link

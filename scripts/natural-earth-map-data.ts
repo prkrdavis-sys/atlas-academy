@@ -1,5 +1,7 @@
 import { geoArea, geoNaturalEarth1, geoPath } from "d3-geo";
-import type { Feature, FeatureCollection, Geometry, Position } from "geojson";
+import type { Feature, FeatureCollection, Geometry, MultiPolygon, Polygon, Position } from "geojson";
+import polygonClipping from "polygon-clipping";
+import type { MultiPolygon as ClippingMultiPolygon } from "polygon-clipping";
 import countriesData from "../data/countries.json";
 import { SUPPLEMENTAL_MAP_IDS } from "../lib/context-maps";
 import type { Country } from "../lib/types";
@@ -13,6 +15,11 @@ const NATURAL_EARTH_COUNTRIES_LAKES_URL =
 // uncut lakes don't matter.
 const NATURAL_EARTH_MAP_UNITS_URL =
   "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_admin_0_map_units.geojson";
+/** Disputed/breakaway overlays — used to rebuild ISO-recognized borders. */
+const NATURAL_EARTH_10M_DISPUTED_URL =
+  "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_admin_0_disputed_areas.geojson";
+const NATURAL_EARTH_50M_DISPUTED_URL =
+  "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_admin_0_breakaway_disputed_areas.geojson";
 const GEOBOUNDARIES_API_URL = "https://www.geoboundaries.org/api/current/gbOpen";
 
 export type SvgMapLocation = { id: string; path: string };
@@ -27,6 +34,7 @@ type NaturalEarthProperties = {
   GU_A3?: string;
   BRK_A3?: string;
   ADMIN?: string;
+  NAME?: string;
 };
 
 export type NaturalEarthFeature = Feature<Geometry, NaturalEarthProperties>;
@@ -50,6 +58,12 @@ const MAX_PREFERRED_COORDINATES = 3500;
 const GEOBOUNDARIES_ISO3_OVERRIDES: Record<string, string> = {
   XK: "XKX",
 };
+
+/**
+ * Keep ISO-normalized Natural Earth geometry for these places. geoBoundaries
+ * follows other conventions (e.g. Morocco includes Western Sahara).
+ */
+const SKIP_GEOBOUNDARIES_UPGRADE = new Set(["MA", "EH", "SO"]);
 
 const countries = countriesData as Country[];
 
@@ -212,6 +226,10 @@ export async function loadDetailedGeometry(
     return naturalEarthGeometry;
   }
 
+  if (SKIP_GEOBOUNDARIES_UPGRADE.has(country.code.toUpperCase())) {
+    return naturalEarthGeometry;
+  }
+
   const iso3 = resolveGeoBoundariesIso3(country);
   const api = await fetchJson<GeoBoundariesApiResponse>(
     `${GEOBOUNDARIES_API_URL}/${iso3}/ADM0/`,
@@ -276,17 +294,197 @@ async function mapPool<T, R>(
   return results;
 }
 
+type AreaGeometry = Polygon | MultiPolygon;
+
+function isAreaGeometry(geometry: Geometry | null | undefined): geometry is AreaGeometry {
+  return geometry?.type === "Polygon" || geometry?.type === "MultiPolygon";
+}
+
+function toClippingGeom(geometry: AreaGeometry): ClippingMultiPolygon {
+  // polygon-clipping accepts a single Polygon or MultiPolygon; normalize to MultiPolygon.
+  return (
+    geometry.type === "Polygon" ? [geometry.coordinates] : geometry.coordinates
+  ) as ClippingMultiPolygon;
+}
+
+function fromClippingGeom(geom: ClippingMultiPolygon): AreaGeometry | null {
+  if (geom.length === 0) return null;
+  if (geom.length === 1) {
+    return { type: "Polygon", coordinates: geom[0] as Position[][] };
+  }
+  return { type: "MultiPolygon", coordinates: geom as Position[][][] };
+}
+
+/** Drop degenerate boolean-op slivers (a few vertices / near-zero area). */
+function cleanAreaGeometry(geometry: AreaGeometry): AreaGeometry | null {
+  const polygons: Position[][][] =
+    geometry.type === "Polygon" ? [geometry.coordinates] : geometry.coordinates;
+
+  const kept = polygons.filter((polygon) => {
+    const exterior = polygon[0];
+    if (!exterior || exterior.length < 4) return false;
+    const rawArea = geoArea({
+      type: "Feature",
+      properties: {},
+      geometry: { type: "Polygon", coordinates: polygon },
+    });
+    // Clockwise rings report ~4π − area; take the smaller complement.
+    const area = Math.min(rawArea, 4 * Math.PI - rawArea);
+    // ~1e-6 sr ≈ a few km² — keeps microstates, drops clip artifacts.
+    return area > 1e-6;
+  });
+
+  if (kept.length === 0) return null;
+  if (kept.length === 1) return { type: "Polygon", coordinates: kept[0] };
+  return { type: "MultiPolygon", coordinates: kept };
+}
+
+function unionAreaGeometries(geometries: AreaGeometry[]): AreaGeometry | null {
+  if (geometries.length === 0) return null;
+  if (geometries.length === 1) return cleanAreaGeometry(geometries[0]);
+
+  const result = polygonClipping.union(
+    toClippingGeom(geometries[0]),
+    ...geometries.slice(1).map(toClippingGeom),
+  );
+  const merged = fromClippingGeom(result);
+  return merged ? cleanAreaGeometry(merged) : null;
+}
+
+function differenceAreaGeometries(
+  subject: AreaGeometry,
+  clip: AreaGeometry,
+): AreaGeometry | null {
+  const result = polygonClipping.difference(toClippingGeom(subject), toClippingGeom(clip));
+  const clipped = fromClippingGeom(result);
+  return clipped ? cleanAreaGeometry(clipped) : null;
+}
+
+/**
+ * Natural Earth ADM0_A3 codes that should be dissolved into a parent country
+ * for ISO-recognized borders (de facto breakaways are not separate playable places).
+ */
+const ABSORB_INTO_ADM0: Record<string, string> = {
+  /** Somaliland → Somalia (internationally unrecognized breakaway). */
+  SOL: "SOM",
+  /** Northern Cyprus → Cyprus. */
+  CYN: "CYP",
+  /** UN buffer zone on Cyprus → Cyprus (fills the green-line gap). */
+  CNM: "CYP",
+};
+
+/** BRK_A3 for Moroccan-administered Western Sahara land that NE draws inside Morocco. */
+const WESTERN_SAHARA_IN_MOROCCO_BRK = "B19";
+
+/**
+ * Rebuild ISO-recognized country polygons from Natural Earth's de facto split.
+ *
+ * - Somalia absorbs Somaliland (otherwise the Horn is missing / painted as ocean).
+ * - Cyprus absorbs Northern Cyprus (+ UN buffer).
+ * - Western Sahara reclaims Moroccan-administered land (NE BRK B19); Morocco is clipped
+ *   back to the UN Morocco / Western Sahara frontier.
+ *
+ * Map-unit features for overseas territories are preserved; only the absorbed
+ * breakaway ADM0 codes are removed.
+ */
+export function applyIsoRecognizedBorders(
+  features: NaturalEarthFeature[],
+  disputedFeatures: NaturalEarthFeature[],
+): NaturalEarthFeature[] {
+  const primaryByAdm0 = new Map<string, NaturalEarthFeature>();
+
+  for (const feature of features) {
+    if (!isAreaGeometry(feature.geometry)) continue;
+    const code = normalizeCode(feature.properties.ADM0_A3);
+    if (!code || primaryByAdm0.has(code)) continue;
+    // First hit is the countries-layer polygon (map units are appended after).
+    primaryByAdm0.set(code, feature);
+  }
+
+  const geometryOverrides = new Map<string, AreaGeometry>();
+
+  for (const [source, target] of Object.entries(ABSORB_INTO_ADM0)) {
+    const sourceFeature = primaryByAdm0.get(source);
+    const targetFeature = primaryByAdm0.get(target);
+    if (!sourceFeature || !targetFeature) continue;
+    if (!isAreaGeometry(sourceFeature.geometry) || !isAreaGeometry(targetFeature.geometry)) {
+      continue;
+    }
+
+    const existingOverride = geometryOverrides.get(target);
+    const base = existingOverride ?? targetFeature.geometry;
+    const merged = unionAreaGeometries([base, sourceFeature.geometry]);
+    if (!merged) continue;
+    geometryOverrides.set(target, ensureExteriorWinding(merged) as AreaGeometry);
+  }
+
+  const westernSaharaClaim = disputedFeatures.find(
+    (feature) => normalizeCode(feature.properties.BRK_A3) === WESTERN_SAHARA_IN_MOROCCO_BRK,
+  );
+  const morocco = primaryByAdm0.get("MAR");
+  const westernSahara = primaryByAdm0.get("SAH");
+  if (
+    westernSaharaClaim &&
+    isAreaGeometry(westernSaharaClaim.geometry) &&
+    morocco &&
+    isAreaGeometry(morocco.geometry) &&
+    westernSahara &&
+    isAreaGeometry(westernSahara.geometry)
+  ) {
+    const moroccoBase = geometryOverrides.get("MAR") ?? morocco.geometry;
+    const saharaBase = geometryOverrides.get("SAH") ?? westernSahara.geometry;
+    const moroccoClipped = differenceAreaGeometries(moroccoBase, westernSaharaClaim.geometry);
+    const saharaFull = unionAreaGeometries([saharaBase, westernSaharaClaim.geometry]);
+    if (moroccoClipped) {
+      geometryOverrides.set("MAR", ensureExteriorWinding(moroccoClipped) as AreaGeometry);
+    }
+    if (saharaFull) {
+      geometryOverrides.set("SAH", ensureExteriorWinding(saharaFull) as AreaGeometry);
+    }
+  }
+
+  const absorbed = new Set(Object.keys(ABSORB_INTO_ADM0));
+
+  return features.flatMap((feature) => {
+    const code = normalizeCode(feature.properties.ADM0_A3);
+    if (code && absorbed.has(code)) {
+      return [];
+    }
+
+    const override = code ? geometryOverrides.get(code) : undefined;
+    if (!override) {
+      return [feature];
+    }
+
+    // Only rewrite the primary countries-layer polygon; leave map-unit duplicates alone
+    // so overseas territories that share a parent ADM0_A3 stay findable via GU_A3 / ISO.
+    if (feature !== primaryByAdm0.get(code!)) {
+      return [feature];
+    }
+
+    return [{ ...feature, geometry: override }];
+  });
+}
+
+export async function loadDisputedFeatures(
+  scale: "10m" | "50m" = "10m",
+): Promise<NaturalEarthFeature[]> {
+  const url = scale === "50m" ? NATURAL_EARTH_50M_DISPUTED_URL : NATURAL_EARTH_10M_DISPUTED_URL;
+  return fetchFeatureCollection(url);
+}
+
 export async function loadNaturalEarthFeatures(
   { clipLakes = false }: { clipLakes?: boolean } = {},
 ): Promise<NaturalEarthFeature[]> {
-  const [countryFeatures, mapUnitFeatures] = await Promise.all([
+  const [countryFeatures, mapUnitFeatures, disputedFeatures] = await Promise.all([
     fetchFeatureCollection(
       clipLakes ? NATURAL_EARTH_COUNTRIES_LAKES_URL : NATURAL_EARTH_COUNTRIES_URL,
     ),
     fetchFeatureCollection(NATURAL_EARTH_MAP_UNITS_URL),
+    loadDisputedFeatures("10m"),
   ]);
 
-  return [...countryFeatures, ...mapUnitFeatures];
+  return applyIsoRecognizedBorders([...countryFeatures, ...mapUnitFeatures], disputedFeatures);
 }
 
 export async function buildNaturalEarthLocations(

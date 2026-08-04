@@ -32,7 +32,7 @@ import { useShowMapProgress } from "@/lib/use-show-map-progress";
 import { cn } from "@/lib/utils";
 import { supportsWebGL } from "@/lib/webgl";
 
-type MapView = "globe" | GameScope;
+type MapView = "globe" | "usa";
 
 const MAP_VIEW_STORAGE_KEY = "atlas-academy-map-view";
 
@@ -41,7 +41,6 @@ const SLIDE_DURATION_MS = 420;
 
 const MAP_VIEW_INFO: Record<MapView, { icon: string; label: string }> = {
   globe: { icon: "🌐", label: "Globe" },
-  world: { icon: "🌍", label: "World" },
   usa: { icon: "🇺🇸", label: "USA" },
 };
 
@@ -66,7 +65,7 @@ const InteractiveProgressMap = dynamic(
 );
 
 function normalizeMapView(value: string | null): MapView | null {
-  if (value === "globe" || value === "world" || value === "usa") return value;
+  if (value === "globe" || value === "usa") return value;
   return null;
 }
 
@@ -194,10 +193,10 @@ export function GlobeExperience() {
   }, [mode]);
 
   const requestedView = paramView ?? storedView;
-  // Devices without WebGL fall back to the 2D world map, with a small notice.
+  // Devices without WebGL fall back to the 2D USA map, with a small notice.
   const globeUnavailable = webglOk === false;
   const view: MapView | null =
-    requestedView === "globe" && globeUnavailable ? "world" : requestedView;
+    requestedView === "globe" && globeUnavailable ? "usa" : requestedView;
 
   useEffect(() => {
     if (mode === "map" && requestedView === "globe" && globeUnavailable) {
@@ -248,14 +247,14 @@ export function GlobeExperience() {
   );
 
   const availableViews = useMemo<readonly MapView[]>(
-    () => (globeUnavailable ? ["world", "usa"] : ["globe", "world", "usa"]),
+    () => (globeUnavailable ? ["usa"] : ["globe", "usa"]),
     [globeUnavailable],
   );
 
   // The globe canvas stays mounted at all times; it only hides (and parks its
   // frameloop) while a 2D map view covers the page. Hiding is delayed so the
   // planet stays visible under the pane while it slides in.
-  const is2dView = mode === "map" && (view === "world" || view === "usa");
+  const is2dView = mode === "map" && view === "usa";
   const [globeLayerActive, setGlobeLayerActive] = useState(true);
   useEffect(() => {
     if (!is2dView) {
@@ -270,7 +269,7 @@ export function GlobeExperience() {
   // Panels + stats follow the selection: world summary by default, USA
   // regions while a state is selected.
   const panelScope: GameScope = is2dView
-    ? (view as GameScope)
+    ? "usa"
     : activeGlobeSelection && isStateCode(activeGlobeSelection)
       ? "usa"
       : "world";
@@ -326,7 +325,7 @@ export function GlobeExperience() {
                   >
                     <span>
                       The 3D globe needs WebGL, which this device doesn&apos;t support — showing
-                      the 2D world map instead.
+                      the 2D USA map instead.
                     </span>
                     <button
                       type="button"

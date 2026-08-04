@@ -22,6 +22,7 @@ import { MAP_PROGRESS_CATEGORIES } from "@/lib/types";
 export const FLAG_MAP_PROGRESS_MODES = [
   "flag-to-country",
   "flag-crop-to-country",
+  "inverted-flag-crop-to-country",
   "country-to-flag",
   "inverted-flag-to-country",
   "inverted-country-to-flag",

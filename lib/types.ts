@@ -131,6 +131,7 @@ export type SpeedRoundQuestionType = CoreQuestionType | typeof SPEED_ROUND_ALL_T
 export type GameMode =
   | "flag-to-country"
   | "flag-crop-to-country"
+  | "inverted-flag-crop-to-country"
   | "shape-to-country"
   | "capital-to-country"
   | "country-to-capital"
@@ -197,6 +198,7 @@ export const DEFAULT_SELECTED_MODE: GameMode = "mixed";
 const TYPE_IN_HARD_MODES: GameMode[] = [
   "flag-to-country",
   "flag-crop-to-country",
+  "inverted-flag-crop-to-country",
   "inverted-flag-to-country",
   "shape-to-country",
   "capital-to-country",
@@ -264,10 +266,33 @@ export type Country = {
   currency?: CountryCurrency;
   /** Primary IANA timezone (capital's zone when a place spans multiple). */
   timezone?: string;
-  /** IATA code for the busiest commercial airport serving this place. */
+  /** IATA code for the busiest commercial airport serving this place (chip shows code + short name). */
   largestAirport?: string;
   /** Typical overland or sea access when there is no commercial airport. */
   travelAccess?: PlaceTravelAccess;
+  /** Land-surface elevation extremes in meters (lowest → highest point). */
+  elevation?: { min: number; max: number };
+  /**
+   * Dominant ecosystem / climate in kid-friendly wording (e.g. "Desert", "Tropical rainforest").
+   * Varied places use a short "contains" phrase (e.g. "Rainforest & savanna").
+   */
+  ecosystem?: string;
+  /** Official national/state bird common name. */
+  bird?: string;
+  /** Official national/state flower or plant emblem common name. */
+  plant?: string;
+  /**
+   * Median household income in USD-equivalent terms (rounded annual dollars).
+   * Countries: World Bank PIP via OWID (2021 PPP international dollars, annualized).
+   * US states: Census ACS median household income (current USD).
+   */
+  medianHouseholdIncomeUsd?: number;
+  /**
+   * Typical / median monthly rent in USD (rounded).
+   * Countries: Numbeo 1-bedroom apartment outside city centre.
+   * US states: Census ACS median gross rent.
+   */
+  medianRentUsd?: number;
   capital: string;
   continent: Region;
   subregion: string;
@@ -283,6 +308,10 @@ export type Country = {
   fact: string;
   /** Spoiler-free prompt for fact-to-country game mode. */
   factQuestion: string;
+  /** Alternate library fact; either trivia prompt counts toward mastery. */
+  fact2: string;
+  /** Alternate spoiler-free prompt for fact-to-country game mode. */
+  factQuestion2: string;
 };
 
 export type ModeStats = {
@@ -306,10 +335,48 @@ export type ModeStatsByScope = Record<GameMode, ModeStatsByDifficulty>;
 
 export type ScopedByGameScope<T> = Record<GameScope, T>;
 
+export const PROFILE_AVATAR_IDS = [
+  "maori-female",
+  "sami-male",
+  "ainu-female",
+  "korean-male",
+  "hmong-female",
+  "mongolian-male",
+  "kazakh-female",
+  "punjabi-sikh-male",
+  "uzbek-female",
+  "amazigh-male",
+  "tuareg-male",
+  "yoruba-male",
+  "maasai-female",
+  "xhosa-male",
+  "inuit-female",
+  "quechua-female",
+  "mapuche-male",
+  "samoan-female",
+  "javanese-female",
+  "georgian-male",
+] as const;
+
+export type ProfileAvatarId = (typeof PROFILE_AVATAR_IDS)[number];
+
+export type ProfileAvatarInfo = {
+  id: ProfileAvatarId;
+  culture: string;
+  location: string;
+  flagCode: string;
+  src: string;
+};
+
+export type ProfileAvatarSelection =
+  | { type: "color"; color: string }
+  | { type: "portrait"; avatarId: ProfileAvatarId };
+
 export type Profile = {
   id: string;
   name: string;
   avatarColor: string;
+  avatarId?: ProfileAvatarId;
   createdAt: string;
   globalStreaks: ScopedByGameScope<GlobalStreaksByDifficulty>;
   stats: ScopedByGameScope<ModeStatsByScope>;
@@ -405,6 +472,7 @@ export const PRACTICE_MODES: GameMode[] = ["weak-spots"];
 /** Phase-2 quiz modes shown on the game setup page (not core Play or Practice). */
 export const EXTRA_QUIZ_MODES: GameMode[] = [
   "flag-crop-to-country",
+  "inverted-flag-crop-to-country",
   "country-to-flag",
   "inverted-flag-to-country",
   "inverted-country-to-flag",
@@ -437,6 +505,14 @@ export const GAME_MODES: {
     title: "Flag Close-Up",
     description: "Identify the country from one carefully chosen fragment of its flag",
     icon: "🔎",
+    phase: 2,
+  },
+  {
+    id: "inverted-flag-crop-to-country",
+    title: "Inverted Flag Close-Up",
+    description:
+      "Identify the country from a cropped, rotated or flipped, color-inverted fragment of its flag",
+    icon: "🧩",
     phase: 2,
   },
   {

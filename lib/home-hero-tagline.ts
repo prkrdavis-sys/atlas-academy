@@ -76,7 +76,7 @@ function buildUxProTips(scope: GameScope): string[] {
     "Library pages link to neighboring places — follow them to explore borders.",
     "Library pages show live local time for each place's primary timezone.",
 
-    "The Map tab switches between Globe, World, and USA views — your choice is remembered.",
+    "The Map tab switches between Globe and USA views — your choice is remembered.",
     "On the flat map, colors show mastery progress — Normal climbs teal to gold, Hard goes violet to legendary rainbow.",
     "The map has Normal and Hard progress tiers — toggle them to see different mastery levels.",
     "Easy difficulty doesn't count toward map progress — great for learning without pressure.",
@@ -122,7 +122,7 @@ function buildGuestUxProTips(scope: GameScope): string[] {
     `In Library, sort by Commonly missed once you have a profile — it surfaces ${scopeInfo.nounPlural} you miss most.`,
     "The search bar on Library finds any place by name.",
     "Each Library page includes a context map and links to neighboring places.",
-    "The Map tab switches between Globe, World, and USA views.",
+    "The Map tab switches between Globe and USA views.",
     "Pan and zoom the map, then click any place to open its Library page.",
     "Drag the globe on the home screen to spin it — tap to open the map.",
     "Tap Change under Play to pick mode, difficulty, and region filters.",

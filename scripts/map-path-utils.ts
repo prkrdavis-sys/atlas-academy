@@ -21,14 +21,50 @@ export function toPathBounds(path: string): PathBounds {
   return [left, top, right, bottom];
 }
 
-function boundsArea([left, top, right, bottom]: PathBounds): number {
+export function boundsArea([left, top, right, bottom]: PathBounds): number {
   return Math.max(0, right - left) * Math.max(0, bottom - top);
 }
 
-function boundsDistance(a: PathBounds, b: PathBounds): number {
+export function boundsDistance(a: PathBounds, b: PathBounds): number {
   const dx = Math.max(0, a[0] - b[2], b[0] - a[2]);
   const dy = Math.max(0, a[1] - b[3], b[1] - a[3]);
   return Math.hypot(dx, dy);
+}
+
+/**
+ * Keeps the main connected landmass and nearby substantial islands, while
+ * dropping remote overseas scraps (Caribbean Netherlands, French Guiana, etc.)
+ * that would otherwise make silhouettes and focus crops unreadably small.
+ */
+export function toFocusPath(path: string): string {
+  const subpaths = path.match(/M[^M]*/g) ?? [path];
+  if (subpaths.length <= 1) return path;
+
+  const analyzed = subpaths
+    .map((subpath) => {
+      const bounds = toPathBounds(subpath);
+      return { subpath, bounds, area: boundsArea(bounds) };
+    })
+    .sort((a, b) => b.area - a.area);
+
+  const primary = analyzed[0];
+  const primaryArea = primary.area;
+  const primaryDiagonal = Math.hypot(
+    primary.bounds[2] - primary.bounds[0],
+    primary.bounds[3] - primary.bounds[1],
+  );
+  const included = analyzed.filter(
+    (entry) =>
+      entry.area >= primaryArea * 0.005 &&
+      boundsDistance(primary.bounds, entry.bounds) <= primaryDiagonal * 1.75,
+  );
+
+  return included.map((entry) => entry.subpath).join("");
+}
+
+/** Bounding box of the mainland/core landmass (same filter as toFocusPath). */
+export function toFocusBounds(path: string): PathBounds {
+  return toPathBounds(toFocusPath(path));
 }
 
 /** Shift only X coordinates in d3-geo M/L path segments. */

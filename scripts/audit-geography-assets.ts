@@ -11,7 +11,7 @@ import countriesData from "../data/countries.json";
 import { CONTEXT_MAP_TEMPLATES, getContextMapPathIds } from "../lib/context-maps";
 import type { Country } from "../lib/types";
 import type { GlobeTextureData } from "./generate-globe-texture-data";
-import { MIN_SHAPE_VIEWBOX, parseShapeViewBox, shapeViewBoxTooSmall } from "./map-path-utils";
+import { MIN_SHAPE_VIEWBOX, parseShapeViewBox, shapeViewBoxTooSmall, toFocusPath, unwrapAntimeridianPath } from "./map-path-utils";
 import { isCustomShapeCode } from "./supplemental-shapes";
 
 const countries = countriesData as Country[];
@@ -131,7 +131,10 @@ async function main() {
     }
 
     const shapeAspect = combinedAspect(shapePaths);
-    const mapAspect = combinedAspect(mapPaths);
+    // Shapes crop to mainland/nearby islands; compare against the same focus geometry.
+    const mapAspect = combinedAspect(
+      mapPaths.map((path) => toFocusPath(unwrapAntimeridianPath(path))),
+    );
     if (shapeAspect !== null && mapAspect !== null) {
       const mismatch = aspectMismatchRatio(shapeAspect, mapAspect);
       if (mismatch > 1.02) {

@@ -4,6 +4,12 @@
     "code3": "US-AL",
     "name": "Alabama",
     "officialName": "State of Alabama",
+    "timezone": "America/Chicago",
+    "largestAirport": "BHM",
+    "elevation": {
+      "min": 0,
+      "max": 733
+    },
     "capital": "Montgomery",
     "continent": "South",
     "subregion": "East South Central",
@@ -26,14 +32,25 @@
     "isTerritory": false,
     "fact": "The Saturn V rockets that carried Apollo astronauts to the Moon were designed and built in Huntsville.",
     "factQuestion": "Which state designed and built the Saturn V rockets that carried Apollo astronauts to the Moon in Huntsville?",
-    "timezone": "America/Chicago",
-    "largestAirport": "BHM"
+    "bird": "Yellowhammer",
+    "plant": "Camellia",
+    "fact2": "The first 911 emergency call in the United States was made in Haleyville in 1968.",
+    "factQuestion2": "Which state was first to place a 911 emergency call?",
+    "medianHouseholdIncomeUsd": 62212,
+    "medianRentUsd": 1077,
+    "ecosystem": "Temperate forest"
   },
   {
     "code": "US-AK",
     "code3": "US-AK",
     "name": "Alaska",
     "officialName": "State of Alaska",
+    "timezone": "America/Juneau",
+    "largestAirport": "ANC",
+    "elevation": {
+      "min": 0,
+      "max": 6190
+    },
     "capital": "Juneau",
     "continent": "West",
     "subregion": "Pacific",
@@ -51,14 +68,25 @@
     "isTerritory": false,
     "fact": "The northernmost, westernmost, and easternmost U.S. state—the Aleutian Islands cross the 180th meridian into the Eastern Hemisphere.",
     "factQuestion": "Which state is the northernmost, westernmost, and easternmost in the U.S., with Aleutian Islands crossing the 180th meridian?",
-    "timezone": "America/Juneau",
-    "largestAirport": "ANC"
+    "bird": "Willow ptarmigan",
+    "plant": "Forget-me-not",
+    "fact2": "A 13-year-old orphan named Benny Benson designed the blue flag with eight gold stars in 1927.",
+    "factQuestion2": "Which state chose a flag design created by a 13-year-old?",
+    "medianHouseholdIncomeUsd": 88121,
+    "medianRentUsd": 1444,
+    "ecosystem": "Tundra & rainforest"
   },
   {
     "code": "US-AZ",
     "code3": "US-AZ",
     "name": "Arizona",
     "officialName": "State of Arizona",
+    "timezone": "America/Phoenix",
+    "largestAirport": "PHX",
+    "elevation": {
+      "min": 21,
+      "max": 3852
+    },
     "capital": "Phoenix",
     "continent": "West",
     "subregion": "Mountain",
@@ -82,14 +110,25 @@
     "isTerritory": false,
     "fact": "The Grand Canyon exposes nearly two billion years of geology in its colorful layered walls.",
     "factQuestion": "Which state is home to the Grand Canyon, exposing nearly two billion years of geology?",
-    "timezone": "America/Phoenix",
-    "largestAirport": "PHX"
+    "bird": "Cactus wren",
+    "plant": "Saguaro blossom",
+    "fact2": "London Bridge was dismantled in England, shipped across the Atlantic, and rebuilt in Lake Havasu City in 1971.",
+    "factQuestion2": "Which state has a historic London bridge reconstructed beside a desert lake?",
+    "medianHouseholdIncomeUsd": 77315,
+    "medianRentUsd": 1672,
+    "ecosystem": "Desert"
   },
   {
     "code": "US-AR",
     "code3": "US-AR",
     "name": "Arkansas",
     "officialName": "State of Arkansas",
+    "timezone": "America/Chicago",
+    "largestAirport": "LIT",
+    "elevation": {
+      "min": 17,
+      "max": 839
+    },
     "capital": "Little Rock",
     "continent": "South",
     "subregion": "West South Central",
@@ -114,14 +153,25 @@
     "isTerritory": false,
     "fact": "Hot Springs National Park predates Yellowstone and was the first U.S. federal reserve.",
     "factQuestion": "Which state has Hot Springs National Park, the first U.S. federal reserve, predating Yellowstone?",
-    "timezone": "America/Chicago",
-    "largestAirport": "LIT"
+    "bird": "Northern mockingbird",
+    "plant": "Apple blossom",
+    "fact2": "Crater of Diamonds State Park is the only diamond-producing site in the world where visitors can search for gems and keep what they find.",
+    "factQuestion2": "Which state lets visitors keep diamonds they discover in a public park?",
+    "medianHouseholdIncomeUsd": 58700,
+    "medianRentUsd": 982,
+    "ecosystem": "Temperate forest"
   },
   {
     "code": "US-CA",
     "code3": "US-CA",
     "name": "California",
     "officialName": "State of California",
+    "timezone": "America/Los_Angeles",
+    "largestAirport": "LAX",
+    "elevation": {
+      "min": -86,
+      "max": 4421
+    },
     "capital": "Sacramento",
     "continent": "West",
     "subregion": "Pacific",
@@ -143,14 +193,25 @@
     "isTerritory": false,
     "fact": "The economy here is larger than that of most countries—if it were independent, it would rank among the world's biggest.",
     "factQuestion": "Which state's economy is larger than that of most countries and would rank among the world's biggest if independent?",
-    "timezone": "America/Los_Angeles",
-    "largestAirport": "LAX"
+    "bird": "California quail",
+    "plant": "California poppy",
+    "fact2": "The White Mountains shelter bristlecone pines, including some of the oldest known living nonclonal trees on Earth.",
+    "factQuestion2": "Which state is home to ancient bristlecone pines thousands of years old?",
+    "medianHouseholdIncomeUsd": 95521,
+    "medianRentUsd": 2104,
+    "ecosystem": "Coast, desert & mountains"
   },
   {
     "code": "US-CO",
     "code3": "US-CO",
     "name": "Colorado",
     "officialName": "State of Colorado",
+    "timezone": "America/Denver",
+    "largestAirport": "DEN",
+    "elevation": {
+      "min": 1011,
+      "max": 4401
+    },
     "capital": "Denver",
     "continent": "West",
     "subregion": "Mountain",
@@ -176,14 +237,25 @@
     "isTerritory": false,
     "fact": "Denver sits exactly one mile above sea level, giving the capital its 'Mile High City' nickname.",
     "factQuestion": "Which state's capital Denver sits exactly one mile above sea level, earning the 'Mile High City' nickname?",
-    "timezone": "America/Denver",
-    "largestAirport": "DEN"
+    "bird": "Lark bunting",
+    "plant": "Rocky Mountain columbine",
+    "fact2": "At Four Corners, one marker is the only place in the United States where four states meet at a single point.",
+    "factQuestion2": "Which state touches three others at the nation's unique four-state corner?",
+    "medianHouseholdIncomeUsd": 92911,
+    "medianRentUsd": 1822,
+    "ecosystem": "Mountains & plains"
   },
   {
     "code": "US-CT",
     "code3": "US-CT",
     "name": "Connecticut",
     "officialName": "State of Connecticut",
+    "timezone": "America/New_York",
+    "largestAirport": "BDL",
+    "elevation": {
+      "min": 0,
+      "max": 727
+    },
     "capital": "Hartford",
     "continent": "Northeast",
     "subregion": "New England",
@@ -205,14 +277,25 @@
     "isTerritory": false,
     "fact": "The Fundamental Orders, adopted in 1639, are often called the first written constitution in the Americas.",
     "factQuestion": "Which state's Fundamental Orders of 1639 are often called the first written constitution in the Americas?",
-    "timezone": "America/New_York",
-    "largestAirport": "BDL"
+    "bird": "American robin",
+    "plant": "Mountain laurel",
+    "fact2": "The USS Nautilus, the world's first nuclear-powered submarine, was launched in Groton in 1954.",
+    "factQuestion2": "Which state launched the world's first nuclear-powered submarine?",
+    "medianHouseholdIncomeUsd": 91665,
+    "medianRentUsd": 1550,
+    "ecosystem": "Temperate forest"
   },
   {
     "code": "US-DE",
     "code3": "US-DE",
     "name": "Delaware",
     "officialName": "State of Delaware",
+    "timezone": "America/New_York",
+    "largestAirport": "ILG",
+    "elevation": {
+      "min": 0,
+      "max": 137
+    },
     "capital": "Dover",
     "continent": "South",
     "subregion": "South Atlantic",
@@ -234,14 +317,25 @@
     "isTerritory": false,
     "fact": "The first to ratify the U.S. Constitution on December 7, 1787.",
     "factQuestion": "Which state was the first to ratify the U.S. Constitution on December 7, 1787?",
-    "timezone": "America/New_York",
-    "largestAirport": "ILG"
+    "bird": "Blue Hen chicken",
+    "plant": "Peach blossom",
+    "fact2": "More businesses are incorporated here than there are residents, drawn by the state's influential corporate-law system.",
+    "factQuestion2": "Which state has more incorporated businesses than residents?",
+    "medianHouseholdIncomeUsd": 82174,
+    "medianRentUsd": 1530,
+    "ecosystem": "Coastal plains"
   },
   {
     "code": "US-FL",
     "code3": "US-FL",
     "name": "Florida",
     "officialName": "State of Florida",
+    "timezone": "America/New_York",
+    "largestAirport": "MCO",
+    "elevation": {
+      "min": 0,
+      "max": 105
+    },
     "capital": "Tallahassee",
     "continent": "South",
     "subregion": "South Atlantic",
@@ -262,14 +356,25 @@
     "isTerritory": false,
     "fact": "More coastline than any U.S. state except Alaska and the only one bordering both the Atlantic and Gulf.",
     "factQuestion": "Which state has more coastline than any except Alaska and borders both the Atlantic and Gulf?",
-    "timezone": "America/New_York",
-    "largestAirport": "MCO"
+    "bird": "Northern mockingbird",
+    "plant": "Orange blossom",
+    "fact2": "It is the only place in the United States where American alligators and American crocodiles live side by side in the wild.",
+    "factQuestion2": "Which state is home to both wild alligators and wild crocodiles?",
+    "medianHouseholdIncomeUsd": 73311,
+    "medianRentUsd": 1812,
+    "ecosystem": "Subtropical wetlands"
   },
   {
     "code": "US-GA",
     "code3": "US-GA",
     "name": "Georgia",
     "officialName": "State of Georgia",
+    "timezone": "America/New_York",
+    "largestAirport": "ATL",
+    "elevation": {
+      "min": 0,
+      "max": 1458
+    },
     "capital": "Atlanta",
     "continent": "South",
     "subregion": "South Atlantic",
@@ -293,14 +398,25 @@
     "isTerritory": false,
     "fact": "Coca-Cola was invented by a pharmacist in Atlanta in 1886 and first sold at a local drugstore.",
     "factQuestion": "Which state is where Coca-Cola was invented by a pharmacist in Atlanta in 1886?",
-    "timezone": "America/New_York",
-    "largestAirport": "ATL"
+    "bird": "Brown thrasher",
+    "plant": "Cherokee rose",
+    "fact2": "The Vidalia onion, famous for its sweetness, can be grown commercially only in a legally defined region of this state.",
+    "factQuestion2": "Which state is the only place where true Vidalia onions can be grown?",
+    "medianHouseholdIncomeUsd": 74632,
+    "medianRentUsd": 1506,
+    "ecosystem": "Temperate forest"
   },
   {
     "code": "US-HI",
     "code3": "US-HI",
     "name": "Hawaii",
     "officialName": "State of Hawaii",
+    "timezone": "Pacific/Honolulu",
+    "largestAirport": "HNL",
+    "elevation": {
+      "min": 0,
+      "max": 4207
+    },
     "capital": "Honolulu",
     "continent": "West",
     "subregion": "Pacific",
@@ -318,14 +434,25 @@
     "isTerritory": false,
     "fact": "The only U.S. state that grows coffee commercially and sits 2,400 miles from the mainland.",
     "factQuestion": "Which state is the only one that grows coffee commercially and sits 2,400 miles from the mainland?",
-    "timezone": "Pacific/Honolulu",
-    "largestAirport": "HNL"
+    "bird": "Nene",
+    "plant": "Yellow hibiscus",
+    "fact2": "Mauna Kea rises more than 33,000 feet from its base on the Pacific Ocean floor, making it taller than Everest when measured that way.",
+    "factQuestion2": "Which state has a mountain taller than Everest when measured from its underwater base?",
+    "medianHouseholdIncomeUsd": 95322,
+    "medianRentUsd": 1942,
+    "ecosystem": "Tropical islands"
   },
   {
     "code": "US-ID",
     "code3": "US-ID",
     "name": "Idaho",
     "officialName": "State of Idaho",
+    "timezone": "America/Boise",
+    "largestAirport": "BOI",
+    "elevation": {
+      "min": 216,
+      "max": 3861
+    },
     "capital": "Boise",
     "continent": "West",
     "subregion": "Mountain",
@@ -350,14 +477,25 @@
     "isTerritory": false,
     "fact": "Produces about one-third of all potatoes grown in the United States.",
     "factQuestion": "Which state produces about one-third of all potatoes grown in the United States?",
-    "timezone": "America/Boise",
-    "largestAirport": "BOI"
+    "bird": "Mountain bluebird",
+    "plant": "Syringa",
+    "fact2": "Shoshone Falls on the Snake River is 212 feet high—about 45 feet taller than Niagara Falls.",
+    "factQuestion2": "Which state has a waterfall taller than Niagara Falls?",
+    "medianHouseholdIncomeUsd": 74942,
+    "medianRentUsd": 1384,
+    "ecosystem": "Mountains & desert"
   },
   {
     "code": "US-IL",
     "code3": "US-IL",
     "name": "Illinois",
     "officialName": "State of Illinois",
+    "timezone": "America/Chicago",
+    "largestAirport": "ORD",
+    "elevation": {
+      "min": 85,
+      "max": 376
+    },
     "capital": "Springfield",
     "continent": "Midwest",
     "subregion": "East North Central",
@@ -381,14 +519,25 @@
     "isTerritory": false,
     "fact": "Chicago reversed the flow of its river in 1900 so wastewater would drain away from Lake Michigan.",
     "factQuestion": "Which state saw Chicago reverse the flow of its river in 1900 to drain wastewater away from Lake Michigan?",
-    "timezone": "America/Chicago",
-    "largestAirport": "ORD"
+    "bird": "Northern cardinal",
+    "plant": "Violet",
+    "fact2": "Chicago's Home Insurance Building, completed in 1885, is widely considered the world's first skyscraper because of its metal-frame construction.",
+    "factQuestion2": "Which state is associated with the world's first skyscraper?",
+    "medianHouseholdIncomeUsd": 80306,
+    "medianRentUsd": 1322,
+    "ecosystem": "Prairie & forest"
   },
   {
     "code": "US-IN",
     "code3": "US-IN",
     "name": "Indiana",
     "officialName": "State of Indiana",
+    "timezone": "America/Indiana/Indianapolis",
+    "largestAirport": "IND",
+    "elevation": {
+      "min": 98,
+      "max": 383
+    },
     "capital": "Indianapolis",
     "continent": "Midwest",
     "subregion": "East North Central",
@@ -411,14 +560,25 @@
     "isTerritory": false,
     "fact": "The Indianapolis 500, first held in 1911, is one of the oldest and most famous car races in the world.",
     "factQuestion": "Which state hosts the Indianapolis 500, first held in 1911, one of the world's most famous car races?",
-    "timezone": "America/Indiana/Indianapolis",
-    "largestAirport": "IND"
+    "bird": "Northern cardinal",
+    "plant": "Peony",
+    "fact2": "Every December, the post office in the town of Santa Claus receives thousands of letters addressed to the famous gift giver.",
+    "factQuestion2": "Which state has a town whose post office answers letters to Santa?",
+    "medianHouseholdIncomeUsd": 69477,
+    "medianRentUsd": 1104,
+    "ecosystem": "Temperate forest"
   },
   {
     "code": "US-IA",
     "code3": "US-IA",
     "name": "Iowa",
     "officialName": "State of Iowa",
+    "timezone": "America/Chicago",
+    "largestAirport": "DSM",
+    "elevation": {
+      "min": 146,
+      "max": 509
+    },
     "capital": "Des Moines",
     "continent": "Midwest",
     "subregion": "West North Central",
@@ -443,14 +603,25 @@
     "isTerritory": false,
     "fact": "Leads the nation in corn production and raises more pigs than any other state.",
     "factQuestion": "Which state leads the nation in corn production and raises more pigs than any other?",
-    "timezone": "America/Chicago",
-    "largestAirport": "DSM"
+    "bird": "American goldfinch",
+    "plant": "Wild rose",
+    "fact2": "The first commercial loaf of pre-sliced bread was sold in Chillicothe in 1928 using a machine invented by an Iowa native, Otto Rohwedder.",
+    "factQuestion2": "Which state was home to the inventor of the bread-slicing machine?",
+    "medianHouseholdIncomeUsd": 71433,
+    "medianRentUsd": 981,
+    "ecosystem": "Prairie"
   },
   {
     "code": "US-KS",
     "code3": "US-KS",
     "name": "Kansas",
     "officialName": "State of Kansas",
+    "timezone": "America/Chicago",
+    "largestAirport": "ICT",
+    "elevation": {
+      "min": 207,
+      "max": 1232
+    },
     "capital": "Topeka",
     "continent": "Midwest",
     "subregion": "West North Central",
@@ -473,14 +644,25 @@
     "isTerritory": false,
     "fact": "The geographic center of the contiguous United States lies near Lebanon.",
     "factQuestion": "Which state contains the geographic center of the contiguous United States near Lebanon?",
-    "timezone": "America/Chicago",
-    "largestAirport": "ICT"
+    "bird": "Western meadowlark",
+    "plant": "Sunflower",
+    "fact2": "The first Pizza Hut opened in Wichita in 1958, in a building so small its sign could fit only eight letters.",
+    "factQuestion2": "Which state is where the first Pizza Hut opened?",
+    "medianHouseholdIncomeUsd": 70333,
+    "medianRentUsd": 1079,
+    "ecosystem": "Prairie"
   },
   {
     "code": "US-KY",
     "code3": "US-KY",
     "name": "Kentucky",
     "officialName": "State of Kentucky",
+    "timezone": "America/New_York",
+    "largestAirport": "CVG",
+    "elevation": {
+      "min": 78,
+      "max": 1262
+    },
     "capital": "Frankfort",
     "continent": "South",
     "subregion": "East South Central",
@@ -506,14 +688,25 @@
     "isTerritory": false,
     "fact": "Produces about 95% of the world's bourbon and has more barrels of aging whiskey than people.",
     "factQuestion": "Which state produces about 95% of the world's bourbon and has more whiskey barrels than people?",
-    "timezone": "America/New_York",
-    "largestAirport": "CVG"
+    "bird": "Northern cardinal",
+    "plant": "Goldenrod",
+    "fact2": "Mammoth Cave is the world's longest known cave system, with more than 420 miles of surveyed passageways.",
+    "factQuestion2": "Which state contains the world's longest known cave system?",
+    "medianHouseholdIncomeUsd": 61118,
+    "medianRentUsd": 998,
+    "ecosystem": "Temperate forest"
   },
   {
     "code": "US-LA",
     "code3": "US-LA",
     "name": "Louisiana",
     "officialName": "State of Louisiana",
+    "timezone": "America/Chicago",
+    "largestAirport": "MSY",
+    "elevation": {
+      "min": -2,
+      "max": 163
+    },
     "capital": "Baton Rouge",
     "continent": "South",
     "subregion": "West South Central",
@@ -535,14 +728,25 @@
     "isTerritory": false,
     "fact": "New Orleans sits largely below sea level and relies on levees, pumps, and Mississippi River silt to stay dry.",
     "factQuestion": "Which state has New Orleans sitting largely below sea level, relying on levees and pumps to stay dry?",
-    "timezone": "America/Chicago",
-    "largestAirport": "MSY"
+    "bird": "Brown pelican",
+    "plant": "Magnolia",
+    "fact2": "The state capitol in Baton Rouge stands 450 feet tall, making it the tallest state capitol building in the United States.",
+    "factQuestion2": "Which state has the tallest state capitol building in the country?",
+    "medianHouseholdIncomeUsd": 58229,
+    "medianRentUsd": 1064,
+    "ecosystem": "Wetlands & forest"
   },
   {
     "code": "US-ME",
     "code3": "US-ME",
     "name": "Maine",
     "officialName": "State of Maine",
+    "timezone": "America/New_York",
+    "largestAirport": "PWM",
+    "elevation": {
+      "min": 0,
+      "max": 1606
+    },
     "capital": "Augusta",
     "continent": "Northeast",
     "subregion": "New England",
@@ -562,14 +766,25 @@
     "isTerritory": false,
     "fact": "Supplies roughly 90% of the United States' lobster catch.",
     "factQuestion": "Which state supplies roughly 90% of the United States' lobster catch?",
-    "timezone": "America/New_York",
-    "largestAirport": "PWM"
+    "bird": "Chickadee",
+    "plant": "White pine cone and tassel",
+    "fact2": "The Desert of Maine is a 40-acre expanse of glacial sand dunes created when farming practices exposed a buried sand deposit.",
+    "factQuestion2": "Which state has a small desert created from exposed glacial sand?",
+    "medianHouseholdIncomeUsd": 73733,
+    "medianRentUsd": 1210,
+    "ecosystem": "Boreal forest"
   },
   {
     "code": "US-MD",
     "code3": "US-MD",
     "name": "Maryland",
     "officialName": "State of Maryland",
+    "timezone": "America/New_York",
+    "largestAirport": "BWI",
+    "elevation": {
+      "min": 0,
+      "max": 1027
+    },
     "capital": "Annapolis",
     "continent": "South",
     "subregion": "South Atlantic",
@@ -592,14 +807,25 @@
     "isTerritory": false,
     "fact": "The Star-Spangled Banner was written during the 1814 Battle of Baltimore at Fort McHenry.",
     "factQuestion": "Which state is where the Star-Spangled Banner was written during the 1814 Battle of Baltimore?",
-    "timezone": "America/New_York",
-    "largestAirport": "BWI"
+    "bird": "Baltimore oriole",
+    "plant": "Black-eyed Susan",
+    "fact2": "The Baltimore and Ohio Railroad began service in 1830 as the first commercial railroad in the United States.",
+    "factQuestion2": "Which state was home to the nation's first commercial railroad?",
+    "medianHouseholdIncomeUsd": 98678,
+    "medianRentUsd": 1721,
+    "ecosystem": "Coastal plains"
   },
   {
     "code": "US-MA",
     "code3": "US-MA",
     "name": "Massachusetts",
     "officialName": "State of Massachusetts",
+    "timezone": "America/New_York",
+    "largestAirport": "BOS",
+    "elevation": {
+      "min": 0,
+      "max": 1063
+    },
     "capital": "Boston",
     "continent": "Northeast",
     "subregion": "New England",
@@ -623,14 +849,25 @@
     "isTerritory": false,
     "fact": "The first subway system in the Americas opened in Boston in 1897.",
     "factQuestion": "Which state opened the first subway system in the Americas in Boston in 1897?",
-    "timezone": "America/New_York",
-    "largestAirport": "BOS"
+    "bird": "Black-capped chickadee",
+    "plant": "Mayflower",
+    "fact2": "James Naismith invented basketball in Springfield in 1891 using a soccer ball and two peach baskets.",
+    "factQuestion2": "Which state is where basketball was invented with peach baskets?",
+    "medianHouseholdIncomeUsd": 99858,
+    "medianRentUsd": 1848,
+    "ecosystem": "Temperate forest"
   },
   {
     "code": "US-MI",
     "code3": "US-MI",
     "name": "Michigan",
     "officialName": "State of Michigan",
+    "timezone": "America/Detroit",
+    "largestAirport": "DTW",
+    "elevation": {
+      "min": 174,
+      "max": 603
+    },
     "capital": "Lansing",
     "continent": "Midwest",
     "subregion": "East North Central",
@@ -652,14 +889,25 @@
     "isTerritory": false,
     "fact": "Touches four of the five Great Lakes and has more freshwater shoreline than any other state.",
     "factQuestion": "Which state touches four of the five Great Lakes and has more freshwater shoreline than any other?",
-    "timezone": "America/Detroit",
-    "largestAirport": "DTW"
+    "bird": "American robin",
+    "plant": "Apple blossom",
+    "fact2": "The Mackinac Bridge spans nearly five miles between the state's two peninsulas and is one of the world's longest suspension bridges.",
+    "factQuestion2": "Which state is linked by a nearly five-mile suspension bridge between two peninsulas?",
+    "medianHouseholdIncomeUsd": 69183,
+    "medianRentUsd": 1168,
+    "ecosystem": "Temperate forest"
   },
   {
     "code": "US-MN",
     "code3": "US-MN",
     "name": "Minnesota",
     "officialName": "State of Minnesota",
+    "timezone": "America/Chicago",
+    "largestAirport": "MSP",
+    "elevation": {
+      "min": 183,
+      "max": 702
+    },
     "capital": "Saint Paul",
     "continent": "Midwest",
     "subregion": "West North Central",
@@ -682,14 +930,25 @@
     "isTerritory": false,
     "fact": "More than 11,000 lakes and the birthplace of water skiing and the Mall of America.",
     "factQuestion": "Which state has more than 11,000 lakes and is the birthplace of water skiing and the Mall of America?",
-    "timezone": "America/Chicago",
-    "largestAirport": "MSP"
+    "bird": "Common loon",
+    "plant": "Pink and white lady's slipper",
+    "fact2": "A failed super-strong adhesive developed at a Minnesota laboratory became the removable glue used on Post-it Notes.",
+    "factQuestion2": "Which state helped turn a weak adhesive into Post-it Notes?",
+    "medianHouseholdIncomeUsd": 85086,
+    "medianRentUsd": 1291,
+    "ecosystem": "Prairie & forest"
   },
   {
     "code": "US-MS",
     "code3": "US-MS",
     "name": "Mississippi",
     "officialName": "State of Mississippi",
+    "timezone": "America/Chicago",
+    "largestAirport": "JAN",
+    "elevation": {
+      "min": 0,
+      "max": 246
+    },
     "capital": "Jackson",
     "continent": "South",
     "subregion": "East South Central",
@@ -712,14 +971,25 @@
     "isTerritory": false,
     "fact": "A great river forms most of the western border and inspired the state's name.",
     "factQuestion": "Which state has a namesake river forming most of its western border?",
-    "timezone": "America/Chicago",
-    "largestAirport": "JAN"
+    "bird": "Northern mockingbird",
+    "plant": "Magnolia",
+    "fact2": "Elvis Presley was born in a two-room house in Tupelo in 1935 before becoming known worldwide as the King of Rock and Roll.",
+    "factQuestion2": "Which state is the birthplace of Elvis Presley?",
+    "medianHouseholdIncomeUsd": 54203,
+    "medianRentUsd": 990,
+    "ecosystem": "Temperate forest"
   },
   {
     "code": "US-MO",
     "code3": "US-MO",
     "name": "Missouri",
     "officialName": "State of Missouri",
+    "timezone": "America/Chicago",
+    "largestAirport": "STL",
+    "elevation": {
+      "min": 70,
+      "max": 540
+    },
     "capital": "Jefferson City",
     "continent": "Midwest",
     "subregion": "West North Central",
@@ -746,14 +1016,25 @@
     "isTerritory": false,
     "fact": "The Gateway Arch in St. Louis is 630 feet tall—the tallest monument in the United States.",
     "factQuestion": "Which state is home to the 630-foot Gateway Arch in St. Louis, the tallest U.S. monument?",
-    "timezone": "America/Chicago",
-    "largestAirport": "STL"
+    "bird": "Eastern bluebird",
+    "plant": "Hawthorn",
+    "fact2": "Albert Berry made the first successful parachute jump from an airplane over St. Louis in 1912.",
+    "factQuestion2": "Which state hosted the first successful parachute jump from an airplane?",
+    "medianHouseholdIncomeUsd": 68545,
+    "medianRentUsd": 1067,
+    "ecosystem": "Prairie & forest"
   },
   {
     "code": "US-MT",
     "code3": "US-MT",
     "name": "Montana",
     "officialName": "State of Montana",
+    "timezone": "America/Denver",
+    "largestAirport": "BZN",
+    "elevation": {
+      "min": 549,
+      "max": 3904
+    },
     "capital": "Helena",
     "continent": "West",
     "subregion": "Mountain",
@@ -776,14 +1057,25 @@
     "isTerritory": false,
     "fact": "The name comes from the Spanish word montaña, though it is not the most mountainous U.S. state.",
     "factQuestion": "Which state's name comes from the Spanish word montaña, though it is not the most mountainous?",
-    "timezone": "America/Denver",
-    "largestAirport": "BZN"
+    "bird": "Western meadowlark",
+    "plant": "Bitterroot",
+    "fact2": "The Berkeley Pit, an open-pit copper mine near Butte, filled with acidic water after mining stopped and became one of the nation's largest Superfund sites.",
+    "factQuestion2": "Which state has a vast former copper mine known as the Berkeley Pit?",
+    "medianHouseholdIncomeUsd": 70804,
+    "medianRentUsd": 1177,
+    "ecosystem": "Mountains & plains"
   },
   {
     "code": "US-NE",
     "code3": "US-NE",
     "name": "Nebraska",
     "officialName": "State of Nebraska",
+    "timezone": "America/Chicago",
+    "largestAirport": "OMA",
+    "elevation": {
+      "min": 256,
+      "max": 1656
+    },
     "capital": "Lincoln",
     "continent": "Midwest",
     "subregion": "West North Central",
@@ -808,14 +1100,25 @@
     "isTerritory": false,
     "fact": "Carhenge in Alliance is a full-scale replica of England's Stonehenge built from vintage American cars.",
     "factQuestion": "Which state has Carhenge in Alliance, a full-scale Stonehenge replica built from vintage cars?",
-    "timezone": "America/Chicago",
-    "largestAirport": "OMA"
+    "bird": "Western meadowlark",
+    "plant": "Goldenrod",
+    "fact2": "Kool-Aid was invented in Hastings in 1927 by Edwin Perkins, who figured out how to turn a liquid drink concentrate into powder.",
+    "factQuestion2": "Which state is where Kool-Aid was invented?",
+    "medianHouseholdIncomeUsd": 74590,
+    "medianRentUsd": 1102,
+    "ecosystem": "Prairie"
   },
   {
     "code": "US-NV",
     "code3": "US-NV",
     "name": "Nevada",
     "officialName": "State of Nevada",
+    "timezone": "America/Los_Angeles",
+    "largestAirport": "LAS",
+    "elevation": {
+      "min": 146,
+      "max": 4007
+    },
     "capital": "Carson City",
     "continent": "West",
     "subregion": "Mountain",
@@ -839,14 +1142,25 @@
     "isTerritory": false,
     "fact": "About three-quarters of the population lives in the Las Vegas metro area.",
     "factQuestion": "Which state has about three-quarters of its population living in the Las Vegas metro area?",
-    "timezone": "America/Los_Angeles",
-    "largestAirport": "LAS"
+    "bird": "Mountain bluebird",
+    "plant": "Sagebrush",
+    "fact2": "Nevada legalized casino gambling statewide in 1931, helping transform a desert railroad stop into a global entertainment center.",
+    "factQuestion2": "Which state legalized casino gambling statewide in 1931?",
+    "medianHouseholdIncomeUsd": 76364,
+    "medianRentUsd": 1709,
+    "ecosystem": "Desert"
   },
   {
     "code": "US-NH",
     "code3": "US-NH",
     "name": "New Hampshire",
     "officialName": "State of New Hampshire",
+    "timezone": "America/New_York",
+    "largestAirport": "MHT",
+    "elevation": {
+      "min": 0,
+      "max": 1916
+    },
     "capital": "Concord",
     "continent": "Northeast",
     "subregion": "New England",
@@ -868,14 +1182,25 @@
     "isTerritory": false,
     "fact": "License plates carry the bold motto 'Live Free or Die.'",
     "factQuestion": "Which state's license plates carry the bold motto 'Live Free or Die'?",
-    "timezone": "America/New_York",
-    "largestAirport": "MHT"
+    "bird": "Purple finch",
+    "plant": "Purple lilac",
+    "fact2": "Peterborough opened the first free public library in the United States in 1833, funded by local taxes.",
+    "factQuestion2": "Which state opened the nation's first free public library?",
+    "medianHouseholdIncomeUsd": 96838,
+    "medianRentUsd": 1558,
+    "ecosystem": "Temperate forest"
   },
   {
     "code": "US-NJ",
     "code3": "US-NJ",
     "name": "New Jersey",
     "officialName": "State of New Jersey",
+    "timezone": "America/New_York",
+    "largestAirport": "EWR",
+    "elevation": {
+      "min": 0,
+      "max": 549
+    },
     "capital": "Trenton",
     "continent": "Northeast",
     "subregion": "Mid-Atlantic",
@@ -897,14 +1222,25 @@
     "isTerritory": false,
     "fact": "Thomas Edison developed the practical light bulb, phonograph, and motion picture in his Menlo Park laboratory.",
     "factQuestion": "Which state is where Thomas Edison developed the light bulb, phonograph, and motion picture in Menlo Park?",
-    "timezone": "America/New_York",
-    "largestAirport": "EWR"
+    "bird": "American goldfinch",
+    "plant": "Violet",
+    "fact2": "Atlantic City built the first boardwalk in the United States in 1870 to keep beach sand out of hotels and railroad cars.",
+    "factQuestion2": "Which state built the nation's first boardwalk?",
+    "medianHouseholdIncomeUsd": 99781,
+    "medianRentUsd": 1800,
+    "ecosystem": "Coastal plains"
   },
   {
     "code": "US-NM",
     "code3": "US-NM",
     "name": "New Mexico",
     "officialName": "State of New Mexico",
+    "timezone": "America/Denver",
+    "largestAirport": "ABQ",
+    "elevation": {
+      "min": 866,
+      "max": 4013
+    },
     "capital": "Santa Fe",
     "continent": "West",
     "subregion": "Mountain",
@@ -928,14 +1264,25 @@
     "isTerritory": false,
     "fact": "Roswell became synonymous with UFO lore after a 1947 incident that still fuels conspiracy theories.",
     "factQuestion": "Which state's Roswell became synonymous with UFO lore after a 1947 incident?",
-    "timezone": "America/Denver",
-    "largestAirport": "ABQ"
+    "bird": "Greater roadrunner",
+    "plant": "Yucca flower",
+    "fact2": "Santa Fe, founded in 1610, is the oldest capital city in the United States.",
+    "factQuestion2": "Which state has the oldest capital city in the United States?",
+    "medianHouseholdIncomeUsd": 62268,
+    "medianRentUsd": 1117,
+    "ecosystem": "Desert & mountains"
   },
   {
     "code": "US-NY",
     "code3": "US-NY",
     "name": "New York",
     "officialName": "State of New York",
+    "timezone": "America/New_York",
+    "largestAirport": "JFK",
+    "elevation": {
+      "min": 0,
+      "max": 1629
+    },
     "capital": "Albany",
     "continent": "Northeast",
     "subregion": "Mid-Atlantic",
@@ -959,14 +1306,25 @@
     "isTerritory": false,
     "fact": "More people live in the largest city here than in all but a handful of U.S. states.",
     "factQuestion": "Which state has a largest city with more people than all but a handful of other U.S. states?",
-    "timezone": "America/New_York",
-    "largestAirport": "JFK"
+    "bird": "Eastern bluebird",
+    "plant": "Rose",
+    "fact2": "The Adirondack Park covers more land than Yellowstone, Yosemite, Grand Canyon, Glacier, and Great Smoky Mountains national parks combined.",
+    "factQuestion2": "Which state contains a protected park larger than those five national parks combined?",
+    "medianHouseholdIncomeUsd": 82095,
+    "medianRentUsd": 1634,
+    "ecosystem": "Temperate forest"
   },
   {
     "code": "US-NC",
     "code3": "US-NC",
     "name": "North Carolina",
     "officialName": "State of North Carolina",
+    "timezone": "America/New_York",
+    "largestAirport": "CLT",
+    "elevation": {
+      "min": 0,
+      "max": 2037
+    },
     "capital": "Raleigh",
     "continent": "South",
     "subregion": "South Atlantic",
@@ -989,14 +1347,25 @@
     "isTerritory": false,
     "fact": "The Wright brothers achieved the first powered airplane flight at Kitty Hawk in 1903.",
     "factQuestion": "Which state is where the Wright brothers achieved the first powered airplane flight at Kitty Hawk in 1903?",
-    "timezone": "America/New_York",
-    "largestAirport": "CLT"
+    "bird": "Northern cardinal",
+    "plant": "Flowering dogwood",
+    "fact2": "The Biltmore Estate in Asheville has 250 rooms and remains the largest privately owned house in the United States.",
+    "factQuestion2": "Which state is home to the largest privately owned house in the country?",
+    "medianHouseholdIncomeUsd": 70804,
+    "medianRentUsd": 1338,
+    "ecosystem": "Coast to mountains"
   },
   {
     "code": "US-ND",
     "code3": "US-ND",
     "name": "North Dakota",
     "officialName": "State of North Dakota",
+    "timezone": "America/Chicago",
+    "largestAirport": "FAR",
+    "elevation": {
+      "min": 229,
+      "max": 1069
+    },
     "capital": "Bismarck",
     "continent": "Midwest",
     "subregion": "West North Central",
@@ -1018,14 +1387,25 @@
     "isTerritory": false,
     "fact": "Theodore Roosevelt National Park preserves the badlands where the future president ranched and found inspiration.",
     "factQuestion": "Which state has Theodore Roosevelt National Park, preserving badlands where the future president ranched?",
-    "timezone": "America/Chicago",
-    "largestAirport": "FAR"
+    "bird": "Western meadowlark",
+    "plant": "Wild prairie rose",
+    "fact2": "The International Peace Garden straddles the Canadian border and has celebrated friendship between the two countries since 1932.",
+    "factQuestion2": "Which state shares an international garden dedicated to friendship with Canada?",
+    "medianHouseholdIncomeUsd": 76525,
+    "medianRentUsd": 980,
+    "ecosystem": "Prairie"
   },
   {
     "code": "US-OH",
     "code3": "US-OH",
     "name": "Ohio",
     "officialName": "State of Ohio",
+    "timezone": "America/New_York",
+    "largestAirport": "CLE",
+    "elevation": {
+      "min": 139,
+      "max": 472
+    },
     "capital": "Columbus",
     "continent": "Midwest",
     "subregion": "East North Central",
@@ -1049,14 +1429,25 @@
     "isTerritory": false,
     "fact": "Seven U.S. presidents were born here—more than any state except Virginia.",
     "factQuestion": "Which state was the birthplace of seven U.S. presidents—more than any except Virginia?",
-    "timezone": "America/New_York",
-    "largestAirport": "CLE"
+    "bird": "Northern cardinal",
+    "plant": "Scarlet carnation",
+    "fact2": "The first electric traffic signal in the United States was installed at a busy Cleveland intersection in 1914.",
+    "factQuestion2": "Which state installed the nation's first electric traffic signal?",
+    "medianHouseholdIncomeUsd": 67769,
+    "medianRentUsd": 1090,
+    "ecosystem": "Temperate forest"
   },
   {
     "code": "US-OK",
     "code3": "US-OK",
     "name": "Oklahoma",
     "officialName": "State of Oklahoma",
+    "timezone": "America/Chicago",
+    "largestAirport": "OKC",
+    "elevation": {
+      "min": 88,
+      "max": 1516
+    },
     "capital": "Oklahoma City",
     "continent": "South",
     "subregion": "West South Central",
@@ -1081,14 +1472,25 @@
     "isTerritory": false,
     "fact": "The capital lies close to the geographic center of the contiguous United States.",
     "factQuestion": "Which state's capital lies close to the geographic center of the contiguous United States?",
-    "timezone": "America/Chicago",
-    "largestAirport": "OKC"
+    "bird": "Scissor-tailed flycatcher",
+    "plant": "Oklahoma rose",
+    "fact2": "The Port of Catoosa, connected to the Gulf of Mexico by inland waterways, is one of the farthest inland seaports in the United States.",
+    "factQuestion2": "Which state has one of the nation's farthest inland seaports?",
+    "medianHouseholdIncomeUsd": 62138,
+    "medianRentUsd": 1044,
+    "ecosystem": "Prairie & forest"
   },
   {
     "code": "US-OR",
     "code3": "US-OR",
     "name": "Oregon",
     "officialName": "State of Oregon",
+    "timezone": "America/Los_Angeles",
+    "largestAirport": "PDX",
+    "elevation": {
+      "min": 0,
+      "max": 3429
+    },
     "capital": "Salem",
     "continent": "West",
     "subregion": "Pacific",
@@ -1111,14 +1513,25 @@
     "isTerritory": false,
     "fact": "Crater Lake is the deepest lake in the United States, formed when a volcano collapsed about 7,700 years ago.",
     "factQuestion": "Which state is home to Crater Lake, the deepest lake in the United States?",
-    "timezone": "America/Los_Angeles",
-    "largestAirport": "PDX"
+    "bird": "Western meadowlark",
+    "plant": "Oregon grape",
+    "fact2": "A honey fungus in the Blue Mountains covers more than 2,000 acres, making it one of the largest known organisms on Earth.",
+    "factQuestion2": "Which state is home to a giant underground fungus spanning thousands of acres?",
+    "medianHouseholdIncomeUsd": 80160,
+    "medianRentUsd": 1597,
+    "ecosystem": "Temperate rainforest"
   },
   {
     "code": "US-PA",
     "code3": "US-PA",
     "name": "Pennsylvania",
     "officialName": "State of Pennsylvania",
+    "timezone": "America/New_York",
+    "largestAirport": "PHL",
+    "elevation": {
+      "min": 0,
+      "max": 979
+    },
     "capital": "Harrisburg",
     "continent": "Northeast",
     "subregion": "Mid-Atlantic",
@@ -1143,14 +1556,25 @@
     "isTerritory": false,
     "fact": "Independence Hall in Philadelphia is where the Declaration of Independence and U.S. Constitution were signed.",
     "factQuestion": "Which state is home to Independence Hall, where the Declaration of Independence and Constitution were signed?",
-    "timezone": "America/New_York",
-    "largestAirport": "PHL"
+    "bird": "Ruffed grouse",
+    "plant": "Mountain laurel",
+    "fact2": "Milton Hershey built an entire town around his chocolate factory, including schools, parks, and affordable housing for workers.",
+    "factQuestion2": "Which state has a town founded around a famous chocolate factory?",
+    "medianHouseholdIncomeUsd": 73824,
+    "medianRentUsd": 1252,
+    "ecosystem": "Temperate forest"
   },
   {
     "code": "US-RI",
     "code3": "US-RI",
     "name": "Rhode Island",
     "officialName": "State of Rhode Island",
+    "timezone": "America/New_York",
+    "largestAirport": "PVD",
+    "elevation": {
+      "min": 0,
+      "max": 247
+    },
     "capital": "Providence",
     "continent": "Northeast",
     "subregion": "New England",
@@ -1171,14 +1595,25 @@
     "isTerritory": false,
     "fact": "The smallest U.S. state but with over 400 miles of coastline.",
     "factQuestion": "Which state is the smallest in the U.S. but has over 400 miles of coastline?",
-    "timezone": "America/New_York",
-    "largestAirport": "PVD"
+    "bird": "Rhode Island Red",
+    "plant": "Violet",
+    "fact2": "Newport's Touro Synagogue, dedicated in 1763, is the oldest surviving synagogue building in the United States.",
+    "factQuestion2": "Which state has the oldest surviving synagogue building in the country?",
+    "medianHouseholdIncomeUsd": 84972,
+    "medianRentUsd": 1418,
+    "ecosystem": "Coastal plains"
   },
   {
     "code": "US-SC",
     "code3": "US-SC",
     "name": "South Carolina",
     "officialName": "State of South Carolina",
+    "timezone": "America/New_York",
+    "largestAirport": "CHS",
+    "elevation": {
+      "min": 0,
+      "max": 1083
+    },
     "capital": "Columbia",
     "continent": "South",
     "subregion": "South Atlantic",
@@ -1199,14 +1634,25 @@
     "isTerritory": false,
     "fact": "The first shots of the Civil War were fired at Fort Sumter in Charleston Harbor in 1861.",
     "factQuestion": "Which state is where the first shots of the Civil War were fired at Fort Sumter in 1861?",
-    "timezone": "America/New_York",
-    "largestAirport": "CHS"
+    "bird": "Carolina wren",
+    "plant": "Yellow jessamine",
+    "fact2": "The Angel Oak near Charleston is estimated to be hundreds of years old and spreads its limbs across more than 17,000 square feet.",
+    "factQuestion2": "Which state is home to the sprawling Angel Oak tree?",
+    "medianHouseholdIncomeUsd": 67804,
+    "medianRentUsd": 1272,
+    "ecosystem": "Temperate forest"
   },
   {
     "code": "US-SD",
     "code3": "US-SD",
     "name": "South Dakota",
     "officialName": "State of South Dakota",
+    "timezone": "America/Chicago",
+    "largestAirport": "FSD",
+    "elevation": {
+      "min": 294,
+      "max": 2208
+    },
     "capital": "Pierre",
     "continent": "Midwest",
     "subregion": "West North Central",
@@ -1231,14 +1677,25 @@
     "isTerritory": false,
     "fact": "Mount Rushmore's 60-foot presidential faces were carved into the Black Hills over 14 years.",
     "factQuestion": "Which state is home to Mount Rushmore, with 60-foot presidential faces carved over 14 years?",
-    "timezone": "America/Chicago",
-    "largestAirport": "FSD"
+    "bird": "Ring-necked pheasant",
+    "plant": "Pasque flower",
+    "fact2": "Jewel Cave has more than 220 mapped miles of passageways, making it one of the world's longest cave systems.",
+    "factQuestion2": "Which state contains Jewel Cave, one of the world's longest cave systems?",
+    "medianHouseholdIncomeUsd": 71810,
+    "medianRentUsd": 999,
+    "ecosystem": "Prairie"
   },
   {
     "code": "US-TN",
     "code3": "US-TN",
     "name": "Tennessee",
     "officialName": "State of Tennessee",
+    "timezone": "America/Chicago",
+    "largestAirport": "BNA",
+    "elevation": {
+      "min": 54,
+      "max": 2025
+    },
     "capital": "Nashville",
     "continent": "South",
     "subregion": "East South Central",
@@ -1265,14 +1722,25 @@
     "isTerritory": false,
     "fact": "Memphis is a cradle of blues and rock and roll—Elvis Presley's Graceland draws visitors from around the world.",
     "factQuestion": "Which state has Memphis as a cradle of blues and rock and roll, home to Elvis Presley's Graceland?",
-    "timezone": "America/Chicago",
-    "largestAirport": "BNA"
+    "bird": "Northern mockingbird",
+    "plant": "Iris",
+    "fact2": "Great Smoky Mountains National Park is the most visited national park in the United States.",
+    "factQuestion2": "Which state shares the nation's most visited national park?",
+    "medianHouseholdIncomeUsd": 67631,
+    "medianRentUsd": 1284,
+    "ecosystem": "Temperate forest"
   },
   {
     "code": "US-TX",
     "code3": "US-TX",
     "name": "Texas",
     "officialName": "State of Texas",
+    "timezone": "America/Chicago",
+    "largestAirport": "DFW",
+    "elevation": {
+      "min": 0,
+      "max": 2667
+    },
     "capital": "Austin",
     "continent": "South",
     "subregion": "West South Central",
@@ -1295,14 +1763,25 @@
     "isTerritory": false,
     "fact": "Was an independent republic for nearly ten years before joining the United States in 1845.",
     "factQuestion": "Which state was an independent republic for nearly ten years before joining the United States in 1845?",
-    "timezone": "America/Chicago",
-    "largestAirport": "DFW"
+    "bird": "Northern mockingbird",
+    "plant": "Bluebonnet",
+    "fact2": "The King Ranch covers about 825,000 acres—larger than the entire state of Rhode Island.",
+    "factQuestion2": "Which state has a ranch larger than Rhode Island?",
+    "medianHouseholdIncomeUsd": 75780,
+    "medianRentUsd": 1475,
+    "ecosystem": "Plains, desert & coast"
   },
   {
     "code": "US-UT",
     "code3": "US-UT",
     "name": "Utah",
     "officialName": "State of Utah",
+    "timezone": "America/Denver",
+    "largestAirport": "SLC",
+    "elevation": {
+      "min": 664,
+      "max": 4125
+    },
     "capital": "Salt Lake City",
     "continent": "West",
     "subregion": "Mountain",
@@ -1327,14 +1806,25 @@
     "isTerritory": false,
     "fact": "The Great Salt Lake is saltier than the ocean, so swimmers float effortlessly on its surface.",
     "factQuestion": "Which state is home to the Great Salt Lake, saltier than the ocean so swimmers float effortlessly?",
-    "timezone": "America/Denver",
-    "largestAirport": "SLC"
+    "bird": "California gull",
+    "plant": "Sego lily",
+    "fact2": "Artist Robert Smithson created Spiral Jetty in 1970, a 1,500-foot earthwork of basalt rock that curls into a salty lake.",
+    "factQuestion2": "Which state has the famous Spiral Jetty earthwork in a salty lake?",
+    "medianHouseholdIncomeUsd": 93421,
+    "medianRentUsd": 1593,
+    "ecosystem": "Desert & mountains"
   },
   {
     "code": "US-VT",
     "code3": "US-VT",
     "name": "Vermont",
     "officialName": "State of Vermont",
+    "timezone": "America/New_York",
+    "largestAirport": "BTV",
+    "elevation": {
+      "min": 29,
+      "max": 1340
+    },
     "capital": "Montpelier",
     "continent": "Northeast",
     "subregion": "New England",
@@ -1356,14 +1846,25 @@
     "isTerritory": false,
     "fact": "Ben & Jerry's ice cream began in a renovated gas station in Burlington in 1978.",
     "factQuestion": "Which state is where Ben & Jerry's ice cream began in a renovated gas station in Burlington in 1978?",
-    "timezone": "America/New_York",
-    "largestAirport": "BTV"
+    "bird": "Hermit thrush",
+    "plant": "Red clover",
+    "fact2": "The first ski tow in the United States began operating in Woodstock in 1934, pulling skiers uphill with a rope powered by a car engine.",
+    "factQuestion2": "Which state operated the nation's first ski tow?",
+    "medianHouseholdIncomeUsd": 81211,
+    "medianRentUsd": 1319,
+    "ecosystem": "Temperate forest"
   },
   {
     "code": "US-VA",
     "code3": "US-VA",
     "name": "Virginia",
     "officialName": "State of Virginia",
+    "timezone": "America/New_York",
+    "largestAirport": "IAD",
+    "elevation": {
+      "min": 0,
+      "max": 1741
+    },
     "capital": "Richmond",
     "continent": "South",
     "subregion": "South Atlantic",
@@ -1387,14 +1888,25 @@
     "isTerritory": false,
     "fact": "Eight U.S. presidents were born here—more than any other state.",
     "factQuestion": "Which state was the birthplace of eight U.S. presidents—more than any other?",
-    "timezone": "America/New_York",
-    "largestAirport": "IAD"
+    "bird": "Northern cardinal",
+    "plant": "American dogwood",
+    "fact2": "Jamestown, founded in 1607, was the first permanent English settlement in North America.",
+    "factQuestion2": "Which state contains the first permanent English settlement in North America?",
+    "medianHouseholdIncomeUsd": 89931,
+    "medianRentUsd": 1646,
+    "ecosystem": "Coast to mountains"
   },
   {
     "code": "US-WA",
     "code3": "US-WA",
     "name": "Washington",
     "officialName": "State of Washington",
+    "timezone": "America/Los_Angeles",
+    "largestAirport": "SEA",
+    "elevation": {
+      "min": 0,
+      "max": 4389
+    },
     "capital": "Olympia",
     "continent": "West",
     "subregion": "Pacific",
@@ -1415,14 +1927,25 @@
     "isTerritory": false,
     "fact": "Mount Rainier is an active volcano towering over Seattle and visible across much of the Puget Sound.",
     "factQuestion": "Which state has Mount Rainier, an active volcano towering over Seattle and visible across the Puget Sound?",
-    "timezone": "America/Los_Angeles",
-    "largestAirport": "SEA"
+    "bird": "Willow goldfinch",
+    "plant": "Coast rhododendron",
+    "fact2": "The first Starbucks store opened near Seattle's Pike Place Market in 1971.",
+    "factQuestion2": "Which state is where the first Starbucks store opened?",
+    "medianHouseholdIncomeUsd": 94605,
+    "medianRentUsd": 1824,
+    "ecosystem": "Temperate rainforest"
   },
   {
     "code": "US-WV",
     "code3": "US-WV",
     "name": "West Virginia",
     "officialName": "State of West Virginia",
+    "timezone": "America/New_York",
+    "largestAirport": "CRW",
+    "elevation": {
+      "min": 73,
+      "max": 1482
+    },
     "capital": "Charleston",
     "continent": "South",
     "subregion": "South Atlantic",
@@ -1446,14 +1969,25 @@
     "isTerritory": false,
     "fact": "Split from Virginia during the Civil War and joined the Union as its own state in 1863.",
     "factQuestion": "Which state split from Virginia during the Civil War and joined the Union in 1863?",
-    "timezone": "America/New_York",
-    "largestAirport": "CRW"
+    "bird": "Northern cardinal",
+    "plant": "Rhododendron",
+    "fact2": "The Green Bank Telescope is the world's largest fully steerable radio telescope and sits in a protected area with very limited radio signals.",
+    "factQuestion2": "Which state has the world's largest fully steerable radio telescope?",
+    "medianHouseholdIncomeUsd": 55948,
+    "medianRentUsd": 883,
+    "ecosystem": "Temperate forest"
   },
   {
     "code": "US-WI",
     "code3": "US-WI",
     "name": "Wisconsin",
     "officialName": "State of Wisconsin",
+    "timezone": "America/Chicago",
+    "largestAirport": "MKE",
+    "elevation": {
+      "min": 176,
+      "max": 595
+    },
     "capital": "Madison",
     "continent": "Midwest",
     "subregion": "East North Central",
@@ -1476,14 +2010,25 @@
     "isTerritory": false,
     "fact": "Produces more cheese than any other U.S. state and hosts the Green Bay Packers' Lambeau Field.",
     "factQuestion": "Which state produces more cheese than any other and hosts the Green Bay Packers' Lambeau Field?",
-    "timezone": "America/Chicago",
-    "largestAirport": "MKE"
+    "bird": "American robin",
+    "plant": "Wood violet",
+    "fact2": "The first kindergarten in the United States opened in Watertown in 1856, founded by German educator Margarethe Schurz.",
+    "factQuestion2": "Which state opened the nation's first kindergarten?",
+    "medianHouseholdIncomeUsd": 74631,
+    "medianRentUsd": 1142,
+    "ecosystem": "Temperate forest"
   },
   {
     "code": "US-WY",
     "code3": "US-WY",
     "name": "Wyoming",
     "officialName": "State of Wyoming",
+    "timezone": "America/Denver",
+    "largestAirport": "JAC",
+    "elevation": {
+      "min": 945,
+      "max": 4209
+    },
     "capital": "Cheyenne",
     "continent": "West",
     "subregion": "Mountain",
@@ -1508,7 +2053,12 @@
     "isTerritory": false,
     "fact": "Yellowstone National Park—mostly within these borders—was the world's first national park, established in 1872.",
     "factQuestion": "Which state contains most of Yellowstone, the world's first national park, established in 1872?",
-    "timezone": "America/Denver",
-    "largestAirport": "JAC"
+    "bird": "Western meadowlark",
+    "plant": "Indian paintbrush",
+    "fact2": "Nellie Tayloe Ross became the first woman to serve as a U.S. state governor when she took office in 1925.",
+    "factQuestion2": "Which state elected the first woman to serve as a governor?",
+    "medianHouseholdIncomeUsd": 72415,
+    "medianRentUsd": 998,
+    "ecosystem": "Mountains & plains"
   }
 ]

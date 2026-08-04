@@ -4,26 +4,24 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { ExpandableFlagImage } from "@/components/ExpandableFlagImage";
 import { FlagImage } from "@/components/FlagDisplay";
+import { LibraryDetailGrid } from "@/components/LibraryDetailGrid";
 import { LibraryDetailNav } from "@/components/LibraryDetailNav";
 import { LibraryDetailBackListener } from "@/components/LibraryDetailBackListener";
 import { LibraryScrollRestore } from "@/components/LibraryScrollRestore";
 import { LibraryPlaceMapSection } from "@/components/LibraryPlaceMapSection";
 import { LibraryPlaceVisual } from "@/components/LibraryPlaceVisual";
-import { LocalTimeChip } from "@/components/LocalTimeChip";
 import {
   countries,
   formatNoNeighborsMessage,
-  formatPopulation,
   getCountryByCode,
   usStates,
 } from "@/lib/countries";
-import { formatCurrencyChipLabel, formatCurrencyChipValue } from "@/lib/currency";
 import {
   buildLibraryDetailHref,
   normalizeLibraryFilter,
   normalizeLibrarySort,
 } from "@/lib/library";
-import { formatDisplayCode, isStateCode } from "@/lib/scope";
+import { isStateCode } from "@/lib/scope";
 import type { GameScope } from "@/lib/types";
 
 type CountryPageProps = {
@@ -65,50 +63,6 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
     .map((borderCode) => getCountryByCode(borderCode))
     .filter((neighbor) => neighbor !== undefined)
     .toSorted((a, b) => a.name.localeCompare(b.name));
-
-  const airportDetails = country.largestAirport
-    ? [{ label: "Largest airport", value: country.largestAirport }]
-    : country.travelAccess
-      ? [
-          { label: "Typical travel", value: country.travelAccess.mode },
-          { label: "Travel from", value: country.travelAccess.from },
-        ]
-      : [];
-
-  const details = isState
-    ? [
-        { label: "Capital", value: country.capital || "No official capital" },
-        { label: "Region", value: country.continent },
-        { label: "Division", value: country.subregion || "Not listed" },
-        { label: "Population", value: country.population > 0 ? formatPopulation(country.population) : "Not available" },
-        {
-          label: "Area",
-          value: country.area > 0 ? `${formatPopulation(country.area)} km²` : "Not available",
-        },
-        { label: "State code", value: formatDisplayCode(country.code) },
-        ...airportDetails,
-      ]
-    : [
-        { label: "Capital", value: country.capital || "No official capital" },
-        ...(country.nativeName
-          ? [{ label: "Native name", value: country.nativeName }]
-          : []),
-        { label: "Language", value: country.languages || "Not listed" },
-        ...(country.currency
-          ? [{
-              label: formatCurrencyChipLabel(country.currency),
-              value: formatCurrencyChipValue(country.currency),
-            }]
-          : []),
-        { label: "Region", value: country.subregion || "Not listed" },
-        { label: "Population", value: country.population > 0 ? formatPopulation(country.population) : "Not available" },
-        {
-          label: "Area",
-          value: country.area > 0 ? `${formatPopulation(country.area)} km²` : "Not available",
-        },
-        { label: "Country codes", value: `${country.code} / ${country.code3}` },
-        ...airportDetails,
-      ];
 
   return (
     <article className="space-y-5 sm:space-y-7">
@@ -173,9 +127,16 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
                 </>
               ) : null}
             </div>
-            <p className="mt-5 rounded-2xl bg-teal-50 p-4 text-sm font-semibold leading-relaxed text-teal-900 dark:bg-teal-950/60 dark:text-teal-200">
-              {country.fact}
-            </p>
+            <div className="mt-5 space-y-3">
+              <p className="rounded-2xl bg-teal-50 p-4 text-sm font-semibold leading-relaxed text-teal-900 dark:bg-teal-950/60 dark:text-teal-200">
+                {country.fact}
+              </p>
+              {country.fact2.trim().length > 0 ? (
+                <p className="rounded-2xl bg-teal-50 p-4 text-sm font-semibold leading-relaxed text-teal-900 dark:bg-teal-950/60 dark:text-teal-200">
+                  {country.fact2}
+                </p>
+              ) : null}
+            </div>
           </div>
 
           <div className="flex min-h-56 items-center justify-center rounded-2xl bg-slate-50 p-6 dark:bg-slate-800/70 sm:min-h-72">
@@ -189,30 +150,7 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
         </div>
       </header>
 
-      <section aria-labelledby="country-details-heading">
-        <h2 id="country-details-heading" className="mb-3 font-display text-xl font-extrabold text-slate-800 dark:text-slate-100">
-          {isState ? "State details" : "Country details"}
-        </h2>
-        <dl className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
-          {details.flatMap((detail, index) => {
-            const chip = (
-              <div
-                key={detail.label}
-                className="rounded-2xl border-2 border-slate-200 bg-white/80 p-4 dark:border-slate-700 dark:bg-slate-900/80"
-              >
-                <dt className="text-xs font-bold text-slate-500 dark:text-slate-400">{detail.label}</dt>
-                <dd className="mt-1 font-display text-base font-extrabold leading-snug text-slate-900 dark:text-slate-100 sm:text-lg">
-                  {detail.value}
-                </dd>
-              </div>
-            );
-            if (index === 0 && country.timezone) {
-              return [chip, <LocalTimeChip key="local-time" timeZone={country.timezone} />];
-            }
-            return [chip];
-          })}
-        </dl>
-      </section>
+      <LibraryDetailGrid country={country} isState={isState} />
 
       <LibraryPlaceMapSection country={country} />
 

@@ -1,4 +1,4 @@
-/** Updates fact + factQuestion in data/countries.json and data/states.json from place-facts.ts */
+/** Updates fact fields in data/countries.json and data/states.json from place-facts.ts */
 
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -6,9 +6,13 @@ import {
   COUNTRY_FACTS,
   STATE_FACTS,
   getCountryFact,
+  getCountryFact2,
   getCountryFactQuestion,
+  getCountryFactQuestion2,
   getStateFact,
+  getStateFact2,
   getStateFactQuestion,
+  getStateFactQuestion2,
 } from "./place-facts";
 
 type PlaceRow = {
@@ -17,6 +21,8 @@ type PlaceRow = {
   name: string;
   fact: string;
   factQuestion: string;
+  fact2: string;
+  factQuestion2: string;
 };
 
 const ROOT = process.cwd();
@@ -29,11 +35,15 @@ function updateCountries() {
     const code3 = country.code3 ?? country.code;
     const fact = getCountryFact(code3);
     const question = getCountryFactQuestion(code3);
-    if (!fact || !question) {
+    const fact2 = getCountryFact2(code3);
+    const question2 = getCountryFactQuestion2(code3);
+    if (!fact || !question || !fact2 || !question2) {
       throw new Error(`Missing fact data for ${country.name} (${code3})`);
     }
     country.fact = fact;
     country.factQuestion = question;
+    country.fact2 = fact2;
+    country.factQuestion2 = question2;
   }
 
   const codes = new Set(countries.map((c) => (c.code3 ?? c.code).toUpperCase()));
@@ -54,11 +64,15 @@ function updateStates() {
   for (const state of states) {
     const fact = getStateFact(state.code);
     const question = getStateFactQuestion(state.code);
-    if (!fact || !question) {
+    const fact2 = getStateFact2(state.code);
+    const question2 = getStateFactQuestion2(state.code);
+    if (!fact || !question || !fact2 || !question2) {
       throw new Error(`Missing fact data for ${state.name} (${state.code})`);
     }
     state.fact = fact;
     state.factQuestion = question;
+    state.fact2 = fact2;
+    state.factQuestion2 = question2;
   }
 
   const codes = new Set(states.map((s) => s.code.toUpperCase()));

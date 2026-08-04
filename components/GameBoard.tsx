@@ -616,7 +616,7 @@ export function GameBoard({
                     className="size-7 shrink-0 max-sm:size-6"
                     draggable={false}
                   />
-                  Back home
+                  Take me home
                 </Button>
               )}
             </div>
@@ -652,7 +652,8 @@ export function GameBoard({
   const isAtlasleRound = question.displayType === "atlasle";
   const isInvertedFlagRound =
     question.mode === "inverted-flag-to-country" ||
-    question.mode === "inverted-country-to-flag";
+    question.mode === "inverted-country-to-flag" ||
+    question.mode === "inverted-flag-crop-to-country";
   const isMultipleChoiceRound =
     !isAtlasleRound &&
     (question.displayType === "flags-grid" ||
@@ -912,13 +913,18 @@ export function GameBoard({
                 <FlagCropDisplay
                   code={question.countryCode}
                   orientation={question.flagCropOrientation}
+                  inverted={isInvertedFlagRound}
                 />
               )}
               {question.displayType === "shape" && (
                 <ShapeDisplay code={question.countryCode} compact />
               )}
               {question.displayType === "capital" && (
-                <CapitalDisplay code={question.countryCode} compact showLabel />
+                <CapitalDisplay
+                  code={question.countryCode}
+                  compact
+                  showLabel={question.mode !== "country-to-capital"}
+                />
               )}
               {question.mode === "neighbor-quiz" && (
                 <NeighborCountryDisplay code={question.countryCode} />

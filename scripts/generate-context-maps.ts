@@ -15,47 +15,15 @@ import {
   loadNaturalEarthFeatures,
   type SvgMapLocation,
 } from "./natural-earth-map-data";
-import { MAP_WIDTH, toPathBounds, unwrapAntimeridianPath } from "./map-path-utils";
+import {
+  MAP_WIDTH,
+  toFocusBounds,
+  toPathBounds,
+  unwrapAntimeridianPath,
+} from "./map-path-utils";
 
 const OUT_DIR = join(process.cwd(), "public", "maps");
 const countries = countriesData as Country[];
-
-function boundsArea([left, top, right, bottom]: PathBounds): number {
-  return Math.max(0, right - left) * Math.max(0, bottom - top);
-}
-
-function boundsDistance(a: PathBounds, b: PathBounds): number {
-  const dx = Math.max(0, a[0] - b[2], b[0] - a[2]);
-  const dy = Math.max(0, a[1] - b[3], b[1] - a[3]);
-  return Math.hypot(dx, dy);
-}
-
-/**
- * Keeps the main connected landmass and nearby substantial islands in frame,
- * while excluding remote territories that make the featured place unreadably small.
- */
-function toFocusBounds(path: string): PathBounds {
-  const subpathBounds = (path.match(/M[^M]*/g) ?? [path])
-    .map(toPathBounds)
-    .sort((a, b) => boundsArea(b) - boundsArea(a));
-  const primary = subpathBounds[0];
-  const primaryArea = boundsArea(primary);
-  const primaryDiagonal = Math.hypot(primary[2] - primary[0], primary[3] - primary[1]);
-  // Keep nearby islands / the Far East tip after antimeridian unwrap; drop only
-  // remote overseas territories (Caribbean Netherlands, French Guiana, etc.).
-  const included = subpathBounds.filter(
-    (bounds) =>
-      boundsArea(bounds) >= primaryArea * 0.005 &&
-      boundsDistance(primary, bounds) <= primaryDiagonal * 1.75,
-  );
-
-  return [
-    Math.min(...included.map((bounds) => bounds[0])),
-    Math.min(...included.map((bounds) => bounds[1])),
-    Math.max(...included.map((bounds) => bounds[2])),
-    Math.max(...included.map((bounds) => bounds[3])),
-  ];
-}
 
 function buildTemplate(
   locations: SvgMapLocation[],

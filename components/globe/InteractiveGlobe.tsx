@@ -13,7 +13,7 @@ import { OrbitControls, Stars } from "@react-three/drei";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
 import {
-  GLOBE_IDLE_RESET_MS,
+  GLOBE_IDLE_AUTO_SPIN_MS,
   GLOBE_ROTATION_SPEED,
   getGlobeCanvasGlSettings,
   getGlobeStarCount,
@@ -70,8 +70,6 @@ const CINEMATIC_ZOOM_DURATION_S = 3.2;
 const PLACE_FOCUS_DURATION_S = 2.8;
 /** Seconds to ease the camera home after the reset button. */
 const RESET_HOME_DURATION_S = 1.8;
-/** Damping for idle polar-angle leveling before auto-spin resumes. */
-const IDLE_POLAR_RETURN_DAMP = 2.4;
 /**
  * Altitude multiplier for one zoom button press. Applied to height above the
  * unit sphere (not center-distance) so close-in steps stay readable.
@@ -515,12 +513,11 @@ function PlaceFocusIntro({
   return null;
 }
 
-type ViewSettleMode = "idle" | "home";
+type ViewSettleMode = "home";
 
 /**
- * Idle: levels the camera polar angle (vertical tilt) in place, then resumes
- * auto-spin from the current longitude / zoom.
- * Home: eases yaw, tilt, zoom, and mesh spin back to the Europe-facing rest pose.
+ * Eases yaw, tilt, zoom, and mesh spin back to the Europe-facing rest pose
+ * after an explicit reset.
  */
 function ViewSettleAnimation({
   controlsRef,
@@ -585,39 +582,6 @@ function ViewSettleAnimation({
       onComplete();
     };
 
-    if (mode === "idle") {
-      if (reducedMotion) {
-        spherical.phi = GLOBE_DEFAULT_POLAR;
-        spherical.makeSafe();
-        offset.setFromSpherical(spherical);
-        controls.object.position.copy(controls.target).add(offset);
-        controls.object.lookAt(controls.target);
-        controls.update();
-        finish();
-        return;
-      }
-
-      controls.enabled = false;
-      spherical.phi = THREE.MathUtils.damp(
-        spherical.phi,
-        GLOBE_DEFAULT_POLAR,
-        IDLE_POLAR_RETURN_DAMP,
-        delta,
-      );
-      if (Math.abs(spherical.phi - GLOBE_DEFAULT_POLAR) <= 0.001) {
-        spherical.phi = GLOBE_DEFAULT_POLAR;
-      }
-      spherical.makeSafe();
-      offset.setFromSpherical(spherical);
-      controls.object.position.copy(controls.target).add(offset);
-      controls.object.lookAt(controls.target);
-      controls.update();
-
-      if (spherical.phi === GLOBE_DEFAULT_POLAR) finish();
-      return;
-    }
-
-    // mode === "home"
     const start = startRef.current;
     const applyHome = (progress: number) => {
       const theta = lerpAngle(start.theta, 0, progress);
@@ -813,9 +777,10 @@ type InteractiveGlobeProps = {
 /**
  * The shared full-screen 3D globe behind both the home hero and the map view:
  * outer-space scenery with orbit + zoom camera controls, tap-to-select
- * countries and states (map mode), and gentle auto-spin until the player
- * interacts. It stays mounted (and perfectly still) while the page UI slides
- * between home and map so the planet never reloads or jumps.
+ * countries and states (map mode), and gentle auto-spin after eight seconds
+ * of idle time without a selection. It stays mounted (and perfectly still)
+ * while the page UI slides between home and map so the planet never reloads
+ * or jumps.
  */
 export default function InteractiveGlobe({
   profile,
@@ -839,8 +804,9 @@ export default function InteractiveGlobe({
   const containerRef = useRef<HTMLDivElement>(null);
   const controlsRef = useRef<OrbitControlsImpl | null>(null);
   const spinGroupRef = useRef<THREE.Group | null>(null);
-  const idleResetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [autoSpin, setAutoSpin] = useState(true);
+  const idleAutoSpinTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [autoSpin, setAutoSpin] = useState(false);
+  const selectedCodeRef = useRef(selectedCode);
   const [introCancelled, setIntroCancelled] = useState(false);
   const [focusIntroComplete, setFocusIntroComplete] = useState(false);
   const [cinematicIntroComplete, setCinematicIntroComplete] = useState(false);
@@ -857,10 +823,19 @@ export default function InteractiveGlobe({
     ? !introCancelled && !focusIntroComplete
     : !introCancelled && !cinematicIntroComplete;
   const settleRunning = settleMode !== null;
+  // OrbitControls auto-rotation starts from the existing camera perspective;
+  // idle auto-spin must not run a separate orientation-settling animation.
+  const autoSpinActive =
+    autoSpin &&
+    selectedCode === null &&
+    active &&
+    pageVisible &&
+    !reducedMotion &&
+    !usePlaceFocus &&
+    !settleRunning;
   // Park the frameloop entirely while a 2D map view covers the globe.
   const { frameloop, bumpActivity } = useGlobeFrameloop(pageVisible && active, {
-    forceAlways:
-      (autoSpin && !reducedMotion && !usePlaceFocus) || introRunning || settleRunning,
+    forceAlways: autoSpinActive || introRunning || settleRunning,
   });
   const canvasGl = getGlobeCanvasGlSettings(perfTier);
   const starCount = getGlobeStarCount(perfTier);
@@ -868,16 +843,20 @@ export default function InteractiveGlobe({
   const restDistanceRef = useRef(CINEMATIC_REST_DISTANCE);
   const [maxCameraDistance, setMaxCameraDistance] = useState(MAX_CAMERA_DISTANCE);
 
-  const clearIdleResetTimer = useCallback(() => {
-    if (idleResetTimerRef.current) {
-      clearTimeout(idleResetTimerRef.current);
-      idleResetTimerRef.current = null;
+  useEffect(() => {
+    selectedCodeRef.current = selectedCode;
+  }, [selectedCode]);
+
+  const clearIdleAutoSpinTimer = useCallback(() => {
+    if (idleAutoSpinTimerRef.current) {
+      clearTimeout(idleAutoSpinTimerRef.current);
+      idleAutoSpinTimerRef.current = null;
     }
   }, []);
 
   const beginSettle = useCallback(
     (mode: ViewSettleMode) => {
-      clearIdleResetTimer();
+      clearIdleAutoSpinTimer();
       setIntroCancelled(true);
       setAutoSpin(false);
       bumpActivity();
@@ -885,30 +864,34 @@ export default function InteractiveGlobe({
       setSettleMode(mode);
       setSettleKey((key) => key + 1);
     },
-    [bumpActivity, clearIdleResetTimer, onSelectPlace],
+    [bumpActivity, clearIdleAutoSpinTimer, onSelectPlace],
   );
 
   const resetView = useCallback(() => {
     beginSettle("home");
   }, [beginSettle]);
 
-  const armIdleReset = useCallback(() => {
-    clearIdleResetTimer();
-    idleResetTimerRef.current = setTimeout(() => {
-      idleResetTimerRef.current = null;
-      beginSettle("idle");
-    }, GLOBE_IDLE_RESET_MS);
-  }, [clearIdleResetTimer, beginSettle]);
+  const armIdleAutoSpin = useCallback(() => {
+    clearIdleAutoSpinTimer();
+    if (selectedCodeRef.current !== null) return;
+
+    idleAutoSpinTimerRef.current = setTimeout(() => {
+      idleAutoSpinTimerRef.current = null;
+      if (selectedCodeRef.current !== null) return;
+      setAutoSpin(true);
+      bumpActivity();
+    }, GLOBE_IDLE_AUTO_SPIN_MS);
+  }, [bumpActivity, clearIdleAutoSpinTimer]);
 
   const noteUserInteraction = useCallback(() => {
     setSettleMode(null);
     setIntroCancelled(true);
     setAutoSpin(false);
     bumpActivity();
-    armIdleReset();
+    armIdleAutoSpin();
     const controls = controlsRef.current;
     if (controls) controls.enabled = true;
-  }, [bumpActivity, armIdleReset]);
+  }, [armIdleAutoSpin, bumpActivity]);
 
   const ensureControlsReady = useCallback(() => {
     setSettleMode(null);
@@ -917,7 +900,7 @@ export default function InteractiveGlobe({
     if (controls) controls.enabled = true;
   }, []);
 
-  useEffect(() => () => clearIdleResetTimer(), [clearIdleResetTimer]);
+  useEffect(() => () => clearIdleAutoSpinTimer(), [clearIdleAutoSpinTimer]);
 
   useEffect(() => {
     if (!initialPlaceCode) return;
@@ -931,8 +914,36 @@ export default function InteractiveGlobe({
     setIntroCancelled(false);
     setSettleMode(null);
     bumpActivity();
-    armIdleReset();
-  }, [initialPlaceCode, bumpActivity, armIdleReset]);
+    clearIdleAutoSpinTimer();
+  }, [initialPlaceCode, bumpActivity, clearIdleAutoSpinTimer]);
+
+  useEffect(() => {
+    const idleAutoSpinBlocked =
+      !active ||
+      !pageVisible ||
+      reducedMotion ||
+      Boolean(initialPlaceCode) ||
+      selectedCode !== null ||
+      settleMode !== null;
+
+    if (idleAutoSpinBlocked) {
+      clearIdleAutoSpinTimer();
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setAutoSpin(false);
+      return;
+    }
+
+    armIdleAutoSpin();
+  }, [
+    active,
+    armIdleAutoSpin,
+    clearIdleAutoSpinTimer,
+    initialPlaceCode,
+    pageVisible,
+    reducedMotion,
+    selectedCode,
+    settleMode,
+  ]);
 
   const zoomBy = useCallback(
     (factor: number) => {
@@ -978,7 +989,7 @@ export default function InteractiveGlobe({
           return;
         }
         bumpActivity();
-        armIdleReset();
+        armIdleAutoSpin();
       },
       zoomIn: () => zoomBy(ZOOM_BUTTON_FACTOR),
       zoomOut: () => zoomBy(1 / ZOOM_BUTTON_FACTOR),
@@ -987,7 +998,7 @@ export default function InteractiveGlobe({
     return () => {
       handleRef.current = null;
     };
-  }, [handleRef, bumpActivity, noteUserInteraction, armIdleReset, zoomBy, resetView]);
+  }, [handleRef, bumpActivity, noteUserInteraction, armIdleAutoSpin, zoomBy, resetView]);
 
   const panelScope = highlightedCode && isStateCode(highlightedCode) ? "usa" : "world";
 
@@ -1009,7 +1020,7 @@ export default function InteractiveGlobe({
         // Sit below the floating Globe/World/USA toggle in GlobeExperience.
         overlayPanelClassName="left-3 top-[calc(var(--app-header-offset)+4rem)]"
         onDismissSelection={() => {
-          bumpActivity();
+          noteUserInteraction();
           onSelectPlace(null);
         }}
       >
@@ -1037,7 +1048,10 @@ export default function InteractiveGlobe({
               powerPreference: canvasGl.powerPreference,
             }}
             style={{ touchAction: "none" }}
-            onPointerMissed={() => onSelectPlace(null)}
+            onPointerMissed={() => {
+              noteUserInteraction();
+              onSelectPlace(null);
+            }}
             onCreated={(state) => {
               state.invalidate();
             }}
@@ -1077,12 +1091,11 @@ export default function InteractiveGlobe({
               onPointerDownOnGlobe={ensureControlsReady}
               onPickPlace={(code) => {
                 if (code && code === highlightedCode) {
-                  bumpActivity();
+                  noteUserInteraction();
                   onSelectPlace(null);
                   return;
                 }
-                if (code) noteUserInteraction();
-                else bumpActivity();
+                noteUserInteraction();
                 onSelectPlace(code);
               }}
             />
@@ -1098,7 +1111,7 @@ export default function InteractiveGlobe({
             />
             <KeepFrameloopAlive
               controlsRef={controlsRef}
-              autoSpin={autoSpin && !reducedMotion && !usePlaceFocus}
+              autoSpin={autoSpinActive}
               onActivity={bumpActivity}
             />
             <OrbitControls
@@ -1113,15 +1126,15 @@ export default function InteractiveGlobe({
               enableZoom={mode === "map"}
               minDistance={MIN_CAMERA_DISTANCE}
               maxDistance={maxCameraDistance}
-              autoRotate={autoSpin && !reducedMotion && !usePlaceFocus && !settleRunning}
+              autoRotate={autoSpinActive}
               // OrbitControls speed 1.0 ≈ 0.1 rad/s; match the home globe's gentle spin.
               autoRotateSpeed={GLOBE_ROTATION_SPEED * 10}
               onStart={noteUserInteraction}
               onChange={() => {
                 bumpActivity();
                 // Keep pushing the idle deadline out while the camera is still moving
-                // from a drag, pinch, or zoom — otherwise a long gesture can auto-reset mid-move.
-                if (idleResetTimerRef.current) armIdleReset();
+                // from a drag, pinch, or zoom.
+                if (idleAutoSpinTimerRef.current) armIdleAutoSpin();
               }}
             />
             <AltitudeAwareZoomSpeed controlsRef={controlsRef} />
@@ -1140,7 +1153,6 @@ export default function InteractiveGlobe({
                 reducedMotion={reducedMotion}
                 onComplete={() => {
                   setSettleMode(null);
-                  setAutoSpin(true);
                   bumpActivity();
                 }}
                 onActivity={bumpActivity}

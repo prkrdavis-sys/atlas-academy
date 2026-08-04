@@ -2,8 +2,8 @@ import type { Profile } from "@/lib/types";
 import { STREAK_SNUFF_MIN } from "@/lib/streak-tier";
 
 /**
- * Tiny Web Audio synth for game feedback — no audio files needed. All sounds
- * are short envelope-shaped tones so they feel game-like without being loud.
+ * Tiny Web Audio synth for game feedback. Most cues are short envelope-shaped
+ * tones; end-of-game uses a trumpet fanfare sample (`complete`).
  *
  * AudioContext starts suspended under browser autoplay rules and can re-suspend
  * after backgrounding. Lifecycle (gesture prime, resume, mobile keep-alive) is
@@ -22,12 +22,25 @@ export type PlaySoundOptions = {
   lostStreak?: number;
 };
 
+/** Sample-backed cues (Mixkit Trumpet fanfare — free Mixkit License). */
+const SAMPLE_URLS = {
+  complete: "/sounds/complete-fanfare.mp3",
+} as const;
+
+const SAMPLE_GAIN = {
+  complete: 0.42,
+} as const;
+
+type SampleSoundKind = keyof typeof SAMPLE_URLS;
+
 let audioContext: AudioContext | null = null;
 let gesturesInstalled = false;
 let keepAliveInstalled = false;
 /** Set when the tab backgrounds or the context suspends — iOS can report "running" but stay silent until re-primed on a gesture. */
 let needsGestureUnlock = false;
 let sessionKeepAlive: OscillatorNode | null = null;
+const sampleBuffers = new Map<SoundKind, AudioBuffer>();
+const sampleLoads = new Map<SoundKind, Promise<AudioBuffer | null>>();
 
 function getAudioContextConstructor(): typeof AudioContext | null {
   if (typeof window === "undefined") return null;
@@ -82,6 +95,8 @@ function markNeedsGestureUnlock(): void {
 function resetAudioContext(): void {
   stopSessionKeepAlive();
   audioContext = null;
+  sampleBuffers.clear();
+  sampleLoads.clear();
 }
 
 function needsAudioRecovery(ctx: AudioContext): boolean {
@@ -251,9 +266,16 @@ export function isSoundEnabled(profile: Profile | null | undefined): boolean {
 export function unlockAudio(): void {
   installAudioGestures();
   const ctx = getAudioContext();
-  if (!ctx || ctx.state === "closed" || !needsAudioRecovery(ctx)) return;
+  if (!ctx || ctx.state === "closed") return;
 
-  void ensureAudioReady(ctx);
+  if (!needsAudioRecovery(ctx)) {
+    preloadSamples(ctx);
+    return;
+  }
+
+  void ensureAudioReady(ctx).then((ready) => {
+    if (ready) preloadSamples(ready);
+  });
 }
 
 type Note = {
@@ -267,7 +289,9 @@ type Note = {
   gain: number;
 };
 
-const SOUNDS: Record<SoundKind, Note[]> = {
+type SynthSoundKind = Exclude<SoundKind, SampleSoundKind>;
+
+const SOUNDS: Record<SynthSoundKind, Note[]> = {
   tap: [{ at: 0, frequency: 520, frequencyEnd: 640, duration: 0.06, type: "sine", gain: 0.12 }],
   play: [
     { at: 0, frequency: 392, duration: 0.09, type: "triangle", gain: 0.16 },
@@ -286,13 +310,6 @@ const SOUNDS: Record<SoundKind, Note[]> = {
     { at: 0.07, frequency: 659, duration: 0.07, type: "triangle", gain: 0.14 },
     { at: 0.14, frequency: 784, duration: 0.07, type: "triangle", gain: 0.14 },
     { at: 0.21, frequency: 1047, duration: 0.18, type: "triangle", gain: 0.15 },
-  ],
-  complete: [
-    { at: 0, frequency: 523, duration: 0.08, type: "triangle", gain: 0.14 },
-    { at: 0.08, frequency: 659, duration: 0.08, type: "triangle", gain: 0.14 },
-    { at: 0.16, frequency: 784, duration: 0.08, type: "triangle", gain: 0.14 },
-    { at: 0.24, frequency: 1047, duration: 0.12, type: "triangle", gain: 0.15 },
-    { at: 0.38, frequency: 1319, duration: 0.28, type: "triangle", gain: 0.16 },
   ],
 };
 
@@ -362,9 +379,64 @@ export function getCorrectSoundNotes(streak: number): Note[] {
   return notes;
 }
 
+function isSampleSound(kind: SoundKind): kind is SampleSoundKind {
+  return kind in SAMPLE_URLS;
+}
+
+function loadSample(ctx: AudioContext, kind: SampleSoundKind): Promise<AudioBuffer | null> {
+  const url = SAMPLE_URLS[kind];
+  if (!url) return Promise.resolve(null);
+
+  const cached = sampleBuffers.get(kind);
+  if (cached) return Promise.resolve(cached);
+
+  const inflight = sampleLoads.get(kind);
+  if (inflight) return inflight;
+
+  const load = fetch(url)
+    .then((response) => {
+      if (!response.ok) throw new Error(`Failed to load ${url}`);
+      return response.arrayBuffer();
+    })
+    .then((bytes) => ctx.decodeAudioData(bytes.slice(0)))
+    .then((buffer) => {
+      sampleBuffers.set(kind, buffer);
+      sampleLoads.delete(kind);
+      return buffer;
+    })
+    .catch(() => {
+      sampleLoads.delete(kind);
+      return null;
+    });
+
+  sampleLoads.set(kind, load);
+  return load;
+}
+
+/** Warm sample decode after unlock so end-of-game fanfare is ready on first play. */
+function preloadSamples(ctx: AudioContext): void {
+  for (const kind of Object.keys(SAMPLE_URLS) as SampleSoundKind[]) {
+    void loadSample(ctx, kind);
+  }
+}
+
+function playSample(ctx: AudioContext, kind: SampleSoundKind, buffer: AudioBuffer): void {
+  const source = ctx.createBufferSource();
+  const gainNode = ctx.createGain();
+  const start = ctx.currentTime + 0.01;
+  const gain = SAMPLE_GAIN[kind];
+
+  source.buffer = buffer;
+  gainNode.gain.setValueAtTime(0, start);
+  gainNode.gain.linearRampToValueAtTime(gain, start + 0.02);
+  source.connect(gainNode);
+  gainNode.connect(ctx.destination);
+  source.start(start);
+}
+
 /**
- * Plays a synthesized sound effect. Pass the profile so the player's sound
- * setting is respected; a null/undefined profile plays (guest actions).
+ * Plays a sound effect (synth cue or sample). Pass the profile so the player's
+ * sound setting is respected; a null/undefined profile plays (guest actions).
  */
 export function playSound(
   kind: SoundKind,
@@ -379,9 +451,9 @@ export function playSound(
 
   if (!needsAudioRecovery(ctx)) {
     try {
-      scheduleNotes(ctx, kind, options);
+      scheduleSound(ctx, kind, options);
     } catch {
-      // Ignore scheduling errors so one bad note doesn't break future sounds.
+      // Ignore scheduling errors so one bad cue doesn't break future sounds.
     }
     return;
   }
@@ -390,19 +462,38 @@ export function playSound(
   // so Safari unlocks, then schedule only once the clock is running.
   void ensureAudioReady(ctx).then((ready) => {
     if (!ready) return;
+    preloadSamples(ready);
     try {
-      scheduleNotes(ready, kind, options);
+      scheduleSound(ready, kind, options);
     } catch {
-      // Ignore scheduling errors so one bad note doesn't break future sounds.
+      // Ignore scheduling errors so one bad cue doesn't break future sounds.
     }
   });
 }
 
-function scheduleNotes(ctx: AudioContext, kind: SoundKind, options?: PlaySoundOptions) {
+function scheduleSound(ctx: AudioContext, kind: SoundKind, options?: PlaySoundOptions) {
+  if (isSampleSound(kind)) {
+    void loadSample(ctx, kind).then((buffer) => {
+      if (!buffer) return;
+      try {
+        playSample(ctx, kind, buffer);
+      } catch {
+        // Ignore playback errors on suspended/closed contexts.
+      }
+    });
+    return;
+  }
+
+  scheduleNotes(ctx, kind, options);
+}
+
+function scheduleNotes(ctx: AudioContext, kind: SynthSoundKind, options?: PlaySoundOptions) {
   const notes =
     kind === "correct" && options?.streak !== undefined
       ? getCorrectSoundNotes(options.streak)
-      : kind === "incorrect" && options?.lostStreak !== undefined && options.lostStreak >= STREAK_SNUFF_MIN
+      : kind === "incorrect" &&
+          options?.lostStreak !== undefined &&
+          options.lostStreak >= STREAK_SNUFF_MIN
         ? getIncorrectLostStreakNotes()
         : SOUNDS[kind];
 

@@ -2,6 +2,10 @@
  * Generates quiz/library silhouette SVGs at public/shapes/{code3}.svg from
  * Natural Earth 10m — the same geometry pipeline as context maps and globe
  * borders — so shapes always match map outlines.
+ *
+ * Remote overseas scraps that share an ADM0 polygon (e.g. Caribbean
+ * Netherlands inside NLD) are dropped via toFocusPath so the recognizable
+ * mainland fills the frame.
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -12,7 +16,11 @@ import {
   buildNaturalEarthLocations,
   loadNaturalEarthFeatures,
 } from "./natural-earth-map-data";
-import { buildShapeSvg, unwrapAntimeridianPath } from "./map-path-utils";
+import {
+  buildShapeSvg,
+  toFocusPath,
+  unwrapAntimeridianPath,
+} from "./map-path-utils";
 import { isCustomShapeCode, writeCustomShape } from "./supplemental-shapes";
 
 const countries = countriesData as Country[];
@@ -53,10 +61,12 @@ export async function generateCountryShapes(
     }
 
     const mapIds = getContextMapPathIds(country);
+    // Crop to mainland + nearby islands so remote overseas scraps (e.g.
+    // Caribbean Netherlands) do not shrink the recognizable outline to a speck.
     const paths = mapIds
       .map((id) => pathById.get(id))
       .filter((path): path is string => Boolean(path))
-      .map((path) => unwrapAntimeridianPath(path));
+      .map((path) => toFocusPath(unwrapAntimeridianPath(path)));
 
     if (paths.length !== mapIds.length) {
       missing.push(`${country.code} (${country.name}) missing map path ids: ${mapIds.join(", ")}`);

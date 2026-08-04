@@ -2,12 +2,18 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ProfileAvatar, ProfileAvatarFlag } from "@/components/ProfileAvatar";
+import { ProfileAvatarPicker } from "@/components/ProfileAvatarPicker";
 import { Button } from "@/components/ui/Button";
 import { ProfileProgressInfoDialog } from "@/components/ProfileProgressInfoDialog";
 import { useProfiles } from "@/components/ProfileProvider";
 import { exportProfile, importProfile } from "@/lib/storage";
 import { AVATAR_COLORS, PROFILE_EMOJI } from "@/lib/types";
-import type { Profile } from "@/lib/types";
+import type { Profile, ProfileAvatarId, ProfileAvatarSelection } from "@/lib/types";
+
+function getAvatarSelection(color: string, avatarId: ProfileAvatarId | null): ProfileAvatarSelection {
+  return avatarId ? { type: "portrait", avatarId } : { type: "color", color };
+}
 
 export default function ProfilesPage() {
   const router = useRouter();
@@ -15,9 +21,11 @@ export default function ProfilesPage() {
     useProfiles();
   const [name, setName] = useState("");
   const [color, setColor] = useState<string>(AVATAR_COLORS[0]);
+  const [avatarId, setAvatarId] = useState<ProfileAvatarId | null>(null);
   const [profileToModify, setProfileToModify] = useState<Profile | null>(null);
   const [editName, setEditName] = useState("");
   const [editColor, setEditColor] = useState<string>(AVATAR_COLORS[0]);
+  const [editAvatarId, setEditAvatarId] = useState<ProfileAvatarId | null>(null);
   const [profileToDelete, setProfileToDelete] = useState<Profile | null>(null);
   const [showProgressInfo, setShowProgressInfo] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -26,8 +34,10 @@ export default function ProfilesPage() {
   function handleCreate(e: React.FormEvent) {
     e.preventDefault();
     if (!name.trim()) return;
-    addProfile(name, color);
+    addProfile(name, getAvatarSelection(color, avatarId));
     setName("");
+    setColor(AVATAR_COLORS[0]);
+    setAvatarId(null);
     setShowProgressInfo(true);
   }
 
@@ -39,7 +49,8 @@ export default function ProfilesPage() {
   function openModify(profile: Profile) {
     setProfileToModify(profile);
     setEditName(profile.name);
-    setEditColor(profile.avatarColor);
+    setEditColor(profile.avatarColor || AVATAR_COLORS[0]);
+    setEditAvatarId(profile.avatarId ?? null);
   }
 
   function handleModifySave(e: React.FormEvent) {
@@ -48,9 +59,12 @@ export default function ProfilesPage() {
     updateProfile({
       ...profileToModify,
       name: editName.trim(),
-      avatarColor: AVATAR_COLORS.includes(editColor as (typeof AVATAR_COLORS)[number])
-        ? editColor
-        : profileToModify.avatarColor,
+      avatarColor: editAvatarId
+        ? ""
+        : AVATAR_COLORS.includes(editColor as (typeof AVATAR_COLORS)[number])
+          ? editColor
+          : profileToModify.avatarColor || AVATAR_COLORS[0],
+      avatarId: editAvatarId ?? undefined,
     });
     setProfileToModify(null);
   }
@@ -116,43 +130,35 @@ export default function ProfilesPage() {
               Create a profile
             </h2>
             <p className="relative mt-2 max-w-md text-sm leading-relaxed text-emerald-50">
-              Pick a name and avatar color — it only takes a few seconds.
+              Pick a name and avatar — it only takes a few seconds.
             </p>
           </div>
-          <div className="space-y-4 bg-white/95 p-4 dark:bg-slate-900/95 sm:p-6">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
-              <div className="flex-1">
-                <label htmlFor="create-profile-name" className="mb-1 block text-sm font-medium">
-                  Name
-                </label>
-                <input
-                  id="create-profile-name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-emerald-500 dark:focus:ring-emerald-900"
-                  placeholder="Your name"
-                  autoFocus
-                />
-              </div>
-              <div>
-                <p className="mb-1 text-sm font-medium">Color</p>
-                <div className="flex flex-wrap gap-2">
-                  {AVATAR_COLORS.map((c) => (
-                    <button
-                      key={c}
-                      type="button"
-                      onClick={() => setColor(c)}
-                      aria-label={`Use profile color ${c}`}
-                      className={`h-11 w-11 rounded-full border-2 ${color === c ? "border-slate-800 ring-2 ring-slate-300 ring-offset-2 dark:border-slate-200 dark:ring-slate-600 dark:ring-offset-slate-900" : "border-transparent"}`}
-                      style={{ backgroundColor: c }}
-                    />
-                  ))}
-                </div>
-              </div>
-              <Button type="submit" size="lg" className="w-full sm:w-auto">
-                Create profile
-              </Button>
+          <div className="space-y-5 bg-white/95 p-4 dark:bg-slate-900/95 sm:p-6">
+            <div>
+              <label htmlFor="create-profile-name" className="mb-1 block text-sm font-medium">
+                Name
+              </label>
+              <input
+                id="create-profile-name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-emerald-500 dark:focus:ring-emerald-900"
+                placeholder="Your name"
+                autoFocus
+              />
             </div>
+            <ProfileAvatarPicker
+              color={color}
+              avatarId={avatarId}
+              onColorChange={(nextColor) => {
+                setColor(nextColor);
+                setAvatarId(null);
+              }}
+              onAvatarChange={setAvatarId}
+            />
+            <Button type="submit" size="lg" className="w-full">
+              Create profile
+            </Button>
           </div>
         </form>
       ) : (
@@ -166,7 +172,18 @@ export default function ProfilesPage() {
                   className="rounded-2xl border border-slate-200 bg-slate-50/70 p-3 dark:border-slate-700 dark:bg-slate-800/70 sm:flex sm:flex-wrap sm:items-center sm:justify-between sm:gap-3 sm:bg-transparent sm:px-4 sm:py-3"
                 >
                   <div className="flex items-center gap-3">
-                    <span className="h-10 w-10 rounded-full" style={{ backgroundColor: profile.avatarColor }} />
+                    <div className="flex shrink-0 flex-col items-center gap-1">
+                      <ProfileAvatar
+                        avatarId={profile.avatarId}
+                        avatarColor={profile.avatarColor}
+                        size="lg"
+                        alt=""
+                      />
+                      <ProfileAvatarFlag
+                        avatarId={profile.avatarId}
+                        alt={`Primary location flag for ${profile.name}'s portrait`}
+                      />
+                    </div>
                     <div>
                       <p className="font-medium">{profile.name}</p>
                       {activeProfile?.id === profile.id && (
@@ -228,39 +245,31 @@ export default function ProfilesPage() {
                 </div>
               </div>
             </div>
-            <div className="space-y-4 p-4 sm:p-6">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
-                <div className="flex-1">
-                  <label htmlFor="create-profile-name-existing" className="mb-1 block text-sm font-medium">
-                    Name
-                  </label>
-                  <input
-                    id="create-profile-name-existing"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-emerald-500 dark:focus:ring-emerald-900"
-                    placeholder="Your name"
-                  />
-                </div>
-                <div>
-                  <p className="mb-1 text-sm font-medium">Color</p>
-                  <div className="flex flex-wrap gap-2">
-                    {AVATAR_COLORS.map((c) => (
-                      <button
-                        key={c}
-                        type="button"
-                        onClick={() => setColor(c)}
-                        aria-label={`Use profile color ${c}`}
-                        className={`h-11 w-11 rounded-full border-2 ${color === c ? "border-slate-800 ring-2 ring-slate-300 ring-offset-2 dark:border-slate-200 dark:ring-slate-600 dark:ring-offset-slate-900" : "border-transparent"}`}
-                        style={{ backgroundColor: c }}
-                      />
-                    ))}
-                  </div>
-                </div>
-                <Button type="submit" className="w-full sm:w-auto">
-                  Create profile
-                </Button>
+            <div className="space-y-5 p-4 sm:p-6">
+              <div>
+                <label htmlFor="create-profile-name-existing" className="mb-1 block text-sm font-medium">
+                  Name
+                </label>
+                <input
+                  id="create-profile-name-existing"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-emerald-500 dark:focus:ring-emerald-900"
+                  placeholder="Your name"
+                />
               </div>
+              <ProfileAvatarPicker
+                color={color}
+                avatarId={avatarId}
+                onColorChange={(nextColor) => {
+                  setColor(nextColor);
+                  setAvatarId(null);
+                }}
+                onAvatarChange={setAvatarId}
+              />
+              <Button type="submit" className="w-full">
+                Create profile
+              </Button>
             </div>
           </form>
         </>
@@ -343,21 +352,15 @@ export default function ProfilesPage() {
                   autoFocus
                 />
               </div>
-              <div>
-                <p className="mb-1 text-sm font-medium">Color</p>
-                <div className="flex flex-wrap gap-2">
-                  {AVATAR_COLORS.map((c) => (
-                    <button
-                      key={c}
-                      type="button"
-                      onClick={() => setEditColor(c)}
-                      aria-label={`Use profile color ${c}`}
-                      className={`h-11 w-11 rounded-full border-2 ${editColor === c ? "border-slate-800 ring-2 ring-slate-300 ring-offset-2 dark:border-slate-200 dark:ring-slate-600 dark:ring-offset-slate-900" : "border-transparent"}`}
-                      style={{ backgroundColor: c }}
-                    />
-                  ))}
-                </div>
-              </div>
+              <ProfileAvatarPicker
+                color={editColor}
+                avatarId={editAvatarId}
+                onColorChange={(nextColor) => {
+                  setEditColor(nextColor);
+                  setEditAvatarId(null);
+                }}
+                onAvatarChange={setEditAvatarId}
+              />
             </div>
             <div className="mt-6 grid grid-cols-2 gap-3">
               <Button type="button" variant="secondary" onClick={() => setProfileToModify(null)}>

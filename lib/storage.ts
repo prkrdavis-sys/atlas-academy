@@ -4,6 +4,7 @@ import type {
   GameMode,
   GameScope,
   Profile,
+  ProfileAvatarSelection,
   AchievementSessionContext,
   Question,
   SpeedRoundQuestionType,
@@ -29,6 +30,7 @@ import { isValidSetupMode } from "@/lib/game-setup";
 import { getDailyDateKey, offsetDailyDateKey } from "@/lib/game-engine";
 import { MAX_LOGIN_DATE_HISTORY_DAYS } from "@/lib/login-streak";
 import { scopedDailyKey } from "@/lib/scope";
+import { isProfileAvatarId } from "@/lib/profile-avatars";
 import {
   createEmptyGlobalStreaksByDifficulty,
   createEmptyModeStatsByDifficulty,
@@ -180,6 +182,18 @@ export function normalizeProfile(profile: Profile): Profile {
       ...(profile.settings ?? {}),
     },
   });
+  if (typeof normalized.avatarColor !== "string") {
+    normalized.avatarColor = "";
+  }
+  if (normalized.avatarId !== undefined && !isProfileAvatarId(normalized.avatarId)) {
+    normalized.avatarId = undefined;
+  }
+  if (
+    !normalized.avatarId &&
+    !AVATAR_COLORS.includes(normalized.avatarColor as (typeof AVATAR_COLORS)[number])
+  ) {
+    normalized.avatarColor = AVATAR_COLORS[0];
+  }
   if (!normalized.settings.speedRoundQuestionType) {
     normalized.settings.speedRoundQuestionType = "flag-to-country";
   } else if ((normalized.settings.speedRoundQuestionType as string) === "mixed") {
@@ -289,13 +303,24 @@ export function normalizeProfile(profile: Profile): Profile {
   return normalized as Profile;
 }
 
-export function createProfile(name: string, avatarColor: string): Profile {
+export function createProfile(name: string, selection: ProfileAvatarSelection): Profile {
+  const avatarId =
+    selection.type === "portrait" && isProfileAvatarId(selection.avatarId)
+      ? selection.avatarId
+      : undefined;
+  const avatarColor =
+    selection.type === "color" &&
+    AVATAR_COLORS.includes(selection.color as (typeof AVATAR_COLORS)[number])
+      ? selection.color
+      : avatarId
+        ? ""
+        : AVATAR_COLORS[0];
+
   return {
     id: crypto.randomUUID(),
     name: name.trim(),
-    avatarColor: AVATAR_COLORS.includes(avatarColor as (typeof AVATAR_COLORS)[number])
-      ? avatarColor
-      : AVATAR_COLORS[0],
+    avatarColor,
+    ...(avatarId ? { avatarId } : {}),
     createdAt: new Date().toISOString(),
     globalStreaks: createEmptyGlobalStreaks(),
     stats: createEmptyStats(),

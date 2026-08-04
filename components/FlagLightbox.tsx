@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/Button";
-import { getFlagPath } from "@/lib/countries";
+import { FlagImage } from "@/components/FlagDisplay";
 import { cn } from "@/lib/utils";
 
 type FlagLightboxProps = {
@@ -82,12 +82,11 @@ export function FlagLightbox({ open, onClose, code, countryName }: FlagLightboxP
         </div>
 
         <div className="flex min-h-0 flex-1 items-center justify-center bg-gradient-to-br from-sky-50 via-white to-teal-50 p-4 dark:from-slate-800 dark:via-slate-900 dark:to-teal-950/50 sm:p-6 md:p-8">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={getFlagPath(code)}
+          <FlagImage
+            code={code}
             alt={`Flag of ${countryName}`}
-            className="max-h-full max-w-full object-contain"
-            decoding="async"
+            width={1280}
+            className="max-h-full max-w-full"
           />
         </div>
       </div>

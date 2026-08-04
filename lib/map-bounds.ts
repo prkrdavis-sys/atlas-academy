@@ -218,6 +218,14 @@ function expandCropToCompleteSurroundings(
  *
  * Framing is relative to the subject only (not the continent template), so
  * microstates stay large enough to show their detailed outline.
+ *
+ * Padding is per-axis (not based on the longer side). Ultra-wide places like
+ * Russia used to inherit enormous vertical pad from their east–west span,
+ * which zoomed out into Natural Earth polar scallops where the terrain fill
+ * shows broken pole artifacts. High-Arctic subjects (Canada, Greenland, …)
+ * have the same failure mode from ordinary north pad alone — their mainland
+ * already sits on the polar edge — so they get a tight northern margin and
+ * spill leftover vertical context south.
  */
 function fitCloseUpViewBox(
   subject: PathBounds,
@@ -230,16 +238,33 @@ function fitCloseUpViewBox(
   const subjectWidth = Math.max(subjectRight - subjectLeft, 1e-6);
   const subjectHeight = Math.max(subjectBottom - subjectTop, 1e-6);
   const centerX = (subjectLeft + subjectRight) / 2;
-  const centerY = (subjectTop + subjectBottom) / 2;
-  const subjectSpan = Math.max(subjectWidth, subjectHeight);
+  let centerY = (subjectTop + subjectBottom) / 2;
+  const subjectAspect = subjectWidth / subjectHeight;
+  // Subject northern edge already in the high Arctic (NE y near the pole band).
+  const isArcticSubject = subjectTop < 100;
 
-  const pad = subjectSpan * options.paddingRatio;
-  let width = Math.max(subjectWidth + pad * 2, subjectWidth * 1.12);
-  let height = Math.max(subjectHeight + pad * 2, subjectHeight * 1.12);
+  let padX = subjectWidth * options.paddingRatio;
+  let padY = subjectHeight * options.paddingRatio;
+  // Extreme landscape (Russia, …): horizontal pad tied to width alone
+  // leaves a continent-scale ocean halo. Cap it against the short side.
+  if (subjectAspect > 2.5) {
+    padX = Math.min(padX, subjectHeight * options.paddingRatio * 1.25);
+  }
+  // Canada / Greenland / Svalbard: symmetric pad opens straight into the
+  // polar scallop and over-zooms. Tighten both axes before aspect fit.
+  if (isArcticSubject) {
+    padX = Math.min(padX, subjectWidth * Math.min(options.paddingRatio, 0.28));
+    padY = Math.min(padY, subjectHeight * Math.min(options.paddingRatio, 0.25));
+  }
 
-  // Final safety: the subject must always fit with a little margin.
-  width = Math.max(width, subjectWidth * 1.12);
-  height = Math.max(height, subjectHeight * 1.12);
+  let width = Math.max(subjectWidth + padX * 2, subjectWidth * 1.12);
+  let height = Math.max(subjectHeight + padY * 2, subjectHeight * 1.12);
+  const paddedHeight = height;
+  // Cap how far the frame opens above the subject into Arctic void.
+  const comfortNorthPad = Math.min(
+    padY,
+    subjectHeight * (isArcticSubject ? 0.08 : 0.2),
+  );
 
   if (options.aspectRatio !== undefined) {
     const aspectRatio = options.aspectRatio;
@@ -261,6 +286,20 @@ function fitCloseUpViewBox(
     }
   }
 
+  // Spill surplus height south when aspect fit grew the frame, or when the
+  // subject already sits on the polar edge (Canada) so north pad is wasted void.
+  if (height > paddedHeight + 1e-6 || isArcticSubject) {
+    centerY = subjectTop - comfortNorthPad + height / 2;
+  }
+
+  // Final clamp: do not open the crop into NE polar scallops above y=0 unless
+  // the subject itself extends there (keep the subject fully in frame).
+  const top = centerY - height / 2;
+  const polarFloor = Math.min(subjectTop, 0);
+  if (top < polarFloor) {
+    centerY += polarFloor - top;
+  }
+
   return [centerX - width / 2, centerY - height / 2, width, height];
 }
 
@@ -270,16 +309,18 @@ function fitCloseUpViewBox(
  * territories (e.g. Caribbean Netherlands) and antimeridian fragments do not
  * force a continent-scale zoom-out.
  *
- * The featured place stays centered. Zoom is relative to its size (via
- * `paddingRatio`); optional surroundings completion only pulls in nearby
- * border neighbors that fit within `maxExpandRatio`.
+ * The featured place stays centered on the east–west axis. Zoom is relative to
+ * its size (via `paddingRatio`); optional surroundings completion only pulls in
+ * nearby border neighbors that fit within `maxExpandRatio`. Extra height from
+ * card aspect — and ordinary north pad on high-Arctic subjects like Canada — is
+ * biased south so polar scallops stay out of Learn/Library crops.
  */
 export function computeFocusedViewBox(
   template: MapTemplateBounds,
   focusPathIds: string[],
   options: {
     aspectRatio?: number;
-    /** Padding around the subject relative to its larger side. */
+    /** Padding around the subject as a fraction of each axis (width → padX, height → padY). */
     paddingRatio: number;
     /**
      * When true (default), prefer mainland focus bounds over full path bounds.

@@ -89,6 +89,7 @@ export function filterCountries(options: FilterOptions): Country[] {
   if (
     options.mode === "flag-to-country" ||
     options.mode === "flag-crop-to-country" ||
+    options.mode === "inverted-flag-crop-to-country" ||
     options.mode === "country-to-flag" ||
     options.mode === "inverted-flag-to-country" ||
     options.mode === "inverted-country-to-flag"
@@ -96,7 +97,10 @@ export function filterCountries(options: FilterOptions): Country[] {
     pool = pool.filter((c) => c.hasFlag);
   }
 
-  if (options.mode === "flag-crop-to-country") {
+  if (
+    options.mode === "flag-crop-to-country" ||
+    options.mode === "inverted-flag-crop-to-country"
+  ) {
     pool = pool.filter((c) => isFlagCropEligible(c.code));
   }
 
@@ -121,7 +125,9 @@ export function filterCountries(options: FilterOptions): Country[] {
   }
 
   if (options.mode === "fact-to-country") {
-    pool = pool.filter((c) => c.factQuestion.trim().length > 0);
+    pool = pool.filter(
+      (c) => c.factQuestion.trim().length > 0 || c.factQuestion2.trim().length > 0,
+    );
   }
 
   if (options.mode === "atlasle") {
@@ -192,7 +198,9 @@ export function getEligibleCoreQuestionTypes(country: Country): CoreQuestionType
 export function getEligibleMixedQuestionTypes(country: Country): MixedQuestionType[] {
   const types: MixedQuestionType[] = [...getEligibleCoreQuestionTypes(country)];
   if (country.hasFlag) types.push("country-to-flag");
-  if (country.factQuestion.trim().length > 0) types.push("fact-to-country");
+  if (country.factQuestion.trim().length > 0 || country.factQuestion2.trim().length > 0) {
+    types.push("fact-to-country");
+  }
   return types;
 }
 
@@ -274,6 +282,19 @@ export { getContextMapPathIds, getContextMapTemplatePath } from "@/lib/context-m
 
 export function formatPopulation(population: number): string {
   return new Intl.NumberFormat("en-US").format(population);
+}
+
+/** Formats land-surface elevation extremes for library detail chips. */
+export function formatAltitudeRange(elevation: { min: number; max: number }): string {
+  const formatMeters = (meters: number) =>
+    meters === 0 ? "Sea level" : `${formatPopulation(meters)} m`;
+
+  if (elevation.min === elevation.max) {
+    return formatMeters(elevation.max);
+  }
+
+  const low = elevation.min === 0 ? "Sea level" : formatPopulation(elevation.min);
+  return `${low} – ${formatPopulation(elevation.max)} m`;
 }
 
 export function formatBorderFact(borderCount: number, scope: GameScope = "world"): string {

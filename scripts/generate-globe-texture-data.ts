@@ -17,9 +17,11 @@ import countriesData from "../data/countries.json";
 import statesData from "../data/states.json";
 import type { Country } from "../lib/types";
 import {
+  applyIsoRecognizedBorders,
   countCoordinates,
   findFeatureForCountry,
   loadDetailedGeometry,
+  loadDisputedFeatures,
   loadNaturalEarthFeatures,
   type NaturalEarthFeature,
 } from "./natural-earth-map-data";
@@ -404,18 +406,25 @@ async function buildCloseupUsStates(): Promise<GlobeCountryShape[]> {
 async function main() {
   console.log("Fetching Natural Earth 50m countries...");
   const countryCollection = await fetchFeatureCollection(NATURAL_EARTH_50M_COUNTRIES_URL);
+  console.log("Fetching Natural Earth 50m disputed areas...");
+  const disputedFeatures = await loadDisputedFeatures("50m");
   console.log("Fetching Natural Earth 50m states/provinces...");
   const statesCollection = await fetchFeatureCollection(NATURAL_EARTH_50M_STATES_URL);
+
+  const normalizedCountries = applyIsoRecognizedBorders(
+    countryCollection.features as NaturalEarthFeature[],
+    disputedFeatures,
+  );
 
   const byCode = new Map<string, number[][]>();
   const extras: number[][] = [];
 
-  for (const feature of countryCollection.features as CountryFeature[]) {
+  for (const feature of normalizedCountries) {
     if (!isAreaGeometry(feature.geometry)) continue;
     const rings = projectGeometryRings(feature.geometry);
     if (rings.length === 0) continue;
 
-    const code = resolveFeatureCode(feature);
+    const code = resolveFeatureCode(feature as CountryFeature);
     if (code) {
       byCode.set(code, [...(byCode.get(code) ?? []), ...rings]);
     } else {

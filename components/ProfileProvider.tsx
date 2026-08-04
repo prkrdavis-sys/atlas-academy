@@ -10,14 +10,14 @@ import {
   setActiveProfile,
   upsertProfile,
 } from "@/lib/storage";
-import type { Profile } from "@/lib/types";
+import type { Profile, ProfileAvatarSelection } from "@/lib/types";
 
 type ProfileContextValue = {
   profiles: Profile[];
   activeProfile: Profile | null;
   hydrated: boolean;
   refresh: () => void;
-  addProfile: (name: string, color: string) => Profile;
+  addProfile: (name: string, selection: ProfileAvatarSelection) => Profile;
   switchProfile: (id: string) => void;
   removeProfile: (id: string) => void;
   updateProfile: (profile: Profile) => void;
@@ -85,8 +85,8 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
       activeProfile,
       hydrated,
       refresh,
-      addProfile: (name, color) => {
-        const profile = createProfile(name, color);
+      addProfile: (name, selection) => {
+        const profile = createProfile(name, selection);
         upsertProfile(profile);
         setActiveProfile(profile.id);
         setState(recordDailyLogin(profile.id).state);
