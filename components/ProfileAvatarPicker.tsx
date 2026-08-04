@@ -36,10 +36,6 @@ export function ProfileAvatarPicker({
           <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
             Selected avatar
           </p>
-          <p className="mt-1 text-sm font-semibold text-slate-800 dark:text-slate-100">World portrait</p>
-          <p className="mt-1 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
-            Choose a portrait below.
-          </p>
         </div>
       </div>
 
