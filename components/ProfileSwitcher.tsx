@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { createPortal } from "react-dom";
 import { GlobeDayNightToggle } from "@/components/GlobeDayNightToggle";
 import { GlobeUsModeToggle } from "@/components/GlobeUsModeToggle";
 import { HapticsToggle } from "@/components/HapticsToggle";
@@ -14,30 +15,184 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { cn } from "@/lib/utils";
 import { CurrencySelector } from "@/components/CurrencySelector";
 
+const MENU_PANEL_CLASS =
+  "overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl dark:border-slate-700 dark:bg-slate-900";
+
 /**
  * The "main menu": the header profile dropdown that holds app-wide toggles
  * (appearance, sound, vibration, map progress, globe day/night, USA globe mode)
  * alongside profile switching.
  */
+type MenuPanelContentProps = {
+  pathname: string;
+  displayProfile: ReturnType<typeof useProfiles>["activeProfile"];
+  inactiveProfiles: ReturnType<typeof useProfiles>["profiles"];
+  hydrated: boolean;
+  profiles: ReturnType<typeof useProfiles>["profiles"];
+  onClose: () => void;
+  onSwitchProfile: (profileId: string) => void;
+};
+
+function MenuPanelContent({
+  pathname,
+  displayProfile,
+  inactiveProfiles,
+  hydrated,
+  profiles,
+  onClose,
+  onSwitchProfile,
+}: MenuPanelContentProps) {
+  return (
+    <>
+      <div className="border-b border-slate-100 p-2 dark:border-slate-800">
+        {displayProfile && (
+          <div className="mb-1 rounded-xl bg-emerald-50 px-3 py-2 dark:bg-emerald-950/50">
+            <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-400">
+              Active profile
+            </p>
+            <div className="mt-1 flex min-h-11 items-center gap-3 text-sm">
+              <ProfileAvatar
+                avatarId={displayProfile.avatarId}
+                avatarColor={displayProfile.avatarColor}
+                size="md"
+              />
+              <span className="font-medium">{displayProfile.name}</span>
+            </div>
+          </div>
+        )}
+
+        <Link
+          href="/stats"
+          role="menuitem"
+          aria-current={pathname.startsWith("/stats") ? "page" : undefined}
+          className={cn(
+            "mb-1 flex min-h-11 items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors hover:bg-slate-50 dark:hover:bg-slate-800",
+            pathname.startsWith("/stats")
+              ? "text-teal-700 dark:text-teal-300"
+              : "text-slate-700 dark:text-slate-200",
+          )}
+          onClick={onClose}
+        >
+          <span className="text-lg leading-none" aria-hidden>📊</span>
+          Stats
+        </Link>
+
+        {inactiveProfiles.length > 0 && (
+          <div>
+            <p className="px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+              Switch profile
+            </p>
+            {inactiveProfiles.map((profile) => (
+              <button
+                key={profile.id}
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  onSwitchProfile(profile.id);
+                  onClose();
+                }}
+                className="flex min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-800"
+              >
+                <ProfileAvatar
+                  avatarId={profile.avatarId}
+                  avatarColor={profile.avatarColor}
+                  size="md"
+                />
+                <span className="font-medium">{profile.name}</span>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="border-b border-slate-100 dark:border-slate-800">
+        <CurrencySelector />
+        <ThemeToggle variant="menu" />
+        <SoundToggle />
+        <HapticsToggle />
+        <ShowMapProgressToggle />
+        <GlobeDayNightToggle />
+        <GlobeUsModeToggle />
+      </div>
+
+      <div className="p-2">
+        <Link
+          href="/profiles"
+          role="menuitem"
+          className="flex min-h-11 w-full items-center justify-center rounded-xl px-3 py-2 text-sm font-semibold text-emerald-700 transition-colors hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950/50"
+          onClick={onClose}
+        >
+          {hydrated && profiles.length === 0 ? "Create profile" : "Manage profiles"}
+        </Link>
+      </div>
+    </>
+  );
+}
+
 export function ProfileSwitcher({ compact = false }: { compact?: boolean }) {
   const pathname = usePathname();
   const { profiles, activeProfile, switchProfile, hydrated } = useProfiles();
   const displayProfile = hydrated ? activeProfile : null;
   const inactiveProfiles = profiles.filter((profile) => profile.id !== activeProfile?.id);
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    }
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
+    setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (!open) return;
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setOpen(false);
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [open]);
+
+  useEffect(() => {
+    if (!open || !compact) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [open, compact]);
+
+  useEffect(() => {
+    if (!open || compact) return;
+
+    function handlePointerDown(event: PointerEvent) {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
+        event.preventDefault();
+        setOpen(false);
+      }
+    }
+
+    document.addEventListener("pointerdown", handlePointerDown, true);
+    return () => document.removeEventListener("pointerdown", handlePointerDown, true);
+  }, [open, compact]);
 
   function closeMenu() {
     setOpen(false);
   }
+
+  const menuPanelContent = (
+    <MenuPanelContent
+      pathname={pathname}
+      displayProfile={displayProfile}
+      inactiveProfiles={inactiveProfiles}
+      hydrated={hydrated}
+      profiles={profiles}
+      onClose={closeMenu}
+      onSwitchProfile={switchProfile}
+    />
+  );
 
   return (
     <div className="relative" ref={ref}>
@@ -80,91 +235,41 @@ export function ProfileSwitcher({ compact = false }: { compact?: boolean }) {
         </svg>
       </button>
 
-      {open && (
-        <div
-          role="menu"
-          className="absolute right-0 z-50 mt-2 w-[min(20rem,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl dark:border-slate-700 dark:bg-slate-900"
-        >
-          <div className="border-b border-slate-100 p-2 dark:border-slate-800">
-            {displayProfile && (
-              <div className="mb-1 rounded-xl bg-emerald-50 px-3 py-2 dark:bg-emerald-950/50">
-                <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-400">
-                  Active profile
-                </p>
-                <div className="mt-1 flex min-h-11 items-center gap-3 text-sm">
-                  <ProfileAvatar
-                    avatarId={displayProfile.avatarId}
-                    avatarColor={displayProfile.avatarColor}
-                    size="md"
-                  />
-                  <span className="font-medium">{displayProfile.name}</span>
+      {open && compact && mounted
+        ? createPortal(
+            <div className="fixed inset-0 z-[60] sm:hidden">
+              <button
+                type="button"
+                aria-label="Close menu"
+                className="absolute inset-0 bg-slate-950/40"
+                onClick={closeMenu}
+              />
+              <div
+                role="menu"
+                className={cn(
+                  MENU_PANEL_CLASS,
+                  "absolute right-4 top-[calc(env(safe-area-inset-top)+3.75rem)] z-10 flex w-[min(20rem,calc(100vw-2rem))] max-h-[calc(100dvh-env(safe-area-inset-top)-4.5rem-env(safe-area-inset-bottom)-0.75rem)] flex-col",
+                )}
+              >
+                <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+                  {menuPanelContent}
                 </div>
               </div>
-            )}
+            </div>,
+            document.body,
+          )
+        : null}
 
-            <Link
-              href="/stats"
-              role="menuitem"
-              aria-current={pathname.startsWith("/stats") ? "page" : undefined}
-              className={cn(
-                "mb-1 flex min-h-11 items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors hover:bg-slate-50 dark:hover:bg-slate-800",
-                pathname.startsWith("/stats")
-                  ? "text-teal-700 dark:text-teal-300"
-                  : "text-slate-700 dark:text-slate-200",
-              )}
-              onClick={closeMenu}
-            >
-              <span className="text-lg leading-none" aria-hidden>📊</span>
-              Stats
-            </Link>
-
-            {inactiveProfiles.length > 0 && (
-              <div>
-                <p className="px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                  Switch profile
-                </p>
-                {inactiveProfiles.map((profile) => (
-                  <button
-                    key={profile.id}
-                    type="button"
-                    role="menuitem"
-                    onClick={() => {
-                      switchProfile(profile.id);
-                      closeMenu();
-                    }}
-                    className="flex min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-800"
-                  >
-                    <ProfileAvatar
-                      avatarId={profile.avatarId}
-                      avatarColor={profile.avatarColor}
-                      size="md"
-                    />
-                    <span className="font-medium">{profile.name}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          <div className="border-b border-slate-100 dark:border-slate-800">
-            <CurrencySelector />
-            <ThemeToggle variant="menu" />
-            <SoundToggle />
-            <HapticsToggle />
-            <ShowMapProgressToggle />
-            <GlobeDayNightToggle />
-            <GlobeUsModeToggle />
-          </div>
-
-          <div className="p-2">
-            <Link
-              href="/profiles"
-              role="menuitem"
-              className="flex min-h-11 w-full items-center justify-center rounded-xl px-3 py-2 text-sm font-semibold text-emerald-700 transition-colors hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950/50"
-              onClick={closeMenu}
-            >
-              {hydrated && profiles.length === 0 ? "Create profile" : "Manage profiles"}
-            </Link>
+      {open && !compact && (
+        <div
+          role="menu"
+          className={cn(
+            MENU_PANEL_CLASS,
+            "absolute right-0 z-50 mt-2 w-[min(20rem,calc(100vw-2rem))] max-h-[min(32rem,calc(100dvh-6rem))]",
+          )}
+        >
+          <div className="max-h-[min(32rem,calc(100dvh-6rem))] overflow-y-auto overscroll-contain">
+            {menuPanelContent}
           </div>
         </div>
       )}
