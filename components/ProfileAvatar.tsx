@@ -75,3 +75,25 @@ export function ProfileAvatarFlag({
     />
   );
 }
+
+export function ProfileAvatarDetails({
+  avatarId,
+  className,
+}: {
+  avatarId?: string;
+  className?: string;
+}) {
+  const avatar = getProfileAvatar(avatarId);
+  if (!avatar) return null;
+
+  return (
+    <span className={cn("block min-w-0 text-center", className)}>
+      <span className="block break-words text-[0.65rem] font-semibold leading-tight text-slate-700 dark:text-slate-200">
+        {avatar.culture}
+      </span>
+      <span className="mt-0.5 block break-words text-[0.6rem] leading-tight text-slate-500 dark:text-slate-400">
+        {avatar.location}
+      </span>
+    </span>
+  );
+}

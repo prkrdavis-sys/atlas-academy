@@ -2,17 +2,22 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ProfileAvatar, ProfileAvatarFlag } from "@/components/ProfileAvatar";
+import {
+  ProfileAvatar,
+  ProfileAvatarDetails,
+  ProfileAvatarFlag,
+} from "@/components/ProfileAvatar";
 import { ProfileAvatarPicker } from "@/components/ProfileAvatarPicker";
 import { Button } from "@/components/ui/Button";
 import { ProfileProgressInfoDialog } from "@/components/ProfileProgressInfoDialog";
 import { useProfiles } from "@/components/ProfileProvider";
+import { PROFILE_AVATARS } from "@/lib/profile-avatars";
 import { exportProfile, importProfile } from "@/lib/storage";
-import { AVATAR_COLORS, PROFILE_EMOJI } from "@/lib/types";
+import { PROFILE_EMOJI } from "@/lib/types";
 import type { Profile, ProfileAvatarId, ProfileAvatarSelection } from "@/lib/types";
 
-function getAvatarSelection(color: string, avatarId: ProfileAvatarId | null): ProfileAvatarSelection {
-  return avatarId ? { type: "portrait", avatarId } : { type: "color", color };
+function getAvatarSelection(avatarId: ProfileAvatarId): ProfileAvatarSelection {
+  return { type: "portrait", avatarId };
 }
 
 export default function ProfilesPage() {
@@ -20,12 +25,10 @@ export default function ProfilesPage() {
   const { profiles, activeProfile, hydrated, addProfile, switchProfile, removeProfile, updateProfile, refresh } =
     useProfiles();
   const [name, setName] = useState("");
-  const [color, setColor] = useState<string>(AVATAR_COLORS[0]);
-  const [avatarId, setAvatarId] = useState<ProfileAvatarId | null>(null);
+  const [avatarId, setAvatarId] = useState<ProfileAvatarId>(PROFILE_AVATARS[0].id);
   const [profileToModify, setProfileToModify] = useState<Profile | null>(null);
   const [editName, setEditName] = useState("");
-  const [editColor, setEditColor] = useState<string>(AVATAR_COLORS[0]);
-  const [editAvatarId, setEditAvatarId] = useState<ProfileAvatarId | null>(null);
+  const [editAvatarId, setEditAvatarId] = useState<ProfileAvatarId>(PROFILE_AVATARS[0].id);
   const [profileToDelete, setProfileToDelete] = useState<Profile | null>(null);
   const [showProgressInfo, setShowProgressInfo] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -34,10 +37,9 @@ export default function ProfilesPage() {
   function handleCreate(e: React.FormEvent) {
     e.preventDefault();
     if (!name.trim()) return;
-    addProfile(name, getAvatarSelection(color, avatarId));
+    addProfile(name, getAvatarSelection(avatarId));
     setName("");
-    setColor(AVATAR_COLORS[0]);
-    setAvatarId(null);
+    setAvatarId(PROFILE_AVATARS[0].id);
     setShowProgressInfo(true);
   }
 
@@ -49,8 +51,7 @@ export default function ProfilesPage() {
   function openModify(profile: Profile) {
     setProfileToModify(profile);
     setEditName(profile.name);
-    setEditColor(profile.avatarColor || AVATAR_COLORS[0]);
-    setEditAvatarId(profile.avatarId ?? null);
+    setEditAvatarId(profile.avatarId ?? PROFILE_AVATARS[0].id);
   }
 
   function handleModifySave(e: React.FormEvent) {
@@ -59,12 +60,8 @@ export default function ProfilesPage() {
     updateProfile({
       ...profileToModify,
       name: editName.trim(),
-      avatarColor: editAvatarId
-        ? ""
-        : AVATAR_COLORS.includes(editColor as (typeof AVATAR_COLORS)[number])
-          ? editColor
-          : profileToModify.avatarColor || AVATAR_COLORS[0],
-      avatarId: editAvatarId ?? undefined,
+      avatarColor: "",
+      avatarId: editAvatarId,
     });
     setProfileToModify(null);
   }
@@ -123,15 +120,22 @@ export default function ProfilesPage() {
             >
               {PROFILE_EMOJI}
             </div>
-            <p className="relative text-xs font-black uppercase tracking-[0.16em] text-emerald-100">
-              Get started
-            </p>
-            <h2 className="relative mt-1 font-display text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
-              Create a profile
-            </h2>
-            <p className="relative mt-2 max-w-md text-sm leading-relaxed text-emerald-50">
-              Pick a name and avatar — it only takes a few seconds.
-            </p>
+            <div className="relative flex items-start justify-between gap-3">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.16em] text-emerald-100">
+                  Get started
+                </p>
+                <h2 className="mt-1 font-display text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
+                  Create a profile
+                </h2>
+                <p className="mt-2 max-w-md text-sm leading-relaxed text-emerald-50">
+                  Pick a name and avatar — it only takes a few seconds.
+                </p>
+              </div>
+              <Button type="submit" size="lg" className="shrink-0">
+                Create profile
+              </Button>
+            </div>
           </div>
           <div className="space-y-5 bg-white/95 p-4 dark:bg-slate-900/95 sm:p-6">
             <div>
@@ -148,17 +152,9 @@ export default function ProfilesPage() {
               />
             </div>
             <ProfileAvatarPicker
-              color={color}
               avatarId={avatarId}
-              onColorChange={(nextColor) => {
-                setColor(nextColor);
-                setAvatarId(null);
-              }}
               onAvatarChange={setAvatarId}
             />
-            <Button type="submit" size="lg" className="w-full">
-              Create profile
-            </Button>
           </div>
         </form>
       ) : (
@@ -183,6 +179,7 @@ export default function ProfilesPage() {
                         avatarId={profile.avatarId}
                         alt={`Primary location flag for ${profile.name}'s portrait`}
                       />
+                      <ProfileAvatarDetails avatarId={profile.avatarId} />
                     </div>
                     <div>
                       <p className="font-medium">{profile.name}</p>
@@ -228,21 +225,26 @@ export default function ProfilesPage() {
             className="overflow-hidden rounded-[1.75rem] border-2 border-emerald-200 bg-white/90 shadow-md backdrop-blur dark:border-emerald-800 dark:bg-slate-900/90"
           >
             <div className="border-b border-emerald-100 bg-gradient-to-r from-emerald-50 to-teal-50 px-4 py-4 dark:border-emerald-900/50 dark:from-emerald-950/60 dark:to-teal-950/40 sm:px-6">
-              <div className="flex items-start gap-3">
-                <span
-                  aria-hidden
-                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-500 text-xl shadow-sm"
-                >
-                  {PROFILE_EMOJI}
-                </span>
-                <div>
-                  <h2 className="font-display text-lg font-extrabold text-slate-900 dark:text-slate-100 sm:text-xl">
-                    Create a profile
-                  </h2>
-                  <p className="mt-0.5 text-sm text-slate-600 dark:text-slate-400">
-                    Add another player on this device.
-                  </p>
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start gap-3">
+                  <span
+                    aria-hidden
+                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-500 text-xl shadow-sm"
+                  >
+                    {PROFILE_EMOJI}
+                  </span>
+                  <div>
+                    <h2 className="font-display text-lg font-extrabold text-slate-900 dark:text-slate-100 sm:text-xl">
+                      Create a profile
+                    </h2>
+                    <p className="mt-0.5 text-sm text-slate-600 dark:text-slate-400">
+                      Add another player on this device.
+                    </p>
+                  </div>
                 </div>
+                <Button type="submit" className="shrink-0">
+                  Create profile
+                </Button>
               </div>
             </div>
             <div className="space-y-5 p-4 sm:p-6">
@@ -259,17 +261,9 @@ export default function ProfilesPage() {
                 />
               </div>
               <ProfileAvatarPicker
-                color={color}
                 avatarId={avatarId}
-                onColorChange={(nextColor) => {
-                  setColor(nextColor);
-                  setAvatarId(null);
-                }}
                 onAvatarChange={setAvatarId}
               />
-              <Button type="submit" className="w-full">
-                Create profile
-              </Button>
             </div>
           </form>
         </>
@@ -353,12 +347,7 @@ export default function ProfilesPage() {
                 />
               </div>
               <ProfileAvatarPicker
-                color={editColor}
                 avatarId={editAvatarId}
-                onColorChange={(nextColor) => {
-                  setEditColor(nextColor);
-                  setEditAvatarId(null);
-                }}
                 onAvatarChange={setEditAvatarId}
               />
             </div>
