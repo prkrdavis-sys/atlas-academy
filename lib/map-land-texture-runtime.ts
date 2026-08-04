@@ -23,6 +23,26 @@ let usaMetaPromise: Promise<UsaMapProjectionMeta> | null = null;
 const cropCache = new Map<string, string>();
 const surfaceCropCache = new Map<string, { landHref: string; oceanHref: string }>();
 
+/**
+ * Runtime projection sampling is intentionally reserved for non-touch
+ * devices. Mobile Safari has a much smaller page-process memory budget, and
+ * decoding the source textures plus several working canvases can terminate
+ * the page before the map is visible.
+ */
+export function shouldUseRuntimeMapTexture(): boolean {
+  if (typeof window === "undefined" || typeof navigator === "undefined") return true;
+
+  const deviceMemory = (navigator as Navigator & { deviceMemory?: number }).deviceMemory;
+  const hasCoarsePointer =
+    navigator.maxTouchPoints > 0 ||
+    (typeof window.matchMedia === "function" && window.matchMedia("(pointer: coarse)").matches);
+  const smallestScreenSide = Math.min(window.screen.width, window.screen.height);
+
+  if (deviceMemory !== undefined && deviceMemory <= 4) return false;
+  if (hasCoarsePointer && smallestScreenSide <= 900) return false;
+  return true;
+}
+
 function loadMapLandTextureMeta(): Promise<MapLandTextureMeta> {
   if (!metaPromise) {
     metaPromise = fetch(MAP_LAND_TEXTURE_META_PATH)
@@ -236,18 +256,28 @@ export async function renderMapSurfaceTextureCrop({
   const invert = projection.invert?.bind(projection);
   if (!invert) throw new Error(`${templateKey} projection does not support invert()`);
 
-  const sourceData = (source: CanvasImageSource, sourceWidth: number, sourceHeight: number) => {
+  const sourceData = (
+    source: CanvasImageSource,
+    sourceWidth: number,
+    sourceHeight: number,
+    maxWidth: number,
+  ) => {
+    const scale = Math.min(1, maxWidth / Math.max(sourceWidth, 1));
+    const width = Math.max(1, Math.round(sourceWidth * scale));
+    const height = Math.max(1, Math.round(sourceHeight * scale));
     const canvas = document.createElement("canvas");
-    canvas.width = sourceWidth;
-    canvas.height = sourceHeight;
+    canvas.width = width;
+    canvas.height = height;
     const context = canvas.getContext("2d", { willReadFrequently: true });
     if (!context) throw new Error("Could not read map texture");
-    context.drawImage(source, 0, 0, sourceWidth, sourceHeight);
-    return context.getImageData(0, 0, sourceWidth, sourceHeight);
+    context.drawImage(source, 0, 0, width, height);
+    return context.getImageData(0, 0, width, height);
   };
-  const landData = sourceData(landImage, landImage.naturalWidth, landImage.naturalHeight);
+  // The output is at most 1280px wide, so retaining full-resolution source
+  // ImageData only multiplies peak memory without improving the crop.
+  const landData = sourceData(landImage, landImage.naturalWidth, landImage.naturalHeight, 2048);
   const depthCanvas = getOceanDepthCanvas(depthImage, isDark);
-  const oceanData = sourceData(depthCanvas, depthCanvas.width, depthCanvas.height);
+  const oceanData = sourceData(depthCanvas, depthCanvas.width, depthCanvas.height, 1024);
   const landCanvas = document.createElement("canvas");
   const oceanCanvas = document.createElement("canvas");
   landCanvas.width = oceanCanvas.width = width;

@@ -36,7 +36,10 @@ import {
   MAP_LAND_TEXTURE_PATH,
   MAP_LAND_TEXTURE_WIDTH,
 } from "@/lib/map-land-texture";
-import { renderMapSurfaceTextureCrop } from "@/lib/map-land-texture-runtime";
+import {
+  renderMapSurfaceTextureCrop,
+  shouldUseRuntimeMapTexture,
+} from "@/lib/map-land-texture-runtime";
 import { getCountryByCode } from "@/lib/countries";
 import { isStateCode } from "@/lib/scope";
 import type { Country } from "@/lib/types";
@@ -116,6 +119,8 @@ export function preloadLearnCardMap(countryCode: string, isDark: boolean): Promi
   if (existing) return existing;
 
   const promise = (async () => {
+    if (!shouldUseRuntimeMapTexture()) return;
+
     const country = getCountryByCode(countryCode);
     if (!country || !countryHasContextMap(country)) return;
 
@@ -262,6 +267,17 @@ export function ContextMapSvg({
     oceanHref: string;
   } | null>(null);
 
+  const [surfaceTextureAllowed, setSurfaceTextureAllowed] = useState(false);
+
+  useEffect(() => {
+    // Keep the server and first client render flat; touch devices never start
+    // the high-memory projection sampler.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSurfaceTextureAllowed(shouldUseRuntimeMapTexture());
+  }, []);
+
+  const textureEnabled = landTexture && surfaceTextureAllowed;
+
   useEffect(() => {
     onPathClickRef.current = onPathClick;
     onBackgroundClickRef.current = onBackgroundClick;
@@ -281,7 +297,7 @@ export function ContextMapSvg({
   }, [interactive, onPathClick, onBackgroundClick]);
 
   useEffect(() => {
-    if (!landTexture) return;
+    if (!textureEnabled) return;
 
     let cancelled = false;
     renderMapSurfaceTextureCrop({
@@ -302,7 +318,7 @@ export function ContextMapSvg({
     return () => {
       cancelled = true;
     };
-  }, [landTexture, mapTemplateKey, viewBoxX, viewBoxY, viewBoxWidth, viewBoxHeight, isDark]);
+  }, [textureEnabled, mapTemplateKey, viewBoxX, viewBoxY, viewBoxWidth, viewBoxHeight, isDark]);
 
   const vectorEffect = scaleStrokesWithMap ? undefined : "non-scaling-stroke";
   const styledPaths = orderedPaths.map((path) => {
@@ -314,10 +330,10 @@ export function ContextMapSvg({
       viewBoxWidth,
       viewBoxHeight,
       scaleStrokesWithMap,
-      landTexture,
+      textureEnabled,
     );
     const tintOpacity =
-      !landTexture
+      !textureEnabled
         ? 0
         : resolvedStyle
           ? 0.46
@@ -331,8 +347,8 @@ export function ContextMapSvg({
       path,
       style,
       strokeWidth,
-      stroke: landTexture ? LAND_TEXTURE_BORDER_STROKE : style.stroke,
-      fill: landTexture ? `url(#${landPatternId})` : style.fill,
+      stroke: textureEnabled ? LAND_TEXTURE_BORDER_STROKE : style.stroke,
+      fill: textureEnabled ? `url(#${landPatternId})` : style.fill,
       tintOpacity,
     };
   });
@@ -347,7 +363,7 @@ export function ContextMapSvg({
       shapeRendering="geometricPrecision"
     >
       {includeMasteryFxDefs ? <MapMasteryFxDefs /> : null}
-      {landTexture ? (
+      {textureEnabled ? (
         <defs>
           {surfaceCrop ? (
             <>
@@ -415,9 +431,9 @@ export function ContextMapSvg({
         y={viewBoxY}
         width={viewBoxWidth}
         height={viewBoxHeight}
-        fill={surfaceCrop ? `url(#${oceanPatternId})` : palette.ocean}
+        fill={surfaceCrop && textureEnabled ? `url(#${oceanPatternId})` : palette.ocean}
       />
-      {landTexture ? (
+      {textureEnabled ? (
         <>
           {styledPaths.map(({ path, style, fill }) => (
             <path
