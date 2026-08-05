@@ -3,10 +3,10 @@ import { getProfileAvatar } from "@/lib/profile-avatars";
 import { cn } from "@/lib/utils";
 
 const SIZE_CLASSES = {
-  sm: "h-7 w-7",
-  md: "h-8 w-8",
-  lg: "h-10 w-10",
-  xl: "h-16 w-16",
+  sm: "h-9 w-9",
+  md: "h-11 w-11",
+  lg: "h-14 w-14",
+  xl: "h-28 w-28",
 } as const;
 
 type ProfileAvatarProps = {

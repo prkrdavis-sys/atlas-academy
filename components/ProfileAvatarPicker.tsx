@@ -27,6 +27,7 @@ export function ProfileAvatarPicker({
           <ProfileAvatar
             avatarId={selectedPortrait?.id}
             size="xl"
+            className="h-32 w-32"
             alt=""
           />
           <ProfileAvatarFlag avatarId={selectedPortrait?.id} alt="" />
@@ -54,13 +55,18 @@ export function ProfileAvatarPicker({
                 aria-pressed={selected}
                 title={label}
                 className={cn(
-                  "flex min-w-0 flex-col items-center gap-1 rounded-2xl border-2 px-1.5 py-2 transition",
+                  "flex min-w-0 flex-col items-center gap-1 rounded-2xl border-2 px-1 py-1.5 transition",
                   selected
                     ? "border-emerald-500 bg-emerald-50 ring-2 ring-emerald-200 dark:border-emerald-400 dark:bg-emerald-950/40 dark:ring-emerald-800"
                     : "border-slate-200 bg-white hover:border-sky-300 hover:bg-sky-50/60 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-sky-600 dark:hover:bg-sky-950/30",
                 )}
               >
-                <ProfileAvatar avatarId={avatar.id} size="xl" alt="" />
+                <ProfileAvatar
+                  avatarId={avatar.id}
+                  size="xl"
+                  className="h-auto w-[min(100%,8rem)]"
+                  alt=""
+                />
                 <ProfileAvatarFlag avatarId={avatar.id} alt="" />
                 <ProfileAvatarDetails avatarId={avatar.id} />
               </button>

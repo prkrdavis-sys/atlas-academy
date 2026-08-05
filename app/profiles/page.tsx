@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
 import {
@@ -35,14 +36,25 @@ export default function ProfilesPage() {
   const [showProgressInfo, setShowProgressInfo] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   const [accountError, setAccountError] = useState("");
+  const [mounted, setMounted] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const isNewUser = hydrated && profiles.length === 0;
+  const dialogOpen = Boolean(profileToModify || profileToDelete);
 
   useEffect(() => {
-    if (!profileToModify) return;
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!dialogOpen) return;
 
     function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") setProfileToModify(null);
+      if (event.key !== "Escape") return;
+      if (profileToDelete) {
+        setProfileToDelete(null);
+        return;
+      }
+      setProfileToModify(null);
     }
 
     document.addEventListener("keydown", handleKeyDown);
@@ -53,7 +65,7 @@ export default function ProfilesPage() {
       document.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = previousOverflow;
     };
-  }, [profileToModify]);
+  }, [dialogOpen, profileToDelete]);
 
   function handleCreate(e: React.FormEvent) {
     e.preventDefault();
@@ -351,117 +363,127 @@ export default function ProfilesPage() {
         </div>
       </details>
 
-      {profileToModify && (
-        <div className="fixed inset-0 z-[80] flex items-center justify-center px-4 py-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))]">
-          <button
-            type="button"
-            aria-label="Close modify profile"
-            className="absolute inset-0 bg-slate-950/45 backdrop-blur-sm"
+      {mounted &&
+        profileToModify &&
+        createPortal(
+          <div
+            className="fixed inset-0 z-[80] flex items-center justify-center bg-slate-950/45 px-4 py-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))] backdrop-blur-sm"
             onClick={() => setProfileToModify(null)}
-          />
-          <form
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="modify-profile-title"
-            onSubmit={handleModifySave}
-            className="animate-card-pop-in relative z-10 flex w-full max-w-sm max-h-[calc(100dvh-env(safe-area-inset-top)-env(safe-area-inset-bottom)-2rem)] flex-col overflow-hidden rounded-[2rem] border-2 border-slate-200 bg-white p-5 shadow-2xl dark:border-slate-700 dark:bg-slate-900 sm:p-6"
+            role="presentation"
           >
-            <h3 id="modify-profile-title" className="shrink-0 font-display text-2xl font-extrabold text-slate-900 dark:text-slate-100">
-              Modify profile
-            </h3>
-            <div className="mt-4 min-h-0 flex-1 overflow-y-auto overscroll-contain">
-              <div className="space-y-4">
-                <div>
-                  <label htmlFor="modify-profile-name" className="mb-1 block text-sm font-medium">
-                    Name
-                  </label>
-                  <input
-                    id="modify-profile-name"
-                    value={editName}
-                    onChange={(e) => setEditName(e.target.value)}
-                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
-                    placeholder="Your name"
-                    autoFocus
+            <form
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="modify-profile-title"
+              onSubmit={handleModifySave}
+              onClick={(event) => event.stopPropagation()}
+              className="animate-card-pop-in relative flex w-full max-w-sm max-h-[calc(100dvh-env(safe-area-inset-top)-env(safe-area-inset-bottom)-2rem)] flex-col overflow-hidden rounded-[2rem] border-2 border-slate-200 bg-white p-5 shadow-2xl dark:border-slate-700 dark:bg-slate-900 sm:p-6"
+            >
+              <h3 id="modify-profile-title" className="shrink-0 font-display text-2xl font-extrabold text-slate-900 dark:text-slate-100">
+                Modify profile
+              </h3>
+              <div className="mt-4 min-h-0 flex-1 overflow-y-auto overscroll-contain">
+                <div className="space-y-4">
+                  <div>
+                    <label htmlFor="modify-profile-name" className="mb-1 block text-sm font-medium">
+                      Name
+                    </label>
+                    <input
+                      id="modify-profile-name"
+                      value={editName}
+                      onChange={(e) => setEditName(e.target.value)}
+                      className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+                      placeholder="Your name"
+                      autoFocus
+                    />
+                  </div>
+                  <ProfileAvatarPicker
+                    avatarId={editAvatarId}
+                    onAvatarChange={setEditAvatarId}
                   />
                 </div>
-                <ProfileAvatarPicker
-                  avatarId={editAvatarId}
-                  onAvatarChange={setEditAvatarId}
-                />
               </div>
-            </div>
-            <div className="mt-6 grid shrink-0 grid-cols-2 gap-3">
-              <Button type="button" variant="secondary" onClick={() => setProfileToModify(null)}>
-                Cancel
-              </Button>
-              <Button type="submit" disabled={!editName.trim()}>
-                Save
-              </Button>
-            </div>
-            <div className="mt-5 shrink-0 border-t border-slate-200 pt-4 dark:border-slate-700">
-              <div className="flex items-end justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                    Account username
-                  </p>
-                  <p className="mt-1 truncate text-sm font-medium text-slate-800 dark:text-slate-200">
-                    {user?.email ?? "Unavailable"}
-                  </p>
-                </div>
-                <Button type="button" variant="secondary" onClick={handleLogout} disabled={loggingOut}>
-                  {loggingOut ? "Logging out…" : "Log out"}
+              <div className="mt-6 grid shrink-0 grid-cols-2 gap-3">
+                <Button type="button" variant="secondary" onClick={() => setProfileToModify(null)}>
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={!editName.trim()}>
+                  Save
                 </Button>
               </div>
-              {accountError && (
-                <p role="alert" className="mt-2 text-xs text-rose-600 dark:text-rose-400">
-                  {accountError}
-                </p>
-              )}
-            </div>
-          </form>
-        </div>
-      )}
+              <div className="mt-5 shrink-0 border-t border-slate-200 pt-4 dark:border-slate-700">
+                <div className="flex items-end justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                      Account username
+                    </p>
+                    <p className="mt-1 truncate text-sm font-medium text-slate-800 dark:text-slate-200">
+                      {user?.email ?? "Unavailable"}
+                    </p>
+                  </div>
+                  <Button type="button" variant="secondary" onClick={handleLogout} disabled={loggingOut}>
+                    {loggingOut ? "Logging out…" : "Log out"}
+                  </Button>
+                </div>
+                {accountError && (
+                  <p role="alert" className="mt-2 text-xs text-rose-600 dark:text-rose-400">
+                    {accountError}
+                  </p>
+                )}
+              </div>
+            </form>
+          </div>,
+          document.body,
+        )}
 
-      {profileToDelete && (
-        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-slate-950/45 px-4 backdrop-blur-sm">
+      {mounted &&
+        profileToDelete &&
+        createPortal(
           <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="delete-profile-title"
-            aria-describedby="delete-profile-description"
-            className="animate-card-pop-in w-full max-w-sm rounded-[2rem] border-2 border-rose-100 bg-white p-5 shadow-2xl dark:border-rose-900 dark:bg-slate-900 sm:p-6"
+            className="fixed inset-0 z-[80] flex items-center justify-center bg-slate-950/45 px-4 backdrop-blur-sm"
+            onClick={() => setProfileToDelete(null)}
+            role="presentation"
           >
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-rose-100 text-rose-600 dark:bg-rose-950/50 dark:text-rose-400">
-              <svg aria-hidden="true" className="h-8 w-8" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M8.25 4.5A2.25 2.25 0 0 1 10.5 2.25h3A2.25 2.25 0 0 1 15.75 4.5v.75h3a.75.75 0 0 1 0 1.5H5.25a.75.75 0 0 1 0-1.5h3V4.5Zm1.5.75h4.5V4.5a.75.75 0 0 0-.75-.75h-3a.75.75 0 0 0-.75.75v.75ZM6.75 8.25h10.5l-.64 11.02A2.625 2.625 0 0 1 13.99 21.75H10a2.625 2.625 0 0 1-2.62-2.48L6.75 8.25Zm3.75 2.25a.75.75 0 0 0-.75.75v6a.75.75 0 0 0 1.5 0v-6a.75.75 0 0 0-.75-.75Zm3.75.75a.75.75 0 0 0-1.5 0v6a.75.75 0 0 0 1.5 0v-6Z" />
-              </svg>
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="delete-profile-title"
+              aria-describedby="delete-profile-description"
+              onClick={(event) => event.stopPropagation()}
+              className="animate-card-pop-in relative w-full max-w-sm rounded-[2rem] border-2 border-rose-100 bg-white p-5 shadow-2xl dark:border-rose-900 dark:bg-slate-900 sm:p-6"
+            >
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-rose-100 text-rose-600 dark:bg-rose-950/50 dark:text-rose-400">
+                <svg aria-hidden="true" className="h-8 w-8" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M8.25 4.5A2.25 2.25 0 0 1 10.5 2.25h3A2.25 2.25 0 0 1 15.75 4.5v.75h3a.75.75 0 0 1 0 1.5H5.25a.75.75 0 0 1 0-1.5h3V4.5Zm1.5.75h4.5V4.5a.75.75 0 0 0-.75-.75h-3a.75.75 0 0 0-.75.75v.75ZM6.75 8.25h10.5l-.64 11.02A2.625 2.625 0 0 1 13.99 21.75H10a2.625 2.625 0 0 1-2.62-2.48L6.75 8.25Zm3.75 2.25a.75.75 0 0 0-.75.75v6a.75.75 0 0 0 1.5 0v-6a.75.75 0 0 0-.75-.75Zm3.75.75a.75.75 0 0 0-1.5 0v6a.75.75 0 0 0 1.5 0v-6Z" />
+                </svg>
+              </div>
+              <div className="text-center">
+                <h3 id="delete-profile-title" className="font-display text-2xl font-extrabold text-slate-900 dark:text-slate-100">
+                  Delete profile?
+                </h3>
+                <p id="delete-profile-description" className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">
+                  This will permanently delete <span className="font-bold text-slate-800 dark:text-slate-200">{profileToDelete.name}</span> and all saved progress.
+                </p>
+              </div>
+              <div className="mt-6 grid grid-cols-2 gap-3">
+                <Button type="button" variant="secondary" onClick={() => setProfileToDelete(null)}>
+                  Cancel
+                </Button>
+                <Button
+                  type="button"
+                  variant="danger"
+                  onClick={() => {
+                    removeProfile(profileToDelete.id);
+                    setProfileToDelete(null);
+                  }}
+                >
+                  Delete
+                </Button>
+              </div>
             </div>
-            <div className="text-center">
-              <h3 id="delete-profile-title" className="font-display text-2xl font-extrabold text-slate-900 dark:text-slate-100">
-                Delete profile?
-              </h3>
-              <p id="delete-profile-description" className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">
-                This will permanently delete <span className="font-bold text-slate-800 dark:text-slate-200">{profileToDelete.name}</span> and all saved progress.
-              </p>
-            </div>
-            <div className="mt-6 grid grid-cols-2 gap-3">
-              <Button type="button" variant="secondary" onClick={() => setProfileToDelete(null)}>
-                Cancel
-              </Button>
-              <Button
-                type="button"
-                variant="danger"
-                onClick={() => {
-                  removeProfile(profileToDelete.id);
-                  setProfileToDelete(null);
-                }}
-              >
-                Delete
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }
