@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { AppAnalytics } from "@/components/AppAnalytics";
+import { AuthProvider } from "@/components/AuthProvider";
 import { CurrencyProvider } from "@/components/CurrencyProvider";
 import { Geist, Geist_Mono, Nunito } from "next/font/google";
 import { AppShell } from "@/components/AppShell";
@@ -76,16 +77,18 @@ export default function RootLayout({
       <body className="min-h-full">
         <ThemeProvider>
           <CurrencyProvider>
-            <ProfileProvider>
-              <AudioUnlock />
-              <a
-                href="#main-content"
-                className="fixed left-3 top-3 z-[70] -translate-y-20 rounded-xl bg-slate-900 px-4 py-2 text-sm font-bold text-white transition-transform focus:translate-y-0 dark:bg-slate-100 dark:text-slate-900"
-              >
-                Skip to content
-              </a>
-              <AppShell>{children}</AppShell>
-            </ProfileProvider>
+            <AuthProvider>
+              <ProfileProvider>
+                <AudioUnlock />
+                <a
+                  href="#main-content"
+                  className="fixed left-3 top-3 z-[70] -translate-y-20 rounded-xl bg-slate-900 px-4 py-2 text-sm font-bold text-white transition-transform focus:translate-y-0 dark:bg-slate-100 dark:text-slate-900"
+                >
+                  Skip to content
+                </a>
+                <AppShell>{children}</AppShell>
+              </ProfileProvider>
+            </AuthProvider>
           </CurrencyProvider>
         </ThemeProvider>
         <AppAnalytics />

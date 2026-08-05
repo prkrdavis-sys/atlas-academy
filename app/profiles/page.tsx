@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/components/AuthProvider";
 import {
   ProfileAvatar,
   ProfileAvatarDetails,
@@ -22,6 +23,7 @@ function getAvatarSelection(avatarId: ProfileAvatarId): ProfileAvatarSelection {
 
 export default function ProfilesPage() {
   const router = useRouter();
+  const { user, signOut } = useAuth();
   const { profiles, activeProfile, hydrated, addProfile, switchProfile, removeProfile, updateProfile, refresh } =
     useProfiles();
   const [name, setName] = useState("");
@@ -31,8 +33,27 @@ export default function ProfilesPage() {
   const [editAvatarId, setEditAvatarId] = useState<ProfileAvatarId>(PROFILE_AVATARS[0].id);
   const [profileToDelete, setProfileToDelete] = useState<Profile | null>(null);
   const [showProgressInfo, setShowProgressInfo] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
+  const [accountError, setAccountError] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
   const isNewUser = hydrated && profiles.length === 0;
+
+  useEffect(() => {
+    if (!profileToModify) return;
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setProfileToModify(null);
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [profileToModify]);
 
   function handleCreate(e: React.FormEvent) {
     e.preventDefault();
@@ -64,6 +85,16 @@ export default function ProfilesPage() {
       avatarId: editAvatarId,
     });
     setProfileToModify(null);
+  }
+
+  async function handleLogout() {
+    setAccountError("");
+    setLoggingOut(true);
+    const result = await signOut();
+    setLoggingOut(false);
+    if (result.error) {
+      setAccountError(result.error);
+    }
   }
 
   function handleExport(profile: Profile) {
@@ -99,8 +130,8 @@ export default function ProfilesPage() {
         <h1 className="font-display text-2xl font-extrabold sm:text-3xl">Profiles</h1>
         <p className="mt-1 text-sm text-slate-600 dark:text-slate-400 sm:text-base">
           {isNewUser
-            ? "Create a local player profile to save streaks, stats, and daily progress on this device."
-            : "Create and switch between local player profiles. No password needed."}
+            ? "Create a player profile to save streaks, stats, and daily progress to your account."
+            : "Create and switch between player profiles in this account."}
         </p>
       </div>
 
@@ -238,7 +269,7 @@ export default function ProfilesPage() {
                       Create a profile
                     </h2>
                     <p className="mt-0.5 text-sm text-slate-600 dark:text-slate-400">
-                      Add another player on this device.
+                      Add another player to this account.
                     </p>
                   </div>
                 </div>
@@ -321,43 +352,71 @@ export default function ProfilesPage() {
       </details>
 
       {profileToModify && (
-        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-slate-950/45 px-4 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[80] flex items-center justify-center px-4 py-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))]">
+          <button
+            type="button"
+            aria-label="Close modify profile"
+            className="absolute inset-0 bg-slate-950/45 backdrop-blur-sm"
+            onClick={() => setProfileToModify(null)}
+          />
           <form
             role="dialog"
             aria-modal="true"
             aria-labelledby="modify-profile-title"
             onSubmit={handleModifySave}
-            className="animate-card-pop-in w-full max-w-sm rounded-[2rem] border-2 border-slate-200 bg-white p-5 shadow-2xl dark:border-slate-700 dark:bg-slate-900 sm:p-6"
+            className="animate-card-pop-in relative z-10 flex w-full max-w-sm max-h-[calc(100dvh-env(safe-area-inset-top)-env(safe-area-inset-bottom)-2rem)] flex-col overflow-hidden rounded-[2rem] border-2 border-slate-200 bg-white p-5 shadow-2xl dark:border-slate-700 dark:bg-slate-900 sm:p-6"
           >
-            <h3 id="modify-profile-title" className="font-display text-2xl font-extrabold text-slate-900 dark:text-slate-100">
+            <h3 id="modify-profile-title" className="shrink-0 font-display text-2xl font-extrabold text-slate-900 dark:text-slate-100">
               Modify profile
             </h3>
-            <div className="mt-4 space-y-4">
-              <div>
-                <label htmlFor="modify-profile-name" className="mb-1 block text-sm font-medium">
-                  Name
-                </label>
-                <input
-                  id="modify-profile-name"
-                  value={editName}
-                  onChange={(e) => setEditName(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
-                  placeholder="Your name"
-                  autoFocus
+            <div className="mt-4 min-h-0 flex-1 overflow-y-auto overscroll-contain">
+              <div className="space-y-4">
+                <div>
+                  <label htmlFor="modify-profile-name" className="mb-1 block text-sm font-medium">
+                    Name
+                  </label>
+                  <input
+                    id="modify-profile-name"
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+                    placeholder="Your name"
+                    autoFocus
+                  />
+                </div>
+                <ProfileAvatarPicker
+                  avatarId={editAvatarId}
+                  onAvatarChange={setEditAvatarId}
                 />
               </div>
-              <ProfileAvatarPicker
-                avatarId={editAvatarId}
-                onAvatarChange={setEditAvatarId}
-              />
             </div>
-            <div className="mt-6 grid grid-cols-2 gap-3">
+            <div className="mt-6 grid shrink-0 grid-cols-2 gap-3">
               <Button type="button" variant="secondary" onClick={() => setProfileToModify(null)}>
                 Cancel
               </Button>
               <Button type="submit" disabled={!editName.trim()}>
                 Save
               </Button>
+            </div>
+            <div className="mt-5 shrink-0 border-t border-slate-200 pt-4 dark:border-slate-700">
+              <div className="flex items-end justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                    Account username
+                  </p>
+                  <p className="mt-1 truncate text-sm font-medium text-slate-800 dark:text-slate-200">
+                    {user?.email ?? "Unavailable"}
+                  </p>
+                </div>
+                <Button type="button" variant="secondary" onClick={handleLogout} disabled={loggingOut}>
+                  {loggingOut ? "Logging out…" : "Log out"}
+                </Button>
+              </div>
+              {accountError && (
+                <p role="alert" className="mt-2 text-xs text-rose-600 dark:text-rose-400">
+                  {accountError}
+                </p>
+              )}
             </div>
           </form>
         </div>

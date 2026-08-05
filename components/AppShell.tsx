@@ -1,19 +1,66 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { AppHeader } from "@/components/AppHeader";
+import { useAuth } from "@/components/AuthProvider";
+import { useProfiles } from "@/components/ProfileProvider";
 import { WelcomeDialog } from "@/components/WelcomeDialog";
 import { isMapRoute } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, hydrated: authHydrated } = useAuth();
+  const { syncError } = useProfiles();
+  const isAuthRoute = pathname === "/auth";
   const isActiveGameRoute = pathname.startsWith("/play/") && !pathname.startsWith("/play/setup");
   // Home and map share one persistent globe page that slides between panes.
   const isGlobeExperienceRoute = pathname === "/" || isMapRoute(pathname);
 
+  useEffect(() => {
+    if (!authHydrated) return;
+    if (!user && !isAuthRoute) {
+      router.replace("/auth");
+    } else if (user && isAuthRoute) {
+      router.replace("/");
+    }
+  }, [authHydrated, isAuthRoute, router, user]);
+
+  if (!authHydrated) {
+    return (
+      <main className="flex min-h-dvh items-center justify-center bg-slate-950 text-sm text-slate-300">
+        Loading Atlas Academy…
+      </main>
+    );
+  }
+
+  if (isAuthRoute) {
+    return <main id="main-content">{children}</main>;
+  }
+
+  if (!user) {
+    return (
+      <main className="flex min-h-dvh items-center justify-center bg-slate-950 text-sm text-slate-300">
+        Redirecting to sign in…
+      </main>
+    );
+  }
+
   return (
     <div className="min-h-dvh">
+      {syncError && (
+        <div
+          role="alert"
+          className="fixed inset-x-3 top-3 z-[90] mx-auto max-w-xl rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900 shadow-xl dark:border-amber-700 dark:bg-amber-950/90 dark:text-amber-100"
+        >
+          <p className="font-bold">Cloud saving is temporarily unavailable.</p>
+          <p className="mt-0.5">
+            Your progress is still cached on this device and will retry on the next change or reload. {syncError}
+          </p>
+        </div>
+      )}
       {!isActiveGameRoute && <WelcomeDialog />}
       <AppHeader />
       <main

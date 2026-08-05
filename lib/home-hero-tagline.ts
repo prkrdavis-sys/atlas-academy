@@ -104,8 +104,8 @@ function buildUxProTips(scope: GameScope): string[] {
     "Turn on Globe day/night in the profile menu for real-time sunlight on the 3D globe.",
     "Switch USA on the globe between 50 states or one country from the profile menu.",
 
-    "Use Backup & restore on Profiles to save your progress to a file on this device.",
-    "Multiple profiles can live on one device — switch between them in the profile menu.",
+    "Use Backup & restore on Profiles to keep a portable copy of your account's progress.",
+    "Multiple player profiles can live in one account — switch between them in the profile menu.",
 
     "Use Map, Play, and Library in the bottom nav (mobile) or header tabs (desktop) to jump around.",
   ];

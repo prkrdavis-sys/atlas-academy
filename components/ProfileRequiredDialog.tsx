@@ -62,7 +62,7 @@ export function ProfileRequiredDialog({ open, onClose }: ProfileRequiredDialogPr
           id="profile-required-description"
           className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-300"
         >
-          Atlas Academy saves your streaks, stats, and daily challenge progress on this device.
+          Atlas Academy saves your streaks, stats, and daily challenge progress to your account.
           Pick a name and avatar to get started — it only takes a few seconds.
         </p>
         <div className="mt-6 flex flex-col gap-3 sm:flex-row">

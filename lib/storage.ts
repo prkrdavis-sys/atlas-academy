@@ -46,6 +46,39 @@ import {
 
 const STORAGE_KEY = "atlas-academy";
 const LEGACY_STORAGE_KEY = "geography-game";
+export const PROFILE_STORAGE_CHANGE_EVENT = "atlas-academy-profile-storage-change";
+
+type SaveStateOptions = {
+  notify?: boolean;
+  deletedProfileId?: string;
+};
+
+type StorageChangeDetail = {
+  deletedProfileId?: string;
+};
+
+let activeStorageAccountId: string | null = null;
+
+function getStorageKey() {
+  return activeStorageAccountId ? `${STORAGE_KEY}:${activeStorageAccountId}` : STORAGE_KEY;
+}
+
+export function setStorageAccount(accountId: string | null) {
+  activeStorageAccountId = accountId;
+}
+
+export function getStorageAccount() {
+  return activeStorageAccountId;
+}
+
+function notifyStateChange(detail: StorageChangeDetail = {}) {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(
+    new CustomEvent<StorageChangeDetail>(PROFILE_STORAGE_CHANGE_EVENT, {
+      detail,
+    }),
+  );
+}
 
 type LegacyProfileSettings = Omit<Profile["settings"], "includeTerritories"> & {
   includeTerritories?: boolean;
@@ -347,11 +380,12 @@ function resolveActiveProfileId(
 export function loadState() {
   if (typeof window === "undefined") return getDefaultState();
   try {
-    let raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
+    const storageKey = getStorageKey();
+    let raw = localStorage.getItem(storageKey);
+    if (!raw && !activeStorageAccountId) {
       raw = localStorage.getItem(LEGACY_STORAGE_KEY);
       if (raw) {
-        localStorage.setItem(STORAGE_KEY, raw);
+        localStorage.setItem(storageKey, raw);
         localStorage.removeItem(LEGACY_STORAGE_KEY);
       }
     }
@@ -369,9 +403,15 @@ export function loadState() {
   }
 }
 
-export function saveState(state: ReturnType<typeof getDefaultState>) {
+export function saveState(
+  state: ReturnType<typeof getDefaultState>,
+  options: SaveStateOptions = {},
+) {
   if (typeof window === "undefined") return;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  localStorage.setItem(getStorageKey(), JSON.stringify(state));
+  if (options.notify !== false) {
+    notifyStateChange({ deletedProfileId: options.deletedProfileId });
+  }
 }
 
 export function getActiveProfile(state = loadState()): Profile | null {
@@ -407,7 +447,7 @@ export function deleteProfile(profileId: string) {
   if (state.activeProfileId === profileId) {
     state.activeProfileId = state.profiles[0]?.id ?? null;
   }
-  saveState(state);
+  saveState(state, { deletedProfileId: profileId });
   return state;
 }
 
