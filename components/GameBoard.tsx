@@ -11,15 +11,11 @@ import { AnswerAtlasle } from "@/components/AnswerAtlasle";
 import { AnswerMultipleChoice } from "@/components/AnswerMultipleChoice";
 import { AnswerTypeIn } from "@/components/AnswerTypeIn";
 import { AchievementToast } from "@/components/AchievementToast";
-import { CapitalDisplay } from "@/components/CapitalDisplay";
-import { FlagDisplay, FlagGrid } from "@/components/FlagDisplay";
-import { FlagCropDisplay } from "@/components/FlagCropDisplay";
+import { FlagGrid } from "@/components/FlagDisplay";
 import { GameMapProgressSummary } from "@/components/GameMapProgressSummary";
 import { LearnCard } from "@/components/LearnCard";
-import { NeighborCountryDisplay } from "@/components/NeighborCountryDisplay";
 import { preloadLearnCardMap } from "@/components/PlaceContextMap";
-import { PopulationMatchupDisplay } from "@/components/PopulationMatchupDisplay";
-import { ShapeDisplay } from "@/components/ShapeDisplay";
+import { QuestionMedia } from "@/components/QuestionMedia";
 import { StreakCounter } from "@/components/StreakCounter";
 import { GameActionButton } from "@/components/GameActionButton";
 import { Button } from "@/components/ui/Button";
@@ -36,6 +32,10 @@ import {
 import { triggerHaptic } from "@/lib/haptics";
 import { playSound } from "@/lib/sound";
 import { getGlobalStreakOrZero } from "@/lib/stats-helpers";
+import {
+  isInvertedFlagRound as isInvertedFlagQuestion,
+  isTextOnlyPrompt as isTextOnlyQuestion,
+} from "@/lib/question-presentation";
 import { STREAK_SNUFF_MIN } from "@/lib/streak-tier";
 import {
   getMapProgressSummary,
@@ -723,16 +723,9 @@ export function GameBoard({
   const answerPlace = getCountryByCode(answerCode);
   const roundTaskLabel = getQuestionTaskLabel(question, scope, answerPlace);
   const dailyDateLabel = mode === "daily-challenge" ? formatDailyDate() : null;
-  const isTextOnlyPrompt =
-    (question.mode === "country-to-capital" && question.displayType === "text") ||
-    (question.mode === "country-to-language" && question.displayType === "text") ||
-    (question.mode === "capital-to-country" && question.displayType === "text") ||
-    question.mode === "fact-to-country";
+  const isTextOnlyPrompt = isTextOnlyQuestion(question);
   const isAtlasleRound = question.displayType === "atlasle";
-  const isInvertedFlagRound =
-    question.mode === "inverted-flag-to-country" ||
-    question.mode === "inverted-country-to-flag" ||
-    question.mode === "inverted-flag-crop-to-country";
+  const isInvertedFlagRound = isInvertedFlagQuestion(question);
   const isMultipleChoiceRound =
     !isAtlasleRound &&
     (question.displayType === "flags-grid" ||
@@ -984,44 +977,11 @@ export function GameBoard({
                 difficulty === "hard" ? "max-h-[38%] shrink-0 sm:max-h-none sm:flex-1" : "flex-[0.76] sm:flex-1"
               }`}
             >
-              {question.displayType === "flag" && (
-                <FlagDisplay
-                  code={question.countryCode}
-                  size="md"
-                  inverted={isInvertedFlagRound}
-                />
-              )}
-              {question.displayType === "flag-crop" && (
-                <FlagCropDisplay
-                  code={question.countryCode}
-                  orientation={question.flagCropOrientation}
-                  inverted={isInvertedFlagRound}
-                />
-              )}
-              {question.displayType === "shape" && (
-                <ShapeDisplay code={question.countryCode} compact />
-              )}
-              {question.displayType === "capital" && (
-                <CapitalDisplay
-                  code={question.countryCode}
-                  compact
-                  showLabel={question.mode !== "country-to-capital"}
-                />
-              )}
-              {question.mode === "neighbor-quiz" && (
-                <NeighborCountryDisplay code={question.countryCode} />
-              )}
-              {question.displayType === "population" && question.optionCodes && (
-                <PopulationMatchupDisplay codes={question.optionCodes} />
-              )}
-              {question.displayType === "flags-grid" && question.optionCodes && (
-                <FlagGrid
-                  codes={question.optionCodes.filter((c) => !hiddenOptions.includes(c))}
-                  onSelect={(code) => handleAnswer(code, code)}
-                  compact
-                  inverted={isInvertedFlagRound}
-                />
-              )}
+              <QuestionMedia
+                question={question}
+                hiddenOptions={hiddenOptions}
+                onSelectFlag={(code) => handleAnswer(code, code)}
+              />
             </div>
           ) : null}
 

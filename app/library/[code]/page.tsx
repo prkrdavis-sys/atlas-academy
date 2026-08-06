@@ -21,6 +21,7 @@ import {
   normalizeLibraryFilter,
   normalizeLibrarySort,
 } from "@/lib/library";
+import { LIBRARY_PLACE_TITLE_ID } from "@/lib/library-scroll";
 import { isStateCode } from "@/lib/scope";
 import type { GameScope } from "@/lib/types";
 
@@ -80,6 +81,7 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
           filter={filter}
           isState={isState}
           currentCode={country.code}
+          placeName={country.name}
         />
       </Suspense>
 
@@ -95,7 +97,10 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
             </p>
             <div className="mt-4 flex items-start justify-between gap-3 sm:mt-5 sm:gap-5">
               <div className="min-w-0 flex-1">
-                <h1 className="break-words font-display text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 sm:text-5xl">
+                <h1
+                  id={LIBRARY_PLACE_TITLE_ID}
+                  className="break-words font-display text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 sm:text-5xl"
+                >
                   {country.name}
                 </h1>
                 {country.officialName !== country.name ? (
@@ -172,8 +177,7 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
                     alt=""
                     width={32}
                     frame="pill"
-                    constrainedAxis="height"
-                    className="h-5 w-auto shrink-0"
+                    className="w-8 shrink-0"
                   />
                 ) : null}
                 {neighbor.name}

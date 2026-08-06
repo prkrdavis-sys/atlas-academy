@@ -33,10 +33,10 @@ type FlagImageProps = {
 };
 
 const RECT_FRAME_STYLES: Record<Exclude<FlagFrameVariant, "none">, string> = {
-  sm: "rounded-md border border-slate-200 bg-white dark:border-slate-600 dark:bg-slate-900",
-  md: "rounded-xl border-2 border-slate-200 bg-white shadow-md dark:border-slate-700 dark:bg-slate-800",
-  lg: "rounded-2xl border-2 border-slate-200 bg-white shadow-lg dark:border-slate-600 dark:bg-slate-900",
-  pill: "rounded-sm border border-slate-200 bg-white dark:border-slate-600 dark:bg-slate-900",
+  sm: "overflow-hidden rounded-md border border-slate-200 bg-white dark:border-slate-600 dark:bg-slate-900",
+  md: "overflow-hidden rounded-xl border-2 border-slate-200 bg-white shadow-md dark:border-slate-700 dark:bg-slate-800",
+  lg: "overflow-hidden rounded-2xl border-2 border-slate-200 bg-white shadow-lg dark:border-slate-600 dark:bg-slate-900",
+  pill: "overflow-hidden rounded-sm border border-slate-200 bg-white dark:border-slate-600 dark:bg-slate-900",
 };
 
 const SHAPED_FRAME_STYLES: Record<Exclude<FlagFrameVariant, "none">, string> = {
@@ -77,22 +77,30 @@ function FlagImg({
   clipPath,
   displayAspectRatio,
 }: FlagImgProps) {
+  const isHeightConstrained = constrainedAxis === "height";
+
   return (
     <span
       className={cn(
         "relative max-w-full",
-        constrainedAxis === "height" ? "inline-block" : "block",
+        isHeightConstrained ? "inline-block" : "block",
         className,
       )}
       style={{ aspectRatio: displayAspectRatio ?? getFlagAspectRatio(code) }}
     >
       {/* Local SVG assets are rendered directly so the complete flag remains visible. */}
+      {/* Height-constrained boxes size via height + aspect-ratio. Absolute-fill the
+          image so percentage width/height cannot collapse the box (Safari/WebKit). */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={getFlagPath(code)}
         alt={alt}
         decoding="async"
-        className="block h-full w-full max-w-full"
+        className={
+          isHeightConstrained
+            ? "absolute inset-0 h-full w-full max-w-none"
+            : "block h-full w-full max-w-full"
+        }
         style={{
           objectFit,
           ...(clipPath ? { clipPath } : null),
@@ -147,11 +155,20 @@ export function FlagImage({
   const shaped = isShapedFlag(code);
   const clipPath = getFlagClipPath(code);
   const isHeightConstrained = constrainedAxis === "height";
+  const hasFrame = frame !== "none";
 
   const shapedFrameClass =
-    shaped && frame !== "none" ? SHAPED_FRAME_STYLES[frame] : undefined;
+    shaped && hasFrame ? SHAPED_FRAME_STYLES[frame] : undefined;
   const flagFilterClass = withInvertFilter(shapedFrameClass, inverted);
   const imgClipPath = shaped ? clipPath : undefined;
+
+  // When framed, keep sizing on the outer frame only. Applying the same width to
+  // the inner image makes it as wide as the border-box and paints over the border.
+  const imageClassName = cn(
+    isHeightConstrained ? "max-w-full" : "h-auto w-full",
+    !hasFrame || isHeightConstrained ? className : undefined,
+    flagFilterClass,
+  );
 
   const image =
     layout === "tile" ? (
@@ -176,19 +193,17 @@ export function FlagImage({
         clipPath={imgClipPath}
         displayAspectRatio={displayAspectRatio}
         objectFit="fill"
-        className={cn(
-          isHeightConstrained ? "max-w-full" : "h-auto w-full",
-          className,
-          flagFilterClass,
-        )}
+        className={imageClassName}
       />
     );
 
-  const outerClassName = isHeightConstrained ? undefined : className;
-
-  if (frame === "none") {
+  if (!hasFrame) {
     return image;
   }
+
+  // Height-constrained: size stays on the image; frame shrink-wraps around it.
+  // Width-constrained: size goes on the frame so the border sits outside the flag.
+  const outerClassName = isHeightConstrained ? undefined : className;
 
   return wrapWithFrame(image, code, frame, outerClassName);
 }

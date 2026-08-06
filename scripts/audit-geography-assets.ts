@@ -1,18 +1,16 @@
 /**
  * Audits country silhouettes, context-map borders, and globe outlines for
- * completeness and consistency with Natural Earth geography.
+ * completeness. Shape SVGs use per-place equal-area projections and are not
+ * required to match world-map Natural Earth I aspects.
  */
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-// @ts-expect-error svg-path-bounds ships no type declarations
-import getPathBounds from "svg-path-bounds";
 import globeData from "../data/globe-countries.json";
 import countriesData from "../data/countries.json";
 import { CONTEXT_MAP_TEMPLATES, getContextMapPathIds } from "../lib/context-maps";
 import type { Country } from "../lib/types";
 import type { GlobeTextureData } from "./generate-globe-texture-data";
-import { MIN_SHAPE_VIEWBOX, parseShapeViewBox, shapeViewBoxTooSmall, toFocusPath, unwrapAntimeridianPath } from "./map-path-utils";
-import { isCustomShapeCode } from "./supplemental-shapes";
+import { MIN_SHAPE_VIEWBOX, parseShapeViewBox, shapeViewBoxTooSmall } from "./map-path-utils";
 
 const countries = countriesData as Country[];
 const globe = globeData as GlobeTextureData;
@@ -40,18 +38,6 @@ function parseMapPaths(svgText: string): Map<string, string> {
     paths.set(match[1], match[2]);
   }
   return paths;
-}
-
-function combinedAspect(pathStrings: string[]): number | null {
-  const bounds = getPathBounds(pathStrings.join(" "));
-  const width = bounds[2] - bounds[0];
-  const height = bounds[3] - bounds[1];
-  if (width <= 0 || height <= 0) return null;
-  return width / height;
-}
-
-function aspectMismatchRatio(a: number, b: number): number {
-  return Math.max(a, b) / Math.min(a, b);
 }
 
 async function main() {
@@ -104,44 +90,6 @@ async function main() {
 
     if (!globeCodes.has(country.code) && !GLOBE_OPTIONAL_CODES.has(country.code)) {
       failures.push(`${country.name}: missing globe outline (${country.code})`);
-    }
-  }
-
-  for (const country of countries) {
-    if (!country.hasShape || country.code.startsWith("US-") || isCustomShapeCode(country.code)) {
-      continue;
-    }
-
-    const shapeFile = join(process.cwd(), "public", "shapes", `${country.code3.toLowerCase()}.svg`);
-    const shapePaths = [...readFileSync(shapeFile, "utf8").matchAll(/d="([^"]+)"/g)].map((m) => m[1]);
-    const mapPaths = getContextMapPathIds(country)
-      .map((id) => worldPaths.get(id))
-      .filter((path): path is string => Boolean(path));
-
-    if (mapPaths.length !== getContextMapPathIds(country).length) {
-      failures.push(`${country.name}: missing world map geometry for shape comparison`);
-      continue;
-    }
-
-    if (shapePaths.length !== mapPaths.length) {
-      failures.push(
-        `${country.name}: shape has ${shapePaths.length} path elements but map has ${mapPaths.length}`,
-      );
-      continue;
-    }
-
-    const shapeAspect = combinedAspect(shapePaths);
-    // Shapes crop to mainland/nearby islands; compare against the same focus geometry.
-    const mapAspect = combinedAspect(
-      mapPaths.map((path) => toFocusPath(unwrapAntimeridianPath(path))),
-    );
-    if (shapeAspect !== null && mapAspect !== null) {
-      const mismatch = aspectMismatchRatio(shapeAspect, mapAspect);
-      if (mismatch > 1.02) {
-        failures.push(
-          `${country.name}: shape/map aspect mismatch (${shapeAspect.toFixed(2)} vs ${mapAspect.toFixed(2)})`,
-        );
-      }
     }
   }
 

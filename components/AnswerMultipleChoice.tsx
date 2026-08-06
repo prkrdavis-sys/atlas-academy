@@ -9,6 +9,12 @@ type AnswerMultipleChoiceProps = {
   disabled?: boolean;
   hiddenOptions?: string[];
   revealed?: boolean;
+  /**
+   * Head-to-head: a locked-in but not yet revealed choice. It reads as green
+   * whether or not it is right, and can still be changed until the opponent
+   * commits.
+   */
+  pending?: boolean;
   selectedAnswer?: string | null;
   selectedCode?: string | null;
   correctAnswer?: string;
@@ -74,6 +80,7 @@ export function AnswerMultipleChoice({
   disabled,
   hiddenOptions = [],
   revealed = false,
+  pending = false,
   selectedAnswer = null,
   selectedCode = null,
   correctAnswer,
@@ -96,6 +103,8 @@ export function AnswerMultipleChoice({
           } else {
             optionClass = REVEALED_NEUTRAL_CLASS;
           }
+        } else if (pending && isSelected) {
+          optionClass = CORRECT_REVEAL_CLASS;
         }
 
         return (

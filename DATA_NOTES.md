@@ -11,7 +11,7 @@ US states (the "Across America" scope) use **ISO 3166-2:US** codes (`US-AL` … 
 | Country metadata | mledoze/countries | `npm run refresh-data` |
 | Population | World Bank (2023) + manual overrides for territories | Fetched during refresh |
 | Flag SVGs | [FlagCDN](https://flagcdn.com/) / Wikimedia Commons vectors | Downloaded at true flag ratios during refresh |
-| Shape SVGs | Natural Earth 10m (mainland + nearby islands; remote overseas scraps dropped) | `npm run generate-country-shapes` / `npm run refresh-data` |
+| Shape SVGs | Natural Earth 10m, each place projected with a local azimuthal equal-area view (mainland + nearby islands; remote overseas scraps dropped) so quiz silhouettes keep true proportions | `npm run generate-country-shapes` / `npm run refresh-data` |
 | Context map SVGs | Natural Earth 10m + [geoBoundaries](https://www.geoboundaries.org/) ADM0 upgrades for microstates | `npm run generate-context-maps` |
 | Exchange rates | [Frankfurter](https://frankfurter.dev/) daily reference rates from central banks; USD-base rates are converted at runtime and cached for 24 hours | Automatic runtime refresh; `npm run enrich-currency-data` refreshes the tracked fallback values |
 | Elevation extremes | Wikipedia ([countries](https://en.wikipedia.org/wiki/List_of_elevation_extremes_by_country), [US states](https://en.wikipedia.org/wiki/List_of_U.S._states_and_territories_by_elevation)); meters, land surface | `npm run enrich-elevation-data` |
@@ -21,7 +21,7 @@ US states (the "Across America" scope) use **ISO 3166-2:US** codes (`US-AL` … 
 | Median rent | Countries: [Numbeo](https://www.numbeo.com/cost-of-living/prices_by_country.jsp?displayCurrency=USD&itemId=26&itemId=27) 1-bedroom apartment outside city centre (USD / month); US states: Census ACS median gross rent | `npm run enrich-rent-data` |
 | US state metadata | Hand-curated (2023 Census population estimates, Census regions/divisions) | `npm run refresh-state-data` |
 | US state flag SVGs | Wikimedia Commons (`public/flags/us-XX.svg`) | `npm run fetch-state-flags` |
-| US state shape SVGs | [@svg-maps/usa](https://www.npmjs.com/package/@svg-maps/usa) paths (`public/shapes/us-XX.svg`) | `npm run generate-state-shapes` |
+| US state shape SVGs | [us-atlas](https://github.com/topojson/us-atlas) Census state geometry, per-state azimuthal equal-area (`public/shapes/us-XX.svg`) | `npm run generate-state-shapes` |
 
 ## Geopolitical edge cases
 
@@ -35,7 +35,7 @@ US states (the "Across America" scope) use **ISO 3166-2:US** codes (`US-AL` … 
 
 ## Shape quiz eligibility
 
-Shape quiz questions include every place that has a silhouette asset (`hasShape`). Silhouettes are generated from the same Natural Earth geometry as context maps, cropped to the mainland/core landmass plus nearby islands so remote overseas fragments (e.g. Caribbean Netherlands inside `NLD`) do not shrink the outline to a speck. Four sovereign countries — Kosovo, Marshall Islands, Micronesia, and Tuvalu — have no shape file and are excluded from shape modes. On data refresh, `shapeQuizEligible` is set to match `hasShape`.
+Shape quiz questions include every place that has a silhouette asset (`hasShape`). Silhouettes use the same Natural Earth / Census geometry as maps, but each place is projected alone with an azimuthal equal-area view centered on its landmass so outlines keep true proportions (context maps still use Natural Earth I / Albers USA). Shapes are cropped to the mainland/core landmass plus nearby islands so remote overseas fragments (e.g. Caribbean Netherlands inside `NLD`) do not shrink the outline to a speck. On data refresh, `shapeQuizEligible` is set to match `hasShape`.
 
 ## Keeping data current
 

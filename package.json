@@ -36,6 +36,7 @@
     "fetch-capital-images": "tsx scripts/fetch-capital-images.ts",
     "refresh-capital-images": "tsx scripts/fetch-capital-images.ts --refresh",
     "verify-integrity": "tsx scripts/verify-game-integrity.ts && tsx scripts/audit-geography-assets.ts",
+    "verify-versus-determinism": "tsx scripts/verify-versus-determinism.ts",
     "generate-icons": "node scripts/generate-icons.mjs"
   },
   "dependencies": {

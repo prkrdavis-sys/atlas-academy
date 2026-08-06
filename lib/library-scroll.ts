@@ -16,6 +16,8 @@ export type LibraryLocation = {
 };
 
 export const LIBRARY_PLACE_HEADER_ID = "library-place-header";
+export const LIBRARY_PLACE_TITLE_ID = "library-place-title";
+export const LIBRARY_DETAIL_NAV_ID = "library-detail-nav";
 
 export const LIBRARY_SECTION_ANCHOR_IDS = [
   "country-details-heading",
@@ -44,6 +46,11 @@ function getHeroHeight(): number {
 }
 
 function getScrollChromeHeight(): number {
+  const stickyNav = document.getElementById(LIBRARY_DETAIL_NAV_ID);
+  if (stickyNav) {
+    return Math.max(0, stickyNav.getBoundingClientRect().bottom);
+  }
+
   const headerOffset = Number.parseFloat(
     getComputedStyle(document.documentElement).getPropertyValue("--app-header-offset"),
   );

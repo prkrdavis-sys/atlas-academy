@@ -14,6 +14,8 @@ import {
 } from "@/lib/library";
 import {
   captureLibraryScrollState,
+  LIBRARY_DETAIL_NAV_ID,
+  LIBRARY_PLACE_TITLE_ID,
   markLibraryScrollRestore,
 } from "@/lib/library-scroll";
 import { getCommonlyMissedCountries } from "@/lib/stats-helpers";
@@ -25,6 +27,7 @@ type LibraryDetailNavProps = {
   filter: LibraryFilter;
   isState: boolean;
   currentCode: string;
+  placeName: string;
 };
 
 const navButtonClass =
@@ -37,6 +40,7 @@ export function LibraryDetailNav({
   filter,
   isState,
   currentCode,
+  placeName,
 }: LibraryDetailNavProps) {
   const searchParams = useSearchParams();
   const { activeProfile } = useProfiles();
@@ -52,6 +56,7 @@ export function LibraryDetailNav({
   const positionLabel = index >= 0 && total > 0 ? `${index + 1} of ${total}` : null;
   const sentinelRef = useRef<HTMLDivElement>(null);
   const [isPinned, setIsPinned] = useState(false);
+  const [showStickyTitle, setShowStickyTitle] = useState(false);
 
   useEffect(() => {
     const sentinel = sentinelRef.current;
@@ -68,13 +73,55 @@ export function LibraryDetailNav({
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    const title = document.getElementById(LIBRARY_PLACE_TITLE_ID);
+    if (!title) return;
+
+    let observer: IntersectionObserver | null = null;
+
+    const observe = () => {
+      observer?.disconnect();
+
+      const headerOffset = Number.parseFloat(
+        getComputedStyle(document.documentElement).getPropertyValue("--app-header-offset"),
+      );
+      const chromeTop = Number.isFinite(headerOffset) ? headerOffset : 0;
+      // Match the sticky controls row so the centered title appears once the
+      // hero name scrolls under the library nav, not only under the app header.
+      const navControlsApproxPx = 56;
+      const topInset = chromeTop + navControlsApproxPx;
+
+      observer = new IntersectionObserver(
+        ([entry]) => {
+          setShowStickyTitle(!entry.isIntersecting);
+        },
+        {
+          rootMargin: `-${topInset}px 0px 0px 0px`,
+          threshold: 0,
+        },
+      );
+      observer.observe(title);
+    };
+
+    observe();
+    window.addEventListener("resize", observe);
+
+    return () => {
+      window.removeEventListener("resize", observe);
+      observer?.disconnect();
+    };
+  }, [placeName]);
+
+  const chromeActive = isPinned || showStickyTitle;
+
   return (
     <>
       <div ref={sentinelRef} className="pointer-events-none -mb-2 h-px" aria-hidden />
       <div
+        id={LIBRARY_DETAIL_NAV_ID}
         className={cn(
           "relative z-30 -mx-4 sticky top-[var(--app-header-offset)] px-4 py-2 transition-[background-color,border-color,box-shadow] duration-200 sm:mx-0 sm:px-0",
-          isPinned &&
+          chromeActive &&
             "border-b border-teal-900/10 bg-white/85 backdrop-blur-xl dark:border-slate-700/50 dark:bg-slate-900/85",
         )}
       >
@@ -142,6 +189,20 @@ export function LibraryDetailNav({
                 <span aria-hidden>→</span>
               </span>
             )}
+          </div>
+        </div>
+
+        <div
+          className={cn(
+            "grid transition-[grid-template-rows,opacity] duration-200 ease-out",
+            showStickyTitle ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
+          )}
+          aria-hidden={!showStickyTitle}
+        >
+          <div className="overflow-hidden">
+            <p className="truncate pt-2 text-center font-display text-lg font-extrabold tracking-tight text-slate-900 dark:text-slate-100 sm:text-xl">
+              {placeName}
+            </p>
           </div>
         </div>
       </div>

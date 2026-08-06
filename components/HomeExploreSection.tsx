@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { ProfileRequiredDialog } from "@/components/ProfileRequiredDialog";
+import { FriendsShortcutButton } from "@/components/social/FriendsShortcutButton";
 import { resolvePlayConfig } from "@/lib/game-setup";
 import { getLoginStreak } from "@/lib/login-streak";
 import { GLOBE_MAP_HREF } from "@/lib/navigation";
@@ -192,6 +193,7 @@ export function HomeExploreSection({
           </h2>
           <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3">
             <ShortcutButton href="/stats" icon="📊" label="Stats" />
+            <FriendsShortcutButton scope={scope} />
             <ShortcutButton href={GLOBE_MAP_HREF} icon="🗺️" label="Progress map" />
             <ShortcutButton href="/library" icon="📚" label="Library" />
             <button type="button" onClick={startWeakSpots} className={shortcutClassName}>

@@ -166,13 +166,15 @@ function InlineLearnCard({
   return (
     <div
       className={cn(
-        "animate-learn-card-pop-in flex min-h-0 w-full flex-col overflow-hidden rounded-2xl border-2 bg-white shadow-md dark:bg-slate-900",
+        // Size container so mobile content can stay roomy until the card is actually short.
+        "@container-size animate-learn-card-pop-in flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-2xl border-2 bg-white shadow-md dark:bg-slate-900",
         wasCorrect ? "border-emerald-400 dark:border-emerald-600" : "border-rose-400 dark:border-rose-600",
       )}
     >
       <div
         className={cn(
-          "shrink-0 border-b px-3 py-2 text-center sm:px-6 sm:py-3",
+          "shrink-0 border-b px-4 py-2.5 text-center sm:px-6 sm:py-3",
+          "[@container_(max-height:26rem)]:px-3 [@container_(max-height:26rem)]:py-2",
           wasCorrect
             ? "border-emerald-100 bg-emerald-50/80 dark:border-emerald-900/60 dark:bg-emerald-950/30"
             : "border-rose-100 bg-rose-50/80 dark:border-rose-900/60 dark:bg-rose-950/30",
@@ -183,27 +185,31 @@ function InlineLearnCard({
         </p>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden px-3 py-2 sm:hidden">
-        {/* Visuals shrink first on short phones so Capital/Population/Language never clip. */}
-        <div className="flex min-h-0 flex-1 flex-col justify-center gap-1.5 overflow-hidden">
+      {/*
+        Mobile uses the original roomy sizing by default. Only when this card’s
+        own height is short (max-height 26rem) do flag/map/facts compact so
+        Population/Language never clip under the continue overlay.
+      */}
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden px-4 py-3 [@container_(max-height:26rem)]:px-3 [@container_(max-height:26rem)]:py-2 sm:hidden">
+        <div className="flex min-h-0 flex-1 flex-col justify-center overflow-hidden">
           {country.hasFlag && (
-            <div className="flex min-h-0 shrink justify-center">
+            <div className="mb-2.5 flex min-h-0 shrink justify-center overflow-hidden [@container_(max-height:26rem)]:mb-1.5">
               <FlagImage
                 code={country.code}
                 alt={country.name}
                 width={240}
                 frame="md"
-                className="mx-auto block h-auto max-h-[4.75rem] w-full max-w-[8rem] object-contain"
+                className="mx-auto block h-auto max-h-full w-full max-w-[11rem] object-contain [@container_(max-height:26rem)]:max-h-[4.75rem] [@container_(max-height:26rem)]:max-w-[8rem]"
               />
             </div>
           )}
 
-          <div className="min-h-0 w-full shrink overflow-hidden">
+          <div className="mb-3 min-h-0 w-full shrink overflow-hidden [@container_(max-height:26rem)]:mb-2">
             <PlaceContextMap
               country={country}
               variant="learn"
               highlightNeighbors
-              className="min-h-0 max-h-[5.25rem]"
+              className="min-h-0 max-h-full [@container_(max-height:26rem)]:max-h-[5.5rem]"
             />
           </div>
         </div>
@@ -216,29 +222,29 @@ function InlineLearnCard({
           />
         )}
 
-        <dl className="mt-2 grid w-full shrink-0 grid-cols-2 content-start gap-x-4 gap-y-2 self-stretch text-sm">
+        <dl className="grid w-full shrink-0 grid-cols-2 content-start gap-x-6 gap-y-3 self-stretch pb-1 text-sm [@container_(max-height:26rem)]:gap-x-4 [@container_(max-height:26rem)]:gap-y-2">
           <div className="min-w-0">
-            <dt className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+            <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500 [@container_(max-height:26rem)]:text-[10px] dark:text-slate-400">
               Capital
             </dt>
-            <dd className="mt-0.5 text-sm font-semibold leading-snug text-slate-800 dark:text-slate-200">
+            <dd className="mt-1 text-base font-semibold text-slate-800 [@container_(max-height:26rem)]:mt-0.5 [@container_(max-height:26rem)]:text-sm [@container_(max-height:26rem)]:leading-snug dark:text-slate-200">
               {country.capital || "N/A"}
             </dd>
           </div>
           <div className="min-w-0">
-            <dt className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+            <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500 [@container_(max-height:26rem)]:text-[10px] dark:text-slate-400">
               Region
             </dt>
-            <dd className="mt-0.5 text-sm font-semibold leading-snug text-slate-800 dark:text-slate-200">
+            <dd className="mt-1 text-base font-semibold text-slate-800 [@container_(max-height:26rem)]:mt-0.5 [@container_(max-height:26rem)]:text-sm [@container_(max-height:26rem)]:leading-snug dark:text-slate-200">
               <RegionValue country={country} isState={isState} />
             </dd>
           </div>
           {!compareCountryCode && (
             <div className="min-w-0">
-              <dt className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+              <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500 [@container_(max-height:26rem)]:text-[10px] dark:text-slate-400">
                 Population
               </dt>
-              <dd className="mt-0.5 text-sm font-semibold leading-snug text-slate-800 dark:text-slate-200">
+              <dd className="mt-1 text-base font-semibold text-slate-800 [@container_(max-height:26rem)]:mt-0.5 [@container_(max-height:26rem)]:text-sm [@container_(max-height:26rem)]:leading-snug dark:text-slate-200">
                 {formatPopulation(country.population)}
               </dd>
             </div>
@@ -247,8 +253,8 @@ function InlineLearnCard({
             <LanguageOrNeighbors
               country={country}
               isState={isState}
-              dtClassName="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400"
-              ddClassName="mt-0.5 text-sm font-semibold leading-snug text-slate-800 dark:text-slate-200"
+              dtClassName="text-xs font-semibold uppercase tracking-wide text-slate-500 [@container_(max-height:26rem)]:text-[10px] dark:text-slate-400"
+              ddClassName="mt-1 text-base font-semibold text-slate-800 [@container_(max-height:26rem)]:mt-0.5 [@container_(max-height:26rem)]:text-sm [@container_(max-height:26rem)]:leading-snug dark:text-slate-200"
             />
           </div>
         </dl>
@@ -323,7 +329,7 @@ function InlineLearnCard({
         />
       </div>
 
-      <p className="shrink-0 border-t border-slate-100 px-3 py-2 text-center text-xs font-medium text-slate-400 dark:border-slate-800 dark:text-slate-500 sm:px-6 sm:py-2">
+      <p className="shrink-0 border-t border-slate-100 px-4 py-2.5 text-center text-xs font-medium text-slate-400 dark:border-slate-800 dark:text-slate-500 sm:px-6 sm:py-2 [@container_(max-height:26rem)]:px-3 [@container_(max-height:26rem)]:py-2">
         Tap anywhere to continue
       </p>
     </div>

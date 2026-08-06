@@ -10,7 +10,7 @@ export type PathBounds = [left: number, top: number, right: number, bottom: numb
 export const MAP_WIDTH = 10000;
 export const MAP_HEIGHT = 5000;
 
-/** Target canvas for library/quiz silhouette SVGs (local coords, not map space). */
+/** Target canvas for library/quiz silhouette SVGs (local equal-area coords). */
 export const SHAPE_OUTPUT_CANVAS = 1000;
 export const SHAPE_PAD_RATIO = 0.03;
 /** Reject silhouettes whose viewBox edge is too small to render reliably as `<img>`. */
@@ -164,9 +164,8 @@ export function shapeViewBoxTooSmall(svg: string): boolean {
 }
 
 /**
- * Builds a silhouette SVG in local coordinates (~1000px canvas) from paths in
- * Natural Earth / map projected space. Uses an SVG group transform so every
- * path command type (curves, relative segments, etc.) stays intact.
+ * Builds a silhouette SVG in local coordinates (~1000px canvas) from projected
+ * path data. Uses an SVG group transform so every path command type stays intact.
  */
 export function buildShapeSvg(paths: string[]): string {
   const bounds = paths.map((path) => toPathBounds(path));
