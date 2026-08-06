@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { modeCountsTowardMapProgress } from "@/lib/map-progress";
 import { getScopedModeInfo, scopeQuery, scopeText } from "@/lib/scope";
 import type { GameMode, GameScope } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -11,6 +12,22 @@ function TileBadge({ children }: { children: string }) {
   return (
     <span className="shrink-0 rounded-full bg-slate-100 px-1.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-wide text-slate-500 dark:bg-slate-800 dark:text-slate-400">
       {children}
+    </span>
+  );
+}
+
+function MasteryChip({ size = "sm" }: { size?: "sm" | "md" }) {
+  return (
+    <span
+      title="Counts toward map mastery on Normal or Hard"
+      className={cn(
+        "shrink-0 rounded-full bg-amber-100 font-bold uppercase tracking-wide text-amber-800 dark:bg-amber-950/70 dark:text-amber-300",
+        size === "md"
+          ? "px-2 py-0.5 text-[0.65rem]"
+          : "px-1.5 py-0.5 text-[0.6rem]",
+      )}
+    >
+      Mastery
     </span>
   );
 }
@@ -37,6 +54,7 @@ export function GameModeTile({
   const href = `/play/setup/${mode}${scopeQuery(scope)}`;
   const title = scopeText(modeInfo.title, scope);
   const description = scopeText(modeInfo.description, scope);
+  const showsMastery = modeCountsTowardMapProgress(mode);
 
   switch (variant) {
     case "featured":
@@ -62,6 +80,7 @@ export function GameModeTile({
               <span className="rounded-full bg-teal-600 px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-white dark:bg-teal-500">
                 Recommended
               </span>
+              {showsMastery ? <MasteryChip size="md" /> : null}
             </div>
             <p className="mt-0.5 line-clamp-2 text-xs leading-snug text-slate-600 dark:text-slate-400 sm:text-sm">
               {description}
@@ -97,6 +116,7 @@ export function GameModeTile({
                 {title}
               </h3>
               {badge ? <TileBadge>{badge}</TileBadge> : null}
+              {showsMastery ? <MasteryChip /> : null}
             </div>
             <p className="mt-0.5 line-clamp-2 text-xs leading-snug text-slate-500 dark:text-slate-400">
               {description}
@@ -127,11 +147,12 @@ export function GameModeTile({
             {modeInfo.icon}
           </span>
           <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-1.5">
+            <div className="flex flex-wrap items-center gap-1.5">
               <h3 className="truncate font-display text-sm font-bold text-slate-800 dark:text-slate-200">
                 {title}
               </h3>
               {badge ? <TileBadge>{badge}</TileBadge> : null}
+              {showsMastery ? <MasteryChip /> : null}
             </div>
             <p className="truncate text-xs text-slate-500 dark:text-slate-400">{description}</p>
           </div>

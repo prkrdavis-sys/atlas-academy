@@ -73,6 +73,25 @@ function resolveMapProgressCategoryFromGameMode(mode: GameMode): MapProgressCate
   }
 }
 
+/** Shuffle / challenge modes that fill mastery via category questions. */
+const COMPOSITE_MAP_PROGRESS_MODES = [
+  "mixed",
+  "daily-challenge",
+  "marathon",
+  "speed-round",
+] as const satisfies readonly GameMode[];
+
+/**
+ * Modes whose questions (or shuffled category questions) can fill map mastery
+ * on Normal/Hard. Used by the setup page chip.
+ */
+export function modeCountsTowardMapProgress(mode: GameMode): boolean {
+  if ((COMPOSITE_MAP_PROGRESS_MODES as readonly GameMode[]).includes(mode)) {
+    return true;
+  }
+  return resolveMapProgressCategoryFromGameMode(mode) !== null;
+}
+
 export function toMapProgressDifficulty(
   difficulty: Difficulty,
 ): MapProgressDifficulty | null {

@@ -9,7 +9,11 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { GameEngine } from "../lib/game-engine";
 import { searchLibraryPlaces } from "../lib/library";
-import { resolveMapProgressCategory, wouldCountTowardMapProgress } from "../lib/map-progress";
+import {
+  modeCountsTowardMapProgress,
+  resolveMapProgressCategory,
+  wouldCountTowardMapProgress,
+} from "../lib/map-progress";
 import { normalizeAnswerText } from "../lib/answer-matcher";
 import { countries, getCountryByCode, usStates } from "../lib/countries";
 import { PROFILE_AVATARS } from "../lib/profile-avatars";
@@ -525,6 +529,12 @@ if (
   })
 ) {
   fail("Practice mode should not count toward map progress");
+}
+if (!modeCountsTowardMapProgress("mixed") || !modeCountsTowardMapProgress("flag-to-country")) {
+  fail("Mixed and category modes should show as counting toward map mastery");
+}
+if (modeCountsTowardMapProgress("weak-spots") || modeCountsTowardMapProgress("atlasle")) {
+  fail("Practice and non-category modes should not show as counting toward map mastery");
 }
 
 console.log(`Checked ${questionsChecked} generated questions across ${MODES.length} modes.`);
