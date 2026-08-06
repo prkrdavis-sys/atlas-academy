@@ -230,6 +230,27 @@ export function getDailyChallengePool(options: Omit<FilterOptions, "mode">): Cou
   return [...byCode.values()];
 }
 
+/** The single shared daily pool: sovereign places plus the USA state pool. */
+export function getCombinedDailyChallengePool(): Country[] {
+  const byCode = new Map<string, Country>();
+  const scopes: { scope: GameScope; regions: Region[] }[] = [
+    { scope: "world", regions: [...CONTINENTS] },
+    { scope: "usa", regions: [...US_REGIONS] },
+  ];
+
+  for (const { scope, regions } of scopes) {
+    for (const country of getDailyChallengePool({
+      continents: regions,
+      includeTerritories: false,
+      scope,
+    })) {
+      byCode.set(country.code, country);
+    }
+  }
+
+  return [...byCode.values()];
+}
+
 type PoolOptions = FilterOptions & {
   mode: GameMode;
 };

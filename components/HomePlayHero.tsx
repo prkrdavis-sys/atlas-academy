@@ -199,7 +199,6 @@ export function HomePlayHero({
             </header>
 
             <DailyChallengeBadge
-              profile={profile}
               scope={scope}
               dailyRun={dailyRun}
               playedToday={dailyPlayedToday}
@@ -209,7 +208,7 @@ export function HomePlayHero({
             <GlobeDragZone href={GLOBE_MAP_HREF} globeHandleRef={globeHandleRef} />
 
             {/* Hero actions stay in the lower 40% so more of the globe shows. */}
-            <div className="mx-auto flex h-[40%] min-h-0 w-full max-w-xl shrink-0 flex-col justify-end gap-2 overflow-y-auto overscroll-contain sm:gap-2.5">
+            <div className="mx-auto flex h-[40%] min-h-0 w-full max-w-xl shrink-0 flex-col justify-end gap-2 overflow-x-hidden overflow-y-auto overscroll-contain sm:gap-2.5">
               <button
                 type="button"
                 onClick={startPlay}
@@ -409,7 +408,6 @@ function ModeLoadoutRow({ profile, mode, scope }: ModeLoadoutRowProps) {
 }
 
 type DailyChallengeBadgeProps = {
-  profile: Profile;
   scope: GameScope;
   dailyRun: number;
   playedToday: boolean;
@@ -418,7 +416,6 @@ type DailyChallengeBadgeProps = {
 
 /** Floating daily-challenge entry point that keeps the globe unobstructed. */
 function DailyChallengeBadge({
-  profile,
   scope,
   dailyRun,
   playedToday,
@@ -452,27 +449,10 @@ function DailyChallengeBadge({
         />
       </span>
 
-      <ModeBestFraction
-        profile={profile}
-        mode="daily-challenge"
-        scope={scope}
-        difficulty="medium"
-        className="absolute right-1 top-1 rounded-full border border-amber-500/40 bg-white/90 px-1.5 py-0.5 text-[0.55rem] text-amber-800 shadow-sm dark:border-amber-300/40 dark:bg-slate-900/90 dark:text-amber-200"
-      />
-
-      {completedToday ? (
-        <span
-          aria-hidden
-          className="absolute bottom-0.5 right-0.5 flex size-5 items-center justify-center rounded-full border-2 border-white bg-emerald-500 font-display text-xs font-black text-white shadow-md dark:border-slate-900 sm:bottom-1 sm:right-1 sm:size-6 sm:text-sm"
-        >
-          ✓
-        </span>
-      ) : null}
-
       {dailyRun > 0 ? (
         <span
           aria-hidden
-          className="absolute -bottom-1 -left-1 inline-flex min-h-6 min-w-7 items-center justify-center gap-0.5 rounded-full border-2 border-white bg-orange-500 px-1.5 font-display text-[0.7rem] font-black tabular-nums text-white shadow-md dark:border-slate-900 sm:-bottom-1.5 sm:-left-1.5 sm:min-h-7 sm:min-w-8 sm:text-xs"
+          className="absolute -bottom-1 -right-1 inline-flex min-h-6 min-w-7 items-center justify-center gap-0.5 rounded-full border-2 border-white bg-orange-500 px-1.5 font-display text-[0.7rem] font-black tabular-nums text-white shadow-md dark:border-slate-900 sm:-bottom-1.5 sm:-right-1.5 sm:min-h-7 sm:min-w-8 sm:text-xs"
         >
           <span>🔥</span>
           {dailyRun}

@@ -125,7 +125,7 @@ export function LibraryDetailNav({
             "border-b border-teal-900/10 bg-white/85 backdrop-blur-xl dark:border-slate-700/50 dark:bg-slate-900/85",
         )}
       >
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="relative flex items-center gap-2 sm:gap-3">
           <Link
             href={buildLibraryListHref(scope, resolvedFilter, sort)}
             onClick={markLibraryScrollRestore}
@@ -140,6 +140,7 @@ export function LibraryDetailNav({
             filter={resolvedFilter}
             sort={sort}
             isState={isState}
+            mobileDropdownFullWidth
             className="min-w-0 flex-1"
           />
 

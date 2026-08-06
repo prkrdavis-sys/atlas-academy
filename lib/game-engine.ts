@@ -7,6 +7,7 @@ import {
   getCountryByCode,
   getCountryLanguages,
   getCountryName,
+  getCombinedDailyChallengePool,
   getEligibleMixedQuestionTypes,
   getPlayablePool,
   getPrimaryLanguage,
@@ -20,6 +21,7 @@ import {
   resolveRoundQuestionLimit,
   type ChallengeModifier,
   type Country,
+  type DailyChallengeSnapshot,
   type DailyChallengeQuestionType,
   type Difficulty,
   type GameMode,
@@ -33,7 +35,6 @@ import {
   buildFlagFromPlacePrompt,
   buildLanguagePrompt,
   buildNeighborPrompt,
-  filterDailyDatesByScope,
   placeText,
   scopeText,
 } from "@/lib/scope";
@@ -230,18 +231,24 @@ export class GameEngine {
     includeTerritories = false,
     private scope: GameScope = "world",
     private challengeModifier: ChallengeModifier = "none",
+    dailyQuestionSnapshot?: Question[],
   ) {
-    this.pool = getPlayablePool({
-      continents,
-      includeTerritories,
-      mode,
-      weakSpotCodes,
-      scope,
-    });
+    this.pool =
+      mode === "daily-challenge"
+        ? getCombinedDailyChallengePool()
+        : getPlayablePool({
+            continents,
+            includeTerritories,
+            mode,
+            weakSpotCodes,
+            scope,
+          });
     this.random = seed !== undefined ? seededRandom(seed) : Math.random;
 
     if (this.mode === "daily-challenge") {
-      this.dailyQuestions = this.buildDailyQuestions();
+      this.dailyQuestions = dailyQuestionSnapshot?.length
+        ? dailyQuestionSnapshot
+        : this.buildDailyQuestions();
     } else {
       this.roundCountries = this.buildShuffledRoundCountries();
     }
@@ -249,7 +256,7 @@ export class GameEngine {
 
   getRoundQuestionLimit(): number | undefined {
     if (this.mode === "daily-challenge") {
-      return Math.min(DAILY_CHALLENGE_QUESTION_COUNT, this.pool.length);
+      return Math.min(DAILY_CHALLENGE_QUESTION_COUNT, this.dailyQuestions.length);
     }
     if (this.challengeModifier === "marathon" || this.challengeModifier === "speed-round") {
       return undefined;
@@ -336,7 +343,7 @@ export class GameEngine {
         attempts += 1;
       }
       used.add(country.code);
-      questions.push(this.buildQuestion(country, questionType));
+      questions.push(this.buildQuestion(country, questionType, questions.length));
     }
 
     return questions;
@@ -400,8 +407,17 @@ export class GameEngine {
     return this.buildQuestion(country, questionMode);
   }
 
-  private buildQuestion(country: Country, mode: GameMode): Question {
-    const id = `${mode}-${country.code}-${Date.now()}-${this.questionIndex}`;
+  private buildQuestion(country: Country, mode: GameMode, stableIndex?: number): Question {
+    const id =
+      stableIndex === undefined
+        ? `${mode}-${country.code}-${Date.now()}-${this.questionIndex}`
+        : `daily-${stableIndex}-${mode}-${country.code}`;
+    const displayScope =
+      this.mode === "daily-challenge" && country.code.startsWith("US-")
+        ? "usa"
+        : this.mode === "daily-challenge"
+          ? "world"
+          : this.scope;
 
     switch (mode) {
       case "flag-to-country":
@@ -438,7 +454,7 @@ export class GameEngine {
                 : mode === "inverted-flag-to-country"
                   ? "Which country does this inverted flag belong to?"
                   : "Which country does this flag belong to?",
-            this.scope,
+            displayScope,
             country,
           ),
           correctAnswer: country.name,
@@ -463,7 +479,7 @@ export class GameEngine {
             country.hasCapitalImage
               ? "What country has this capital?"
               : `What country has ${country.capital} as its capital?`,
-            this.scope,
+            displayScope,
             country,
           ),
           correctAnswer: country.name,
@@ -475,13 +491,13 @@ export class GameEngine {
       case "country-to-capital": {
         const mc =
           this.difficulty !== "hard"
-            ? buildCapitalMcOptions(country, this.scope, this.random)
+            ? buildCapitalMcOptions(country, displayScope, this.random)
             : undefined;
         return {
           id,
           mode,
           countryCode: country.code,
-          prompt: buildCapitalPrompt(country, this.scope),
+          prompt: buildCapitalPrompt(country, displayScope),
           correctAnswer: country.capital,
           correctCode: country.code,
           displayType: country.hasCapitalImage ? "capital" : "text",
@@ -501,7 +517,7 @@ export class GameEngine {
           id,
           mode,
           countryCode: country.code,
-          prompt: buildLanguagePrompt(country, this.scope),
+          prompt: buildLanguagePrompt(country, displayScope),
           correctAnswer: primary,
           correctCode: country.code,
           displayType: country.hasFlag ? "flag" : "text",
@@ -517,7 +533,7 @@ export class GameEngine {
           id,
           mode,
           countryCode: country.code,
-          prompt: placeText("Which country matches this shape?", this.scope, country),
+          prompt: placeText("Which country matches this shape?", displayScope, country),
           correctAnswer: country.name,
           correctCode: country.code,
           displayType: "shape",
@@ -532,7 +548,7 @@ export class GameEngine {
           id,
           mode,
           countryCode: country.code,
-          prompt: buildFlagFromPlacePrompt(country, this.scope),
+          prompt: buildFlagFromPlacePrompt(country, displayScope),
           correctAnswer: country.code,
           correctCode: country.code,
           displayType: "flags-grid",
@@ -548,7 +564,7 @@ export class GameEngine {
           id,
           mode,
           countryCode: country.code,
-          prompt: buildNeighborPrompt(country, neighbor, this.scope),
+          prompt: buildNeighborPrompt(country, neighbor, displayScope),
           correctAnswer: neighbor?.name ?? "",
           correctCode: neighborCode,
           displayType: "text",
@@ -572,7 +588,7 @@ export class GameEngine {
           mode,
           countryCode: correct.code,
           secondaryCountryCode: correct.code === country.code ? other.code : country.code,
-          prompt: placeText("Which country has more people?", this.scope, correct),
+          prompt: placeText("Which country has more people?", displayScope, correct),
           correctAnswer: correct.name,
           correctCode: correct.code,
           displayType: "population",
@@ -590,9 +606,9 @@ export class GameEngine {
         );
         const factQuestion = pickFromPool(triviaPrompts, this.random);
         const prompt =
-          this.scope === "usa"
-            ? scopeText(factQuestion, this.scope)
-            : placeText(factQuestion, this.scope, country);
+          displayScope === "usa"
+            ? scopeText(factQuestion, displayScope)
+            : placeText(factQuestion, displayScope, country);
         return {
           id,
           mode,
@@ -615,7 +631,7 @@ export class GameEngine {
         const prompt =
           target === "capital"
             ? `Guess the capital (${maxGuesses} tries)`
-            : placeText(`Guess the country (${maxGuesses} tries)`, this.scope, country);
+            : placeText(`Guess the country (${maxGuesses} tries)`, displayScope, country);
         return {
           id,
           mode,
@@ -676,6 +692,33 @@ export class GameEngine {
   }
 }
 
+export const DAILY_CHALLENGE_CONTENT_VERSION = "2026-08-06";
+
+export function buildDailyChallengeSnapshot(dateKey: string): DailyChallengeSnapshot {
+  const engine = new GameEngine(
+    "daily-challenge",
+    [],
+    "medium",
+    undefined,
+    getDailySeedForDateKey(dateKey),
+    DAILY_CHALLENGE_QUESTION_COUNT,
+    false,
+    "world",
+  );
+  const questions: Question[] = [];
+  for (let index = 0; index < DAILY_CHALLENGE_QUESTION_COUNT; index += 1) {
+    const question = engine.nextQuestion();
+    if (!question) break;
+    questions.push(question);
+  }
+  return {
+    dateKey,
+    contentVersion: DAILY_CHALLENGE_CONTENT_VERSION,
+    seed: getDailySeedForDateKey(dateKey),
+    questions,
+  };
+}
+
 const DAILY_TIMEZONE = "America/New_York";
 
 export function getDailyDateKey(date = new Date()): string {
@@ -687,11 +730,30 @@ export function getDailyDateKey(date = new Date()): string {
   }).format(date);
 }
 
-export function getDailySeed(scope: GameScope = "world", date = new Date()): number {
-  const [year, month, day] = getDailyDateKey(date).split("-").map(Number);
+function dailySeedFromDateKey(dateKey: string): number {
+  const [year, month, day] = dateKey.split("-").map(Number);
   const base = year * 10000 + month * 100 + day;
-  // Give each scope its own daily question sequence.
-  return scope === "usa" ? base + 51 : base;
+  return base;
+}
+
+export function getDailySeed(date = new Date()): number {
+  return dailySeedFromDateKey(getDailyDateKey(date));
+}
+
+export function getDailySeedForDateKey(dateKey: string): number {
+  return dailySeedFromDateKey(dateKey);
+}
+
+export function isValidDailyDateKey(dateKey: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateKey)) return false;
+  const [year, month, day] = dateKey.split("-").map(Number);
+  if (month < 1 || month > 12 || day < 1 || day > 31) return false;
+  return getDailyDateKey(new Date(Date.UTC(year, month - 1, day, 17))) === dateKey;
+}
+
+export function formatDailyDateKey(dateKey: string): string {
+  const [year, month, day] = dateKey.split("-").map(Number);
+  return formatDailyDate(new Date(Date.UTC(year, month - 1, day, 17)));
 }
 
 export function formatDailyDate(date = new Date()): string {
@@ -750,21 +812,27 @@ export function getDailyCalendarParts(date = new Date()) {
 
 export function hasPlayedDailyToday(
   playedDates: string[] | undefined,
-  scope: GameScope = "world",
+  _scope: GameScope = "world",
   date = new Date(),
 ): boolean {
-  return filterDailyDatesByScope(playedDates, scope).includes(getDailyDateKey(date));
+  const normalized = new Set(
+    (playedDates ?? []).map((stored) => stored.includes(":") ? stored.slice(stored.indexOf(":") + 1) : stored),
+  );
+  return normalized.has(getDailyDateKey(date));
 }
 
 export function hasCompletedDailyToday(
   completions: string[] | undefined,
-  scope: GameScope = "world",
+  _scope: GameScope = "world",
   date = new Date(),
 ): boolean {
-  return filterDailyDatesByScope(completions, scope).includes(getDailyDateKey(date));
+  const normalized = new Set(
+    (completions ?? []).map((stored) => stored.includes(":") ? stored.slice(stored.indexOf(":") + 1) : stored),
+  );
+  return normalized.has(getDailyDateKey(date));
 }
 
-function dateKeyToEstMidday(dateKey: string): Date {
+export function dailyDateKeyToDate(dateKey: string): Date {
   const [year, month, day] = dateKey.split("-").map(Number);
   for (let hour = 12; hour <= 20; hour += 1) {
     const probe = new Date(Date.UTC(year, month - 1, day, hour));
@@ -774,7 +842,7 @@ function dateKeyToEstMidday(dateKey: string): Date {
 }
 
 export function offsetDailyDateKey(dateKey: string, dayOffset: number): string {
-  const base = dateKeyToEstMidday(dateKey);
+  const base = dailyDateKeyToDate(dateKey);
   base.setUTCDate(base.getUTCDate() + dayOffset);
   return getDailyDateKey(base);
 }
@@ -808,10 +876,12 @@ export function formatDailyResetCountdown(ms: number): string {
 
 export function getDailyChallengeRun(
   completions: string[] | undefined,
-  scope: GameScope = "world",
+  _scope: GameScope = "world",
   date = new Date(),
 ): number {
-  const set = new Set(filterDailyDatesByScope(completions, scope));
+  const set = new Set(
+    (completions ?? []).map((stored) => stored.includes(":") ? stored.slice(stored.indexOf(":") + 1) : stored),
+  );
   if (set.size === 0) return 0;
 
   const today = getDailyDateKey(date);

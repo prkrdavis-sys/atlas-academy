@@ -269,12 +269,17 @@ input:focus-visible {
 }
 
 .daily-challenge-badge-completed {
-  border-color: rgb(255 255 255 / 0.66);
-  filter: saturate(0.78);
+  border-width: 0.2rem;
+  border-color: rgb(251 191 36 / 0.95);
+  background: transparent;
   box-shadow:
-    0 7px 14px rgb(120 53 15 / 0.24),
-    inset 0 2px 0 rgb(255 255 255 / 0.62),
-    inset 0 -3px 0 rgb(146 64 14 / 0.26);
+    0 0 0 1px rgb(251 191 36 / 0.28),
+    0 7px 14px rgb(120 53 15 / 0.22);
+}
+
+.daily-challenge-badge-completed .daily-challenge-badge-surface {
+  background: transparent;
+  box-shadow: none;
 }
 
 .daily-challenge-badge-surface {

@@ -123,6 +123,7 @@ export function resolveMapProgressCategory(
 ): MapProgressCategory | null {
   const fromQuestion = resolveMapProgressCategoryFromGameMode(question.mode);
   if (fromQuestion) return fromQuestion;
+  if (question.mode === "country-to-language") return null;
 
   switch (question.displayType) {
     case "flag":

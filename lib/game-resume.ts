@@ -2,6 +2,7 @@ import { scopedHref } from "@/lib/scope";
 import type {
   ChallengeModifier,
   Difficulty,
+  DailyChallengeAnswer,
   GameMode,
   GameScope,
   Question,
@@ -27,6 +28,10 @@ export type GameResumeSnapshot = {
   stopOnWrong: boolean;
   maxQuestions?: RoundQuestionSetting;
   countStats: boolean;
+  dailyDateKey?: string;
+  dailyStartedAt?: number;
+  dailyQuestions?: Question[];
+  dailyAnswers?: DailyChallengeAnswer[];
   questionIndex: number;
   roundCountryCodes: string[];
   question: Question;
@@ -79,8 +84,15 @@ function isResumeSnapshot(value: unknown): value is GameResumeSnapshot {
   );
 }
 
-export function buildGameResumePlayHref(mode: GameMode, scope: GameScope): string {
-  return scopedHref(`/play/${mode}`, scope, { resume: "1" });
+export function buildGameResumePlayHref(
+  mode: GameMode,
+  scope: GameScope,
+  dailyDateKey?: string,
+): string {
+  return scopedHref(`/play/${mode}`, scope, {
+    resume: "1",
+    ...(mode === "daily-challenge" && dailyDateKey ? { date: dailyDateKey } : {}),
+  });
 }
 
 export function saveGameResumeSnapshot(snapshot: GameResumeSnapshot): void {

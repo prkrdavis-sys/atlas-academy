@@ -19,16 +19,30 @@ import { QuestionMedia } from "@/components/QuestionMedia";
 import { StreakCounter } from "@/components/StreakCounter";
 import { GameActionButton } from "@/components/GameActionButton";
 import { Button } from "@/components/ui/Button";
+import { useAuth } from "@/components/AuthProvider";
 import { useProfiles, useRequiredProfile } from "@/components/ProfileProvider";
 import { getCountryName, getCountryByCode } from "@/lib/countries";
-import { GameEngine, formatDailyDate, getDailyDateKey } from "@/lib/game-engine";
+import {
+  DAILY_COUNTING_SESSION_KEY,
+  DAILY_CHALLENGE_CONTENT_VERSION,
+  GameEngine,
+  formatDailyDateKey,
+  getDailyDateKey,
+} from "@/lib/game-engine";
+import {
+  clearDailyTimerSession,
+  formatDailyElapsedTime,
+  loadDailyTimerSession,
+  saveDailyTimerSession,
+  submitDailyChallengeResult,
+} from "@/lib/daily-challenge";
 import {
   checkAchievements,
   loadState,
   markDailyChallengePlayed,
   recordBestGameScore,
   recordAnswer,
-  recordDailyChallengeCompletion,
+  recordDailyChallengeResult,
 } from "@/lib/storage";
 import { triggerHaptic } from "@/lib/haptics";
 import { playSound } from "@/lib/sound";
@@ -48,11 +62,20 @@ import {
   saveGameResumeSnapshot,
   type GameResumeSnapshot,
 } from "@/lib/game-resume";
-import { getQuestionTaskLabel, getTypeInPlacePlaceholder, isStateCode, scopedDailyKey, scopeText, SCOPE_INFO } from "@/lib/scope";
+import { getQuestionTaskLabel, getTypeInPlacePlaceholder, isStateCode, scopeText, SCOPE_INFO } from "@/lib/scope";
 import { getStatsMode } from "@/lib/game-setup";
 import { useIsDark } from "@/lib/use-is-dark";
 import { setStoredMapProgressDifficulty } from "@/lib/use-map-progress-difficulty";
-import type { ChallengeModifier, Difficulty, GameMode, GameScope, Question, Region, RoundQuestionSetting } from "@/lib/types";
+import type {
+  ChallengeModifier,
+  DailyChallengeAnswer,
+  Difficulty,
+  GameMode,
+  GameScope,
+  Question,
+  Region,
+  RoundQuestionSetting,
+} from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 function learnCardCountryCodeForQuestion(question: Question): string {
@@ -77,6 +100,8 @@ type GameBoardProps = {
   onPlayAgain?: () => void;
   interactionLocked?: boolean;
   resumeSnapshot?: GameResumeSnapshot | null;
+  dailyDateKey?: string;
+  dailyQuestions?: Question[];
 };
 
 export function GameBoard({
@@ -95,14 +120,22 @@ export function GameBoard({
   onPlayAgain,
   interactionLocked = false,
   resumeSnapshot = null,
+  dailyDateKey = getDailyDateKey(),
+  dailyQuestions,
 }: GameBoardProps) {
   const router = useRouter();
+  const { user } = useAuth();
   const { refresh } = useProfiles();
   const activeProfile = useRequiredProfile();
   const { isDark, ready: themeReady } = useIsDark();
   const statsMode = getStatsMode(mode, challengeModifier);
   const mapProgressDifficulty = toMapProgressDifficulty(difficulty);
   const tracksMapProgress = countStats && mapProgressDifficulty !== null && mode !== "weak-spots";
+  const isDailyChallenge = mode === "daily-challenge";
+  const storedDailyResult = isDailyChallenge
+    ? activeProfile.dailyChallengeResults?.[dailyDateKey]
+    : undefined;
+  const dailyQuestionsForResult = dailyQuestions ?? resumeSnapshot?.dailyQuestions ?? [];
   const [{ engine, firstQuestion, sessionQuestionLimit }] = useState(() => {
     const gameEngine = new GameEngine(
       mode,
@@ -114,6 +147,7 @@ export function GameBoard({
       includeTerritories,
       scope,
       challengeModifier,
+      dailyQuestions ?? resumeSnapshot?.dailyQuestions,
     );
     if (resumeSnapshot) {
       gameEngine.restoreResumeProgress(
@@ -166,6 +200,29 @@ export function GameBoard({
   const [sessionComplete, setSessionComplete] = useState(
     () => resumeSnapshot?.sessionComplete ?? false,
   );
+  const [dailyStartedAt] = useState<number | null>(() => {
+    if (!isDailyChallenge || !countStats) return null;
+    return (
+      resumeSnapshot?.dailyStartedAt ??
+      loadDailyTimerSession(dailyDateKey)?.startedAt ??
+      Date.now()
+    );
+  });
+  const [dailyElapsedCentiseconds, setDailyElapsedCentiseconds] = useState(() => {
+    if (!isDailyChallenge || !countStats || dailyStartedAt === null) return 0;
+    return Math.max(0, Math.round((Date.now() - dailyStartedAt) / 10));
+  });
+  const [dailyCompletionElapsedCentiseconds, setDailyCompletionElapsedCentiseconds] = useState<number | null>(
+    null,
+  );
+  const [reviewStartedAt] = useState<number | null>(() => {
+    if (!isDailyChallenge || countStats) return null;
+    return Date.now();
+  });
+  const [reviewElapsedCentiseconds, setReviewElapsedCentiseconds] = useState(0);
+  const [dailyAnswers, setDailyAnswers] = useState<DailyChallengeAnswer[]>(
+    () => resumeSnapshot?.dailyAnswers ?? [],
+  );
   const [exitedEarly, setExitedEarly] = useState(false);
   const [newAchievements, setNewAchievements] = useState<string[]>([]);
   const [initialMapProgress] = useState(() => {
@@ -180,9 +237,14 @@ export function GameBoard({
   const summaryAchievementsCheckedRef = useRef(false);
   const bestGameScoreRecordedRef = useRef(false);
 
-  function maybeRecordDailyCompletion(completedQuestions: number) {
+  function maybeRecordDailyCompletion(
+    completedQuestions: number,
+    completedCorrectAnswers = correctAnswers,
+    completedSkippedAnswers = skippedAnswers,
+    completedDailyAnswers = dailyAnswers,
+  ) {
     if (
-      mode !== "daily-challenge" ||
+      !isDailyChallenge ||
       !countStats ||
       !sessionQuestionLimit ||
       completedQuestions < sessionQuestionLimit ||
@@ -191,7 +253,36 @@ export function GameBoard({
       return;
     }
     dailyCompletionRecordedRef.current = true;
-    recordDailyChallengeCompletion(activeProfile.id, scope);
+    const elapsedCentiseconds =
+      dailyCompletionElapsedCentiseconds ??
+      (dailyStartedAt === null
+        ? 0
+        : Math.max(0, Math.round((Date.now() - dailyStartedAt) / 10)));
+    const result = {
+      dateKey: dailyDateKey,
+      questionCount: completedQuestions,
+      correctAnswers: completedCorrectAnswers,
+      skippedAnswers: completedSkippedAnswers,
+      elapsedCentiseconds,
+      completedAt: new Date().toISOString(),
+      ...(dailyQuestionsForResult.length ? { questions: dailyQuestionsForResult } : {}),
+      ...(completedDailyAnswers.length ? { answers: completedDailyAnswers } : {}),
+    };
+    setDailyCompletionElapsedCentiseconds(elapsedCentiseconds);
+    recordDailyChallengeResult(activeProfile.id, result);
+    clearDailyTimerSession();
+    if (typeof window !== "undefined") {
+      sessionStorage.removeItem(DAILY_COUNTING_SESSION_KEY);
+    }
+    refresh();
+    if (user && dailyQuestionsForResult.length) {
+      void submitDailyChallengeResult(
+        activeProfile.id,
+        result,
+        seed ?? 0,
+        DAILY_CHALLENGE_CONTENT_VERSION,
+      ).catch(() => undefined);
+    }
   }
 
   function awardAchievements(session: {
@@ -269,27 +360,26 @@ export function GameBoard({
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = previous;
-      if (mode === "daily-challenge" && countStats && typeof window !== "undefined") {
-        sessionStorage.removeItem("daily-counting-session");
-      }
     };
   }, [mode, countStats]);
 
   useEffect(() => {
-    if (!resumeSnapshot || mode !== "daily-challenge" || !countStats) return;
+    if (mode !== "daily-challenge" || !countStats || dailyStartedAt === null) return;
     if (typeof window === "undefined") return;
-    // Keep the counting session alive across learn-card → library → resume.
-    sessionStorage.setItem(
-      "daily-counting-session",
-      scopedDailyKey(getDailyDateKey(), scope),
-    );
-  }, [resumeSnapshot, mode, countStats, scope]);
+    // Keep the counting session alive across navigation and resume.
+    sessionStorage.setItem(DAILY_COUNTING_SESSION_KEY, dailyDateKey);
+    saveDailyTimerSession({ dateKey: dailyDateKey, startedAt: dailyStartedAt });
+  }, [mode, countStats, dailyDateKey, dailyStartedAt]);
 
   function persistLearnCardResume() {
     if (!question || !showLearnCard) return;
     saveGameResumeSnapshot({
       version: 1,
-      playHref: buildGameResumePlayHref(mode, scope),
+      playHref: buildGameResumePlayHref(
+        mode,
+        scope,
+        isDailyChallenge ? dailyDateKey : undefined,
+      ),
       createdAt: Date.now(),
       mode,
       challengeModifier,
@@ -303,6 +393,11 @@ export function GameBoard({
       stopOnWrong,
       ...(maxQuestions !== undefined ? { maxQuestions } : {}),
       countStats,
+      ...(isDailyChallenge ? { dailyDateKey, dailyStartedAt: dailyStartedAt ?? undefined } : {}),
+      ...(isDailyChallenge && dailyQuestionsForResult.length
+        ? { dailyQuestions: dailyQuestionsForResult }
+        : {}),
+      ...(isDailyChallenge && dailyAnswers.length ? { dailyAnswers } : {}),
       questionIndex: engine.getQuestionIndex(),
       roundCountryCodes: engine.getRoundCountryCodes(),
       question,
@@ -336,6 +431,35 @@ export function GameBoard({
     hasFinishedQuestions ||
     hasReachedQuestionLimit;
   const showSummary = roundEnded && !showLearnCard;
+
+  useEffect(() => {
+    if (
+      !isDailyChallenge ||
+      dailyStartedAt === null ||
+      showSummary ||
+      sessionComplete ||
+      gameOver ||
+      exitedEarly
+    ) {
+      return;
+    }
+    const timer = window.setInterval(() => {
+      setDailyElapsedCentiseconds(
+        Math.max(0, Math.round((Date.now() - dailyStartedAt) / 10)),
+      );
+    }, 50);
+    return () => window.clearInterval(timer);
+  }, [isDailyChallenge, dailyStartedAt, showSummary, sessionComplete, gameOver, exitedEarly]);
+
+  useEffect(() => {
+    if (!isDailyChallenge || reviewStartedAt === null || showSummary) return;
+    const timer = window.setInterval(() => {
+      setReviewElapsedCentiseconds(
+        Math.max(0, Math.round((Date.now() - reviewStartedAt) / 10)),
+      );
+    }, 50);
+    return () => window.clearInterval(timer);
+  }, [isDailyChallenge, reviewStartedAt, showSummary]);
 
   // Warm learn-card maps while the player answers / reads, so the terrain crop
   // is already cached when PlaceContextMap mounts.
@@ -422,9 +546,21 @@ export function GameBoard({
     const isCodeSelection = code !== undefined;
     const correct = engine.checkAnswer(question, code ?? answer, isCodeSelection);
     const lostStreak = !correct && streak >= STREAK_SNUFF_MIN ? streak : undefined;
+    const dailyAnswer: DailyChallengeAnswer = {
+      questionIndex: questionCount,
+      answer,
+      correct,
+      skipped: false,
+    };
     setLastCorrect(correct);
     setLastSelectedAnswer(answer);
     setLastSelectedCode(code ?? null);
+    if (isDailyChallenge) {
+      setDailyAnswers((answers) => [
+        ...answers,
+        dailyAnswer,
+      ]);
+    }
     spawnBurst(correct, lostStreak);
     playSound(correct ? "correct" : "incorrect", activeProfile, {
       streak: correct ? streak + 1 : undefined,
@@ -445,17 +581,25 @@ export function GameBoard({
         question,
       );
       if (mode === "daily-challenge") {
-        markDailyChallengePlayed(activeProfile.id, scope);
+        markDailyChallengePlayed(activeProfile.id, dailyDateKey);
       }
 
       const completedQuestions = questionCount + 1;
       const sessionCorrect = correctAnswers + (correct ? 1 : 0);
+      const completedDailyAnswers = isDailyChallenge
+        ? [...dailyAnswers, dailyAnswer]
+        : dailyAnswers;
       const sessionEnded =
         Boolean(sessionQuestionLimit && completedQuestions >= sessionQuestionLimit) ||
         (stopOnWrong && !correct);
 
       if (sessionEnded) {
-        maybeRecordDailyCompletion(completedQuestions);
+        maybeRecordDailyCompletion(
+          completedQuestions,
+          sessionCorrect,
+          skippedAnswers,
+          completedDailyAnswers,
+        );
       }
 
       refresh();
@@ -491,6 +635,18 @@ export function GameBoard({
     setLastCorrect(false);
     setLastSelectedAnswer(null);
     setLastSelectedCode(null);
+    const dailyAnswer: DailyChallengeAnswer = {
+      questionIndex: questionCount,
+      answer: null,
+      correct: false,
+      skipped: true,
+    };
+    if (isDailyChallenge) {
+      setDailyAnswers((answers) => [
+        ...answers,
+        dailyAnswer,
+      ]);
+    }
     const completedQuestions = questionCount + 1;
     setQuestionCount(completedQuestions);
     setSkippedAnswers((count) => count + 1);
@@ -500,14 +656,22 @@ export function GameBoard({
     if (countStats) {
       recordAnswer(activeProfile.id, statsMode, difficulty, false, question.countryCode, true, scope);
       if (mode === "daily-challenge") {
-        markDailyChallengePlayed(activeProfile.id, scope);
+        markDailyChallengePlayed(activeProfile.id, dailyDateKey);
       }
 
       const sessionEnded = Boolean(
         sessionQuestionLimit && completedQuestions >= sessionQuestionLimit,
       );
+      const completedDailyAnswers = isDailyChallenge
+        ? [...dailyAnswers, dailyAnswer]
+        : dailyAnswers;
       if (sessionEnded) {
-        maybeRecordDailyCompletion(completedQuestions);
+        maybeRecordDailyCompletion(
+          completedQuestions,
+          correctAnswers,
+          skippedAnswers + 1,
+          completedDailyAnswers,
+        );
       }
 
       refresh();
@@ -533,6 +697,12 @@ export function GameBoard({
     }
     setShowLearnCard(false);
     setExitedEarly(true);
+    if (isDailyChallenge && countStats) {
+      clearDailyTimerSession();
+      if (typeof window !== "undefined") {
+        sessionStorage.removeItem(DAILY_COUNTING_SESSION_KEY);
+      }
+    }
     playSound("complete", activeProfile);
   }
 
@@ -583,6 +753,11 @@ export function GameBoard({
           }
         : null;
     const mapHref = scope === "usa" ? "/map?view=usa" : "/map";
+    const dailyLeaderboardHref = `/daily-challenge?date=${dailyDateKey}`;
+    const summaryDailyTime =
+      dailyCompletionElapsedCentiseconds ??
+      storedDailyResult?.elapsedCentiseconds ??
+      dailyElapsedCentiseconds;
     const challengeComplete =
       !exitedEarly &&
       !gameOver &&
@@ -628,6 +803,16 @@ export function GameBoard({
               <p className="font-display text-2xl font-extrabold text-sky-700 dark:text-sky-400">{accuracy}%</p>
               <p className="text-xs font-semibold text-sky-800 dark:text-sky-300">Accuracy</p>
             </div>
+            {isDailyChallenge && (
+              <div className="rounded-2xl bg-amber-50 p-3 dark:bg-amber-950/50">
+                <p className="font-display text-2xl font-extrabold text-amber-700 dark:text-amber-400">
+                  {formatDailyElapsedTime(summaryDailyTime)}
+                </p>
+                <p className="text-xs font-semibold text-amber-800 dark:text-amber-300">
+                  {countStats ? "Time" : "Original time"}
+                </p>
+              </div>
+            )}
             {difficulty === "easy" && mode === "atlasle" && (
               <div className="rounded-2xl bg-amber-50 p-3 dark:bg-amber-950/50">
                 <p className="font-display text-2xl font-extrabold text-amber-700 dark:text-amber-400">{hintsUsed}</p>
@@ -672,12 +857,12 @@ export function GameBoard({
                 variant="secondary"
                 size="lg"
                 className="w-full gap-2.5 px-6 text-lg max-sm:gap-1.5 max-sm:px-2.5 max-sm:whitespace-nowrap"
-                onClick={() => router.push(mapHref)}
+                onClick={() => router.push(isDailyChallenge ? dailyLeaderboardHref : mapHref)}
               >
                 <span className="text-2xl leading-none max-sm:text-xl" aria-hidden>
-                  🗺️
+                  {isDailyChallenge ? "🏆" : "🗺️"}
                 </span>
-                View map
+                {isDailyChallenge ? "View leaderboard" : "View map"}
               </Button>
               {exitedEarly && onPlayAgain ? (
                 <Button
@@ -729,8 +914,16 @@ export function GameBoard({
       ? question.correctCode ?? question.countryCode
       : question.countryCode;
   const answerPlace = getCountryByCode(answerCode);
-  const roundTaskLabel = getQuestionTaskLabel(question, scope, answerPlace);
-  const dailyDateLabel = mode === "daily-challenge" ? formatDailyDate() : null;
+  const questionScope = isDailyChallenge
+    ? isStateCode(answerCode)
+      ? "usa"
+      : "world"
+    : scope;
+  const roundTaskLabel = getQuestionTaskLabel(question, questionScope, answerPlace);
+  const dailyDateLabel = isDailyChallenge ? formatDailyDateKey(dailyDateKey) : null;
+  const headerDailyTime = countStats
+    ? dailyCompletionElapsedCentiseconds ?? dailyElapsedCentiseconds
+    : storedDailyResult?.elapsedCentiseconds ?? 0;
   const isTextOnlyPrompt = isTextOnlyQuestion(question);
   const isAtlasleRound = question.displayType === "atlasle";
   const isInvertedFlagRound = isInvertedFlagQuestion(question);
@@ -750,7 +943,11 @@ export function GameBoard({
         <span className="font-black">{question.correctAnswer}</span>
       </>
     ) : undefined;
-  const learnCardLibraryScope = isStateCode(learnCardCountryCode) ? "usa" : scope;
+  const learnCardLibraryScope = isStateCode(learnCardCountryCode)
+    ? "usa"
+    : isDailyChallenge
+      ? "world"
+      : scope;
   const learnCardLibraryHref = buildLibraryDetailHref(
     learnCardCountryCode,
     learnCardLibraryScope,
@@ -842,6 +1039,24 @@ export function GameBoard({
               <p className="game-stat-label text-[9px] font-semibold uppercase text-emerald-600 dark:text-emerald-400">Correct</p>
               <p className="font-display text-base font-extrabold leading-none text-emerald-700 dark:text-emerald-300 sm:text-lg">{correctAnswers}</p>
             </div>
+            {isDailyChallenge && (
+              <div className="shrink-0 rounded-xl border-2 border-amber-200 bg-amber-50/90 px-1.5 py-1 text-center dark:border-amber-800 dark:bg-amber-950/40 sm:rounded-2xl sm:px-3 sm:py-1.5">
+                <p className="game-stat-label text-[9px] font-semibold uppercase text-amber-600 dark:text-amber-400">
+                  {countStats ? "Time" : "Score"}
+                </p>
+                <p className="font-display text-base font-extrabold leading-none text-amber-700 dark:text-amber-300 sm:text-lg">
+                  {formatDailyElapsedTime(headerDailyTime)}
+                </p>
+              </div>
+            )}
+            {isDailyChallenge && !countStats && (
+              <div className="shrink-0 rounded-xl border-2 border-violet-200 bg-violet-50/90 px-1.5 py-1 text-center dark:border-violet-800 dark:bg-violet-950/40 sm:rounded-2xl sm:px-3 sm:py-1.5">
+                <p className="game-stat-label text-[9px] font-semibold uppercase text-violet-600 dark:text-violet-400">Review</p>
+                <p className="font-display text-base font-extrabold leading-none text-violet-700 dark:text-violet-300 sm:text-lg">
+                  {formatDailyElapsedTime(reviewElapsedCentiseconds)}
+                </p>
+              </div>
+            )}
             {timed && (
               <div className={`shrink-0 rounded-xl border-2 px-1.5 py-1 text-center sm:rounded-2xl sm:px-3 sm:py-1.5 ${timeLeft <= 10 ? "border-rose-300 bg-rose-50 dark:border-rose-700 dark:bg-rose-950/50" : "border-slate-200 bg-white/90 dark:border-slate-700 dark:bg-slate-900/90"}`}>
                 <p className={`game-stat-label text-[9px] font-semibold uppercase ${timeLeft <= 10 ? "text-rose-500 dark:text-rose-400" : "text-slate-500 dark:text-slate-400"}`}>Time</p>
@@ -971,7 +1186,7 @@ export function GameBoard({
                 target={question.atlasleTarget ?? "name"}
                 maxGuesses={question.atlasleMaxGuesses ?? 6}
                 difficulty={difficulty}
-                scope={scope}
+                scope={questionScope}
                 disabled={disabled || interactionLocked}
                 onComplete={(_correct, finalGuess, puzzleHints) => {
                   setHintsUsed((count) => count + puzzleHints);
@@ -1008,7 +1223,7 @@ export function GameBoard({
                     ? "Type the capital..."
                     : question.mode === "country-to-language"
                       ? "Type the language..."
-                      : getTypeInPlacePlaceholder(scope, answerPlace?.isTerritory ?? false)
+                    : getTypeInPlacePlaceholder(questionScope, answerPlace?.isTerritory ?? false)
                 }
                 />
               </div>

@@ -444,10 +444,12 @@ export type Profile = {
   loginStreak?: { lastDateKey: string; length: number };
   /** Recent EST date keys (YYYY-MM-DD) the app was opened; pruned to ~2 weeks for the week view. */
   loginDates?: string[];
-  /** EST date keys (YYYY-MM-DD) when the daily challenge was first played with stats */
+  /** Eastern date keys (YYYY-MM-DD) when the daily challenge was first played with stats. */
   dailyChallengePlayedDates?: string[];
-  /** EST date keys (YYYY-MM-DD) when the daily challenge was fully completed */
+  /** Eastern date keys (YYYY-MM-DD) when the daily challenge was fully completed. */
   dailyChallengeCompletions?: string[];
+  /** First-completion result metadata used for local review and resume UI. */
+  dailyChallengeResults?: Record<string, DailyChallengeLocalResult>;
   /** Questions answered per EST date key (YYYY-MM-DD), across scopes and difficulties. */
   activityByDate?: Record<string, number>;
   /** Highest global streak reached today, per scope and difficulty (resets each EST day) */
@@ -497,6 +499,33 @@ export type Question = {
   atlasleTarget?: AtlasleGuessTarget;
   /** Atlasle: max guesses for this puzzle (difficulty-dependent). */
   atlasleMaxGuesses?: number;
+};
+
+/** The immutable client-side representation of one date's daily challenge. */
+export type DailyChallengeSnapshot = {
+  dateKey: string;
+  contentVersion: string;
+  seed: number;
+  questions: Question[];
+};
+
+/** The first completed attempt for a profile and daily challenge date. */
+export type DailyChallengeLocalResult = {
+  dateKey: string;
+  questionCount: number;
+  correctAnswers: number;
+  skippedAnswers: number;
+  elapsedCentiseconds: number;
+  completedAt: string;
+  questions?: Question[];
+  answers?: DailyChallengeAnswer[];
+};
+
+export type DailyChallengeAnswer = {
+  questionIndex: number;
+  answer: string | null;
+  correct: boolean;
+  skipped: boolean;
 };
 
 export type AnswerResult = {

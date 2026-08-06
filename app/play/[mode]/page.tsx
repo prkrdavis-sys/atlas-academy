@@ -13,26 +13,28 @@ import {
 } from "@/lib/game-setup";
 import {
   DAILY_COUNTING_SESSION_KEY,
-  formatDailyDate,
-  getDailyChallengeRun,
+  buildDailyChallengeSnapshot,
   getDailyDateKey,
-  getDailySeed,
+  dailyDateKeyToDate,
+  formatDailyDateKey,
+  getDailyChallengeRun,
+  getDailySeedForDateKey,
   hasCompletedDailyToday,
   hasPlayedDailyToday,
+  isValidDailyDateKey,
 } from "@/lib/game-engine";
 import {
   clearGameResumeSnapshot,
   consumeGameResumeSnapshot,
   type GameResumeSnapshot,
 } from "@/lib/game-resume";
-import { getScopedModeInfo, scopedDailyKey, scopedHref } from "@/lib/scope";
+import { getScopedModeInfo, scopedHref } from "@/lib/scope";
 import { getCommonlyMissedCountries } from "@/lib/stats-helpers";
 import { recordModeSelection, updateProfileSettings } from "@/lib/storage";
 import { useResolvedGameScope } from "@/lib/use-game-scope";
 import {
   CONTINENTS,
   DAILY_CHALLENGE_QUESTION_COUNT,
-  US_REGIONS,
   clampRoundQuestionSetting,
   isChallengeModifierActive,
   type Difficulty,
@@ -49,7 +51,6 @@ function PlayPageInner() {
   const profile = useRequiredProfile();
   const requestedMode = params.mode as GameMode;
   const scope = useResolvedGameScope();
-  const isUsa = scope === "usa";
   const wantsResume = searchParams.get("resume") === "1";
 
   const resolved = resolvePlayConfig(
@@ -69,16 +70,27 @@ function PlayPageInner() {
     : draft.challengeModifier;
 
   const isDailyChallenge = requestedMode === "daily-challenge";
-  const dailyDateLabel = isDailyChallenge ? formatDailyDate() : null;
+  const currentDailyDateKey = getDailyDateKey();
+  const requestedDailyDateKey = searchParams.get("date");
+  const dailyDateKey =
+    isDailyChallenge &&
+    requestedDailyDateKey &&
+    isValidDailyDateKey(requestedDailyDateKey) &&
+    requestedDailyDateKey <= currentDailyDateKey
+      ? requestedDailyDateKey
+      : currentDailyDateKey;
+  const dailyDate = dailyDateKeyToDate(dailyDateKey);
+  const dailyDateLabel = isDailyChallenge ? formatDailyDateKey(dailyDateKey) : null;
+  const dailySnapshot = isDailyChallenge ? buildDailyChallengeSnapshot(dailyDateKey) : null;
   const dailyCompletedToday =
     isDailyChallenge && scope
-      ? hasCompletedDailyToday(profile.dailyChallengeCompletions, scope)
+      ? hasCompletedDailyToday(profile.dailyChallengeCompletions, scope, dailyDate)
       : false;
   const dailyRun =
     isDailyChallenge && scope
-      ? getDailyChallengeRun(profile.dailyChallengeCompletions, scope)
+      ? getDailyChallengeRun(profile.dailyChallengeCompletions, scope, dailyDate)
       : 0;
-  const dailyContinents: Region[] = isUsa ? [...US_REGIONS] : [...CONTINENTS];
+  const dailyContinents: Region[] = [...CONTINENTS];
   const dailyDifficulty: Difficulty = "medium";
 
   const weakSpotCodes =
@@ -121,15 +133,16 @@ function PlayPageInner() {
         setResumeSnapshot(snapshot);
         setCountStats(snapshot.countStats);
         if (snapshot.mode === "daily-challenge" && snapshot.countStats) {
-          sessionStorage.setItem(
-            DAILY_COUNTING_SESSION_KEY,
-            scopedDailyKey(getDailyDateKey(), scope),
-          );
+          sessionStorage.setItem(DAILY_COUNTING_SESSION_KEY, snapshot.dailyDateKey ?? dailyDateKey);
         }
         setSessionKey((key) => key + 1);
         setStarted(true);
         setShowOverlay(false);
-        router.replace(scopedHref(`/play/${snapshot.mode}`, scope));
+        router.replace(
+          scopedHref(`/play/${snapshot.mode}`, scope, {
+            ...(snapshot.dailyDateKey ? { date: snapshot.dailyDateKey } : {}),
+          }),
+        );
         return;
       }
     }
@@ -142,8 +155,8 @@ function PlayPageInner() {
     clearGameResumeSnapshot();
 
     if (isDailyChallenge) {
-      const today = scopedDailyKey(getDailyDateKey(), scope);
-      const playedToday = hasPlayedDailyToday(profile.dailyChallengePlayedDates, scope);
+      const today = dailyDateKey;
+      const playedToday = hasPlayedDailyToday(profile.dailyChallengePlayedDates, scope, dailyDate);
       const activeSession =
         typeof window !== "undefined" &&
         sessionStorage.getItem(DAILY_COUNTING_SESSION_KEY) === today;
@@ -163,11 +176,14 @@ function PlayPageInner() {
     setSessionKey((key) => key + 1);
     setStarted(true);
     setShowOverlay(true);
-  }, [scope]);
+  }, [scope, dailyDate, dailyDateKey, isDailyChallenge, profile, requestedMode, mode, router, wantsResume]);
   /* eslint-enable react-hooks/set-state-in-effect */
 
   function handlePlayAgain() {
     setResumeSnapshot(null);
+    if (isDailyChallenge && profile.dailyChallengeResults?.[dailyDateKey]) {
+      setCountStats(false);
+    }
     setSessionKey((key) => key + 1);
     setShowOverlay(true);
   }
@@ -202,6 +218,8 @@ function PlayPageInner() {
         countStats: resumeSnapshot.countStats,
         interactionLocked: false,
         resumeSnapshot,
+        dailyDateKey: resumeSnapshot.dailyDateKey ?? dailyDateKey,
+        dailyQuestions: resumeSnapshot.dailyQuestions ?? dailySnapshot?.questions,
       }
     : {
         mode,
@@ -211,8 +229,8 @@ function PlayPageInner() {
         includeTerritories: isDailyChallenge ? false : draft.includeTerritories,
         difficulty: isDailyChallenge ? dailyDifficulty : draft.difficulty,
         weakSpotCodes,
-        seed: isDailyChallenge ? getDailySeed(scope) : undefined,
-        timed: challengeActive && activeChallengeModifier === "speed-round",
+        seed: isDailyChallenge ? getDailySeedForDateKey(dailyDateKey) : undefined,
+        timed: isDailyChallenge ? false : challengeActive && activeChallengeModifier === "speed-round",
         stopOnWrong: challengeActive && activeChallengeModifier === "marathon",
         maxQuestions: isDailyChallenge
           ? DAILY_CHALLENGE_QUESTION_COUNT
@@ -222,6 +240,8 @@ function PlayPageInner() {
         countStats: isDailyChallenge ? countStats : true,
         interactionLocked: showOverlay,
         resumeSnapshot: null,
+        dailyDateKey: isDailyChallenge ? dailyDateKey : undefined,
+        dailyQuestions: isDailyChallenge ? dailySnapshot?.questions : undefined,
       };
 
   return (

@@ -17,6 +17,7 @@ type LibrarySearchProps = {
   filter: LibraryFilter;
   sort?: LibrarySort;
   isState?: boolean;
+  mobileDropdownFullWidth?: boolean;
   className?: string;
   onNavigateToDetail?: () => void;
 };
@@ -44,6 +45,7 @@ export function LibrarySearch({
   filter,
   sort = "alphabetical",
   isState = false,
+  mobileDropdownFullWidth = false,
   className,
   onNavigateToDetail,
 }: LibrarySearchProps) {
@@ -149,7 +151,14 @@ export function LibrarySearch({
   }, [fullPlaceholder]);
 
   return (
-    <div ref={containerRef} className={cn("relative", className)}>
+    <div
+      ref={containerRef}
+      className={cn(
+        "relative",
+        mobileDropdownFullWidth && "max-sm:static",
+        className,
+      )}
+    >
       <div className="relative">
         <SearchIcon className="pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500 dark:text-slate-400" />
         <input
@@ -186,7 +195,11 @@ export function LibrarySearch({
           id={listboxId}
           role="listbox"
           aria-label={isState ? "Matching states" : "Matching countries"}
-          className="absolute z-20 mt-2 max-h-72 w-full overflow-y-auto rounded-2xl border-2 border-slate-200 bg-white/95 p-1.5 shadow-lg backdrop-blur dark:border-slate-700 dark:bg-slate-900/95"
+          className={cn(
+            "absolute z-20 mt-2 max-h-72 w-full overflow-y-auto rounded-2xl border-2 border-slate-200 bg-white/95 p-1.5 shadow-lg backdrop-blur dark:border-slate-700 dark:bg-slate-900/95",
+            mobileDropdownFullWidth &&
+              "max-sm:-left-4 max-sm:-right-4 max-sm:top-[calc(100%+0.5rem)] max-sm:mt-0 max-sm:w-auto",
+          )}
         >
           {matches.length > 0 ? (
             matches.map((match, index) => {

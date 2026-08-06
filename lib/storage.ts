@@ -29,7 +29,6 @@ import { checkAchievements as evaluateAchievements, reconcileAchievements } from
 import { isValidSetupMode } from "@/lib/game-setup";
 import { getDailyDateKey, offsetDailyDateKey } from "@/lib/game-engine";
 import { MAX_LOGIN_DATE_HISTORY_DAYS } from "@/lib/login-streak";
-import { scopedDailyKey } from "@/lib/scope";
 import { isProfileAvatarId } from "@/lib/profile-avatars";
 import {
   createEmptyGlobalStreaksByDifficulty,
@@ -217,6 +216,10 @@ function normalizeProfiles(rawProfiles: unknown[]): Profile[] {
   return profiles;
 }
 
+function normalizeDailyDateKey(stored: string): string {
+  return stored.includes(":") ? stored.slice(stored.indexOf(":") + 1) : stored;
+}
+
 export function normalizeProfile(profile: Profile): Profile {
   const normalized = migrateLegacyStats({
     ...(profile as LegacyProfile),
@@ -304,12 +307,26 @@ export function normalizeProfile(profile: Profile): Profile {
   if (!normalized.loginDates) {
     normalized.loginDates = [];
   }
-  if (!normalized.dailyChallengePlayedDates) {
-    normalized.dailyChallengePlayedDates = [];
+  normalized.dailyChallengePlayedDates = [
+    ...new Set((normalized.dailyChallengePlayedDates ?? []).map(normalizeDailyDateKey)),
+  ];
+  normalized.dailyChallengeCompletions = [
+    ...new Set((normalized.dailyChallengeCompletions ?? []).map(normalizeDailyDateKey)),
+  ];
+  const dailyResults: NonNullable<Profile["dailyChallengeResults"]> = {};
+  for (const [storedKey, result] of Object.entries(normalized.dailyChallengeResults ?? {})) {
+    const dateKey = normalizeDailyDateKey(storedKey);
+    if (
+      result &&
+      typeof result === "object" &&
+      Number.isFinite(result.elapsedCentiseconds) &&
+      Number.isFinite(result.correctAnswers) &&
+      Number.isFinite(result.questionCount)
+    ) {
+      dailyResults[dateKey] = { ...result, dateKey };
+    }
   }
-  if (!normalized.dailyChallengeCompletions) {
-    normalized.dailyChallengeCompletions = [];
-  }
+  normalized.dailyChallengeResults = dailyResults;
   if (!normalized.activityByDate) {
     normalized.activityByDate = {};
   }
@@ -656,34 +673,52 @@ export function recordDailyLogin(profileId: string): DailyLoginResult {
   return { state, extended: true, streakLength: profile.loginStreak.length };
 }
 
-export function recordDailyChallengeCompletion(profileId: string, scope: GameScope = "world") {
+export function recordDailyChallengeCompletion(profileId: string, dateKey = getDailyDateKey()) {
   const state = loadState();
   const profile = state.profiles.find((p) => p.id === profileId);
   if (!profile) return state;
 
-  const today = scopedDailyKey(getDailyDateKey(), scope);
   if (!profile.dailyChallengeCompletions) {
     profile.dailyChallengeCompletions = [];
   }
-  if (!profile.dailyChallengeCompletions.includes(today)) {
-    profile.dailyChallengeCompletions.push(today);
+  if (!profile.dailyChallengeCompletions.includes(dateKey)) {
+    profile.dailyChallengeCompletions.push(dateKey);
     saveState(state);
   }
   return state;
 }
 
-export function markDailyChallengePlayed(profileId: string, scope: GameScope = "world") {
+export function markDailyChallengePlayed(profileId: string, dateKey = getDailyDateKey()) {
   const state = loadState();
   const profile = state.profiles.find((p) => p.id === profileId);
   if (!profile) return state;
 
-  const today = scopedDailyKey(getDailyDateKey(), scope);
   if (!profile.dailyChallengePlayedDates) {
     profile.dailyChallengePlayedDates = [];
   }
-  if (!profile.dailyChallengePlayedDates.includes(today)) {
-    profile.dailyChallengePlayedDates.push(today);
+  if (!profile.dailyChallengePlayedDates.includes(dateKey)) {
+    profile.dailyChallengePlayedDates.push(dateKey);
     saveState(state);
+  }
+  return state;
+}
+
+export function recordDailyChallengeResult(
+  profileId: string,
+  result: NonNullable<Profile["dailyChallengeResults"]>[string],
+) {
+  const state = loadState();
+  const profile = state.profiles.find((p) => p.id === profileId);
+  if (!profile) return state;
+
+  if (!profile.dailyChallengeResults) {
+    profile.dailyChallengeResults = {};
+  }
+  if (!profile.dailyChallengeResults[result.dateKey]) {
+    profile.dailyChallengeResults[result.dateKey] = result;
+    saveState(state);
+    recordDailyChallengeCompletion(profileId, result.dateKey);
+    return loadState();
   }
   return state;
 }
