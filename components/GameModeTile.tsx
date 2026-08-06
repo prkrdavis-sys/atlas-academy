@@ -81,13 +81,13 @@ export function GameModeTile({
         <Link
           href={href}
           className={cn(
-            "group flex w-full items-center gap-3 rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:border-teal-300 hover:shadow-md dark:border-slate-700 dark:bg-slate-900 dark:hover:border-teal-600",
+            "group flex w-full items-center gap-3 rounded-xl border border-white/80 bg-white px-3.5 py-3 shadow-sm ring-1 ring-slate-900/5 transition-all hover:-translate-y-0.5 hover:border-teal-200 hover:shadow-md hover:ring-teal-500/20 dark:border-slate-700/80 dark:bg-slate-800 dark:ring-white/5 dark:hover:border-teal-600/60 dark:hover:ring-teal-400/20 sm:px-4 sm:py-3.5",
             className,
           )}
         >
           <span
             aria-hidden
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-2xl transition-transform group-hover:scale-110 dark:bg-slate-800 sm:h-12 sm:w-12"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-2xl transition-transform group-hover:scale-110 dark:bg-slate-900/70 sm:h-12 sm:w-12"
           >
             {modeInfo.icon}
           </span>
@@ -102,6 +102,12 @@ export function GameModeTile({
               {description}
             </p>
           </div>
+          <span
+            aria-hidden
+            className="shrink-0 text-base font-bold text-slate-300 transition-transform group-hover:translate-x-0.5 group-hover:text-teal-500 dark:text-slate-500 dark:group-hover:text-teal-400"
+          >
+            ›
+          </span>
         </Link>
       );
 

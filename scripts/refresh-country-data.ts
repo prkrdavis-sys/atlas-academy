@@ -6,6 +6,7 @@ import {
   getCountryFactQuestion,
   getCountryFactQuestion2,
 } from "./place-facts";
+import { getCountrySearchKeywords } from "./place-search-keywords";
 import {
   attachUsdRate,
   fetchUsdExchangeRates,
@@ -358,6 +359,7 @@ async function main() {
       factQuestion: buildFactQuestion(code3, raw.name.common),
       fact2: buildFact2(code3, raw.name.common),
       factQuestion2: buildFactQuestion2(code3, raw.name.common),
+      searchKeywords: getCountrySearchKeywords(code3),
     });
   }
 

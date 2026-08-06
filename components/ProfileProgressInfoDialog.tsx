@@ -2,13 +2,21 @@
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import { useAuth } from "@/components/AuthProvider";
 import { Button } from "@/components/ui/Button";
 
-const PROGRESS_TIPS = [
-  "Stats and streaks save automatically on this device.",
-  "App updates can sometimes reset or delete profiles and stats — it's the alpha life.",
-  "Clearing browser data or switching browsers will reset it too.",
-  "Use Backup & restore on Profiles to keep a copy safe.",
+const SIGNED_IN_PROGRESS_TIPS = [
+  "Stats and streaks save automatically to your account.",
+  "Sign in on another device to pick up where you left off.",
+  "Multiple player profiles can share one account — switch anytime from the profile menu.",
+  "Use Backup & restore on Profiles anytime for a portable copy.",
+] as const;
+
+const GUEST_PROGRESS_TIPS = [
+  "Stats and streaks save automatically while you play as a guest.",
+  "Guest progress stays on this device until you create an account.",
+  "Create an account anytime to sync your progress across devices.",
+  "Use Backup & restore on Profiles anytime for a portable copy.",
 ] as const;
 
 type ProfileProgressInfoDialogProps = {
@@ -17,7 +25,12 @@ type ProfileProgressInfoDialogProps = {
 };
 
 export function ProfileProgressInfoDialog({ open, onClose }: ProfileProgressInfoDialogProps) {
+  const { isGuest } = useAuth();
   const [mounted, setMounted] = useState(false);
+  const tips = isGuest ? GUEST_PROGRESS_TIPS : SIGNED_IN_PROGRESS_TIPS;
+  const title = isGuest
+    ? "Your progress saves on this device"
+    : "Your progress saves to your account";
 
   useEffect(() => {
     setMounted(true);
@@ -70,10 +83,10 @@ export function ProfileProgressInfoDialog({ open, onClose }: ProfileProgressInfo
           id="profile-progress-title"
           className="mt-2 font-display text-2xl font-extrabold tracking-tight text-slate-900 dark:text-slate-50"
         >
-          Your progress saves on this device
+          {title}
         </h2>
         <div id="profile-progress-description" className="mt-4 space-y-2.5">
-          {PROGRESS_TIPS.map((tip) => (
+          {tips.map((tip) => (
             <div key={tip} className="flex gap-2.5 text-sm leading-snug text-slate-600 dark:text-slate-300">
               <span aria-hidden className="mt-0.5 shrink-0 font-bold text-teal-600 dark:text-teal-400">
                 •

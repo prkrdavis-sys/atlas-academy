@@ -1,5 +1,7 @@
+import { formatAirportChip } from "@/lib/airport";
 import { getPlacesForScope, getRegionsForScope } from "@/lib/countries";
 import { normalizeAnswerText } from "@/lib/answer-matcher";
+import { formatTimeZoneName } from "@/lib/timezone";
 import type { Country, GameScope, Region } from "@/lib/types";
 
 export const LIBRARY_TERRITORIES_FILTER = "Territories" as const;
@@ -86,40 +88,209 @@ export function getFilteredLibraryPlaces(
   return places.toSorted((a, b) => a.name.localeCompare(b.name));
 }
 
-function getSearchableTexts(place: Country): string[] {
-  return [
-    place.name,
-    place.officialName,
-    place.nativeName,
-    place.languages,
-    place.code,
-    place.code3,
-    ...(place.aliases ?? []),
-  ]
-    .filter((text): text is string => Boolean(text))
-    .map(normalizeAnswerText);
+export type LibrarySearchCategory =
+  | "official name"
+  | "native name"
+  | "alias"
+  | "language"
+  | "code"
+  | "capital"
+  | "airport"
+  | "currency"
+  | "time zone"
+  | "trivia";
+
+export type LibrarySearchMatch = {
+  place: Country;
+  keyword: string | null;
+  category: LibrarySearchCategory | null;
+};
+
+type SearchDescriptor = {
+  label: string;
+  values: string[];
+  category: LibrarySearchCategory | null;
+  isPlaceName: boolean;
+};
+
+type ScoredSearchMatch = LibrarySearchMatch & {
+  rank: number;
+};
+
+const timeZoneNameCache = new Map<string, string>();
+
+function getCachedTimeZoneName(timeZone: string): string {
+  const cached = timeZoneNameCache.get(timeZone);
+  if (cached) return cached;
+
+  const name = formatTimeZoneName(timeZone);
+  timeZoneNameCache.set(timeZone, name);
+  return name;
 }
 
-/** Prefix matches rank above substring matches; searches the full scope pool. */
+function addSearchDescriptor(
+  descriptors: SearchDescriptor[],
+  seen: Set<string>,
+  label: string | undefined,
+  category: LibrarySearchCategory | null,
+  values: string[] = [],
+  isPlaceName = false,
+): void {
+  const trimmedLabel = label?.trim();
+  if (!trimmedLabel || !normalizeAnswerText(trimmedLabel)) return;
+
+  const searchableValues = [...new Set([trimmedLabel, ...values])]
+    .filter((value) => normalizeAnswerText(value).length > 0);
+  if (searchableValues.length === 0) return;
+
+  const key = `${category ?? "name"}:${normalizeAnswerText(trimmedLabel)}`;
+  if (seen.has(key)) return;
+  seen.add(key);
+  descriptors.push({
+    label: trimmedLabel,
+    values: searchableValues,
+    category,
+    isPlaceName,
+  });
+}
+
+function getSearchDescriptors(place: Country): SearchDescriptor[] {
+  const descriptors: SearchDescriptor[] = [];
+  const seen = new Set<string>();
+
+  addSearchDescriptor(descriptors, seen, place.name, null, [], true);
+  addSearchDescriptor(descriptors, seen, place.officialName, "official name");
+  addSearchDescriptor(descriptors, seen, place.nativeName, "native name");
+
+  for (const alias of place.aliases ?? []) {
+    addSearchDescriptor(descriptors, seen, alias, "alias");
+  }
+
+  for (const language of place.languages?.split(" · ") ?? []) {
+    addSearchDescriptor(descriptors, seen, language, "language");
+  }
+
+  addSearchDescriptor(descriptors, seen, place.code, "code");
+  addSearchDescriptor(descriptors, seen, place.code3, "code");
+  addSearchDescriptor(descriptors, seen, place.capital, "capital");
+
+  if (place.largestAirport) {
+    const airportLabel = formatAirportChip(place.largestAirport);
+    addSearchDescriptor(
+      descriptors,
+      seen,
+      airportLabel,
+      "airport",
+      [place.largestAirport],
+    );
+  }
+
+  if (place.currency) {
+    addSearchDescriptor(descriptors, seen, place.currency.name, "currency");
+    addSearchDescriptor(descriptors, seen, place.currency.code, "currency");
+    addSearchDescriptor(descriptors, seen, place.currency.symbol, "currency");
+  }
+
+  if (place.timezone) {
+    addSearchDescriptor(
+      descriptors,
+      seen,
+      getCachedTimeZoneName(place.timezone),
+      "time zone",
+    );
+    addSearchDescriptor(
+      descriptors,
+      seen,
+      place.timezone,
+      "time zone",
+      [place.timezone.replace(/[\/_]/gu, " ")],
+    );
+  }
+
+  for (const keyword of place.searchKeywords ?? []) {
+    addSearchDescriptor(descriptors, seen, keyword, "trivia");
+  }
+
+  return descriptors;
+}
+
+function getDescriptorMatch(
+  descriptor: SearchDescriptor,
+  normalizedQuery: string,
+): { rank: number } | null {
+  let bestRank: number | null = null;
+
+  for (const value of descriptor.values) {
+    const normalizedValue = normalizeAnswerText(value);
+    if (!normalizedValue) continue;
+
+    const isExact = normalizedValue === normalizedQuery;
+    const isPrefix = normalizedValue.startsWith(normalizedQuery);
+    const isSubstring = normalizedValue.includes(normalizedQuery);
+    if (!isSubstring) continue;
+
+    const rank = descriptor.isPlaceName
+      ? isExact
+        ? 0
+        : isPrefix
+          ? 1
+          : 2
+      : isExact
+        ? 3
+        : isPrefix
+          ? 4
+          : 5;
+
+    bestRank = bestRank === null ? rank : Math.min(bestRank, rank);
+  }
+
+  return bestRank === null ? null : { rank: bestRank };
+}
+
+/** Searches the full scope pool, ranking direct names and metadata matches. */
 export function searchLibraryPlaces(
   scope: GameScope,
   query: string,
   limit = 8,
-): Country[] {
+): LibrarySearchMatch[] {
   const normalizedQuery = normalizeAnswerText(query);
   if (!normalizedQuery) return [];
 
-  return getPlacesForScope(scope)
-    .filter((place) =>
-      getSearchableTexts(place).some((text) => text.includes(normalizedQuery)),
-    )
+  const matches: ScoredSearchMatch[] = [];
+
+  for (const place of getPlacesForScope(scope)) {
+    let bestMatch: ScoredSearchMatch | null = null;
+
+    for (const descriptor of getSearchDescriptors(place)) {
+      const descriptorMatch = getDescriptorMatch(descriptor, normalizedQuery);
+      if (!descriptorMatch) continue;
+
+      const candidate: ScoredSearchMatch = {
+        place,
+        keyword: descriptor.isPlaceName ? null : descriptor.label,
+        category: descriptor.category,
+        rank: descriptorMatch.rank,
+      };
+
+      if (
+        !bestMatch ||
+        candidate.rank < bestMatch.rank ||
+        (candidate.rank === bestMatch.rank &&
+          (candidate.keyword ?? "").length < (bestMatch.keyword ?? "").length)
+      ) {
+        bestMatch = candidate;
+      }
+    }
+
+    if (bestMatch) matches.push(bestMatch);
+  }
+
+  return matches
     .toSorted((a, b) => {
-      const aName = normalizeAnswerText(a.name);
-      const bName = normalizeAnswerText(b.name);
-      const aStarts = aName.startsWith(normalizedQuery) ? 0 : 1;
-      const bStarts = bName.startsWith(normalizedQuery) ? 0 : 1;
-      if (aStarts !== bStarts) return aStarts - bStarts;
-      return a.name.localeCompare(b.name);
+      if (a.rank !== b.rank) return a.rank - b.rank;
+      const nameOrder = a.place.name.localeCompare(b.place.name);
+      if (nameOrder !== 0) return nameOrder;
+      return (a.keyword ?? "").localeCompare(b.keyword ?? "");
     })
     .slice(0, limit);
 }

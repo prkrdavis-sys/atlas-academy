@@ -117,6 +117,24 @@ export function PlacesSheet({
                 </button>
               );
             })}
+            <button
+              type="button"
+              disabled={nothingSelected}
+              onClick={() =>
+                onChange({
+                  continents: [],
+                  includeTerritories: false,
+                })
+              }
+              className={cn(
+                "min-h-10 rounded-full border-2 px-3.5 text-sm font-semibold transition-colors",
+                nothingSelected
+                  ? "cursor-not-allowed border-slate-100 bg-slate-50 text-slate-400 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-600"
+                  : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-slate-600",
+              )}
+            >
+              Clear selection
+            </button>
           </div>
         </section>
 

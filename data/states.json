@@ -38,7 +38,15 @@
     "factQuestion2": "Which state was first to place a 911 emergency call?",
     "medianHouseholdIncomeUsd": 62212,
     "medianRentUsd": 1077,
-    "ecosystem": "Temperate forest"
+    "ecosystem": "Temperate forest",
+    "searchKeywords": [
+      "Saturn V",
+      "Apollo",
+      "Moon",
+      "Huntsville",
+      "United States",
+      "Haleyville"
+    ]
   },
   {
     "code": "US-AK",
@@ -74,7 +82,13 @@
     "factQuestion2": "Which state chose a flag design created by a 13-year-old?",
     "medianHouseholdIncomeUsd": 88121,
     "medianRentUsd": 1444,
-    "ecosystem": "Tundra & rainforest"
+    "ecosystem": "Tundra & rainforest",
+    "searchKeywords": [
+      "U.S",
+      "Aleutian Islands",
+      "Eastern Hemisphere",
+      "Benny Benson"
+    ]
   },
   {
     "code": "US-AZ",
@@ -116,7 +130,14 @@
     "factQuestion2": "Which state has a historic London bridge reconstructed beside a desert lake?",
     "medianHouseholdIncomeUsd": 77315,
     "medianRentUsd": 1672,
-    "ecosystem": "Desert"
+    "ecosystem": "Desert",
+    "searchKeywords": [
+      "Grand Canyon",
+      "London Bridge",
+      "England",
+      "Atlantic",
+      "Lake Havasu City"
+    ]
   },
   {
     "code": "US-AR",
@@ -159,7 +180,13 @@
     "factQuestion2": "Which state lets visitors keep diamonds they discover in a public park?",
     "medianHouseholdIncomeUsd": 58700,
     "medianRentUsd": 982,
-    "ecosystem": "Temperate forest"
+    "ecosystem": "Temperate forest",
+    "searchKeywords": [
+      "Hot Springs National Park",
+      "Yellowstone",
+      "U.S",
+      "Crater of Diamonds State Park"
+    ]
   },
   {
     "code": "US-CA",
@@ -199,7 +226,11 @@
     "factQuestion2": "Which state is home to ancient bristlecone pines thousands of years old?",
     "medianHouseholdIncomeUsd": 95521,
     "medianRentUsd": 2104,
-    "ecosystem": "Coast, desert & mountains"
+    "ecosystem": "Coast, desert & mountains",
+    "searchKeywords": [
+      "White Mountains",
+      "Earth"
+    ]
   },
   {
     "code": "US-CO",
@@ -243,7 +274,13 @@
     "factQuestion2": "Which state touches three others at the nation's unique four-state corner?",
     "medianHouseholdIncomeUsd": 92911,
     "medianRentUsd": 1822,
-    "ecosystem": "Mountains & plains"
+    "ecosystem": "Mountains & plains",
+    "searchKeywords": [
+      "Denver",
+      "Mile High City",
+      "Four Corners",
+      "United States"
+    ]
   },
   {
     "code": "US-CT",
@@ -283,7 +320,13 @@
     "factQuestion2": "Which state launched the world's first nuclear-powered submarine?",
     "medianHouseholdIncomeUsd": 91665,
     "medianRentUsd": 1550,
-    "ecosystem": "Temperate forest"
+    "ecosystem": "Temperate forest",
+    "searchKeywords": [
+      "Fundamental Orders",
+      "Americas",
+      "USS Nautilus",
+      "Groton"
+    ]
   },
   {
     "code": "US-DE",
@@ -323,7 +366,10 @@
     "factQuestion2": "Which state has more incorporated businesses than residents?",
     "medianHouseholdIncomeUsd": 82174,
     "medianRentUsd": 1530,
-    "ecosystem": "Coastal plains"
+    "ecosystem": "Coastal plains",
+    "searchKeywords": [
+      "U.S Constitution on December"
+    ]
   },
   {
     "code": "US-FL",
@@ -362,7 +408,14 @@
     "factQuestion2": "Which state is home to both wild alligators and wild crocodiles?",
     "medianHouseholdIncomeUsd": 73311,
     "medianRentUsd": 1812,
-    "ecosystem": "Subtropical wetlands"
+    "ecosystem": "Subtropical wetlands",
+    "searchKeywords": [
+      "U.S",
+      "Alaska",
+      "Atlantic and Gulf",
+      "United States",
+      "American"
+    ]
   },
   {
     "code": "US-GA",
@@ -404,7 +457,12 @@
     "factQuestion2": "Which state is the only place where true Vidalia onions can be grown?",
     "medianHouseholdIncomeUsd": 74632,
     "medianRentUsd": 1506,
-    "ecosystem": "Temperate forest"
+    "ecosystem": "Temperate forest",
+    "searchKeywords": [
+      "Coca-Cola",
+      "Atlanta",
+      "Vidalia"
+    ]
   },
   {
     "code": "US-HI",
@@ -440,7 +498,13 @@
     "factQuestion2": "Which state has a mountain taller than Everest when measured from its underwater base?",
     "medianHouseholdIncomeUsd": 95322,
     "medianRentUsd": 1942,
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "U.S",
+      "Mauna Kea",
+      "Pacific Ocean",
+      "Everest"
+    ]
   },
   {
     "code": "US-ID",
@@ -483,7 +547,14 @@
     "factQuestion2": "Which state has a waterfall taller than Niagara Falls?",
     "medianHouseholdIncomeUsd": 74942,
     "medianRentUsd": 1384,
-    "ecosystem": "Mountains & desert"
+    "ecosystem": "Mountains & desert",
+    "searchKeywords": [
+      "Produces",
+      "United States",
+      "Shoshone Falls",
+      "Snake River",
+      "Niagara Falls"
+    ]
   },
   {
     "code": "US-IL",
@@ -525,7 +596,12 @@
     "factQuestion2": "Which state is associated with the world's first skyscraper?",
     "medianHouseholdIncomeUsd": 80306,
     "medianRentUsd": 1322,
-    "ecosystem": "Prairie & forest"
+    "ecosystem": "Prairie & forest",
+    "searchKeywords": [
+      "Chicago",
+      "Lake Michigan",
+      "Chicago Home Insurance Building"
+    ]
   },
   {
     "code": "US-IN",
@@ -566,7 +642,12 @@
     "factQuestion2": "Which state has a town whose post office answers letters to Santa?",
     "medianHouseholdIncomeUsd": 69477,
     "medianRentUsd": 1104,
-    "ecosystem": "Temperate forest"
+    "ecosystem": "Temperate forest",
+    "searchKeywords": [
+      "Indianapolis",
+      "Every December",
+      "Santa Claus"
+    ]
   },
   {
     "code": "US-IA",
@@ -609,7 +690,13 @@
     "factQuestion2": "Which state was home to the inventor of the bread-slicing machine?",
     "medianHouseholdIncomeUsd": 71433,
     "medianRentUsd": 981,
-    "ecosystem": "Prairie"
+    "ecosystem": "Prairie",
+    "searchKeywords": [
+      "Leads",
+      "Chillicothe",
+      "Iowa",
+      "Otto Rohwedder"
+    ]
   },
   {
     "code": "US-KS",
@@ -650,7 +737,13 @@
     "factQuestion2": "Which state is where the first Pizza Hut opened?",
     "medianHouseholdIncomeUsd": 70333,
     "medianRentUsd": 1079,
-    "ecosystem": "Prairie"
+    "ecosystem": "Prairie",
+    "searchKeywords": [
+      "United States",
+      "Lebanon",
+      "Pizza Hut",
+      "Wichita"
+    ]
   },
   {
     "code": "US-KY",
@@ -694,7 +787,11 @@
     "factQuestion2": "Which state contains the world's longest known cave system?",
     "medianHouseholdIncomeUsd": 61118,
     "medianRentUsd": 998,
-    "ecosystem": "Temperate forest"
+    "ecosystem": "Temperate forest",
+    "searchKeywords": [
+      "Produces",
+      "Mammoth Cave"
+    ]
   },
   {
     "code": "US-LA",
@@ -734,7 +831,13 @@
     "factQuestion2": "Which state has the tallest state capitol building in the country?",
     "medianHouseholdIncomeUsd": 58229,
     "medianRentUsd": 1064,
-    "ecosystem": "Wetlands & forest"
+    "ecosystem": "Wetlands & forest",
+    "searchKeywords": [
+      "New Orleans",
+      "Mississippi River",
+      "Baton Rouge",
+      "United States"
+    ]
   },
   {
     "code": "US-ME",
@@ -772,7 +875,12 @@
     "factQuestion2": "Which state has a small desert created from exposed glacial sand?",
     "medianHouseholdIncomeUsd": 73733,
     "medianRentUsd": 1210,
-    "ecosystem": "Boreal forest"
+    "ecosystem": "Boreal forest",
+    "searchKeywords": [
+      "Supplies",
+      "United States",
+      "Desert of Maine"
+    ]
   },
   {
     "code": "US-MD",
@@ -813,7 +921,13 @@
     "factQuestion2": "Which state was home to the nation's first commercial railroad?",
     "medianHouseholdIncomeUsd": 98678,
     "medianRentUsd": 1721,
-    "ecosystem": "Coastal plains"
+    "ecosystem": "Coastal plains",
+    "searchKeywords": [
+      "Star-Spangled Banner",
+      "Battle of Baltimore at Fort McHenry",
+      "Baltimore and Ohio Railroad",
+      "United States"
+    ]
   },
   {
     "code": "US-MA",
@@ -855,7 +969,13 @@
     "factQuestion2": "Which state is where basketball was invented with peach baskets?",
     "medianHouseholdIncomeUsd": 99858,
     "medianRentUsd": 1848,
-    "ecosystem": "Temperate forest"
+    "ecosystem": "Temperate forest",
+    "searchKeywords": [
+      "Americas",
+      "Boston",
+      "James Naismith",
+      "Springfield"
+    ]
   },
   {
     "code": "US-MI",
@@ -895,7 +1015,12 @@
     "factQuestion2": "Which state is linked by a nearly five-mile suspension bridge between two peninsulas?",
     "medianHouseholdIncomeUsd": 69183,
     "medianRentUsd": 1168,
-    "ecosystem": "Temperate forest"
+    "ecosystem": "Temperate forest",
+    "searchKeywords": [
+      "Touches",
+      "Great Lakes",
+      "Mackinac Bridge"
+    ]
   },
   {
     "code": "US-MN",
@@ -936,7 +1061,12 @@
     "factQuestion2": "Which state helped turn a weak adhesive into Post-it Notes?",
     "medianHouseholdIncomeUsd": 85086,
     "medianRentUsd": 1291,
-    "ecosystem": "Prairie & forest"
+    "ecosystem": "Prairie & forest",
+    "searchKeywords": [
+      "Mall of America",
+      "Minnesota",
+      "Post-it Notes"
+    ]
   },
   {
     "code": "US-MS",
@@ -977,7 +1107,12 @@
     "factQuestion2": "Which state is the birthplace of Elvis Presley?",
     "medianHouseholdIncomeUsd": 54203,
     "medianRentUsd": 990,
-    "ecosystem": "Temperate forest"
+    "ecosystem": "Temperate forest",
+    "searchKeywords": [
+      "Elvis Presley",
+      "Tupelo",
+      "King of Rock and Roll"
+    ]
   },
   {
     "code": "US-MO",
@@ -1022,7 +1157,13 @@
     "factQuestion2": "Which state hosted the first successful parachute jump from an airplane?",
     "medianHouseholdIncomeUsd": 68545,
     "medianRentUsd": 1067,
-    "ecosystem": "Prairie & forest"
+    "ecosystem": "Prairie & forest",
+    "searchKeywords": [
+      "Gateway Arch in St",
+      "Louis",
+      "United States",
+      "Albert Berry"
+    ]
   },
   {
     "code": "US-MT",
@@ -1063,7 +1204,14 @@
     "factQuestion2": "Which state has a vast former copper mine known as the Berkeley Pit?",
     "medianHouseholdIncomeUsd": 70804,
     "medianRentUsd": 1177,
-    "ecosystem": "Mountains & plains"
+    "ecosystem": "Mountains & plains",
+    "searchKeywords": [
+      "Spanish",
+      "U.S",
+      "Berkeley Pit",
+      "Butte",
+      "Superfund"
+    ]
   },
   {
     "code": "US-NE",
@@ -1106,7 +1254,15 @@
     "factQuestion2": "Which state is where Kool-Aid was invented?",
     "medianHouseholdIncomeUsd": 74590,
     "medianRentUsd": 1102,
-    "ecosystem": "Prairie"
+    "ecosystem": "Prairie",
+    "searchKeywords": [
+      "Carhenge in Alliance",
+      "England Stonehenge",
+      "American",
+      "Kool-Aid",
+      "Hastings",
+      "Edwin Perkins"
+    ]
   },
   {
     "code": "US-NV",
@@ -1148,7 +1304,11 @@
     "factQuestion2": "Which state legalized casino gambling statewide in 1931?",
     "medianHouseholdIncomeUsd": 76364,
     "medianRentUsd": 1709,
-    "ecosystem": "Desert"
+    "ecosystem": "Desert",
+    "searchKeywords": [
+      "Las Vegas",
+      "Nevada"
+    ]
   },
   {
     "code": "US-NH",
@@ -1188,7 +1348,14 @@
     "factQuestion2": "Which state opened the nation's first free public library?",
     "medianHouseholdIncomeUsd": 96838,
     "medianRentUsd": 1558,
-    "ecosystem": "Temperate forest"
+    "ecosystem": "Temperate forest",
+    "searchKeywords": [
+      "License",
+      "Live Free",
+      "Die",
+      "Peterborough",
+      "United States"
+    ]
   },
   {
     "code": "US-NJ",
@@ -1228,7 +1395,13 @@
     "factQuestion2": "Which state built the nation's first boardwalk?",
     "medianHouseholdIncomeUsd": 99781,
     "medianRentUsd": 1800,
-    "ecosystem": "Coastal plains"
+    "ecosystem": "Coastal plains",
+    "searchKeywords": [
+      "Thomas Edison",
+      "Menlo Park",
+      "Atlantic City",
+      "United States"
+    ]
   },
   {
     "code": "US-NM",
@@ -1270,7 +1443,13 @@
     "factQuestion2": "Which state has the oldest capital city in the United States?",
     "medianHouseholdIncomeUsd": 62268,
     "medianRentUsd": 1117,
-    "ecosystem": "Desert & mountains"
+    "ecosystem": "Desert & mountains",
+    "searchKeywords": [
+      "Roswell",
+      "UFO",
+      "Santa Fe",
+      "United States"
+    ]
   },
   {
     "code": "US-NY",
@@ -1312,7 +1491,12 @@
     "factQuestion2": "Which state contains a protected park larger than those five national parks combined?",
     "medianHouseholdIncomeUsd": 82095,
     "medianRentUsd": 1634,
-    "ecosystem": "Temperate forest"
+    "ecosystem": "Temperate forest",
+    "searchKeywords": [
+      "U.S",
+      "Adirondack Park",
+      "Yellowstone Yosemite Grand Canyon Glacier and Great Smoky Mountains"
+    ]
   },
   {
     "code": "US-NC",
@@ -1353,7 +1537,13 @@
     "factQuestion2": "Which state is home to the largest privately owned house in the country?",
     "medianHouseholdIncomeUsd": 70804,
     "medianRentUsd": 1338,
-    "ecosystem": "Coast to mountains"
+    "ecosystem": "Coast to mountains",
+    "searchKeywords": [
+      "Wright",
+      "Kitty Hawk",
+      "Biltmore Estate in Asheville",
+      "United States"
+    ]
   },
   {
     "code": "US-ND",
@@ -1393,7 +1583,12 @@
     "factQuestion2": "Which state shares an international garden dedicated to friendship with Canada?",
     "medianHouseholdIncomeUsd": 76525,
     "medianRentUsd": 980,
-    "ecosystem": "Prairie"
+    "ecosystem": "Prairie",
+    "searchKeywords": [
+      "Theodore Roosevelt National Park",
+      "International Peace Garden",
+      "Canadian"
+    ]
   },
   {
     "code": "US-OH",
@@ -1435,7 +1630,13 @@
     "factQuestion2": "Which state installed the nation's first electric traffic signal?",
     "medianHouseholdIncomeUsd": 67769,
     "medianRentUsd": 1090,
-    "ecosystem": "Temperate forest"
+    "ecosystem": "Temperate forest",
+    "searchKeywords": [
+      "Seven U.S",
+      "Virginia",
+      "United States",
+      "Cleveland"
+    ]
   },
   {
     "code": "US-OK",
@@ -1478,7 +1679,12 @@
     "factQuestion2": "Which state has one of the nation's farthest inland seaports?",
     "medianHouseholdIncomeUsd": 62138,
     "medianRentUsd": 1044,
-    "ecosystem": "Prairie & forest"
+    "ecosystem": "Prairie & forest",
+    "searchKeywords": [
+      "United States",
+      "Port of Catoosa",
+      "Gulf of Mexico"
+    ]
   },
   {
     "code": "US-OR",
@@ -1519,7 +1725,13 @@
     "factQuestion2": "Which state is home to a giant underground fungus spanning thousands of acres?",
     "medianHouseholdIncomeUsd": 80160,
     "medianRentUsd": 1597,
-    "ecosystem": "Temperate rainforest"
+    "ecosystem": "Temperate rainforest",
+    "searchKeywords": [
+      "Crater Lake",
+      "United States",
+      "Blue Mountains",
+      "Earth"
+    ]
   },
   {
     "code": "US-PA",
@@ -1562,7 +1774,13 @@
     "factQuestion2": "Which state has a town founded around a famous chocolate factory?",
     "medianHouseholdIncomeUsd": 73824,
     "medianRentUsd": 1252,
-    "ecosystem": "Temperate forest"
+    "ecosystem": "Temperate forest",
+    "searchKeywords": [
+      "Independence Hall in Philadelphia",
+      "Declaration of Independence and U.S",
+      "Constitution",
+      "Milton Hershey"
+    ]
   },
   {
     "code": "US-RI",
@@ -1601,7 +1819,12 @@
     "factQuestion2": "Which state has the oldest surviving synagogue building in the country?",
     "medianHouseholdIncomeUsd": 84972,
     "medianRentUsd": 1418,
-    "ecosystem": "Coastal plains"
+    "ecosystem": "Coastal plains",
+    "searchKeywords": [
+      "U.S",
+      "Newport Touro Synagogue",
+      "United States"
+    ]
   },
   {
     "code": "US-SC",
@@ -1640,7 +1863,13 @@
     "factQuestion2": "Which state is home to the sprawling Angel Oak tree?",
     "medianHouseholdIncomeUsd": 67804,
     "medianRentUsd": 1272,
-    "ecosystem": "Temperate forest"
+    "ecosystem": "Temperate forest",
+    "searchKeywords": [
+      "Civil War",
+      "Fort Sumter in Charleston Harbor",
+      "Angel Oak",
+      "Charleston"
+    ]
   },
   {
     "code": "US-SD",
@@ -1683,7 +1912,12 @@
     "factQuestion2": "Which state contains Jewel Cave, one of the world's longest cave systems?",
     "medianHouseholdIncomeUsd": 71810,
     "medianRentUsd": 999,
-    "ecosystem": "Prairie"
+    "ecosystem": "Prairie",
+    "searchKeywords": [
+      "Mount Rushmore",
+      "Black Hills",
+      "Jewel Cave"
+    ]
   },
   {
     "code": "US-TN",
@@ -1728,7 +1962,14 @@
     "factQuestion2": "Which state shares the nation's most visited national park?",
     "medianHouseholdIncomeUsd": 67631,
     "medianRentUsd": 1284,
-    "ecosystem": "Temperate forest"
+    "ecosystem": "Temperate forest",
+    "searchKeywords": [
+      "Memphis",
+      "Elvis Presley",
+      "Graceland",
+      "Great Smoky Mountains National Park",
+      "United States"
+    ]
   },
   {
     "code": "US-TX",
@@ -1769,7 +2010,13 @@
     "factQuestion2": "Which state has a ranch larger than Rhode Island?",
     "medianHouseholdIncomeUsd": 75780,
     "medianRentUsd": 1475,
-    "ecosystem": "Plains, desert & coast"
+    "ecosystem": "Plains, desert & coast",
+    "searchKeywords": [
+      "Was",
+      "United States",
+      "King Ranch",
+      "Rhode Island"
+    ]
   },
   {
     "code": "US-UT",
@@ -1812,7 +2059,12 @@
     "factQuestion2": "Which state has the famous Spiral Jetty earthwork in a salty lake?",
     "medianHouseholdIncomeUsd": 93421,
     "medianRentUsd": 1593,
-    "ecosystem": "Desert & mountains"
+    "ecosystem": "Desert & mountains",
+    "searchKeywords": [
+      "Great Salt Lake",
+      "Artist Robert Smithson",
+      "Spiral Jetty"
+    ]
   },
   {
     "code": "US-VT",
@@ -1852,7 +2104,13 @@
     "factQuestion2": "Which state operated the nation's first ski tow?",
     "medianHouseholdIncomeUsd": 81211,
     "medianRentUsd": 1319,
-    "ecosystem": "Temperate forest"
+    "ecosystem": "Temperate forest",
+    "searchKeywords": [
+      "Ben Jerry",
+      "Burlington",
+      "United States",
+      "Woodstock"
+    ]
   },
   {
     "code": "US-VA",
@@ -1894,7 +2152,13 @@
     "factQuestion2": "Which state contains the first permanent English settlement in North America?",
     "medianHouseholdIncomeUsd": 89931,
     "medianRentUsd": 1646,
-    "ecosystem": "Coast to mountains"
+    "ecosystem": "Coast to mountains",
+    "searchKeywords": [
+      "Eight U.S",
+      "Jamestown",
+      "English",
+      "North America"
+    ]
   },
   {
     "code": "US-WA",
@@ -1933,7 +2197,14 @@
     "factQuestion2": "Which state is where the first Starbucks store opened?",
     "medianHouseholdIncomeUsd": 94605,
     "medianRentUsd": 1824,
-    "ecosystem": "Temperate rainforest"
+    "ecosystem": "Temperate rainforest",
+    "searchKeywords": [
+      "Mount Rainier",
+      "Seattle",
+      "Puget Sound",
+      "Starbucks",
+      "Seattle Pike Place Market"
+    ]
   },
   {
     "code": "US-WV",
@@ -1975,7 +2246,13 @@
     "factQuestion2": "Which state has the world's largest fully steerable radio telescope?",
     "medianHouseholdIncomeUsd": 55948,
     "medianRentUsd": 883,
-    "ecosystem": "Temperate forest"
+    "ecosystem": "Temperate forest",
+    "searchKeywords": [
+      "Split from Virginia",
+      "Civil War",
+      "Union",
+      "Green Bank Telescope"
+    ]
   },
   {
     "code": "US-WI",
@@ -2016,7 +2293,16 @@
     "factQuestion2": "Which state opened the nation's first kindergarten?",
     "medianHouseholdIncomeUsd": 74631,
     "medianRentUsd": 1142,
-    "ecosystem": "Temperate forest"
+    "ecosystem": "Temperate forest",
+    "searchKeywords": [
+      "Produces",
+      "U.S",
+      "Green Bay Packers Lambeau Field",
+      "United States",
+      "Watertown",
+      "German",
+      "Margarethe Schurz"
+    ]
   },
   {
     "code": "US-WY",
@@ -2059,6 +2345,11 @@
     "factQuestion2": "Which state elected the first woman to serve as a governor?",
     "medianHouseholdIncomeUsd": 72415,
     "medianRentUsd": 998,
-    "ecosystem": "Mountains & plains"
+    "ecosystem": "Mountains & plains",
+    "searchKeywords": [
+      "Yellowstone National Park",
+      "Nellie Tayloe Ross",
+      "U.S"
+    ]
   }
 ]

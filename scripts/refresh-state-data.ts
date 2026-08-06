@@ -15,6 +15,7 @@ import {
   getStateFactQuestion,
   getStateFactQuestion2,
 } from "./place-facts";
+import { getStateSearchKeywords } from "./place-search-keywords";
 import { getStateAirport } from "./airport-data";
 import { getStateEmblems } from "./bird-plant-data";
 import { getStateElevation } from "./elevation-data";
@@ -190,6 +191,7 @@ const states = STATE_ROWS.map(
         if (!question) throw new Error(`Missing curated secondary fact question for ${name} (${code})`);
         return question;
       })(),
+      searchKeywords: getStateSearchKeywords(code),
     };
   },
 );

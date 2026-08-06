@@ -61,10 +61,14 @@ export function LibrarySearch({
   );
 
   const showDropdown = isOpen && query.trim().length > 0;
-
-  useEffect(() => {
-    setHighlightedIndex(matches.length > 0 ? 0 : -1);
-  }, [matches]);
+  const activeIndex =
+    matches.length > 0 &&
+    highlightedIndex >= 0 &&
+    highlightedIndex < matches.length
+      ? highlightedIndex
+      : matches.length > 0
+        ? 0
+        : -1;
 
   useEffect(() => {
     if (!showDropdown) return;
@@ -99,19 +103,25 @@ export function LibrarySearch({
       case "ArrowDown":
         event.preventDefault();
         if (matches.length === 0) return;
-        setHighlightedIndex((current) => (current + 1) % matches.length);
+        setHighlightedIndex((current) => {
+          const normalizedCurrent =
+            current >= 0 && current < matches.length ? current : 0;
+          return (normalizedCurrent + 1) % matches.length;
+        });
         break;
       case "ArrowUp":
         event.preventDefault();
         if (matches.length === 0) return;
         setHighlightedIndex((current) =>
-          current <= 0 ? matches.length - 1 : current - 1,
+          current <= 0 || current >= matches.length
+            ? matches.length - 1
+            : current - 1,
         );
         break;
       case "Enter":
         event.preventDefault();
-        if (highlightedIndex >= 0 && matches[highlightedIndex]) {
-          navigateTo(matches[highlightedIndex].code);
+        if (activeIndex >= 0 && matches[activeIndex]) {
+          navigateTo(matches[activeIndex].place.code);
         }
         break;
       case "Escape":
@@ -147,8 +157,10 @@ export function LibrarySearch({
           type="search"
           value={query}
           onChange={(event) => {
-            setQuery(event.target.value);
+            const nextQuery = event.target.value;
+            setQuery(nextQuery);
             setIsOpen(true);
+            setHighlightedIndex(nextQuery.trim() ? 0 : -1);
           }}
           onFocus={() => {
             if (query.trim()) setIsOpen(true);
@@ -163,7 +175,7 @@ export function LibrarySearch({
           aria-controls={listboxId}
           aria-autocomplete="list"
           aria-activedescendant={
-            highlightedIndex >= 0 ? `${listboxId}-option-${highlightedIndex}` : undefined
+            activeIndex >= 0 ? `${listboxId}-option-${activeIndex}` : undefined
           }
           className="min-h-11 w-full rounded-full border-2 border-slate-200 bg-white/80 py-2.5 pl-11 pr-4 text-sm font-semibold text-slate-800 shadow-sm placeholder:font-medium placeholder:text-slate-400 focus:border-teal-400 focus:outline-none focus:ring-2 focus:ring-teal-200 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-teal-500 dark:focus:ring-teal-900/60"
         />
@@ -177,8 +189,16 @@ export function LibrarySearch({
           className="absolute z-20 mt-2 max-h-72 w-full overflow-y-auto rounded-2xl border-2 border-slate-200 bg-white/95 p-1.5 shadow-lg backdrop-blur dark:border-slate-700 dark:bg-slate-900/95"
         >
           {matches.length > 0 ? (
-            matches.map((place, index) => {
-              const active = index === highlightedIndex;
+            matches.map((match, index) => {
+              const place = match.place;
+              const active = index === activeIndex;
+              const subtitle =
+                match.keyword && match.category
+                  ? `${match.keyword} · ${match.category}`
+                  : null;
+              const optionLabel = subtitle
+                ? `${place.name}, ${subtitle}`
+                : place.name;
               return (
                 <li key={place.code} role="presentation">
                   <button
@@ -186,6 +206,7 @@ export function LibrarySearch({
                     type="button"
                     role="option"
                     aria-selected={active}
+                    aria-label={optionLabel}
                     onMouseEnter={() => setHighlightedIndex(index)}
                     onClick={() => navigateTo(place.code)}
                     className={cn(
@@ -211,8 +232,22 @@ export function LibrarySearch({
                         {place.code}
                       </span>
                     )}
-                    <span className="min-w-0 font-display text-sm font-extrabold leading-tight">
-                      {place.name}
+                    <span className="min-w-0">
+                      <span className="block truncate font-display text-sm font-extrabold leading-tight">
+                        {place.name}
+                      </span>
+                      {subtitle ? (
+                        <span
+                          className={cn(
+                            "mt-0.5 block truncate text-xs font-semibold",
+                            active
+                              ? "text-teal-700 dark:text-teal-300"
+                              : "text-slate-500 dark:text-slate-400",
+                          )}
+                        >
+                          {subtitle}
+                        </span>
+                      ) : null}
                     </span>
                   </button>
                 </li>

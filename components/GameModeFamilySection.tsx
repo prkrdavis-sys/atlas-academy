@@ -1,12 +1,10 @@
 "use client";
 
 import { GameModeTile } from "@/components/GameModeTile";
-import { scopeText } from "@/lib/scope";
 import type { GameMode, GameScope } from "@/lib/types";
 
 type GameModeFamilySectionProps = {
   title: string;
-  blurb: string;
   icon: string;
   primary: GameMode[];
   /** Variants of the primary modes, kept collapsed so the page stays scannable. */
@@ -16,7 +14,6 @@ type GameModeFamilySectionProps = {
 
 export function GameModeFamilySection({
   title,
-  blurb,
   icon,
   primary,
   twists,
@@ -25,26 +22,21 @@ export function GameModeFamilySection({
   const modeCount = primary.length + twists.length;
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white/70 p-3 dark:border-slate-700 dark:bg-slate-900/60 sm:p-4">
-      <div className="flex items-start gap-3">
+    <section className="rounded-2xl bg-slate-100/80 p-3 dark:bg-slate-950/50 sm:p-4">
+      <div className="flex items-center gap-3">
         <span
           aria-hidden
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-xl dark:bg-slate-800"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-xl shadow-sm dark:bg-slate-800/80"
         >
           {icon}
         </span>
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-baseline gap-x-2">
-            <h2 className="font-display text-base font-extrabold text-slate-900 dark:text-slate-100 sm:text-lg">
-              {title}
-            </h2>
-            <span className="text-xs font-semibold text-slate-400 dark:text-slate-500">
-              {modeCount} {modeCount === 1 ? "mode" : "modes"}
-            </span>
-          </div>
-          <p className="mt-0.5 text-xs leading-snug text-slate-500 dark:text-slate-400 sm:text-sm">
-            {scopeText(blurb, scope)}
-          </p>
+        <div className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-2">
+          <h2 className="font-display text-base font-extrabold text-slate-900 dark:text-slate-100 sm:text-lg">
+            {title}
+          </h2>
+          <span className="text-xs font-semibold text-slate-400 dark:text-slate-500">
+            {modeCount} {modeCount === 1 ? "mode" : "modes"}
+          </span>
         </div>
       </div>
 

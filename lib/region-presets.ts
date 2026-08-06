@@ -12,26 +12,14 @@ export type RegionPreset = {
  * leave untouched.
  */
 const MAIN_CONTINENTS = CONTINENTS.filter((continent) => continent !== "Antarctica");
-const AMERICAS: Region[] = ["North America", "South America"];
 
-/** One-tap shortcuts shown above the region grid, widest scope first. */
+/** One-tap shortcuts shown above the region grid. */
 export function getRegionPresets(scope: GameScope): RegionPreset[] {
   if (scope === "usa") {
-    return [
-      { id: "all", label: "All 50 states", regions: [...US_REGIONS] },
-      ...US_REGIONS.map((region) => ({ id: region, label: region, regions: [region] })),
-    ];
+    return [{ id: "all", label: "All 50 states", regions: [...US_REGIONS] }];
   }
 
-  return [
-    { id: "world", label: "Whole world", regions: [...MAIN_CONTINENTS] },
-    { id: "americas", label: "Americas", regions: AMERICAS },
-    ...MAIN_CONTINENTS.map((continent) => ({
-      id: continent,
-      label: continent,
-      regions: [continent as Region],
-    })),
-  ];
+  return [{ id: "world", label: "Whole world", regions: [...MAIN_CONTINENTS] }];
 }
 
 function sameRegions(a: readonly Region[], b: readonly Region[]): boolean {

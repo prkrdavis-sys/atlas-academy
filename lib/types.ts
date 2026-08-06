@@ -349,6 +349,8 @@ export type Country = {
   fact2: string;
   /** Alternate spoiler-free prompt for fact-to-country game mode. */
   factQuestion2: string;
+  /** Curated trivia terms and memorable names used by the library search. */
+  searchKeywords?: string[];
 };
 
 export type ModeStats = {
@@ -677,8 +679,6 @@ export type ModeFamilyId = "flags" | "maps" | "capitals" | "knowledge" | "practi
 export const MODE_FAMILIES: readonly {
   id: ModeFamilyId;
   title: string;
-  /** Passed through scopeText, so country/countries wording adapts to USA scope. */
-  blurb: string;
   icon: string;
   primary: GameMode[];
   twists: GameMode[];
@@ -686,7 +686,6 @@ export const MODE_FAMILIES: readonly {
   {
     id: "flags",
     title: "Flags",
-    blurb: "Match flags to the places that fly them",
     icon: "🏳️",
     primary: ["flag-to-country", "country-to-flag"],
     twists: [
@@ -699,7 +698,6 @@ export const MODE_FAMILIES: readonly {
   {
     id: "maps",
     title: "Maps & borders",
-    blurb: "Read outlines and figure out who touches who",
     icon: "🗺️",
     primary: ["shape-to-country", "neighbor-quiz"],
     twists: [],
@@ -707,7 +705,6 @@ export const MODE_FAMILIES: readonly {
   {
     id: "capitals",
     title: "Capitals",
-    blurb: "Connect capital cities to their countries",
     icon: "🏛️",
     primary: ["capital-to-country", "country-to-capital"],
     twists: [],
@@ -715,7 +712,6 @@ export const MODE_FAMILIES: readonly {
   {
     id: "knowledge",
     title: "Facts & trivia",
-    blurb: "Languages, population, profiles, and word puzzles",
     icon: "💡",
     primary: ["fact-to-country", "atlasle", "country-to-language", "population-showdown"],
     twists: [],
@@ -723,7 +719,6 @@ export const MODE_FAMILIES: readonly {
   {
     id: "practice",
     title: "Practice",
-    blurb: "Target the places you keep getting wrong",
     icon: "🎯",
     primary: ["weak-spots"],
     twists: [],

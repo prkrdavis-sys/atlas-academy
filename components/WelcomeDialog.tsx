@@ -8,7 +8,7 @@ import { hasSeenWelcome, markWelcomeSeen } from "@/lib/welcome";
 const WELCOME_HIGHLIGHTS = [
   "Match flags, capitals, and country shapes from around the world.",
   "Build streaks, chase daily challenges, and beat your personal best.",
-  "Create a local profile to save your streaks, stats, and daily progress on this device.",
+  "Create a profile to save your streaks, stats, and daily progress to your account.",
 ] as const;
 
 const WELCOME_COUNTDOWN_SECONDS = 5;
@@ -130,11 +130,10 @@ export function WelcomeDialog() {
             <span className="font-bold">Heads up!</span>
             {" "}
             You&apos;re on the alpha build — I&apos;m still cooking, so things may shift, wobble,
-            or surprise you. That includes profiles and stats: an update might reset or delete them.
+            or surprise you.
           </p>
           <p>
-            Thanks for being an early explorer. Grab a backup on Profiles if you want a safety net
-            while you help shape what Atlas Academy becomes.
+            Thanks for being an early explorer and helping shape what Atlas Academy becomes.
           </p>
         </div>
         <Button

@@ -8,6 +8,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { GameEngine } from "../lib/game-engine";
+import { searchLibraryPlaces } from "../lib/library";
 import { resolveMapProgressCategory, wouldCountTowardMapProgress } from "../lib/map-progress";
 import { normalizeAnswerText } from "../lib/answer-matcher";
 import { countries, getCountryByCode, usStates } from "../lib/countries";
@@ -207,6 +208,72 @@ const SCOPE_SETUPS: { scope: GameScope; regions: Region[] }[] = [
   { scope: "world", regions: [...CONTINENTS] },
   { scope: "usa", regions: [...US_REGIONS] },
 ];
+
+const allPlaces = [...countries, ...usStates];
+for (const place of allPlaces) {
+  const keywords = place.searchKeywords ?? [];
+  if (keywords.length === 0) {
+    fail(`${place.name}: missing library trivia search keywords`);
+  }
+  const normalizedKeywords = keywords.map(normalizeAnswerText);
+  if (new Set(normalizedKeywords).size !== normalizedKeywords.length) {
+    fail(`${place.name}: duplicate library trivia search keywords`);
+  }
+}
+
+function expectLibrarySearchMatch(
+  scope: GameScope,
+  query: string,
+  code: string,
+  keyword: string,
+  category: string,
+): void {
+  const match = searchLibraryPlaces(scope, query).find((candidate) => candidate.place.code === code);
+  if (!match) {
+    fail(`Library search "${query}" should return ${code}`);
+    return;
+  }
+  if (match.keyword !== keyword || match.category !== category) {
+    fail(
+      `Library search "${query}" should label ${code} as ${keyword} · ${category}, got ${
+        match.keyword ?? "no keyword"
+      } · ${match.category ?? "no category"}`,
+    );
+  }
+}
+
+expectLibrarySearchMatch("world", "Havana", "CU", "Havana", "capital");
+expectLibrarySearchMatch("world", "Amazon", "BR", "Amazon", "trivia");
+expectLibrarySearchMatch("world", "Jesus", "BR", "Jesus", "trivia");
+expectLibrarySearchMatch("world", "Redeemer", "BR", "Redeemer", "trivia");
+expectLibrarySearchMatch("world", "GRU", "BR", "GRU - Guarulhos", "airport");
+expectLibrarySearchMatch("world", "Guarulhos", "BR", "GRU - Guarulhos", "airport");
+expectLibrarySearchMatch("world", "BRL", "BR", "BRL", "currency");
+expectLibrarySearchMatch("world", "Brazilian real", "BR", "Brazilian real", "currency");
+expectLibrarySearchMatch("world", "America Sao Paulo", "BR", "America/Sao_Paulo", "time zone");
+
+const worldGeorgia = searchLibraryPlaces("world", "Georgia");
+const usaGeorgia = searchLibraryPlaces("usa", "Georgia");
+if (worldGeorgia.some(({ place }) => place.code.startsWith("US-"))) {
+  fail('World library search must not return US states for "Georgia"');
+}
+if (!worldGeorgia.some(({ place }) => place.code === "GE")) {
+  fail('World library search should return Georgia for "Georgia"');
+}
+if (usaGeorgia.some(({ place }) => place.code === "GE")) {
+  fail('USA library search must not return the country Georgia for "Georgia"');
+}
+if (!usaGeorgia.some(({ place }) => place.code === "US-GA")) {
+  fail('USA library search should return Georgia for "Georgia"');
+}
+for (const query of ["Havana", "Amazon", "Jesus", "Redeemer", "GRU", "BRL", "Georgia"]) {
+  for (const scope of ["world", "usa"] as const) {
+    const results = searchLibraryPlaces(scope, query);
+    if (new Set(results.map(({ place }) => place.code)).size !== results.length) {
+      fail(`Library search "${query}" returned duplicate place codes in ${scope} scope`);
+    }
+  }
+}
 
 for (const { scope, regions } of SCOPE_SETUPS) {
 for (const mode of MODES) {

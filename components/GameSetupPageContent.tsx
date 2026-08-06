@@ -36,7 +36,6 @@ export function GameSetupPageContent() {
         <GameModeFamilySection
           key={family.id}
           title={family.title}
-          blurb={family.blurb}
           icon={family.icon}
           primary={family.primary}
           twists={family.twists}

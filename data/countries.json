@@ -46,7 +46,11 @@
     "plant": "Tulip",
     "fact2": "The Sar-e Sang mines have supplied lapis lazuli for more than 6,000 years, including pigment used in ancient artworks.",
     "factQuestion2": "Which country has some of the world's oldest lapis lazuli mines?",
-    "ecosystem": "Mountains & desert"
+    "ecosystem": "Mountains & desert",
+    "searchKeywords": [
+      "Buddhas of Bamiyan",
+      "Sar-e Sang"
+    ]
   },
   {
     "code": "AX",
@@ -85,7 +89,12 @@
     },
     "fact2": "These Baltic islands have been demilitarized since 1856, meaning no military forces or fortifications are allowed there.",
     "factQuestion2": "Which country consists of Baltic islands that have been demilitarized for more than a century?",
-    "ecosystem": "Boreal forest"
+    "ecosystem": "Boreal forest",
+    "searchKeywords": [
+      "Swedish-speaking",
+      "Finland",
+      "Baltic"
+    ]
   },
   {
     "code": "AL",
@@ -134,7 +143,12 @@
     "factQuestion2": "Which country speaks a language that belongs to its own branch of the Indo-European family?",
     "medianHouseholdIncomeUsd": 4686,
     "medianRentUsd": 369,
-    "ecosystem": "Mediterranean hills"
+    "ecosystem": "Mediterranean hills",
+    "searchKeywords": [
+      "Cold War",
+      "Earth",
+      "Indo-European"
+    ]
   },
   {
     "code": "DZ",
@@ -186,7 +200,12 @@
     "factQuestion2": "Which country contains Saharan rock art depicting ancient swimmers?",
     "medianHouseholdIncomeUsd": 3327,
     "medianRentUsd": 100,
-    "ecosystem": "Desert"
+    "ecosystem": "Desert",
+    "searchKeywords": [
+      "Sahara",
+      "Mediterranean",
+      "Tassili"
+    ]
   },
   {
     "code": "AS",
@@ -225,7 +244,12 @@
     },
     "fact2": "The National Park of American Samoa is the only U.S. national park south of the equator.",
     "factQuestion2": "Which country is home to the only U.S. national park south of the equator?",
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "U.S",
+      "NFL",
+      "National Park of American Samoa"
+    ]
   },
   {
     "code": "AD",
@@ -270,7 +294,12 @@
     },
     "fact2": "It has two heads of state: the elected president of France and the Bishop of Urgell in Spain.",
     "factQuestion2": "Which country is jointly led by a French president and a Spanish bishop?",
-    "ecosystem": "Alpine forest"
+    "ecosystem": "Alpine forest",
+    "searchKeywords": [
+      "France",
+      "Spain",
+      "Bishop of Urgell in Spain"
+    ]
   },
   {
     "code": "AO",
@@ -317,7 +346,11 @@
     "fact2": "The giant sable antelope, once feared extinct, survives only in this country's woodlands.",
     "factQuestion2": "Which country is the only wild home of the giant sable antelope?",
     "medianHouseholdIncomeUsd": 1416,
-    "ecosystem": "Savanna & rainforest"
+    "ecosystem": "Savanna & rainforest",
+    "searchKeywords": [
+      "Kalandula Falls",
+      "Africa"
+    ]
   },
   {
     "code": "AI",
@@ -356,7 +389,12 @@
     "bird": "Zenaida dove",
     "fact2": "Its capital, The Valley, is one of the smallest capital settlements in the Caribbean.",
     "factQuestion2": "Which country has a capital called The Valley?",
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "Britain",
+      "Valley",
+      "Caribbean"
+    ]
   },
   {
     "code": "AQ",
@@ -391,7 +429,11 @@
     },
     "fact2": "This is the coldest, driest, and windiest continent, even though it is covered in ice.",
     "factQuestion2": "Which country is the coldest, driest, and windiest continent?",
-    "ecosystem": "Ice sheet"
+    "ecosystem": "Ice sheet",
+    "searchKeywords": [
+      "Antarctica",
+      "ice"
+    ]
   },
   {
     "code": "AG",
@@ -430,7 +472,11 @@
     "bird": "Magnificent frigatebird",
     "fact2": "Barbuda shelters one of the Caribbean's largest frigatebird colonies, where males inflate bright red throat pouches to attract mates.",
     "factQuestion2": "Which country includes an island with a huge colony of red-throated frigatebirds?",
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "Barbuda",
+      "Caribbean"
+    ]
   },
   {
     "code": "AR",
@@ -479,7 +525,13 @@
     "factQuestion2": "Which country is widely regarded as the birthplace of tango?",
     "medianHouseholdIncomeUsd": 6984,
     "medianRentUsd": 366,
-    "ecosystem": "Pampas, Andes & desert"
+    "ecosystem": "Pampas, Andes & desert",
+    "searchKeywords": [
+      "tango",
+      "Perito Moreno Glacier",
+      "Río",
+      "Plata"
+    ]
   },
   {
     "code": "AM",
@@ -528,7 +580,12 @@
     "factQuestion2": "Which country was the first state to adopt Christianity as an official religion?",
     "medianHouseholdIncomeUsd": 3119,
     "medianRentUsd": 480,
-    "ecosystem": "Mountains & steppe"
+    "ecosystem": "Mountains & steppe",
+    "searchKeywords": [
+      "Mount Ararat",
+      "Türkiye",
+      "Christianity"
+    ]
   },
   {
     "code": "AW",
@@ -567,7 +624,11 @@
     "bird": "Brown-throated parakeet",
     "fact2": "Divi-divi trees are bent permanently in one direction by the island's steady trade winds.",
     "factQuestion2": "Which country is known for wind-sculpted divi-divi trees?",
-    "ecosystem": "Dry tropical scrub"
+    "ecosystem": "Dry tropical scrub",
+    "searchKeywords": [
+      "Caribbean",
+      "Divi-divi"
+    ]
   },
   {
     "code": "AU",
@@ -610,7 +671,11 @@
     "factQuestion2": "Which country is home to the Great Barrier Reef?",
     "medianHouseholdIncomeUsd": 21793,
     "medianRentUsd": 1232,
-    "ecosystem": "Desert & grasslands"
+    "ecosystem": "Desert & grasslands",
+    "searchKeywords": [
+      "Earth",
+      "Great Barrier Reef"
+    ]
   },
   {
     "code": "AT",
@@ -663,7 +728,13 @@
     "factQuestion2": "Which country has the world's oldest continuously operating zoo?",
     "medianHouseholdIncomeUsd": 26075,
     "medianRentUsd": 829,
-    "ecosystem": "Alpine forest"
+    "ecosystem": "Alpine forest",
+    "searchKeywords": [
+      "Vienna",
+      "Europe",
+      "Mozart Beethoven and Strauss",
+      "Vienna Schönbrunn Palace"
+    ]
   },
   {
     "code": "AZ",
@@ -713,7 +784,11 @@
     "factQuestion2": "Which country has nearly half of the world's mud volcanoes?",
     "medianHouseholdIncomeUsd": 3413,
     "medianRentUsd": 265,
-    "ecosystem": "Mountains & steppe"
+    "ecosystem": "Mountains & steppe",
+    "searchKeywords": [
+      "Caspian",
+      "Kura"
+    ]
   },
   {
     "code": "BS",
@@ -753,7 +828,10 @@
     "bird": "American flamingo",
     "fact2": "On Big Major Cay, feral pigs famously paddle into the turquoise water to greet visiting boats.",
     "factQuestion2": "Which country is known for an island where swimming pigs greet visitors?",
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "Big Major Cay"
+    ]
   },
   {
     "code": "BH",
@@ -795,7 +873,12 @@
     "fact2": "Ancient burial mounds from the Dilmun civilization dot the landscape, with thousands still visible today.",
     "factQuestion2": "Which country is scattered with thousands of ancient Dilmun burial mounds?",
     "medianRentUsd": 632,
-    "ecosystem": "Desert"
+    "ecosystem": "Desert",
+    "searchKeywords": [
+      "Tree of Life",
+      "Ancient",
+      "Dilmun"
+    ]
   },
   {
     "code": "BD",
@@ -842,7 +925,14 @@
     "factQuestion2": "Which country shares the world's largest mangrove forest with India?",
     "medianHouseholdIncomeUsd": 2254,
     "medianRentUsd": 46,
-    "ecosystem": "River delta & monsoon"
+    "ecosystem": "River delta & monsoon",
+    "searchKeywords": [
+      "Iowa",
+      "Earth",
+      "Sundarbans",
+      "India",
+      "Bengal"
+    ]
   },
   {
     "code": "BB",
@@ -883,7 +973,12 @@
     "fact2": "Mount Gay has been producing rum since 1703, making it one of the world's oldest commercial rum distilleries.",
     "factQuestion2": "Which country is home to one of the world's oldest rum distilleries?",
     "medianHouseholdIncomeUsd": 5654,
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "Caribbean",
+      "British",
+      "Mount Gay"
+    ]
   },
   {
     "code": "BY",
@@ -933,7 +1028,12 @@
     "factQuestion2": "Which country protects European bison in the ancient Belovezhskaya forest?",
     "medianHouseholdIncomeUsd": 6711,
     "medianRentUsd": 316,
-    "ecosystem": "Temperate forest"
+    "ecosystem": "Temperate forest",
+    "searchKeywords": [
+      "Europe",
+      "Belovezhskaya Pushcha",
+      "European"
+    ]
   },
   {
     "code": "BE",
@@ -982,7 +1082,10 @@
     "factQuestion2": "Which country is widely associated with the invention of French fries?",
     "medianHouseholdIncomeUsd": 22954,
     "medianRentUsd": 893,
-    "ecosystem": "Temperate forest"
+    "ecosystem": "Temperate forest",
+    "searchKeywords": [
+      "French"
+    ]
   },
   {
     "code": "BZ",
@@ -1027,7 +1130,12 @@
     "fact2": "It is the only Central American country where English is the official language.",
     "factQuestion2": "Which country is the only one in Central America with English as its official language?",
     "medianHouseholdIncomeUsd": 5452,
-    "ecosystem": "Tropical rainforest"
+    "ecosystem": "Tropical rainforest",
+    "searchKeywords": [
+      "Great Blue Hole",
+      "Central American",
+      "English"
+    ]
   },
   {
     "code": "BJ",
@@ -1073,7 +1181,13 @@
     "fact2": "The annual Voodoo festival in Ouidah draws practitioners and visitors to ceremonies honoring ancestors and spirits.",
     "factQuestion2": "Which country hosts a major annual Voodoo festival in the coastal city of Ouidah?",
     "medianHouseholdIncomeUsd": 1533,
-    "ecosystem": "Savanna"
+    "ecosystem": "Savanna",
+    "searchKeywords": [
+      "Kingdom of Dahomey",
+      "Dora Milaje in Black Panther",
+      "Voodoo",
+      "Ouidah"
+    ]
   },
   {
     "code": "BM",
@@ -1112,7 +1226,11 @@
     "bird": "Bermuda petrel",
     "fact2": "Its reefs have caused hundreds of shipwrecks, helping create one of the Atlantic's richest underwater wreck-diving regions.",
     "factQuestion2": "Which country is renowned for Atlantic shipwreck diving among coral reefs?",
-    "ecosystem": "Subtropical islands"
+    "ecosystem": "Subtropical islands",
+    "searchKeywords": [
+      "Pink-sand",
+      "Atlantic"
+    ]
   },
   {
     "code": "BT",
@@ -1158,7 +1276,11 @@
     "fact2": "The takin, its unusual national animal, looks like a cross between a goat and a moose.",
     "factQuestion2": "Which country has the takin as its national animal?",
     "medianHouseholdIncomeUsd": 6019,
-    "ecosystem": "Himalayan forests"
+    "ecosystem": "Himalayan forests",
+    "searchKeywords": [
+      "Progress",
+      "Gross National Happiness"
+    ]
   },
   {
     "code": "BO",
@@ -1208,7 +1330,12 @@
     "factQuestion2": "Which country contains the salt flat that becomes the world's largest natural mirror after rain?",
     "medianHouseholdIncomeUsd": 6139,
     "medianRentUsd": 165,
-    "ecosystem": "Andes, rainforest & desert"
+    "ecosystem": "Andes, rainforest & desert",
+    "searchKeywords": [
+      "Paz",
+      "Sucre",
+      "Salar de Uyuni"
+    ]
   },
   {
     "code": "BA",
@@ -1255,7 +1382,12 @@
     "factQuestion2": "Which country hosted the 1984 Winter Olympics in Sarajevo?",
     "medianHouseholdIncomeUsd": 5764,
     "medianRentUsd": 238,
-    "ecosystem": "Temperate forest"
+    "ecosystem": "Temperate forest",
+    "searchKeywords": [
+      "Mostar Ottoman-era Stari Most",
+      "Sarajevo",
+      "Winter Olympics"
+    ]
   },
   {
     "code": "BW",
@@ -1302,7 +1434,11 @@
     "fact2": "The country is one of the world's leading diamond producers and contains the enormous Jwaneng mine.",
     "factQuestion2": "Which country is home to the giant Jwaneng diamond mine?",
     "medianHouseholdIncomeUsd": 2130,
-    "ecosystem": "Savanna & desert"
+    "ecosystem": "Savanna & desert",
+    "searchKeywords": [
+      "Okavango Delta",
+      "Jwaneng"
+    ]
   },
   {
     "code": "BV",
@@ -1338,7 +1474,12 @@
     },
     "fact2": "Almost the entire island is covered by glaciers, while sheer cliffs make landing on it exceptionally difficult.",
     "factQuestion2": "Which country is a remote, glacier-covered island with almost no accessible shoreline?",
-    "ecosystem": "Subantarctic islands"
+    "ecosystem": "Subantarctic islands",
+    "searchKeywords": [
+      "Earth",
+      "Antarctica",
+      "Almost"
+    ]
   },
   {
     "code": "BR",
@@ -1393,7 +1534,15 @@
     "factQuestion2": "Which country is home to the Christ the Redeemer statue overlooking Rio de Janeiro?",
     "medianHouseholdIncomeUsd": 6173,
     "medianRentUsd": 246,
-    "ecosystem": "Rainforest & savanna"
+    "ecosystem": "Rainforest & savanna",
+    "searchKeywords": [
+      "Amazon",
+      "Christ the Redeemer",
+      "Jesus",
+      "Redeemer",
+      "Rio de Janeiro",
+      "Corcovado Mountain"
+    ]
   },
   {
     "code": "IO",
@@ -1434,7 +1583,14 @@
     },
     "fact2": "Coral atolls here ring some of the clearest lagoons in the Indian Ocean, far from any continental coastline.",
     "factQuestion2": "Which country consists of remote coral atolls and lagoons in the central Indian Ocean?",
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "Chagos Archipelago",
+      "Diego Garcia",
+      "U.S U.K",
+      "Indian Ocean",
+      "Coral"
+    ]
   },
   {
     "code": "VG",
@@ -1474,7 +1630,10 @@
     "bird": "Mourning dove",
     "fact2": "The Baths are a maze of enormous granite boulders, sea pools, and caves along the shore of one of its islands.",
     "factQuestion2": "Which country is home to The Baths, a shoreline maze of giant granite boulders and sea pools?",
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "Baths"
+    ]
   },
   {
     "code": "BN",
@@ -1518,7 +1677,10 @@
     "plant": "Simpur",
     "fact2": "Kampong Ayer is a vast water village near the capital, with homes, schools, and mosques built on stilts above the river.",
     "factQuestion2": "Which country is home to Kampong Ayer, a large stilt village on a river?",
-    "ecosystem": "Tropical rainforest"
+    "ecosystem": "Tropical rainforest",
+    "searchKeywords": [
+      "Kampong Ayer"
+    ]
   },
   {
     "code": "BG",
@@ -1568,7 +1730,11 @@
     "factQuestion2": "Which country is famous for the Rose Valley and its rose-oil harvest?",
     "medianHouseholdIncomeUsd": 11017,
     "medianRentUsd": 362,
-    "ecosystem": "Temperate forest"
+    "ecosystem": "Temperate forest",
+    "searchKeywords": [
+      "Cyrillic",
+      "Rose Valley"
+    ]
   },
   {
     "code": "BF",
@@ -1614,7 +1780,12 @@
     "fact2": "Ouagadougou hosts FESPACO, Africa's largest film festival, every two years.",
     "factQuestion2": "Which country hosts Africa's largest film festival in Ouagadougou?",
     "medianHouseholdIncomeUsd": 1231,
-    "ecosystem": "Savanna"
+    "ecosystem": "Savanna",
+    "searchKeywords": [
+      "Mossi and Dioula",
+      "Ouagadougou",
+      "FESPACO Africa"
+    ]
   },
   {
     "code": "BI",
@@ -1660,7 +1831,13 @@
     "fact2": "Royal drummers perform on huge sacred drums in a tradition recognized by UNESCO as intangible cultural heritage.",
     "factQuestion2": "Which country is known for its UNESCO-recognized royal drumming tradition?",
     "medianHouseholdIncomeUsd": 733,
-    "ecosystem": "Highland savanna"
+    "ecosystem": "Highland savanna",
+    "searchKeywords": [
+      "Rwanda",
+      "European",
+      "Royal",
+      "UNESCO"
+    ]
   },
   {
     "code": "KH",
@@ -1706,7 +1883,11 @@
     "plant": "Rumduol",
     "fact2": "Tonlé Sap Lake reverses the direction of its river flow during the monsoon, expanding dramatically into a seasonal inland sea.",
     "factQuestion2": "Which country has a lake whose river reverses direction during the monsoon?",
-    "ecosystem": "Tropical forest"
+    "ecosystem": "Tropical forest",
+    "searchKeywords": [
+      "Angkor Wat",
+      "Tonlé Sap Lake"
+    ]
   },
   {
     "code": "CM",
@@ -1755,7 +1936,13 @@
     "fact2": "Mount Cameroon rises directly from the Gulf of Guinea and is one of Africa's most active volcanoes.",
     "factQuestion2": "Which country is home to an active volcano that rises from the Gulf of Guinea coast?",
     "medianHouseholdIncomeUsd": 1820,
-    "ecosystem": "Rainforest & savanna"
+    "ecosystem": "Rainforest & savanna",
+    "searchKeywords": [
+      "Nicknamed Africa",
+      "Mount Cameroon",
+      "Gulf of Guinea",
+      "Africa"
+    ]
   },
   {
     "code": "CA",
@@ -1798,7 +1985,10 @@
     "factQuestion2": "Which country contains the Bay of Fundy, known for the world's highest tides?",
     "medianHouseholdIncomeUsd": 23623,
     "medianRentUsd": 1134,
-    "ecosystem": "Forests, plains & tundra"
+    "ecosystem": "Forests, plains & tundra",
+    "searchKeywords": [
+      "Bay of Fundy"
+    ]
   },
   {
     "code": "CV",
@@ -1840,7 +2030,14 @@
     "fact2": "Pico do Fogo is an active volcano whose black lava slopes rise from the middle of Fogo Island.",
     "factQuestion2": "Which country includes Fogo Island and the active volcano Pico do Fogo?",
     "medianHouseholdIncomeUsd": 2255,
-    "ecosystem": "Dry tropical islands"
+    "ecosystem": "Dry tropical islands",
+    "searchKeywords": [
+      "Morna",
+      "Atlantic",
+      "Pico",
+      "Fogo",
+      "Fogo Island"
+    ]
   },
   {
     "code": "BQ",
@@ -1880,7 +2077,14 @@
     },
     "fact2": "Saba's Mount Scenery is the highest point in the entire Kingdom of the Netherlands.",
     "factQuestion2": "Which Caribbean country includes Mount Scenery, the highest peak in its European kingdom?",
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "Bonaire Sint Eustatius and Saba",
+      "Caribbean",
+      "Netherlands",
+      "Saba Mount Scenery",
+      "Kingdom"
+    ]
   },
   {
     "code": "KY",
@@ -1919,7 +2123,10 @@
     "bird": "Grand Cayman parrot",
     "fact2": "Stingray City is a shallow sandbar where southern stingrays gather around snorkelers in clear water.",
     "factQuestion2": "Which country is known for Stingray City, where visitors can meet wild stingrays in shallow water?",
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "Stingray City"
+    ]
   },
   {
     "code": "CF",
@@ -1967,7 +2174,10 @@
     "fact2": "Dzanga Bai is a rainforest clearing where hundreds of forest elephants gather to drink mineral-rich water.",
     "factQuestion2": "Which country contains Dzanga Bai, a rainforest clearing visited by forest elephants?",
     "medianHouseholdIncomeUsd": 702,
-    "ecosystem": "Savanna & rainforest"
+    "ecosystem": "Savanna & rainforest",
+    "searchKeywords": [
+      "Dzanga Bai"
+    ]
   },
   {
     "code": "TD",
@@ -2016,7 +2226,12 @@
     "fact2": "The Ennedi Plateau is filled with sandstone arches, rock towers, and prehistoric paintings in the eastern Sahara.",
     "factQuestion2": "Which country contains the Sahara's dramatic Ennedi sandstone arches and rock art?",
     "medianHouseholdIncomeUsd": 1336,
-    "ecosystem": "Desert & savanna"
+    "ecosystem": "Desert & savanna",
+    "searchKeywords": [
+      "Sahel",
+      "Ennedi Plateau",
+      "Sahara"
+    ]
   },
   {
     "code": "CL",
@@ -2063,7 +2278,10 @@
     "factQuestion2": "Which country contains the exceptionally dry Atacama Desert?",
     "medianHouseholdIncomeUsd": 8968,
     "medianRentUsd": 355,
-    "ecosystem": "Desert, Andes & forests"
+    "ecosystem": "Desert, Andes & forests",
+    "searchKeywords": [
+      "Atacama Desert"
+    ]
   },
   {
     "code": "CN",
@@ -2124,7 +2342,11 @@
     "factQuestion2": "Which country is home to the Terracotta Army?",
     "medianHouseholdIncomeUsd": 4878,
     "medianRentUsd": 233,
-    "ecosystem": "Mountains, plains & desert"
+    "ecosystem": "Mountains, plains & desert",
+    "searchKeywords": [
+      "Great Wall",
+      "Thousands"
+    ]
   },
   {
     "code": "CX",
@@ -2163,7 +2385,10 @@
     },
     "fact2": "More than 60% of the island is protected as national park, preserving rainforest and rare seabirds.",
     "factQuestion2": "Which country protects most of its remote Indian Ocean island as a national park?",
-    "ecosystem": "Tropical rainforest"
+    "ecosystem": "Tropical rainforest",
+    "searchKeywords": [
+      "Famous"
+    ]
   },
   {
     "code": "CC",
@@ -2202,7 +2427,11 @@
     },
     "fact2": "Pulu Keeling National Park protects nesting seabirds, coconut crabs, and a rare coral atoll ecosystem.",
     "factQuestion2": "Which country protects a remote Indian Ocean atoll park known for seabirds and coconut crabs?",
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "Indian Ocean",
+      "Pulu Keeling National Park"
+    ]
   },
   {
     "code": "CO",
@@ -2251,7 +2480,11 @@
     "factQuestion2": "Which country is home to the River of Five Colors?",
     "medianHouseholdIncomeUsd": 4117,
     "medianRentUsd": 448,
-    "ecosystem": "Rainforest & Andes"
+    "ecosystem": "Rainforest & Andes",
+    "searchKeywords": [
+      "Caño Cristales",
+      "River of Five Colors"
+    ]
   },
   {
     "code": "KM",
@@ -2292,7 +2525,10 @@
     "fact2": "Mount Karthala, a massive shield volcano, dominates the largest island and has one of the world's biggest volcanic calderas.",
     "factQuestion2": "Which country is dominated by the active volcano Mount Karthala?",
     "medianHouseholdIncomeUsd": 2365,
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "Mount Karthala"
+    ]
   },
   {
     "code": "CG",
@@ -2342,7 +2578,13 @@
     "fact2": "Its capital faces Kinshasa across the Congo River, making the two cities the world's closest pair of national capitals.",
     "factQuestion2": "Which country has a capital directly across a river from Kinshasa?",
     "medianHouseholdIncomeUsd": 1374,
-    "ecosystem": "Tropical rainforest"
+    "ecosystem": "Tropical rainforest",
+    "searchKeywords": [
+      "Congo Basin",
+      "Amazon",
+      "Kinshasa",
+      "Congo River"
+    ]
   },
   {
     "code": "CK",
@@ -2380,7 +2622,14 @@
     },
     "fact2": "Aitutaki's turquoise lagoon is ringed by tiny motus, or coral islets, and is often considered one of the Pacific's most beautiful lagoons.",
     "factQuestion2": "Which country includes Aitutaki's lagoon of coral islets?",
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "Residents",
+      "New Zealand",
+      "Wellington",
+      "Aitutaki",
+      "Pacific"
+    ]
   },
   {
     "code": "CR",
@@ -2426,7 +2675,11 @@
     "factQuestion2": "Which country contains an estimated 5% of Earth's biodiversity despite its small size?",
     "medianHouseholdIncomeUsd": 8537,
     "medianRentUsd": 658,
-    "ecosystem": "Tropical rainforest"
+    "ecosystem": "Tropical rainforest",
+    "searchKeywords": [
+      "Despite",
+      "Earth"
+    ]
   },
   {
     "code": "HR",
@@ -2476,7 +2729,13 @@
     "factQuestion2": "Which country gave the world the word behind the cravat and necktie?",
     "medianHouseholdIncomeUsd": 13408,
     "medianRentUsd": 565,
-    "ecosystem": "Mediterranean & forest"
+    "ecosystem": "Mediterranean & forest",
+    "searchKeywords": [
+      "Dubrovnik",
+      "King Landing in Game of Thrones",
+      "Croatian",
+      "France"
+    ]
   },
   {
     "code": "CU",
@@ -2518,7 +2777,11 @@
     "fact2": "The bee hummingbird, the world's smallest bird, lives here; it is only about five centimeters long.",
     "factQuestion2": "Which country is home to the tiny bee hummingbird?",
     "medianRentUsd": 507,
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "Classic",
+      "American"
+    ]
   },
   {
     "code": "CW",
@@ -2558,7 +2821,11 @@
     },
     "fact2": "A famous blue liqueur is flavored with the bitter peel of the laraha, a citrus fruit that grows only on this island.",
     "factQuestion2": "Which country grows the rare laraha citrus used to flavor a famous blue liqueur?",
-    "ecosystem": "Dry tropical scrub"
+    "ecosystem": "Dry tropical scrub",
+    "searchKeywords": [
+      "Handelskade",
+      "Dutch"
+    ]
   },
   {
     "code": "CY",
@@ -2602,7 +2869,13 @@
     "factQuestion2": "Which country is known for the ancient sweet wine Commandaria?",
     "medianHouseholdIncomeUsd": 19031,
     "medianRentUsd": 836,
-    "ecosystem": "Mediterranean scrub"
+    "ecosystem": "Mediterranean scrub",
+    "searchKeywords": [
+      "Legend",
+      "Aphrodite the Greek",
+      "Commandaria",
+      "Troodos"
+    ]
   },
   {
     "code": "CZ",
@@ -2651,7 +2924,13 @@
     "factQuestion2": "Which country was the setting for the Defenestration of Prague?",
     "medianHouseholdIncomeUsd": 14260,
     "medianRentUsd": 677,
-    "ecosystem": "Temperate forest"
+    "ecosystem": "Temperate forest",
+    "searchKeywords": [
+      "Prague Astronomical Clock",
+      "Prague",
+      "Defenestration of Prague",
+      "Thirty Years War"
+    ]
   },
   {
     "code": "DK",
@@ -2697,7 +2976,13 @@
     "factQuestion2": "Which country uses the Dannebrog, often called the world's oldest national flag?",
     "medianHouseholdIncomeUsd": 22164,
     "medianRentUsd": 899,
-    "ecosystem": "Temperate farmland"
+    "ecosystem": "Temperate farmland",
+    "searchKeywords": [
+      "LEGO",
+      "Billund",
+      "LEGOLAND",
+      "Dannebrog"
+    ]
   },
   {
     "code": "DJ",
@@ -2742,7 +3027,12 @@
     "fact2": "Lake Assal is Africa's lowest point and so salty that people can float easily in its water.",
     "factQuestion2": "Which country contains Lake Assal, Africa's lowest point?",
     "medianHouseholdIncomeUsd": 1717,
-    "ecosystem": "Desert"
+    "ecosystem": "Desert",
+    "searchKeywords": [
+      "Afar Triple Junction",
+      "Lake Assal",
+      "Africa"
+    ]
   },
   {
     "code": "DM",
@@ -2782,7 +3072,11 @@
     "bird": "Imperial amazon",
     "fact2": "Its flag features the Sisserou parrot, making it the only national flag with the color purple in its design.",
     "factQuestion2": "Which country has a flag featuring a Sisserou parrot and the color purple?",
-    "ecosystem": "Tropical rainforest"
+    "ecosystem": "Tropical rainforest",
+    "searchKeywords": [
+      "Boiling Lake",
+      "Sisserou"
+    ]
   },
   {
     "code": "DO",
@@ -2827,7 +3121,12 @@
     "factQuestion2": "Which country is the only source of the blue gemstone larimar?",
     "medianHouseholdIncomeUsd": 6379,
     "medianRentUsd": 353,
-    "ecosystem": "Tropical forest"
+    "ecosystem": "Tropical forest",
+    "searchKeywords": [
+      "Shares Hispaniola with Haiti",
+      "Caribbean",
+      "Larimar"
+    ]
   },
   {
     "code": "CD",
@@ -2882,7 +3181,11 @@
     "fact2": "Bonobos, great apes closely related to chimpanzees, live naturally only in the forests south of the Congo River.",
     "factQuestion2": "Which country is the wild home of the bonobo?",
     "medianHouseholdIncomeUsd": 480,
-    "ecosystem": "Tropical rainforest"
+    "ecosystem": "Tropical rainforest",
+    "searchKeywords": [
+      "Congo River",
+      "Bonobos"
+    ]
   },
   {
     "code": "EC",
@@ -2928,7 +3231,14 @@
     "factQuestion2": "Which country contains Chimborazo, Earth's farthest surface point from its center?",
     "medianHouseholdIncomeUsd": 4636,
     "medianRentUsd": 266,
-    "ecosystem": "Rainforest & Andes"
+    "ecosystem": "Rainforest & Andes",
+    "searchKeywords": [
+      "Named",
+      "Galápagos Islands",
+      "Because Earth",
+      "Chimborazo",
+      "Earth"
+    ]
   },
   {
     "code": "EG",
@@ -2977,7 +3287,11 @@
     "factQuestion2": "Which country relocated the ancient temples of Abu Simbel block by block?",
     "medianHouseholdIncomeUsd": 2778,
     "medianRentUsd": 101,
-    "ecosystem": "Desert"
+    "ecosystem": "Desert",
+    "searchKeywords": [
+      "Great Pyramid of Giza",
+      "Abu Simbel"
+    ]
   },
   {
     "code": "SV",
@@ -3022,7 +3336,11 @@
     "fact2": "Pupusas—thick corn cakes stuffed with ingredients such as cheese, beans, or pork—are so central to local food culture that they have a national day.",
     "factQuestion2": "Which country is famous for pupusas, stuffed corn cakes?",
     "medianHouseholdIncomeUsd": 4336,
-    "ecosystem": "Tropical forest"
+    "ecosystem": "Tropical forest",
+    "searchKeywords": [
+      "Central America",
+      "Pupusas"
+    ]
   },
   {
     "code": "GQ",
@@ -3066,7 +3384,14 @@
     "fact2": "The capital, Malabo, sits on Bioko Island rather than on the mainland, separated from it by the Gulf of Guinea.",
     "factQuestion2": "Which country has its capital on Bioko Island off the African mainland?",
     "medianHouseholdIncomeUsd": 2604,
-    "ecosystem": "Tropical rainforest"
+    "ecosystem": "Tropical rainforest",
+    "searchKeywords": [
+      "African",
+      "Spanish",
+      "Malabo",
+      "Bioko Island",
+      "Gulf of Guinea"
+    ]
   },
   {
     "code": "ER",
@@ -3111,7 +3436,13 @@
     "bird": "White-cheeked turaco",
     "fact2": "The Dahlak Archipelago in the Red Sea contains more than 200 islands and is known for exceptionally clear coral reefs.",
     "factQuestion2": "Which country includes the Dahlak Archipelago in the Red Sea?",
-    "ecosystem": "Desert & highlands"
+    "ecosystem": "Desert & highlands",
+    "searchKeywords": [
+      "Asmara",
+      "Art Deco and Modernist",
+      "Dahlak Archipelago",
+      "Red Sea"
+    ]
   },
   {
     "code": "EE",
@@ -3158,7 +3489,11 @@
     "factQuestion2": "Which country contains the Kaali meteorite craters on Saaremaa?",
     "medianHouseholdIncomeUsd": 13331,
     "medianRentUsd": 496,
-    "ecosystem": "Boreal forest"
+    "ecosystem": "Boreal forest",
+    "searchKeywords": [
+      "Kaali",
+      "Saaremaa"
+    ]
   },
   {
     "code": "SZ",
@@ -3204,7 +3539,12 @@
     "fact2": "The annual Umhlanga, or Reed Dance, brings thousands of young women together in a major cultural ceremony.",
     "factQuestion2": "Which country hosts the annual Umhlanga Reed Dance?",
     "medianHouseholdIncomeUsd": 1235,
-    "ecosystem": "Highland savanna"
+    "ecosystem": "Highland savanna",
+    "searchKeywords": [
+      "Africa",
+      "Umhlanga",
+      "Reed Dance"
+    ]
   },
   {
     "code": "ET",
@@ -3254,7 +3594,13 @@
     "fact2": "Coffee is traditionally traced to the forests of Kaffa, where the coffee plant grows wild and ceremonies still honor its preparation.",
     "factQuestion2": "Which country is traditionally regarded as coffee's birthplace?",
     "medianHouseholdIncomeUsd": 1273,
-    "ecosystem": "Highlands & savanna"
+    "ecosystem": "Highlands & savanna",
+    "searchKeywords": [
+      "Follows",
+      "Gregorian",
+      "Coffee",
+      "Kaffa"
+    ]
   },
   {
     "code": "FK",
@@ -3293,7 +3639,11 @@
     },
     "fact2": "Five species of penguin breed on these windswept islands, including king, gentoo, and rockhopper penguins.",
     "factQuestion2": "Which country is home to breeding colonies of five penguin species in the South Atlantic?",
-    "ecosystem": "Cold grasslands"
+    "ecosystem": "Cold grasslands",
+    "searchKeywords": [
+      "Britain and Argentina",
+      "Five"
+    ]
   },
   {
     "code": "FO",
@@ -3333,7 +3683,11 @@
     "bird": "Eurasian oystercatcher",
     "fact2": "Many homes have turf roofs, a centuries-old building tradition that helps insulate houses against North Atlantic weather.",
     "factQuestion2": "Which country is known for traditional homes with grass-covered roofs?",
-    "ecosystem": "Tundra islands"
+    "ecosystem": "Tundra islands",
+    "searchKeywords": [
+      "Residents",
+      "North Atlantic"
+    ]
   },
   {
     "code": "FJ",
@@ -3376,7 +3730,11 @@
     "fact2": "Kava, a mildly sedating drink made from a pepper-family root, is shared from a communal bowl in an important welcome ritual.",
     "factQuestion2": "Which country has a traditional welcome ceremony centered on sharing kava?",
     "medianHouseholdIncomeUsd": 2615,
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "Straddles the International Date Line",
+      "Kava"
+    ]
   },
   {
     "code": "FI",
@@ -3424,7 +3782,11 @@
     "factQuestion2": "Which country has about 188,000 lakes and the endangered Saimaa ringed seal?",
     "medianHouseholdIncomeUsd": 20614,
     "medianRentUsd": 720,
-    "ecosystem": "Boreal forest"
+    "ecosystem": "Boreal forest",
+    "searchKeywords": [
+      "Lake Saimaa",
+      "Saimaa"
+    ]
   },
   {
     "code": "FR",
@@ -3476,7 +3838,12 @@
     "factQuestion2": "Which country hosted the Lumière brothers' first public film screening?",
     "medianHouseholdIncomeUsd": 20882,
     "medianRentUsd": 701,
-    "ecosystem": "Temperate forest"
+    "ecosystem": "Temperate forest",
+    "searchKeywords": [
+      "Earth",
+      "Lumière",
+      "Paris"
+    ]
   },
   {
     "code": "GF",
@@ -3519,7 +3886,15 @@
     },
     "fact2": "Although it lies in South America, it is part of the European Union and uses the euro.",
     "factQuestion2": "Which country is in South America yet uses the euro as part of the European Union?",
-    "ecosystem": "Tropical rainforest"
+    "ecosystem": "Tropical rainforest",
+    "searchKeywords": [
+      "Europe",
+      "Kourou",
+      "South America",
+      "European",
+      "Although",
+      "European Union"
+    ]
   },
   {
     "code": "PF",
@@ -3558,7 +3933,11 @@
     },
     "fact2": "Teahupo'o is famous for a powerful wave that breaks over an extremely shallow coral reef, producing a strikingly hollow barrel.",
     "factQuestion2": "Which country includes the surf break Teahupo'o?",
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "Bora Bora and Tahiti",
+      "Teahupo'o"
+    ]
   },
   {
     "code": "TF",
@@ -3601,7 +3980,12 @@
     },
     "fact2": "The Crozet Islands host huge colonies of king penguins, albatrosses, and elephant seals in the southern Indian Ocean.",
     "factQuestion2": "Which country includes the Crozet Islands' vast penguin and albatross colonies?",
-    "ecosystem": "Subantarctic islands"
+    "ecosystem": "Subantarctic islands",
+    "searchKeywords": [
+      "Remote",
+      "Crozet Islands",
+      "Indian Ocean"
+    ]
   },
   {
     "code": "GA",
@@ -3646,7 +4030,11 @@
     "fact2": "At Loango National Park, forest elephants can sometimes be seen walking along Atlantic beaches.",
     "factQuestion2": "Which country is home to Loango National Park, where elephants can walk on beaches?",
     "medianHouseholdIncomeUsd": 4127,
-    "ecosystem": "Tropical rainforest"
+    "ecosystem": "Tropical rainforest",
+    "searchKeywords": [
+      "Loango National Park",
+      "Atlantic"
+    ]
   },
   {
     "code": "GM",
@@ -3688,7 +4076,12 @@
     "fact2": "Kunta Kinteh Island, a small river island, preserves a former slave-trading site and is a UNESCO World Heritage Site.",
     "factQuestion2": "Which country contains the UNESCO-listed Kunta Kinteh Island?",
     "medianHouseholdIncomeUsd": 1773,
-    "ecosystem": "Savanna"
+    "ecosystem": "Savanna",
+    "searchKeywords": [
+      "Senegal",
+      "Kunta Kinteh Island",
+      "UNESCO World Heritage Site"
+    ]
   },
   {
     "code": "GE",
@@ -3736,7 +4129,11 @@
     "factQuestion2": "Which country uses a unique 33-letter alphabet with its own distinctive script?",
     "medianHouseholdIncomeUsd": 3202,
     "medianRentUsd": 356,
-    "ecosystem": "Mountains & forest"
+    "ecosystem": "Mountains & forest",
+    "searchKeywords": [
+      "Archaeologists",
+      "Europe"
+    ]
   },
   {
     "code": "DE",
@@ -3789,7 +4186,12 @@
     "factQuestion2": "Which country began Oktoberfest in Munich and has more than 1,300 breweries?",
     "medianHouseholdIncomeUsd": 23425,
     "medianRentUsd": 716,
-    "ecosystem": "Temperate forest"
+    "ecosystem": "Temperate forest",
+    "searchKeywords": [
+      "Autobahn",
+      "Oktoberfest",
+      "Munich"
+    ]
   },
   {
     "code": "GH",
@@ -3835,7 +4237,12 @@
     "fact2": "Lake Volta is one of the world's largest artificial lakes by surface area, created when the Akosombo Dam was built.",
     "factQuestion2": "Which country contains the vast artificial Lake Volta?",
     "medianHouseholdIncomeUsd": 1359,
-    "ecosystem": "Savanna & forest"
+    "ecosystem": "Savanna & forest",
+    "searchKeywords": [
+      "African",
+      "Lake Volta",
+      "Akosombo Dam"
+    ]
   },
   {
     "code": "GI",
@@ -3876,7 +4283,12 @@
     "bird": "Barbary partridge",
     "fact2": "Its airport runway crosses the main road into the territory, so road traffic stops whenever aircraft land or take off.",
     "factQuestion2": "Which country has an airport runway that crosses its main road?",
-    "ecosystem": "Mediterranean scrub"
+    "ecosystem": "Mediterranean scrub",
+    "searchKeywords": [
+      "Rock",
+      "Barbary",
+      "Europe"
+    ]
   },
   {
     "code": "GR",
@@ -3924,7 +4336,14 @@
     "factQuestion2": "Which country was the birthplace of the ancient Olympic Games?",
     "medianHouseholdIncomeUsd": 10553,
     "medianRentUsd": 439,
-    "ecosystem": "Mediterranean scrub"
+    "ecosystem": "Mediterranean scrub",
+    "searchKeywords": [
+      "Thousands",
+      "Olympic Games",
+      "Olympia",
+      "BCE",
+      "Zeus"
+    ]
   },
   {
     "code": "GL",
@@ -3963,7 +4382,10 @@
     },
     "fact2": "Northeast Greenland National Park is the world's largest national park, covering an area larger than many countries.",
     "factQuestion2": "Which country contains the world's largest national park?",
-    "ecosystem": "Ice sheet & tundra"
+    "ecosystem": "Ice sheet & tundra",
+    "searchKeywords": [
+      "Northeast Greenland National Park"
+    ]
   },
   {
     "code": "GD",
@@ -4003,7 +4425,12 @@
     "fact2": "The Molinière Underwater Sculpture Park, installed beneath the sea in 2006, was the world's first underwater sculpture park.",
     "factQuestion2": "Which country pioneered an underwater sculpture park at Molinière?",
     "medianHouseholdIncomeUsd": 5082,
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "Known",
+      "Spice Isle",
+      "Molinière Underwater Sculpture Park"
+    ]
   },
   {
     "code": "GP",
@@ -4041,7 +4468,11 @@
     },
     "fact2": "Its two main islands form the shape of a butterfly when viewed from above, separated by a narrow channel called the Rivière Salée.",
     "factQuestion2": "Which country is shaped like a butterfly when its two main islands are viewed from above?",
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "Soufrière",
+      "Rivière Salée"
+    ]
   },
   {
     "code": "GU",
@@ -4080,7 +4511,12 @@
     },
     "fact2": "Ancient Chamorro people built distinctive latte stone pillars, whose capstones supported raised homes.",
     "factQuestion2": "Which country is known for ancient Chamorro latte stone pillars?",
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "U.S",
+      "Pacific",
+      "Ancient Chamorro"
+    ]
   },
   {
     "code": "GT",
@@ -4127,7 +4563,12 @@
     "fact2": "The quetzal, a brilliantly colored bird sacred to the Maya, gives its name to the national currency.",
     "factQuestion2": "Which country names its currency after the sacred quetzal bird?",
     "medianHouseholdIncomeUsd": 3187,
-    "ecosystem": "Tropical forest"
+    "ecosystem": "Tropical forest",
+    "searchKeywords": [
+      "Tikal",
+      "Maya",
+      "Petén"
+    ]
   },
   {
     "code": "GG",
@@ -4167,7 +4608,12 @@
     },
     "fact2": "Victor Hugo wrote much of Les Misérables while living in exile on the island.",
     "factQuestion2": "Which country was Victor Hugo's island home while he wrote much of Les Misérables?",
-    "ecosystem": "Temperate islands"
+    "ecosystem": "Temperate islands",
+    "searchKeywords": [
+      "Channel Island",
+      "Victor Hugo",
+      "Les Misérables"
+    ]
   },
   {
     "code": "GN",
@@ -4215,7 +4661,11 @@
     "fact2": "The Fouta Djallon highlands are the source region for the Niger, Senegal, and Gambia rivers.",
     "factQuestion2": "Which country contains the highlands where the Niger, Senegal, and Gambia rivers rise?",
     "medianHouseholdIncomeUsd": 2064,
-    "ecosystem": "Rainforest & savanna"
+    "ecosystem": "Rainforest & savanna",
+    "searchKeywords": [
+      "Fouta Djallon",
+      "Niger Senegal and Gambia"
+    ]
   },
   {
     "code": "GW",
@@ -4259,7 +4709,12 @@
     "fact2": "Cashews are so important that their harvest is the country's leading agricultural export.",
     "factQuestion2": "Which country relies heavily on cashews as its leading agricultural export?",
     "medianHouseholdIncomeUsd": 1259,
-    "ecosystem": "Mangroves & savanna"
+    "ecosystem": "Mangroves & savanna",
+    "searchKeywords": [
+      "Bijagós Archipelago",
+      "UNESCO",
+      "Cashews"
+    ]
   },
   {
     "code": "GY",
@@ -4305,7 +4760,13 @@
     "fact2": "Kaieteur Falls plunges 226 meters in a single drop—nearly five times the height of Niagara Falls.",
     "factQuestion2": "Which country contains the towering single-drop Kaieteur Falls?",
     "medianHouseholdIncomeUsd": 2812,
-    "ecosystem": "Tropical rainforest"
+    "ecosystem": "Tropical rainforest",
+    "searchKeywords": [
+      "Amazon",
+      "South America",
+      "Kaieteur Falls",
+      "Niagara Falls"
+    ]
   },
   {
     "code": "HT",
@@ -4350,7 +4811,11 @@
     "fact2": "Citadelle Laferrière is a mountaintop fortress built after independence and is one of the largest fortresses in the Americas.",
     "factQuestion2": "Which country contains the mountaintop Citadelle Laferrière fortress?",
     "medianHouseholdIncomeUsd": 699,
-    "ecosystem": "Tropical hills"
+    "ecosystem": "Tropical hills",
+    "searchKeywords": [
+      "Citadelle Laferrière",
+      "Americas"
+    ]
   },
   {
     "code": "HM",
@@ -4385,7 +4850,14 @@
     },
     "fact2": "Big Ben is an active volcano rising more than 2,700 meters above the southern Indian Ocean on this remote island.",
     "factQuestion2": "Which country includes the remote active volcano nicknamed Big Ben in the southern Indian Ocean?",
-    "ecosystem": "Subantarctic islands"
+    "ecosystem": "Subantarctic islands",
+    "searchKeywords": [
+      "Among",
+      "Earth",
+      "Antarctica",
+      "Big Ben",
+      "Indian Ocean"
+    ]
   },
   {
     "code": "HN",
@@ -4431,7 +4903,14 @@
     "fact2": "The Bay Islands lie beside the Mesoamerican Barrier Reef, the second-largest coral reef system in the world.",
     "factQuestion2": "Which country includes the Bay Islands beside the Mesoamerican Barrier Reef?",
     "medianHouseholdIncomeUsd": 3048,
-    "ecosystem": "Tropical forest"
+    "ecosystem": "Tropical forest",
+    "searchKeywords": [
+      "Copán",
+      "Maya",
+      "Central America",
+      "Bay Islands",
+      "Mesoamerican Barrier Reef"
+    ]
   },
   {
     "code": "HK",
@@ -4476,7 +4955,11 @@
     "fact2": "The Star Ferry has crossed Victoria Harbour since 1888, offering one of the world's most iconic short urban boat rides.",
     "factQuestion2": "Which country is home to the historic Star Ferry crossing Victoria Harbour?",
     "medianRentUsd": 1667,
-    "ecosystem": "Subtropical hills"
+    "ecosystem": "Subtropical hills",
+    "searchKeywords": [
+      "Star Ferry",
+      "Victoria Harbour"
+    ]
   },
   {
     "code": "HU",
@@ -4527,7 +5010,12 @@
     "factQuestion2": "Which country gave the world the Rubik’s Cube?",
     "medianHouseholdIncomeUsd": 8081,
     "medianRentUsd": 472,
-    "ecosystem": "Temperate plains"
+    "ecosystem": "Temperate plains",
+    "searchKeywords": [
+      "Budapest",
+      "Rubik Cube",
+      "Ernő Rubik"
+    ]
   },
   {
     "code": "IS",
@@ -4569,7 +5057,12 @@
     "fact2": "Its language has changed so little since medieval times that many people can still read the old Norse sagas with relatively little help.",
     "factQuestion2": "Which country has preserved a language close to that of the medieval Norse sagas?",
     "medianHouseholdIncomeUsd": 22131,
-    "ecosystem": "Volcanic tundra"
+    "ecosystem": "Volcanic tundra",
+    "searchKeywords": [
+      "Runs",
+      "Mid-Atlantic Ridge",
+      "Norse"
+    ]
   },
   {
     "code": "IN",
@@ -4620,7 +5113,10 @@
     "factQuestion2": "Which country is home to bridges grown from the roots of living trees?",
     "medianHouseholdIncomeUsd": 2021,
     "medianRentUsd": 93,
-    "ecosystem": "Monsoon forests & desert"
+    "ecosystem": "Monsoon forests & desert",
+    "searchKeywords": [
+      "Meghalaya"
+    ]
   },
   {
     "code": "ID",
@@ -4667,7 +5163,10 @@
     "factQuestion2": "Which country is the natural home of Komodo dragons?",
     "medianHouseholdIncomeUsd": 2429,
     "medianRentUsd": 170,
-    "ecosystem": "Tropical rainforest"
+    "ecosystem": "Tropical rainforest",
+    "searchKeywords": [
+      "Komodo"
+    ]
   },
   {
     "code": "IR",
@@ -4719,7 +5218,10 @@
     "factQuestion2": "Which country is known for ancient underground water channels called qanats?",
     "medianHouseholdIncomeUsd": 3718,
     "medianRentUsd": 185,
-    "ecosystem": "Mountains & desert"
+    "ecosystem": "Mountains & desert",
+    "searchKeywords": [
+      "Persian"
+    ]
   },
   {
     "code": "IQ",
@@ -4770,7 +5272,12 @@
     "factQuestion2": "Which country contains the ancient Mesopotamian city of Ur?",
     "medianHouseholdIncomeUsd": 3974,
     "medianRentUsd": 205,
-    "ecosystem": "Desert & steppe"
+    "ecosystem": "Desert & steppe",
+    "searchKeywords": [
+      "Mesopotamia",
+      "Abraham",
+      "Euphrates"
+    ]
   },
   {
     "code": "IE",
@@ -4816,7 +5323,12 @@
     "factQuestion2": "Which country has a prehistoric tomb illuminated by the winter-solstice sunrise?",
     "medianHouseholdIncomeUsd": 18428,
     "medianRentUsd": 1609,
-    "ecosystem": "Temperate grassland"
+    "ecosystem": "Temperate grassland",
+    "searchKeywords": [
+      "Lush",
+      "Gulf Stream",
+      "Newgrange"
+    ]
   },
   {
     "code": "IM",
@@ -4855,7 +5367,11 @@
     },
     "fact2": "The native Manx cat is famous for having little or no tail, a trait linked to a genetic mutation on this island.",
     "factQuestion2": "Which country is the namesake of the tailless Manx cat?",
-    "ecosystem": "Temperate islands"
+    "ecosystem": "Temperate islands",
+    "searchKeywords": [
+      "Crown",
+      "Manx"
+    ]
   },
   {
     "code": "IL",
@@ -4905,7 +5421,12 @@
     "factQuestion2": "Which country contains the desert plateau fortress of Masada?",
     "medianHouseholdIncomeUsd": 13682,
     "medianRentUsd": 1207,
-    "ecosystem": "Mediterranean scrub"
+    "ecosystem": "Mediterranean scrub",
+    "searchKeywords": [
+      "Dead Sea",
+      "Earth",
+      "Masada"
+    ]
   },
   {
     "code": "IT",
@@ -4956,7 +5477,11 @@
     "factQuestion2": "Which country is home to Venice, the canal city built on more than 100 islands?",
     "medianHouseholdIncomeUsd": 17808,
     "medianRentUsd": 654,
-    "ecosystem": "Mediterranean & Alps"
+    "ecosystem": "Mediterranean & Alps",
+    "searchKeywords": [
+      "UNESCO World Heritage Sites",
+      "Venice"
+    ]
   },
   {
     "code": "CI",
@@ -5006,7 +5531,11 @@
     "fact2": "The Basilica of Our Lady of Peace has a dome inspired by St. Peter’s in Rome and is among the world’s largest churches by area.",
     "factQuestion2": "Which country contains the enormous Basilica of Our Lady of Peace?",
     "medianHouseholdIncomeUsd": 1737,
-    "ecosystem": "Rainforest & savanna"
+    "ecosystem": "Rainforest & savanna",
+    "searchKeywords": [
+      "Basilica of Our Lady of Peace",
+      "Peter in Rome"
+    ]
   },
   {
     "code": "JM",
@@ -5047,7 +5576,12 @@
     "fact2": "The Blue Mountains produce prized coffee beans that grow slowly in cool, misty highlands.",
     "factQuestion2": "Which country is known for coffee grown in the misty Blue Mountains?",
     "medianHouseholdIncomeUsd": 5217,
-    "ecosystem": "Tropical forest"
+    "ecosystem": "Tropical forest",
+    "searchKeywords": [
+      "Reggae",
+      "Bob Marley",
+      "Blue Mountains"
+    ]
   },
   {
     "code": "JP",
@@ -5090,7 +5624,11 @@
     "factQuestion2": "Which country is home to a hotel that has operated since the year 705?",
     "medianHouseholdIncomeUsd": 15393,
     "medianRentUsd": 383,
-    "ecosystem": "Temperate forest"
+    "ecosystem": "Temperate forest",
+    "searchKeywords": [
+      "Pacific Ring of Fire",
+      "Nishiyama Onsen Keiunkan"
+    ]
   },
   {
     "code": "JE",
@@ -5130,7 +5668,10 @@
     },
     "fact2": "A dairy cattle breed known for rich, high-butterfat milk originated on this Channel Island.",
     "factQuestion2": "Which country is the origin of a famous Channel Island dairy cattle breed prized for rich milk?",
-    "ecosystem": "Temperate islands"
+    "ecosystem": "Temperate islands",
+    "searchKeywords": [
+      "Channel Island"
+    ]
   },
   {
     "code": "JO",
@@ -5180,7 +5721,14 @@
     "factQuestion2": "Which country contains the desert landscape known as Wadi Rum?",
     "medianHouseholdIncomeUsd": 5005,
     "medianRentUsd": 194,
-    "ecosystem": "Desert"
+    "ecosystem": "Desert",
+    "searchKeywords": [
+      "Petra",
+      "Nabataeans",
+      "Wadi Rum",
+      "Valley",
+      "Moon"
+    ]
   },
   {
     "code": "KZ",
@@ -5230,7 +5778,13 @@
     "factQuestion2": "Which country contains Baikonur Cosmodrome, launch site of the first satellite and first human spaceflight?",
     "medianHouseholdIncomeUsd": 4469,
     "medianRentUsd": 324,
-    "ecosystem": "Steppe"
+    "ecosystem": "Steppe",
+    "searchKeywords": [
+      "Soviet",
+      "Baikonur Cosmodrome",
+      "Sputnik",
+      "Yuri Gagarin"
+    ]
   },
   {
     "code": "KE",
@@ -5279,7 +5833,11 @@
     "factQuestion2": "Which country contains Lake Turkana, a key site for early human fossil discoveries?",
     "medianHouseholdIncomeUsd": 1173,
     "medianRentUsd": 150,
-    "ecosystem": "Savanna"
+    "ecosystem": "Savanna",
+    "searchKeywords": [
+      "Great Rift Valley",
+      "Lake Turkana"
+    ]
   },
   {
     "code": "KI",
@@ -5320,7 +5878,10 @@
     "fact2": "Its easternmost islands use a time zone of UTC+14, putting them among the first inhabited places to enter a new calendar day.",
     "factQuestion2": "Which country includes islands among the first inhabited places to see each new day?",
     "medianHouseholdIncomeUsd": 2939,
-    "ecosystem": "Coral atolls"
+    "ecosystem": "Coral atolls",
+    "searchKeywords": [
+      "UTC"
+    ]
   },
   {
     "code": "XK",
@@ -5367,7 +5928,14 @@
     "fact2": "The medieval Visoki Dečani monastery preserves one of the Balkans’ richest collections of Byzantine frescoes.",
     "factQuestion2": "Which country contains the medieval Visoki Dečani monastery?",
     "medianRentUsd": 257,
-    "ecosystem": "Mountains & forest"
+    "ecosystem": "Mountains & forest",
+    "searchKeywords": [
+      "Pristina Newborn",
+      "Independence Day",
+      "Visoki Dečani",
+      "Balkans",
+      "Byzantine"
+    ]
   },
   {
     "code": "KW",
@@ -5411,7 +5979,14 @@
     "fact2": "Traditional pearl divers once supplied prized natural pearls from the warm waters of the Persian Gulf.",
     "factQuestion2": "Which country had a historic economy built around pearl diving in the Persian Gulf?",
     "medianRentUsd": 604,
-    "ecosystem": "Desert"
+    "ecosystem": "Desert",
+    "searchKeywords": [
+      "Liberation Tower",
+      "Gulf War",
+      "Iraqi",
+      "Traditional",
+      "Persian Gulf"
+    ]
   },
   {
     "code": "KG",
@@ -5458,7 +6033,11 @@
     "fact2": "Issyk-Kul, one of the world’s largest high-altitude lakes, never freezes despite its snowy mountain setting.",
     "factQuestion2": "Which country contains the high-altitude lake Issyk-Kul, which rarely freezes?",
     "medianHouseholdIncomeUsd": 2503,
-    "ecosystem": "Mountains & steppe"
+    "ecosystem": "Mountains & steppe",
+    "searchKeywords": [
+      "Tian Shan",
+      "Issyk-Kul"
+    ]
   },
   {
     "code": "LA",
@@ -5507,7 +6086,12 @@
     "fact2": "The Plain of Jars is scattered with thousands of enormous ancient stone vessels, some weighing several tons.",
     "factQuestion2": "Which country contains the mysterious archaeological Plain of Jars?",
     "medianHouseholdIncomeUsd": 2252,
-    "ecosystem": "Tropical forest"
+    "ecosystem": "Tropical forest",
+    "searchKeywords": [
+      "Secret War",
+      "Vietnam",
+      "Plain of Jars"
+    ]
   },
   {
     "code": "LV",
@@ -5556,7 +6140,12 @@
     "factQuestion2": "Which country hosts a song festival with a choir of tens of thousands of performers?",
     "medianHouseholdIncomeUsd": 12028,
     "medianRentUsd": 314,
-    "ecosystem": "Temperate forest"
+    "ecosystem": "Temperate forest",
+    "searchKeywords": [
+      "Riga",
+      "Europe",
+      "Art Nouveau"
+    ]
   },
   {
     "code": "LB",
@@ -5601,7 +6190,14 @@
     "fact2": "Byblos is one of the world’s oldest continuously inhabited cities and gave its name to the Greek word behind “Bible.”",
     "factQuestion2": "Which country is home to the ancient city of Byblos?",
     "medianHouseholdIncomeUsd": 2988,
-    "ecosystem": "Mediterranean hills"
+    "ecosystem": "Mediterranean hills",
+    "searchKeywords": [
+      "Cedars",
+      "Egyptians and Phoenicians",
+      "Byblos",
+      "Greek",
+      "Bible"
+    ]
   },
   {
     "code": "LS",
@@ -5645,7 +6241,12 @@
     "fact2": "Traditional Basotho blankets are worn like cloaks and have become a distinctive national symbol.",
     "factQuestion2": "Which country is known for the traditional Basotho blanket worn as a cloak?",
     "medianHouseholdIncomeUsd": 1307,
-    "ecosystem": "Highland grassland"
+    "ecosystem": "Highland grassland",
+    "searchKeywords": [
+      "Entirely",
+      "South Africa",
+      "Traditional Basotho"
+    ]
   },
   {
     "code": "LR",
@@ -5690,7 +6291,14 @@
     "fact2": "Its capital was named for U.S. President James Monroe and is one of the few national capitals founded by formerly enslaved settlers from America.",
     "factQuestion2": "Which country has a capital named after U.S. President James Monroe?",
     "medianHouseholdIncomeUsd": 1413,
-    "ecosystem": "Tropical rainforest"
+    "ecosystem": "Tropical rainforest",
+    "searchKeywords": [
+      "Founded",
+      "American",
+      "U.S",
+      "U.S President James Monroe",
+      "America"
+    ]
   },
   {
     "code": "LY",
@@ -5739,7 +6347,16 @@
     "plant": "Pomegranate blossom",
     "fact2": "The ancient Greek city of Cyrene was built on a fertile plateau above the Mediterranean and became a major classical center.",
     "factQuestion2": "Which country contains the ancient Greek city of Cyrene?",
-    "ecosystem": "Desert"
+    "ecosystem": "Desert",
+    "searchKeywords": [
+      "Much",
+      "Sahara",
+      "Roman",
+      "Leptis Magna",
+      "Greek",
+      "Cyrene",
+      "Mediterranean"
+    ]
   },
   {
     "code": "LI",
@@ -5785,7 +6402,11 @@
     "bird": "Eagle",
     "fact2": "Its national army was disbanded in 1868 after sending 80 soldiers to a war and reportedly returning with 81.",
     "factQuestion2": "Which country is linked to the tale of an army that returned from war with one extra man?",
-    "ecosystem": "Alpine forest"
+    "ecosystem": "Alpine forest",
+    "searchKeywords": [
+      "doubly landlocked",
+      "landlocked"
+    ]
   },
   {
     "code": "LT",
@@ -5834,7 +6455,12 @@
     "factQuestion2": "Which country is home to the pilgrimage site known as the Hill of Crosses?",
     "medianHouseholdIncomeUsd": 13722,
     "medianRentUsd": 446,
-    "ecosystem": "Temperate forest"
+    "ecosystem": "Temperate forest",
+    "searchKeywords": [
+      "European",
+      "Soviet",
+      "Hill of Crosses"
+    ]
   },
   {
     "code": "LU",
@@ -5882,7 +6508,12 @@
     "factQuestion2": "Which country hosts several major European Union institutions despite being one of Europe's smallest states?",
     "medianHouseholdIncomeUsd": 32662,
     "medianRentUsd": 1802,
-    "ecosystem": "Temperate forest"
+    "ecosystem": "Temperate forest",
+    "searchKeywords": [
+      "GDP",
+      "European Union",
+      "Despite"
+    ]
   },
   {
     "code": "MO",
@@ -5925,7 +6556,14 @@
     "plant": "Lotus",
     "fact2": "Its historic center blends Portuguese tiled squares, Catholic churches, and Chinese temples in a compact former trading port.",
     "factQuestion2": "Which country has a historic center blending Portuguese colonial architecture with Chinese temples?",
-    "ecosystem": "Subtropical coast"
+    "ecosystem": "Subtropical coast",
+    "searchKeywords": [
+      "Portuguese",
+      "China",
+      "Las Vegas",
+      "Catholic",
+      "Chinese"
+    ]
   },
   {
     "code": "MG",
@@ -5968,7 +6606,12 @@
     "fact2": "Baobab trees line a famous dirt road in the west, their giant trunks creating one of Africa’s most recognizable landscapes.",
     "factQuestion2": "Which country is home to the famous Avenue of the Baobabs?",
     "medianHouseholdIncomeUsd": 817,
-    "ecosystem": "Rainforest & dry forest"
+    "ecosystem": "Rainforest & dry forest",
+    "searchKeywords": [
+      "Broke",
+      "Africa",
+      "Baobab"
+    ]
   },
   {
     "code": "MW",
@@ -6015,7 +6658,13 @@
     "fact2": "Mount Mulanje rises abruptly from the surrounding plains, with granite peaks and one of central Africa’s largest rock faces.",
     "factQuestion2": "Which country contains the dramatic granite massif of Mount Mulanje?",
     "medianHouseholdIncomeUsd": 701,
-    "ecosystem": "Savanna"
+    "ecosystem": "Savanna",
+    "searchKeywords": [
+      "Lake Malawi",
+      "Earth",
+      "Mount Mulanje",
+      "Africa"
+    ]
   },
   {
     "code": "MY",
@@ -6062,7 +6711,11 @@
     "factQuestion2": "Which country is one of the natural homes of the world’s largest flower, Rafflesia?",
     "medianHouseholdIncomeUsd": 10787,
     "medianRentUsd": 270,
-    "ecosystem": "Tropical rainforest"
+    "ecosystem": "Tropical rainforest",
+    "searchKeywords": [
+      "Petronas Towers in Kuala Lumpur",
+      "Rafflesia"
+    ]
   },
   {
     "code": "MV",
@@ -6104,7 +6757,11 @@
     "fact2": "Many beaches glow blue at night when bioluminescent plankton are stirred by waves.",
     "factQuestion2": "Which country is known for beaches that can glow blue at night from bioluminescent plankton?",
     "medianHouseholdIncomeUsd": 5480,
-    "ecosystem": "Coral atolls"
+    "ecosystem": "Coral atolls",
+    "searchKeywords": [
+      "bioluminescent plankton",
+      "blue beaches"
+    ]
   },
   {
     "code": "ML",
@@ -6153,7 +6810,12 @@
     "fact2": "The Great Mosque of Djenné is the world’s largest mud-brick building and is replastered each year by the community.",
     "factQuestion2": "Which country contains the world’s largest mud-brick building?",
     "medianHouseholdIncomeUsd": 1339,
-    "ecosystem": "Desert & savanna"
+    "ecosystem": "Desert & savanna",
+    "searchKeywords": [
+      "Timbuktu",
+      "Islamic",
+      "Great Mosque of Djenné"
+    ]
   },
   {
     "code": "MT",
@@ -6196,7 +6858,14 @@
     "factQuestion2": "Which country has a Semitic official language written in the Latin alphabet?",
     "medianHouseholdIncomeUsd": 20451,
     "medianRentUsd": 992,
-    "ecosystem": "Mediterranean scrub"
+    "ecosystem": "Mediterranean scrub",
+    "searchKeywords": [
+      "Megalithic Temples",
+      "Stonehenge",
+      "Egyptian",
+      "Semitic",
+      "Latin"
+    ]
   },
   {
     "code": "MH",
@@ -6238,7 +6907,12 @@
     "fact2": "Traditional navigators used stick charts made from palm ribs and shells to map ocean swells and island positions.",
     "factQuestion2": "Which country developed traditional stick charts for navigating ocean swells?",
     "medianHouseholdIncomeUsd": 3708,
-    "ecosystem": "Coral atolls"
+    "ecosystem": "Coral atolls",
+    "searchKeywords": [
+      "Bikini Atoll",
+      "U.S",
+      "Traditional"
+    ]
   },
   {
     "code": "MQ",
@@ -6276,7 +6950,11 @@
     },
     "fact2": "Its national flower, the red heliconia, is called the “balisier” and appears on local symbols and designs.",
     "factQuestion2": "Which country is associated with the red heliconia flower called the balisier?",
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "Mount Pelée",
+      "Saint-Pierre"
+    ]
   },
   {
     "code": "MR",
@@ -6322,7 +7000,13 @@
     "fact2": "The Iron Ore Train can stretch for more than two kilometers as it carries ore across the Sahara to the Atlantic coast.",
     "factQuestion2": "Which country is crossed by one of the world’s longest freight trains through the Sahara?",
     "medianHouseholdIncomeUsd": 2212,
-    "ecosystem": "Desert"
+    "ecosystem": "Desert",
+    "searchKeywords": [
+      "Richat Structure",
+      "Sahara",
+      "Iron Ore Train",
+      "Atlantic"
+    ]
   },
   {
     "code": "MU",
@@ -6366,7 +7050,11 @@
     "factQuestion2": "Which country is home to the unusual Seven Colored Earths dunes?",
     "medianHouseholdIncomeUsd": 4932,
     "medianRentUsd": 320,
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "dodo",
+      "Seven Colored Earths"
+    ]
   },
   {
     "code": "YT",
@@ -6405,7 +7093,11 @@
     },
     "fact2": "A vast coral lagoon surrounds the main island, sheltering sea turtles, dolphins, and mangrove ecosystems.",
     "factQuestion2": "Which country is surrounded by one of the world’s largest enclosed coral lagoons?",
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "Comoros",
+      "French"
+    ]
   },
   {
     "code": "MX",
@@ -6453,7 +7145,13 @@
     "factQuestion2": "Which country hosts millions of monarch butterflies during their winter migration?",
     "medianHouseholdIncomeUsd": 5217,
     "medianRentUsd": 490,
-    "ecosystem": "Deserts, forests & tropics"
+    "ecosystem": "Deserts, forests & tropics",
+    "searchKeywords": [
+      "Tenochtitlán the Aztec",
+      "Mexico",
+      "Canada",
+      "United States"
+    ]
   },
   {
     "code": "FM",
@@ -6494,7 +7192,12 @@
     "fact2": "Nan Madol is an ancient ceremonial city built on dozens of artificial islets from massive basalt columns.",
     "factQuestion2": "Which country contains the ancient artificial-island city of Nan Madol?",
     "medianHouseholdIncomeUsd": 1703,
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "Spans",
+      "Rhode Island",
+      "Nan Madol"
+    ]
   },
   {
     "code": "MD",
@@ -6539,7 +7242,11 @@
     "factQuestion2": "Which country celebrates spring with red-and-white Mărțișor cords?",
     "medianHouseholdIncomeUsd": 4252,
     "medianRentUsd": 369,
-    "ecosystem": "Temperate plains"
+    "ecosystem": "Temperate plains",
+    "searchKeywords": [
+      "Mileștii Mici",
+      "Mărțișor"
+    ]
   },
   {
     "code": "MC",
@@ -6583,7 +7290,15 @@
     },
     "fact2": "The Oceanographic Museum, founded by Prince Albert I, is built dramatically into a cliff above the Mediterranean.",
     "factQuestion2": "Which country has a cliffside oceanographic museum founded by a prince?",
-    "ecosystem": "Mediterranean coast"
+    "ecosystem": "Mediterranean coast",
+    "searchKeywords": [
+      "Smaller",
+      "Central Park in New York",
+      "Grand Prix",
+      "Oceanographic Museum",
+      "Prince Albert I",
+      "Mediterranean"
+    ]
   },
   {
     "code": "MN",
@@ -6628,7 +7343,12 @@
     "fact2": "The Gobi Desert contains the Flaming Cliffs, where the first scientifically recognized dinosaur eggs were discovered in 1923.",
     "factQuestion2": "Which country contains the Flaming Cliffs, where dinosaur eggs were first scientifically identified?",
     "medianHouseholdIncomeUsd": 4390,
-    "ecosystem": "Steppe & desert"
+    "ecosystem": "Steppe & desert",
+    "searchKeywords": [
+      "Genghis Khan",
+      "Gobi Desert",
+      "Flaming Cliffs"
+    ]
   },
   {
     "code": "ME",
@@ -6677,7 +7397,13 @@
     "factQuestion2": "Which country contains the dramatic Adriatic inlet known as the Bay of Kotor?",
     "medianHouseholdIncomeUsd": 6489,
     "medianRentUsd": 485,
-    "ecosystem": "Mountains & forest"
+    "ecosystem": "Mountains & forest",
+    "searchKeywords": [
+      "Black Mountain in Venetian Italian",
+      "Mount Lovćen",
+      "Bay of Kotor",
+      "Adriatic"
+    ]
   },
   {
     "code": "MS",
@@ -6716,7 +7442,13 @@
     "bird": "Montserrat oriole",
     "fact2": "Its volcanic soil helps produce exceptionally lush tropical vegetation, earning it the nickname “the Emerald Isle of the Caribbean.”",
     "factQuestion2": "Which country is nicknamed the Emerald Isle of the Caribbean for its lush volcanic landscape?",
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "Soufrière Hills",
+      "Plymouth",
+      "Emerald Isle",
+      "Caribbean"
+    ]
   },
   {
     "code": "MA",
@@ -6764,7 +7496,11 @@
     "factQuestion2": "Which country is home to al-Qarawiyyin, one of the world’s oldest operating universities?",
     "medianHouseholdIncomeUsd": 3079,
     "medianRentUsd": 216,
-    "ecosystem": "Mountains & desert"
+    "ecosystem": "Mountains & desert",
+    "searchKeywords": [
+      "Chefchaouen",
+      "Fez"
+    ]
   },
   {
     "code": "MZ",
@@ -6814,7 +7550,12 @@
     "fact2": "Ilha de Moçambique, linked to the mainland by a narrow bridge, preserves centuries of Swahili, Portuguese, and Arab-influenced architecture.",
     "factQuestion2": "Which country contains a historic coral-stone island city once used as an Indian Ocean trading capital?",
     "medianHouseholdIncomeUsd": 540,
-    "ecosystem": "Savanna"
+    "ecosystem": "Savanna",
+    "searchKeywords": [
+      "Bazaruto Archipelago",
+      "Ilha de Moçambique",
+      "Swahili Portuguese and Arab-influenced"
+    ]
   },
   {
     "code": "MM",
@@ -6864,7 +7605,12 @@
     "fact2": "The ancient city of Bagan contains more than 2,000 surviving Buddhist temples and pagodas spread across a vast plain.",
     "factQuestion2": "Which country is home to the temple-studded plain of Bagan?",
     "medianHouseholdIncomeUsd": 1986,
-    "ecosystem": "Tropical forest"
+    "ecosystem": "Tropical forest",
+    "searchKeywords": [
+      "Shwedagon Pagoda in Yangon",
+      "Bagan",
+      "Buddhist"
+    ]
   },
   {
     "code": "NA",
@@ -6912,7 +7658,10 @@
     "fact2": "Welwitschia, a strange desert plant with just two ever-growing leaves, can survive for more than a thousand years here.",
     "factQuestion2": "Which country is home to the ancient Welwitschia plant?",
     "medianHouseholdIncomeUsd": 2265,
-    "ecosystem": "Desert & savanna"
+    "ecosystem": "Desert & savanna",
+    "searchKeywords": [
+      "Welwitschia"
+    ]
   },
   {
     "code": "NR",
@@ -6953,7 +7702,10 @@
     "fact2": "This island nation has no official capital; government offices are concentrated in the district of Yaren.",
     "factQuestion2": "Which country has no official capital city?",
     "medianHouseholdIncomeUsd": 2289,
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "Yaren"
+    ]
   },
   {
     "code": "NP",
@@ -7000,7 +7752,13 @@
     "factQuestion2": "Which country maintains the tradition of the living goddess Kumari?",
     "medianHouseholdIncomeUsd": 2932,
     "medianRentUsd": 67,
-    "ecosystem": "Himalayan forests"
+    "ecosystem": "Himalayan forests",
+    "searchKeywords": [
+      "Mount Everest",
+      "China",
+      "Kumari",
+      "Kathmandu Valley"
+    ]
   },
   {
     "code": "NL",
@@ -7049,7 +7807,13 @@
     "factQuestion2": "Which country is home to Europe's largest port?",
     "medianHouseholdIncomeUsd": 25216,
     "medianRentUsd": 1329,
-    "ecosystem": "Temperate farmland"
+    "ecosystem": "Temperate farmland",
+    "searchKeywords": [
+      "Rotterdam",
+      "Europe",
+      "Rhine",
+      "North Sea"
+    ]
   },
   {
     "code": "NC",
@@ -7088,7 +7852,10 @@
     },
     "fact2": "The kagu, a pale gray bird with striped wings and a distinctive crest, is found nowhere else on Earth.",
     "factQuestion2": "Which country is the only native home of the rare kagu bird?",
-    "ecosystem": "Tropical forest"
+    "ecosystem": "Tropical forest",
+    "searchKeywords": [
+      "Earth"
+    ]
   },
   {
     "code": "NZ",
@@ -7130,7 +7897,11 @@
     "fact2": "Glowworms illuminate the limestone caves of Waitomo, making their ceilings look like a star-filled night sky.",
     "factQuestion2": "Which country is famous for the glowworm caves of Waitomo?",
     "medianRentUsd": 975,
-    "ecosystem": "Temperate forest"
+    "ecosystem": "Temperate forest",
+    "searchKeywords": [
+      "Glowworms",
+      "Waitomo"
+    ]
   },
   {
     "code": "NI",
@@ -7175,7 +7946,12 @@
     "fact2": "Masaya Volcano has a crater so active that visitors can sometimes see a glowing lava lake from its rim.",
     "factQuestion2": "Which country is home to the active lava lake at Masaya Volcano?",
     "medianHouseholdIncomeUsd": 3249,
-    "ecosystem": "Tropical forest"
+    "ecosystem": "Tropical forest",
+    "searchKeywords": [
+      "Central America",
+      "Lake Nicaragua",
+      "Masaya Volcano"
+    ]
   },
   {
     "code": "NE",
@@ -7224,7 +8000,10 @@
     "fact2": "This landlocked country is one of the world's leading producers of uranium, a metal used for nuclear energy.",
     "factQuestion2": "Which country is a major global producer of uranium?",
     "medianHouseholdIncomeUsd": 971,
-    "ecosystem": "Desert & savanna"
+    "ecosystem": "Desert & savanna",
+    "searchKeywords": [
+      "Sahara"
+    ]
   },
   {
     "code": "NG",
@@ -7272,7 +8051,14 @@
     "factQuestion2": "Which country contains the Osun-Osogbo Sacred Grove?",
     "medianHouseholdIncomeUsd": 1236,
     "medianRentUsd": 284,
-    "ecosystem": "Savanna & rainforest"
+    "ecosystem": "Savanna & rainforest",
+    "searchKeywords": [
+      "Africa",
+      "Nollywood",
+      "Hollywood",
+      "Osun-Osogbo Sacred Grove",
+      "Yoruba"
+    ]
   },
   {
     "code": "NU",
@@ -7311,7 +8097,10 @@
     },
     "fact2": "With no rivers or lakes, this coral island depends almost entirely on rainwater stored in underground limestone reservoirs.",
     "factQuestion2": "Which country has no rivers or lakes and relies on rainwater stored underground?",
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "New Zealand"
+    ]
   },
   {
     "code": "NF",
@@ -7351,7 +8140,12 @@
     },
     "fact2": "A tall, symmetrical pine native only here is now planted as an ornamental tree around the world.",
     "factQuestion2": "Which country is the native home of a tall ornamental pine planted worldwide?",
-    "ecosystem": "Subtropical islands"
+    "ecosystem": "Subtropical islands",
+    "searchKeywords": [
+      "Settled",
+      "Bounty",
+      "Pitcairn"
+    ]
   },
   {
     "code": "KP",
@@ -7396,7 +8190,11 @@
     "bird": "Northern goshawk",
     "fact2": "Mount Paektu, an active volcano with a crater lake at its summit, is the highest peak on its peninsula.",
     "factQuestion2": "Which country contains Mount Paektu, an active volcano with a crater lake at its summit?",
-    "ecosystem": "Temperate forest"
+    "ecosystem": "Temperate forest",
+    "searchKeywords": [
+      "Still",
+      "Mount Paektu"
+    ]
   },
   {
     "code": "MK",
@@ -7447,7 +8245,13 @@
     "factQuestion2": "Which country is the birthplace of Mother Teresa?",
     "medianHouseholdIncomeUsd": 5665,
     "medianRentUsd": 238,
-    "ecosystem": "Mountains & forest"
+    "ecosystem": "Mountains & forest",
+    "searchKeywords": [
+      "Lake Ohrid",
+      "Europe",
+      "Mother Teresa",
+      "Skopje"
+    ]
   },
   {
     "code": "MP",
@@ -7487,7 +8291,13 @@
     },
     "fact2": "Tinian's North Field was the World War II departure point for the two aircraft that dropped atomic bombs on Japan.",
     "factQuestion2": "Which country includes Tinian, home to the historic North Field air base?",
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "Mariana Trench",
+      "Tinian North Field",
+      "World War II",
+      "Japan"
+    ]
   },
   {
     "code": "NO",
@@ -7535,7 +8345,13 @@
     "factQuestion2": "Which country is known for Lofoten's traditional stockfish-drying racks?",
     "medianHouseholdIncomeUsd": 28381,
     "medianRentUsd": 1055,
-    "ecosystem": "Fjords & forest"
+    "ecosystem": "Fjords & forest",
+    "searchKeywords": [
+      "Fjords",
+      "Ice Age",
+      "For",
+      "Lofoten"
+    ]
   },
   {
     "code": "OM",
@@ -7580,7 +8396,14 @@
     "fact2": "Frankincense trees grow in the Dhofar region, where their fragrant resin powered an ancient trade route across Arabia and the Mediterranean.",
     "factQuestion2": "Which country is famed for the frankincense trees of Dhofar?",
     "medianRentUsd": 396,
-    "ecosystem": "Desert"
+    "ecosystem": "Desert",
+    "searchKeywords": [
+      "Sultan Qaboos",
+      "Frankincense",
+      "Dhofar",
+      "Arabia",
+      "Mediterranean"
+    ]
   },
   {
     "code": "PK",
@@ -7629,7 +8452,13 @@
     "factQuestion2": "Which country contains the ancient city of Mohenjo-daro?",
     "medianHouseholdIncomeUsd": 1578,
     "medianRentUsd": 74,
-    "ecosystem": "Mountains, plains & desert"
+    "ecosystem": "Mountains, plains & desert",
+    "searchKeywords": [
+      "Everest",
+      "Savage Mountain",
+      "Mohenjo-daro",
+      "Indus Valley"
+    ]
   },
   {
     "code": "PW",
@@ -7670,7 +8499,10 @@
     "bird": "Palau fruit dove",
     "fact2": "In 2009, this island nation created the world's first national shark sanctuary, protecting its surrounding waters from commercial shark fishing.",
     "factQuestion2": "Which country created the world's first national shark sanctuary?",
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "Jellyfish Lake"
+    ]
   },
   {
     "code": "PS",
@@ -7719,7 +8551,13 @@
     "fact2": "Bethlehem's Church of the Nativity stands above the traditional site of Jesus's birth and has welcomed pilgrims for centuries.",
     "factQuestion2": "Which country contains Bethlehem's Church of the Nativity?",
     "medianHouseholdIncomeUsd": 4398,
-    "ecosystem": "Mediterranean scrub"
+    "ecosystem": "Mediterranean scrub",
+    "searchKeywords": [
+      "Jericho",
+      "Bethlehem Church",
+      "Nativity",
+      "Jesus"
+    ]
   },
   {
     "code": "PA",
@@ -7766,7 +8604,13 @@
     "factQuestion2": "Which country has a volcano from whose summit both the Caribbean and Pacific can sometimes be seen?",
     "medianHouseholdIncomeUsd": 6780,
     "medianRentUsd": 714,
-    "ecosystem": "Tropical rainforest"
+    "ecosystem": "Tropical rainforest",
+    "searchKeywords": [
+      "South America",
+      "Volcán Barú",
+      "Caribbean Sea",
+      "Pacific Ocean"
+    ]
   },
   {
     "code": "PG",
@@ -7811,7 +8655,10 @@
     "fact2": "At Kuk Swamp, archaeologists found evidence of farming and drainage systems dating back at least 7,000 years.",
     "factQuestion2": "Which country contains the ancient agricultural site of Kuk Swamp?",
     "medianHouseholdIncomeUsd": 1056,
-    "ecosystem": "Tropical rainforest"
+    "ecosystem": "Tropical rainforest",
+    "searchKeywords": [
+      "Kuk Swamp"
+    ]
   },
   {
     "code": "PY",
@@ -7858,7 +8705,12 @@
     "fact2": "Its flag is one of the few national flags with different designs on its front and back.",
     "factQuestion2": "Which country has a national flag with different emblems on each side?",
     "medianHouseholdIncomeUsd": 5447,
-    "ecosystem": "Grassland & forest"
+    "ecosystem": "Grassland & forest",
+    "searchKeywords": [
+      "Guaraní",
+      "American",
+      "Spanish"
+    ]
   },
   {
     "code": "PE",
@@ -7908,7 +8760,13 @@
     "factQuestion2": "Which country is home to the mysterious Nazca Lines?",
     "medianHouseholdIncomeUsd": 3894,
     "medianRentUsd": 248,
-    "ecosystem": "Andes, desert & rainforest"
+    "ecosystem": "Andes, desert & rainforest",
+    "searchKeywords": [
+      "Machu Picchu",
+      "Inca",
+      "Andes",
+      "Nazca Lines"
+    ]
   },
   {
     "code": "PH",
@@ -7952,7 +8810,10 @@
     "factQuestion2": "Which country is home to the Banaue Rice Terraces?",
     "medianHouseholdIncomeUsd": 2069,
     "medianRentUsd": 187,
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "Banaue Rice Terraces"
+    ]
   },
   {
     "code": "PN",
@@ -7994,7 +8855,12 @@
     },
     "fact2": "With no airstrip, this remote island group is reached by ship, and its tiny main settlement is called Adamstown.",
     "factQuestion2": "Which country has Adamstown as its only settlement?",
-    "ecosystem": "Subtropical islands"
+    "ecosystem": "Subtropical islands",
+    "searchKeywords": [
+      "Settled",
+      "HMS Bounty",
+      "Adamstown"
+    ]
   },
   {
     "code": "PL",
@@ -8046,7 +8912,13 @@
     "factQuestion2": "Which country shares Białowieża Forest, home to European bison?",
     "medianHouseholdIncomeUsd": 14176,
     "medianRentUsd": 604,
-    "ecosystem": "Temperate plains"
+    "ecosystem": "Temperate plains",
+    "searchKeywords": [
+      "Wieliczka Salt Mine",
+      "Białowieża Forest",
+      "European",
+      "Europe"
+    ]
   },
   {
     "code": "PT",
@@ -8091,7 +8963,11 @@
     "factQuestion2": "Which country produces roughly half of the world's cork?",
     "medianHouseholdIncomeUsd": 12292,
     "medianRentUsd": 840,
-    "ecosystem": "Mediterranean scrub"
+    "ecosystem": "Mediterranean scrub",
+    "searchKeywords": [
+      "Explorers",
+      "India Brazil and Japan"
+    ]
   },
   {
     "code": "PR",
@@ -8132,7 +9008,12 @@
     "fact2": "El Yunque is the only tropical rainforest in the U.S. National Forest System, with waterfalls, tree frogs, and lush mountain trails.",
     "factQuestion2": "Which country contains El Yunque, the only tropical rainforest in the U.S. National Forest System?",
     "medianRentUsd": 678,
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "Bioluminescent",
+      "Yunque",
+      "U.S National Forest System"
+    ]
   },
   {
     "code": "QA",
@@ -8176,7 +9057,13 @@
     "factQuestion2": "Which country contains the desert inlet known as the Inland Sea?",
     "medianHouseholdIncomeUsd": 26778,
     "medianRentUsd": 977,
-    "ecosystem": "Desert"
+    "ecosystem": "Desert",
+    "searchKeywords": [
+      "Hosted",
+      "FIFA World Cup",
+      "Khor Al Adaid",
+      "Inland Sea"
+    ]
   },
   {
     "code": "RE",
@@ -8216,7 +9103,12 @@
     },
     "fact2": "The cirque of Mafate contains mountain villages with no road access; many supplies arrive by foot or helicopter.",
     "factQuestion2": "Which country includes the roadless mountain villages of Mafate?",
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "Piton",
+      "Fournaise",
+      "Mafate"
+    ]
   },
   {
     "code": "RO",
@@ -8265,7 +9157,15 @@
     "factQuestion2": "Which country is home to the colorful Merry Cemetery of Săpânța?",
     "medianHouseholdIncomeUsd": 10896,
     "medianRentUsd": 367,
-    "ecosystem": "Temperate forest"
+    "ecosystem": "Temperate forest",
+    "searchKeywords": [
+      "Transylvania",
+      "Bram Stoker",
+      "Dracula",
+      "Vlad the Impaler",
+      "Bran Castle",
+      "Merry Cemetery in Săpânța"
+    ]
   },
   {
     "code": "RU",
@@ -8323,7 +9223,13 @@
     "factQuestion2": "Which country contains Lake Baikal, the world's deepest lake?",
     "medianHouseholdIncomeUsd": 7407,
     "medianRentUsd": 367,
-    "ecosystem": "Taiga & tundra"
+    "ecosystem": "Taiga & tundra",
+    "searchKeywords": [
+      "Spans",
+      "Europe and Asia",
+      "Earth",
+      "Lake Baikal"
+    ]
   },
   {
     "code": "RW",
@@ -8369,7 +9275,12 @@
     "fact2": "Imigongo is a traditional art form that creates striking geometric designs using painted cow dung on wooden panels.",
     "factQuestion2": "Which country is known for the geometric folk art called imigongo?",
     "medianHouseholdIncomeUsd": 1281,
-    "ecosystem": "Highland forest"
+    "ecosystem": "Highland forest",
+    "searchKeywords": [
+      "Plastic",
+      "Umuganda",
+      "Imigongo"
+    ]
   },
   {
     "code": "BL",
@@ -8409,7 +9320,12 @@
     },
     "fact2": "Its harbor town, Gustavia, is named after a Swedish king, recalling the island's period under Swedish rule in the 1800s.",
     "factQuestion2": "Which country has a harbor town called Gustavia that was named for a Swedish king?",
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "Caribbean",
+      "Gustavia",
+      "Swedish"
+    ]
   },
   {
     "code": "SH",
@@ -8447,7 +9363,14 @@
     },
     "fact2": "Tristan da Cunha, part of this territory, is often called the world's most remote inhabited archipelago.",
     "factQuestion2": "Which country includes Tristan da Cunha, one of the world's most remote inhabited places?",
-    "ecosystem": "Remote Atlantic islands"
+    "ecosystem": "Remote Atlantic islands",
+    "searchKeywords": [
+      "Napoleon",
+      "Waterloo",
+      "Europe",
+      "Tristan",
+      "Cunha"
+    ]
   },
   {
     "code": "KN",
@@ -8487,7 +9410,13 @@
     "bird": "Brown pelican",
     "fact2": "Brimstone Hill Fortress is a massive 17th-century stronghold nicknamed the Gibraltar of the West Indies.",
     "factQuestion2": "Which country is home to Brimstone Hill Fortress?",
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "Western Hemisphere",
+      "Brimstone Hill Fortress",
+      "Gibraltar",
+      "West Indies"
+    ]
   },
   {
     "code": "LC",
@@ -8527,7 +9456,12 @@
     "fact2": "Sulphur Springs lets visitors see steaming vents, bubbling mud pools, and a volcanic crater reached by road.",
     "factQuestion2": "Which country has the drive-in volcanic area called Sulphur Springs?",
     "medianHouseholdIncomeUsd": 6202,
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "Twin Pitons",
+      "UNESCO World Heritage Site",
+      "Sulphur Springs"
+    ]
   },
   {
     "code": "MF",
@@ -8568,7 +9502,14 @@
     },
     "fact2": "Marigot, its main town, grew around a French fort built to watch over the island's sheltered bay.",
     "factQuestion2": "Which country has Marigot as its main town?",
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "Split",
+      "France",
+      "Netherlands",
+      "Marigot",
+      "French"
+    ]
   },
   {
     "code": "PM",
@@ -8607,7 +9548,14 @@
     },
     "fact2": "During Prohibition in the United States, these islands became a major base for smuggling liquor across nearby waters.",
     "factQuestion2": "Which country became a liquor-smuggling hub during U.S. Prohibition?",
-    "ecosystem": "Boreal islands"
+    "ecosystem": "Boreal islands",
+    "searchKeywords": [
+      "French",
+      "Canada",
+      "Newfoundland",
+      "Prohibition",
+      "United States"
+    ]
   },
   {
     "code": "VC",
@@ -8646,7 +9594,11 @@
     "bird": "St Vincent parrot",
     "fact2": "Its botanical garden, founded in 1765, is considered one of the oldest in the Western Hemisphere.",
     "factQuestion2": "Which country is home to one of the Western Hemisphere's oldest botanical gardens?",
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "Soufrière",
+      "Western Hemisphere"
+    ]
   },
   {
     "code": "WS",
@@ -8689,7 +9641,13 @@
     "fact2": "Author Robert Louis Stevenson spent his final years here and is buried on Mount Vaea overlooking the coast.",
     "factQuestion2": "Which country is home to Robert Louis Stevenson's grave on Mount Vaea?",
     "medianHouseholdIncomeUsd": 3057,
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "Skipped December",
+      "International Date Line",
+      "Author Robert Louis Stevenson",
+      "Mount Vaea"
+    ]
   },
   {
     "code": "SM",
@@ -8733,7 +9691,13 @@
     },
     "fact2": "Although it is not part of the European Union, this tiny state legally mints its own designs on euro coins.",
     "factQuestion2": "Which country mints its own euro coins despite not belonging to the European Union?",
-    "ecosystem": "Mediterranean hills"
+    "ecosystem": "Mediterranean hills",
+    "searchKeywords": [
+      "Claims",
+      "Mount Titano",
+      "Although",
+      "European Union"
+    ]
   },
   {
     "code": "ST",
@@ -8774,7 +9738,12 @@
     "fact2": "The equator passes through tiny Rolas Islet, where visitors can stand with one foot in each hemisphere.",
     "factQuestion2": "Which country includes Rolas Islet, crossed by the equator?",
     "medianHouseholdIncomeUsd": 2178,
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "Cocoa",
+      "Europe",
+      "Rolas Islet"
+    ]
   },
   {
     "code": "SA",
@@ -8824,7 +9793,12 @@
     "fact2": "Hegra preserves more than 100 monumental tombs carved into sandstone cliffs by the Nabataeans nearly 2,000 years ago.",
     "factQuestion2": "Which country contains the Nabataean rock-cut tombs of Hegra?",
     "medianRentUsd": 443,
-    "ecosystem": "Desert"
+    "ecosystem": "Desert",
+    "searchKeywords": [
+      "Empty Quarter",
+      "Hegra",
+      "Nabataeans"
+    ]
   },
   {
     "code": "SN",
@@ -8873,7 +9847,13 @@
     "fact2": "Dakar's African Renaissance Monument rises 49 meters above a hill and is one of Africa's tallest statues.",
     "factQuestion2": "Which country is home to Dakar's African Renaissance Monument?",
     "medianHouseholdIncomeUsd": 1838,
-    "ecosystem": "Savanna"
+    "ecosystem": "Savanna",
+    "searchKeywords": [
+      "Lake Retba",
+      "Dead Sea",
+      "Dakar African Renaissance Monument",
+      "Africa"
+    ]
   },
   {
     "code": "RS",
@@ -8926,7 +9906,13 @@
     "factQuestion2": "Which country contains the unusual stone pillars of Devil's Town?",
     "medianHouseholdIncomeUsd": 7686,
     "medianRentUsd": 377,
-    "ecosystem": "Temperate forest"
+    "ecosystem": "Temperate forest",
+    "searchKeywords": [
+      "Belgrade",
+      "Europe",
+      "Đavolja Varoš",
+      "Devil Town"
+    ]
   },
   {
     "code": "SC",
@@ -8968,7 +9954,11 @@
     "fact2": "Aldabra Atoll supports the world's largest population of giant tortoises, with more than 100,000 animals.",
     "factQuestion2": "Which country includes Aldabra Atoll, home to huge numbers of giant tortoises?",
     "medianHouseholdIncomeUsd": 7665,
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "Vallée de Mai",
+      "Aldabra Atoll"
+    ]
   },
   {
     "code": "SL",
@@ -9011,7 +10001,11 @@
     "fact2": "Freetown Harbour is one of the world's largest natural harbors, broad enough to shelter a vast number of ships.",
     "factQuestion2": "Which country is home to Freetown Harbour, one of the world's largest natural harbors?",
     "medianHouseholdIncomeUsd": 1226,
-    "ecosystem": "Tropical rainforest"
+    "ecosystem": "Tropical rainforest",
+    "searchKeywords": [
+      "Portuguese",
+      "Freetown Harbour"
+    ]
   },
   {
     "code": "SG",
@@ -9054,7 +10048,12 @@
     "fact2": "Singapore's Changi Airport has an indoor waterfall—the 40-meter Rain Vortex, the world's tallest indoor waterfall.",
     "factQuestion2": "Which country is home to an airport with the world's tallest indoor waterfall?",
     "medianRentUsd": 2095,
-    "ecosystem": "Tropical city-state"
+    "ecosystem": "Tropical city-state",
+    "searchKeywords": [
+      "Transformed",
+      "Singapore Changi Airport",
+      "Rain Vortex"
+    ]
   },
   {
     "code": "SX",
@@ -9095,7 +10094,12 @@
     },
     "fact2": "This island's Dutch side hosts the world's smallest landmass divided between two countries, shared with France.",
     "factQuestion2": "Which country occupies one side of the world's smallest divided island?",
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "Maho Beach",
+      "Dutch",
+      "France"
+    ]
   },
   {
     "code": "SK",
@@ -9145,7 +10149,12 @@
     "factQuestion2": "Which country has a capital that is Europe's nearest to another national capital?",
     "medianHouseholdIncomeUsd": 8929,
     "medianRentUsd": 567,
-    "ecosystem": "Temperate forest"
+    "ecosystem": "Temperate forest",
+    "searchKeywords": [
+      "Europe",
+      "Bratislava",
+      "Austria"
+    ]
   },
   {
     "code": "SI",
@@ -9194,7 +10203,11 @@
     "factQuestion2": "Which country is known for Lake Bled's wish-granting church bell?",
     "medianHouseholdIncomeUsd": 17971,
     "medianRentUsd": 655,
-    "ecosystem": "Alpine forest"
+    "ecosystem": "Alpine forest",
+    "searchKeywords": [
+      "Postojna Cave",
+      "Lake Bled"
+    ]
   },
   {
     "code": "SB",
@@ -9235,7 +10248,14 @@
     "fact2": "The waters around these islands contain 'Iron Bottom Sound,' named for the many World War II ships and aircraft resting on its seabed.",
     "factQuestion2": "Which country has waters nicknamed Iron Bottom Sound?",
     "medianHouseholdIncomeUsd": 1252,
-    "ecosystem": "Tropical rainforest"
+    "ecosystem": "Tropical rainforest",
+    "searchKeywords": [
+      "Residents",
+      "U.S Marines in World War II",
+      "Guadalcanal",
+      "Iron Bottom Sound",
+      "World War II"
+    ]
   },
   {
     "code": "SO",
@@ -9279,7 +10299,11 @@
     },
     "fact2": "A critically endangered wild ass, an ancestor of the domestic donkey, is native to this Horn of Africa region.",
     "factQuestion2": "Which country is home to a critically endangered wild ass native to the Horn of Africa?",
-    "ecosystem": "Desert & savanna"
+    "ecosystem": "Desert & savanna",
+    "searchKeywords": [
+      "Africa",
+      "Horn of Africa"
+    ]
   },
   {
     "code": "ZA",
@@ -9330,7 +10354,13 @@
     "factQuestion2": "Which country is home to Table Mountain and its famous 'tablecloth' clouds?",
     "medianHouseholdIncomeUsd": 2394,
     "medianRentUsd": 404,
-    "ecosystem": "Savanna & scrub"
+    "ecosystem": "Savanna & scrub",
+    "searchKeywords": [
+      "Three",
+      "Table Mountain",
+      "Cape Town",
+      "Himalayas"
+    ]
   },
   {
     "code": "GS",
@@ -9372,7 +10402,13 @@
     },
     "fact2": "South Georgia supports one of the world's largest king penguin colonies, with hundreds of thousands of breeding pairs at St. Andrews Bay.",
     "factQuestion2": "Which country is home to the enormous king penguin colony at St. Andrews Bay?",
-    "ecosystem": "Subantarctic islands"
+    "ecosystem": "Subantarctic islands",
+    "searchKeywords": [
+      "Grytviken",
+      "Ernest Shackleton",
+      "South Georgia",
+      "Andrews Bay"
+    ]
   },
   {
     "code": "KR",
@@ -9418,7 +10454,11 @@
     "factQuestion2": "Which country is known for Jeju Island's haenyeo free-divers?",
     "medianHouseholdIncomeUsd": 19802,
     "medianRentUsd": 378,
-    "ecosystem": "Temperate forest"
+    "ecosystem": "Temperate forest",
+    "searchKeywords": [
+      "Hangul",
+      "Jeju Island"
+    ]
   },
   {
     "code": "SS",
@@ -9466,7 +10506,11 @@
     "fact2": "The vast Sudd wetland can expand to an area larger than Switzerland during the rainy season.",
     "factQuestion2": "Which country contains the vast seasonal Sudd wetland?",
     "medianHouseholdIncomeUsd": 604,
-    "ecosystem": "Savanna"
+    "ecosystem": "Savanna",
+    "searchKeywords": [
+      "Sudd",
+      "Switzerland"
+    ]
   },
   {
     "code": "ES",
@@ -9516,7 +10560,13 @@
     "factQuestion2": "Which country hosts the La Tomatina tomato-throwing festival?",
     "medianHouseholdIncomeUsd": 17266,
     "medianRentUsd": 819,
-    "ecosystem": "Mediterranean scrub"
+    "ecosystem": "Mediterranean scrub",
+    "searchKeywords": [
+      "Sagrada Família in Barcelona",
+      "Spain",
+      "Tomatina",
+      "Buñol"
+    ]
   },
   {
     "code": "LK",
@@ -9562,7 +10612,10 @@
     "factQuestion2": "Which country is home to the rock fortress of Sigiriya?",
     "medianHouseholdIncomeUsd": 2886,
     "medianRentUsd": 133,
-    "ecosystem": "Tropical forest"
+    "ecosystem": "Tropical forest",
+    "searchKeywords": [
+      "Sigiriya"
+    ]
   },
   {
     "code": "SD",
@@ -9613,7 +10666,14 @@
     "fact2": "The Nile's Blue and White branches meet at Khartoum before continuing north as the Nile.",
     "factQuestion2": "Which country contains the confluence of the Blue and White Nile?",
     "medianHouseholdIncomeUsd": 2159,
-    "ecosystem": "Desert & savanna"
+    "ecosystem": "Desert & savanna",
+    "searchKeywords": [
+      "Egypt",
+      "Nubian",
+      "Nile",
+      "Nile Blue and White",
+      "Khartoum"
+    ]
   },
   {
     "code": "SR",
@@ -9659,7 +10719,12 @@
     "fact2": "Its capital, Paramaribo, has a UNESCO-listed historic center of distinctive wooden colonial buildings.",
     "factQuestion2": "Which country has Paramaribo's UNESCO-listed wooden historic center?",
     "medianHouseholdIncomeUsd": 5270,
-    "ecosystem": "Tropical rainforest"
+    "ecosystem": "Tropical rainforest",
+    "searchKeywords": [
+      "South America",
+      "Paramaribo",
+      "UNESCO-listed"
+    ]
   },
   {
     "code": "SJ",
@@ -9699,7 +10764,12 @@
     },
     "fact2": "On Svalbard, polar bears outnumber people, and visitors outside settlements are required to carry protection against them.",
     "factQuestion2": "Which country or territory requires visitors outside settlements to prepare for polar bears?",
-    "ecosystem": "Arctic tundra"
+    "ecosystem": "Arctic tundra",
+    "searchKeywords": [
+      "Global Seed Vault",
+      "Arctic",
+      "Svalbard"
+    ]
   },
   {
     "code": "SE",
@@ -9746,7 +10816,15 @@
     "factQuestion2": "Which country rebuilds a famous hotel from river ice every winter?",
     "medianHouseholdIncomeUsd": 20295,
     "medianRentUsd": 720,
-    "ecosystem": "Boreal forest"
+    "ecosystem": "Boreal forest",
+    "searchKeywords": [
+      "Nobel Prizes",
+      "Stockholm",
+      "Peace",
+      "Oslo",
+      "Icehotel in Jukkasjärvi",
+      "Torne River"
+    ]
   },
   {
     "code": "CH",
@@ -9796,7 +10874,12 @@
     "factQuestion2": "Which country shares the Matterhorn, the mountain that inspired Toblerone?",
     "medianHouseholdIncomeUsd": 26385,
     "medianRentUsd": 1648,
-    "ecosystem": "Alpine forest"
+    "ecosystem": "Alpine forest",
+    "searchKeywords": [
+      "Four",
+      "Matterhorn",
+      "Toblerone"
+    ]
   },
   {
     "code": "SY",
@@ -9844,7 +10927,11 @@
     "fact2": "Aleppo soap, traditionally made from olive oil and laurel oil, is considered one of the world's oldest hard soaps.",
     "factQuestion2": "Which country is associated with the ancient olive-and-laurel Aleppo soap?",
     "medianHouseholdIncomeUsd": 1684,
-    "ecosystem": "Desert & steppe"
+    "ecosystem": "Desert & steppe",
+    "searchKeywords": [
+      "Damascus",
+      "Aleppo"
+    ]
   },
   {
     "code": "TW",
@@ -9888,7 +10975,11 @@
     "factQuestion2": "Which country is credited with inventing bubble tea?",
     "medianHouseholdIncomeUsd": 16843,
     "medianRentUsd": 309,
-    "ecosystem": "Subtropical forest"
+    "ecosystem": "Subtropical forest",
+    "searchKeywords": [
+      "Taipei",
+      "Taiwan"
+    ]
   },
   {
     "code": "TJ",
@@ -9935,7 +11026,13 @@
     "fact2": "The Pamir Highway crosses some of the world's highest roads, passing mountain plateaus more than 4,000 meters above sea level.",
     "factQuestion2": "Which country is crossed by the high-altitude Pamir Highway?",
     "medianHouseholdIncomeUsd": 2779,
-    "ecosystem": "Mountains & desert"
+    "ecosystem": "Mountains & desert",
+    "searchKeywords": [
+      "Pamir",
+      "Roof",
+      "World",
+      "Pamir Highway"
+    ]
   },
   {
     "code": "TZ",
@@ -9986,7 +11083,12 @@
     "fact2": "Mount Kilimanjaro is the world's tallest free-standing mountain, rising nearly 5,900 meters above the surrounding plains.",
     "factQuestion2": "Which country is home to the world's tallest free-standing mountain?",
     "medianHouseholdIncomeUsd": 1080,
-    "ecosystem": "Savanna"
+    "ecosystem": "Savanna",
+    "searchKeywords": [
+      "Serengeti",
+      "Earth",
+      "Mount Kilimanjaro"
+    ]
   },
   {
     "code": "TH",
@@ -10035,7 +11137,12 @@
     "factQuestion2": "Which country has a capital with one of the world's longest ceremonial names?",
     "medianHouseholdIncomeUsd": 5737,
     "medianRentUsd": 292,
-    "ecosystem": "Tropical forest"
+    "ecosystem": "Tropical forest",
+    "searchKeywords": [
+      "Southeast Asian",
+      "European",
+      "Bangkok"
+    ]
   },
   {
     "code": "TL",
@@ -10078,7 +11185,11 @@
     "fact2": "The traditional woven cloth called tais is made in vivid regional patterns and remains central to ceremonies and daily life.",
     "factQuestion2": "Which country is known for its traditional handwoven tais textiles?",
     "medianHouseholdIncomeUsd": 1172,
-    "ecosystem": "Tropical forest"
+    "ecosystem": "Tropical forest",
+    "searchKeywords": [
+      "independence",
+      "tais"
+    ]
   },
   {
     "code": "TG",
@@ -10122,7 +11233,11 @@
     "fact2": "Koutammakou is a cultural landscape of distinctive mud tower-houses built by the Batammariba people.",
     "factQuestion2": "Which country contains Koutammakou's distinctive mud tower-houses?",
     "medianHouseholdIncomeUsd": 1406,
-    "ecosystem": "Savanna"
+    "ecosystem": "Savanna",
+    "searchKeywords": [
+      "Koutammakou",
+      "Batammariba"
+    ]
   },
   {
     "code": "TK",
@@ -10163,7 +11278,11 @@
     },
     "fact2": "Tokelau has no airport; the main way to reach its three atolls is a boat journey from Samoa.",
     "factQuestion2": "Which country or territory has no airport and is reached by boat to its three atolls?",
-    "ecosystem": "Coral atolls"
+    "ecosystem": "Coral atolls",
+    "searchKeywords": [
+      "Tokelau",
+      "Samoa"
+    ]
   },
   {
     "code": "TO",
@@ -10205,7 +11324,11 @@
     "fact2": "The Hunga Tonga–Hunga Ha'apai eruption in 2022 produced an atmospheric shock wave detected around the world.",
     "factQuestion2": "Which country experienced the 2022 eruption whose shock wave traveled around the world?",
     "medianHouseholdIncomeUsd": 4016,
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "Pacific",
+      "Hunga Tonga Hunga Ha'apai"
+    ]
   },
   {
     "code": "TT",
@@ -10247,7 +11370,11 @@
     "fact2": "Carnival here features elaborate costumes, calypso music, and competitive soca performances before Lent.",
     "factQuestion2": "Which country is famous for Carnival traditions of calypso, soca, and elaborate costumes?",
     "medianHouseholdIncomeUsd": 4443,
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "Carnival",
+      "Lent"
+    ]
   },
   {
     "code": "TN",
@@ -10294,7 +11421,16 @@
     "factQuestion2": "Which country is home to Djerba's ancient El Ghriba synagogue?",
     "medianHouseholdIncomeUsd": 4760,
     "medianRentUsd": 159,
-    "ecosystem": "Mediterranean & desert"
+    "ecosystem": "Mediterranean & desert",
+    "searchKeywords": [
+      "Ancient Carthage",
+      "Rome",
+      "Romans",
+      "Djerba",
+      "Africa",
+      "Jewish",
+      "Ghriba"
+    ]
   },
   {
     "code": "TR",
@@ -10347,7 +11483,12 @@
     "factQuestion2": "Which country is known for Cappadocia's cave homes and underground cities?",
     "medianHouseholdIncomeUsd": 10127,
     "medianRentUsd": 415,
-    "ecosystem": "Mountains & steppe"
+    "ecosystem": "Mountains & steppe",
+    "searchKeywords": [
+      "Istanbul",
+      "Europe and Asia",
+      "Cappadocia"
+    ]
   },
   {
     "code": "TM",
@@ -10393,7 +11534,12 @@
     "fact2": "Ashgabat holds world records for its extensive use of white marble, giving much of the city a strikingly pale skyline.",
     "factQuestion2": "Which country has a capital famous for its vast white-marble architecture?",
     "medianHouseholdIncomeUsd": 1398,
-    "ecosystem": "Desert"
+    "ecosystem": "Desert",
+    "searchKeywords": [
+      "Darvaza",
+      "Soviet",
+      "Ashgabat"
+    ]
   },
   {
     "code": "TC",
@@ -10431,7 +11577,11 @@
     },
     "fact2": "Grand Turk Island is known for a dramatic underwater wall where shallow reefs drop steeply into deep ocean.",
     "factQuestion2": "Which country or territory is known for Grand Turk's dramatic underwater reef wall?",
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "Caribbean",
+      "Grand Turk Island"
+    ]
   },
   {
     "code": "TV",
@@ -10471,7 +11621,10 @@
     "fact2": "Its internet domain, .tv, became valuable worldwide because it is popular with television and streaming companies.",
     "factQuestion2": "Which country owns the valuable .tv internet domain?",
     "medianHouseholdIncomeUsd": 2533,
-    "ecosystem": "Coral atolls"
+    "ecosystem": "Coral atolls",
+    "searchKeywords": [
+      "Among"
+    ]
   },
   {
     "code": "UG",
@@ -10519,7 +11672,12 @@
     "fact2": "The source of the White Nile is traditionally marked at Jinja, where water flows out of Lake Victoria.",
     "factQuestion2": "Which country is traditionally associated with the source of the White Nile?",
     "medianHouseholdIncomeUsd": 935,
-    "ecosystem": "Savanna"
+    "ecosystem": "Savanna",
+    "searchKeywords": [
+      "White Nile",
+      "Jinja",
+      "Lake Victoria"
+    ]
   },
   {
     "code": "UA",
@@ -10570,7 +11728,12 @@
     "factQuestion2": "Which country has the world's deepest metro station?",
     "medianHouseholdIncomeUsd": 5002,
     "medianRentUsd": 242,
-    "ecosystem": "Temperate plains"
+    "ecosystem": "Temperate plains",
+    "searchKeywords": [
+      "Europe",
+      "Arsenalna",
+      "Kyiv"
+    ]
   },
   {
     "code": "AE",
@@ -10618,7 +11781,12 @@
     "factQuestion2": "Which country built the palm-tree-shaped artificial island Palm Jumeirah?",
     "medianHouseholdIncomeUsd": 27929,
     "medianRentUsd": 1117,
-    "ecosystem": "Desert"
+    "ecosystem": "Desert",
+    "searchKeywords": [
+      "Burj Khalifa",
+      "Dubai",
+      "Palm Jumeirah"
+    ]
   },
   {
     "code": "GB",
@@ -10668,7 +11836,13 @@
     "factQuestion2": "Which country is home to the prehistoric stone circle of Stonehenge?",
     "medianHouseholdIncomeUsd": 19912,
     "medianRentUsd": 1098,
-    "ecosystem": "Temperate forest"
+    "ecosystem": "Temperate forest",
+    "searchKeywords": [
+      "Made",
+      "England Scotland Wales and Northern Ireland",
+      "Stonehenge",
+      "Wales"
+    ]
   },
   {
     "code": "US",
@@ -10718,7 +11892,10 @@
     "factQuestion2": "Which country established the world's first national park?",
     "medianHouseholdIncomeUsd": 26304,
     "medianRentUsd": 1339,
-    "ecosystem": "Deserts to forests"
+    "ecosystem": "Deserts to forests",
+    "searchKeywords": [
+      "Yellowstone"
+    ]
   },
   {
     "code": "UM",
@@ -10756,7 +11933,12 @@
     },
     "fact2": "Johnston Atoll is so remote that it has no permanent residents and is mainly a protected wildlife refuge.",
     "factQuestion2": "Which country or territory includes the remote, uninhabited Johnston Atoll?",
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "Includes Midway Atoll",
+      "World War II",
+      "Johnston Atoll"
+    ]
   },
   {
     "code": "VI",
@@ -10795,7 +11977,13 @@
     },
     "fact2": "Saint Thomas's harbor is watched over by the 99 Steps, a steep staircase built from Danish ship ballast bricks.",
     "factQuestion2": "Which country or territory is home to Saint Thomas's historic 99 Steps?",
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "Purchased from Denmark",
+      "Saint Thomas",
+      "Steps",
+      "Danish"
+    ]
   },
   {
     "code": "UY",
@@ -10841,7 +12029,10 @@
     "factQuestion2": "Which country has one of the world's longest carnival seasons?",
     "medianHouseholdIncomeUsd": 9797,
     "medianRentUsd": 532,
-    "ecosystem": "Grassland"
+    "ecosystem": "Grassland",
+    "searchKeywords": [
+      "Montevideo"
+    ]
   },
   {
     "code": "UZ",
@@ -10891,7 +12082,12 @@
     "factQuestion2": "Which country is home to the walled Silk Road city of Khiva?",
     "medianHouseholdIncomeUsd": 6037,
     "medianRentUsd": 306,
-    "ecosystem": "Desert & steppe"
+    "ecosystem": "Desert & steppe",
+    "searchKeywords": [
+      "Registan in Samarkand",
+      "Silk Road",
+      "Khiva"
+    ]
   },
   {
     "code": "VU",
@@ -10933,7 +12129,12 @@
     "fact2": "The people of Tanna Island maintain a living tradition of sending messages between villages using elaborate drum rhythms.",
     "factQuestion2": "Which country includes Tanna Island, known for traditional drum-message systems?",
     "medianHouseholdIncomeUsd": 1886,
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "Bungee",
+      "Pentecost Island",
+      "Tanna Island"
+    ]
   },
   {
     "code": "VA",
@@ -10979,7 +12180,12 @@
     },
     "fact2": "Michelangelo painted the Sistine Chapel ceiling while standing on scaffolding for four years, completing it in 1512.",
     "factQuestion2": "Which country contains the Sistine Chapel ceiling painted by Michelangelo?",
-    "ecosystem": "Mediterranean city"
+    "ecosystem": "Mediterranean city",
+    "searchKeywords": [
+      "Rome",
+      "Michelangelo",
+      "Sistine Chapel"
+    ]
   },
   {
     "code": "VE",
@@ -11026,7 +12232,11 @@
     "factQuestion2": "Which country is home to the frequently flashing Catatumbo lightning?",
     "medianHouseholdIncomeUsd": 3426,
     "medianRentUsd": 189,
-    "ecosystem": "Rainforest & savanna"
+    "ecosystem": "Rainforest & savanna",
+    "searchKeywords": [
+      "Angel Falls",
+      "Catatumbo"
+    ]
   },
   {
     "code": "VN",
@@ -11075,7 +12285,12 @@
     "factQuestion2": "Which country is home to Sơn Đoòng, the world's largest known cave passage?",
     "medianHouseholdIncomeUsd": 4862,
     "medianRentUsd": 264,
-    "ecosystem": "Tropical forest"
+    "ecosystem": "Tropical forest",
+    "searchKeywords": [
+      "Long Bay",
+      "UNESCO World Heritage Site",
+      "Sơn Đoòng"
+    ]
   },
   {
     "code": "WF",
@@ -11115,7 +12330,12 @@
     },
     "fact2": "Wallis and Futuna preserves Polynesian kingdoms whose customary chiefs still play important roles in local life.",
     "factQuestion2": "Which country or territory preserves Polynesian kingdoms with customary chiefs?",
-    "ecosystem": "Tropical islands"
+    "ecosystem": "Tropical islands",
+    "searchKeywords": [
+      "French",
+      "Wallis and Futuna",
+      "Polynesian"
+    ]
   },
   {
     "code": "EH",
@@ -11159,7 +12379,11 @@
     },
     "fact2": "Vast gravel plains called hamadas stretch for long distances here, with bare rock and almost no sand dunes.",
     "factQuestion2": "Which country or territory is covered largely by bare-rock desert plains called hamadas?",
-    "ecosystem": "Desert"
+    "ecosystem": "Desert",
+    "searchKeywords": [
+      "Earth",
+      "Vast"
+    ]
   },
   {
     "code": "YE",
@@ -11204,7 +12428,12 @@
     "fact2": "Socotra's dragon blood trees have umbrella-shaped crowns and red sap, creating one of Earth's most otherworldly landscapes.",
     "factQuestion2": "Which country includes Socotra, home to dragon blood trees?",
     "medianHouseholdIncomeUsd": 1386,
-    "ecosystem": "Desert & mountains"
+    "ecosystem": "Desert & mountains",
+    "searchKeywords": [
+      "Old City of Sana'a",
+      "Socotra",
+      "Earth"
+    ]
   },
   {
     "code": "ZM",
@@ -11255,7 +12484,14 @@
     "fact2": "The Zambezi River's annual flood transforms Liuwa Plain National Park into a stage for Africa's second-largest wildebeest migration.",
     "factQuestion2": "Which country hosts the wildebeest migration across Liuwa Plain?",
     "medianHouseholdIncomeUsd": 613,
-    "ecosystem": "Savanna"
+    "ecosystem": "Savanna",
+    "searchKeywords": [
+      "Victoria Falls",
+      "Mosi-oa-Tunya",
+      "Zambezi River",
+      "Liuwa Plain National Park",
+      "Africa"
+    ]
   },
   {
     "code": "ZW",
@@ -11303,6 +12539,12 @@
     "factQuestion2": "Which country features its Balancing Rocks on banknotes?",
     "medianHouseholdIncomeUsd": 1112,
     "medianRentUsd": 226,
-    "ecosystem": "Savanna"
+    "ecosystem": "Savanna",
+    "searchKeywords": [
+      "Medieval",
+      "Indian Ocean",
+      "Balancing Rocks",
+      "Harare"
+    ]
   }
 ]

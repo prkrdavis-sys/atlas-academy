@@ -19,6 +19,7 @@
     "generate-airport-short-names": "tsx scripts/generate-airport-short-names.ts",
     "refresh-state-data": "tsx scripts/refresh-state-data.ts",
     "refresh-place-facts": "tsx scripts/refresh-place-facts.ts",
+    "refresh-search-keywords": "tsx scripts/refresh-search-keywords.ts",
     "fetch-state-flags": "bash scripts/fetch-state-flags.sh",
     "generate-state-shapes": "tsx scripts/generate-state-shapes.ts",
     "generate-country-shapes": "tsx scripts/generate-country-shapes.ts",
