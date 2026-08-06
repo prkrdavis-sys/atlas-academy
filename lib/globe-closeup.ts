@@ -497,19 +497,23 @@ export function paintGlobeCloseupRegion(
     if (!shape.isState) landPath.addPath(path);
   }
 
-  const hasLandImagery = landColorImage != null;
-  if (landColorImage) {
+  // Sage underlay so land stays visible if Blue Marble fails to paint.
+  const landUnderlay = getProgressFillColor(0, isDark, difficulty);
+  ctx.fillStyle = landUnderlay;
+  for (const { shape, path } of shapePaths) {
+    if (shape.isState) continue;
+    ctx.fill(path, "evenodd");
+  }
+
+  const landCanvas =
+    landColorImage != null ? getLandColorCanvas(landColorImage, isDark) : null;
+  const hasLandImagery = landCanvas != null;
+  if (landCanvas) {
     // Real natural-color terrain clipped to land, sampled at world
     // coordinates so panning never shifts it.
     ctx.save();
     ctx.clip(landPath, "evenodd");
-    drawWorldImageForWindow(
-      ctx,
-      getLandColorCanvas(landColorImage, isDark),
-      window,
-      width,
-      height,
-    );
+    drawWorldImageForWindow(ctx, landCanvas, window, width, height);
     ctx.restore();
   }
 

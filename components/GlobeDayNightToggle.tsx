@@ -11,6 +11,7 @@ export function GlobeDayNightToggle() {
     <div suppressHydrationWarning>
       <MenuSwitch
         label="Day / night"
+        emoji="🌓"
         checked={ready && enabled}
         onCheckedChange={setEnabled}
       />

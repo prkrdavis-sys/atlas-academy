@@ -14,6 +14,7 @@ export function ShowMapProgressToggle() {
     <div suppressHydrationWarning>
       <MenuSwitch
         label="Map progress"
+        emoji="🗺️"
         checked={ready && enabled}
         onCheckedChange={setEnabled}
       />

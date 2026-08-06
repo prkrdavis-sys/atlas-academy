@@ -240,6 +240,43 @@ export function getDifficultyHint(mode: GameMode, level: Difficulty): string {
   }
 }
 
+/** Full-sentence version of getDifficultyHint, for the difficulty picker sheet. */
+export function getDifficultyDescription(mode: GameMode, level: Difficulty): string {
+  if (mode === "atlasle") {
+    switch (level) {
+      case "easy":
+        return "Eight guesses, and you can reveal letters when you get stuck.";
+      case "medium":
+        return "Six guesses, with no letter reveals.";
+      case "hard":
+        return "Four guesses, and the clues arrive more slowly.";
+      default: {
+        const _exhaustive: never = level;
+        return _exhaustive;
+      }
+    }
+  }
+
+  switch (level) {
+    case "easy":
+      return "Multiple choice, with hints and boosts to help you along.";
+    case "medium":
+      return "Multiple choice with four options and no extra help.";
+    case "hard":
+      if (mode === "country-to-flag" || mode === "inverted-country-to-flag") {
+        return "Pick from six flags instead of four.";
+      }
+      if (TYPE_IN_HARD_MODES.includes(mode)) {
+        return "Type the answer from memory — no options to choose from.";
+      }
+      return "Multiple choice, with the trickiest lookalikes mixed in.";
+    default: {
+      const _exhaustive: never = level;
+      return _exhaustive;
+    }
+  }
+}
+
 export type CountryCurrency = {
   code: string;
   name: string;
@@ -628,6 +665,73 @@ export const GAME_MODES: {
     phase: 2,
   },
 ];
+
+/**
+ * Groups the setup-screen modes by what the player is asked about, so the mode
+ * picker reads as a handful of skills instead of one long list. `twists` are
+ * variants of the family's primary modes (cropped, inverted, reversed flags)
+ * and stay collapsed until asked for.
+ */
+export type ModeFamilyId = "flags" | "maps" | "capitals" | "knowledge" | "practice";
+
+export const MODE_FAMILIES: readonly {
+  id: ModeFamilyId;
+  title: string;
+  /** Passed through scopeText, so country/countries wording adapts to USA scope. */
+  blurb: string;
+  icon: string;
+  primary: GameMode[];
+  twists: GameMode[];
+}[] = [
+  {
+    id: "flags",
+    title: "Flags",
+    blurb: "Match flags to the places that fly them",
+    icon: "🏳️",
+    primary: ["flag-to-country", "country-to-flag"],
+    twists: [
+      "flag-crop-to-country",
+      "inverted-flag-to-country",
+      "inverted-country-to-flag",
+      "inverted-flag-crop-to-country",
+    ],
+  },
+  {
+    id: "maps",
+    title: "Maps & borders",
+    blurb: "Read outlines and figure out who touches who",
+    icon: "🗺️",
+    primary: ["shape-to-country", "neighbor-quiz"],
+    twists: [],
+  },
+  {
+    id: "capitals",
+    title: "Capitals",
+    blurb: "Connect capital cities to their countries",
+    icon: "🏛️",
+    primary: ["capital-to-country", "country-to-capital"],
+    twists: [],
+  },
+  {
+    id: "knowledge",
+    title: "Facts & trivia",
+    blurb: "Languages, population, profiles, and word puzzles",
+    icon: "💡",
+    primary: ["fact-to-country", "atlasle", "country-to-language", "population-showdown"],
+    twists: [],
+  },
+  {
+    id: "practice",
+    title: "Practice",
+    blurb: "Target the places you keep getting wrong",
+    icon: "🎯",
+    primary: ["weak-spots"],
+    twists: [],
+  },
+];
+
+/** The mode given the featured treatment above the families. */
+export const FEATURED_SETUP_MODE: GameMode = "mixed";
 
 export const AVATAR_COLORS = [
   "#2563eb",

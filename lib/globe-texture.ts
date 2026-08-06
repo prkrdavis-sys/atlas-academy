@@ -572,7 +572,38 @@ export function createGlobeTexturePaint(
   // Painted-water mottle beneath the land shapes.
   applyGlobeSurfaceGrain(baseCtx, width, height, pixelScale, "ocean");
 
-  const hasLandImagery = landColorImage != null;
+  // Combined land silhouette (extras + countries; NE features never overlap,
+  // so even-odd only carves genuine holes) — clips the Blue Marble imagery
+  // and the land grain pass to land.
+  const extrasPath = buildPath(GLOBE_TEXTURE_DATA.extras, width, height);
+  const landPath = new Path2D();
+  landPath.addPath(extrasPath);
+  for (const shape of shapes) {
+    if (!shape.isState) landPath.addPath(pathFor(shape.code, shape.rings));
+  }
+
+  // Opaque sage underlay for every country before Blue Marble. If land
+  // imagery fails to paint (mobile canvas eviction, empty clip, etc.)
+  // countries still read as land instead of vanishing into ocean blue.
+  const landUnderlay = getProgressFillColor(0, isDark, difficulty);
+  baseCtx.fillStyle = landUnderlay;
+  baseCtx.fill(extrasPath, "evenodd");
+  for (const shape of shapes) {
+    if (shape.isState) continue;
+    baseCtx.fill(pathFor(shape.code, shape.rings), "evenodd");
+  }
+
+  const landCanvas =
+    landColorImage != null ? getLandColorCanvas(landColorImage, isDark, width) : null;
+  const hasLandImagery = landCanvas != null;
+  if (landCanvas) {
+    // Real natural-color terrain under every land shape, world-anchored.
+    baseCtx.save();
+    baseCtx.clip(landPath, "evenodd");
+    baseCtx.drawImage(landCanvas, 0, 0, width, height);
+    baseCtx.restore();
+  }
+
   const drawOpts = {
     isDark,
     difficulty,
@@ -584,24 +615,6 @@ export function createGlobeTexturePaint(
     goldPattern,
     hasLandImagery,
   };
-
-  // Combined land silhouette (extras + countries; NE features never overlap,
-  // so even-odd only carves genuine holes) — clips the Blue Marble imagery
-  // and the land grain pass to land.
-  const extrasPath = buildPath(GLOBE_TEXTURE_DATA.extras, width, height);
-  const landPath = new Path2D();
-  landPath.addPath(extrasPath);
-  for (const shape of shapes) {
-    if (!shape.isState) landPath.addPath(pathFor(shape.code, shape.rings));
-  }
-
-  if (landColorImage) {
-    // Real natural-color terrain under every land shape, world-anchored.
-    baseCtx.save();
-    baseCtx.clip(landPath, "evenodd");
-    baseCtx.drawImage(getLandColorCanvas(landColorImage, isDark), 0, 0, width, height);
-    baseCtx.restore();
-  }
 
   drawShapeFill(baseCtx, extrasPath, 0, drawOpts);
   strokeShape(baseCtx, extrasPath, false, palette, pixelScale);

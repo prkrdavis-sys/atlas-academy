@@ -40,6 +40,9 @@ export default function ProfilesPage() {
   const fileRef = useRef<HTMLInputElement>(null);
   const isNewUser = hydrated && profiles.length === 0;
   const dialogOpen = Boolean(profileToModify || profileToDelete);
+  const orderedProfiles = activeProfile
+    ? [activeProfile, ...profiles.filter((profile) => profile.id !== activeProfile.id)]
+    : profiles;
 
   useEffect(() => {
     setMounted(true);
@@ -210,7 +213,7 @@ export default function ProfilesPage() {
           <div className="rounded-[1.75rem] border-2 border-slate-200 bg-white/90 p-4 shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90 sm:p-6">
             <h2 className="mb-4 font-semibold">Your profiles</h2>
             <div className="space-y-3">
-              {profiles.map((profile) => (
+              {orderedProfiles.map((profile) => (
                 <div
                   key={profile.id}
                   className="rounded-2xl border border-slate-200 bg-slate-50/70 p-3 dark:border-slate-700 dark:bg-slate-800/70 sm:flex sm:flex-wrap sm:items-center sm:justify-between sm:gap-3 sm:bg-transparent sm:px-4 sm:py-3"
@@ -350,7 +353,7 @@ export default function ProfilesPage() {
                 Export
               </p>
               <ul className="mt-2 space-y-1">
-                {profiles.map((profile) => (
+                {orderedProfiles.map((profile) => (
                   <li key={profile.id} className="flex items-center justify-between gap-3 text-sm">
                     <span className="truncate text-slate-700 dark:text-slate-300">{profile.name}</span>
                     <button

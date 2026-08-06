@@ -13,11 +13,15 @@ import { normalizeAnswerText } from "../lib/answer-matcher";
 import { countries, getCountryByCode, usStates } from "../lib/countries";
 import { PROFILE_AVATARS } from "../lib/profile-avatars";
 import { CONTEXT_MAP_TEMPLATES } from "../lib/context-maps";
+import { REGION_SHAPE_REGIONS, getRegionShapePath } from "../lib/continent-shapes";
 import flagCropData from "../data/flag-crops.json";
 import { MIN_SHAPE_VIEWBOX, shapeViewBoxTooSmall } from "./map-path-utils";
 import {
   CONTINENTS,
+  FEATURED_SETUP_MODE,
   FLAG_CROP_ORIENTATIONS,
+  MODE_FAMILIES,
+  SETUP_MODES,
   US_REGIONS,
   type GameMode,
   type GameScope,
@@ -155,6 +159,29 @@ for (const template of CONTEXT_MAP_TEMPLATES) {
 
 if (!existsSync(join("public", "maps", "bounds.json"))) {
   fail("Missing context map bounds manifest: public/maps/bounds.json");
+}
+
+for (const region of REGION_SHAPE_REGIONS) {
+  const shapePath = getRegionShapePath(region);
+  if (!existsSync(join("public", shapePath))) {
+    fail(`Missing region silhouette for ${region}: public${shapePath}`);
+  }
+}
+
+// The mode picker renders MODE_FAMILIES, so a setup mode missing from it would
+// be unreachable, and a duplicate would render twice.
+const familyModes = MODE_FAMILIES.flatMap((family) => [...family.primary, ...family.twists]);
+for (const mode of SETUP_MODES) {
+  if (mode === FEATURED_SETUP_MODE) continue;
+  const appearances = familyModes.filter((candidate) => candidate === mode).length;
+  if (appearances !== 1) {
+    fail(`Setup mode ${mode} appears ${appearances} times in MODE_FAMILIES, expected exactly 1`);
+  }
+}
+for (const mode of familyModes) {
+  if (!SETUP_MODES.includes(mode)) {
+    fail(`MODE_FAMILIES lists ${mode}, which is not a setup mode`);
+  }
 }
 
 const MODES: GameMode[] = [

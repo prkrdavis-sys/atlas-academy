@@ -25,6 +25,7 @@ export function SoundToggle() {
   return (
     <MenuSwitch
       label="Sound"
+      emoji="🔊"
       checked={enabled}
       onCheckedChange={setEnabled}
     />

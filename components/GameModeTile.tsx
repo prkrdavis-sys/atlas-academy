@@ -7,14 +7,30 @@ import { cn } from "@/lib/utils";
 
 type GameModeTileVariant = "featured" | "card" | "row";
 
+function TileBadge({ children }: { children: string }) {
+  return (
+    <span className="shrink-0 rounded-full bg-slate-100 px-1.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-wide text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+      {children}
+    </span>
+  );
+}
+
 type GameModeTileProps = {
   mode: GameMode;
   scope: GameScope;
   variant?: GameModeTileVariant;
+  /** Short qualifier shown beside the title, e.g. "Twist" for flag variants. */
+  badge?: string;
   className?: string;
 };
 
-export function GameModeTile({ mode, scope, variant = "card", className }: GameModeTileProps) {
+export function GameModeTile({
+  mode,
+  scope,
+  variant = "card",
+  badge,
+  className,
+}: GameModeTileProps) {
   const modeInfo = getScopedModeInfo(mode, scope);
   if (!modeInfo) return null;
 
@@ -76,9 +92,12 @@ export function GameModeTile({ mode, scope, variant = "card", className }: GameM
             {modeInfo.icon}
           </span>
           <div className="min-w-0 flex-1">
-            <h3 className="font-display text-sm font-extrabold text-slate-900 dark:text-slate-100 sm:text-base">
-              {title}
-            </h3>
+            <div className="flex flex-wrap items-center gap-1.5">
+              <h3 className="font-display text-sm font-extrabold text-slate-900 dark:text-slate-100 sm:text-base">
+                {title}
+              </h3>
+              {badge ? <TileBadge>{badge}</TileBadge> : null}
+            </div>
             <p className="mt-0.5 line-clamp-2 text-xs leading-snug text-slate-500 dark:text-slate-400">
               {description}
             </p>
@@ -102,9 +121,12 @@ export function GameModeTile({ mode, scope, variant = "card", className }: GameM
             {modeInfo.icon}
           </span>
           <div className="min-w-0 flex-1">
-            <h3 className="truncate font-display text-sm font-bold text-slate-800 dark:text-slate-200">
-              {title}
-            </h3>
+            <div className="flex items-center gap-1.5">
+              <h3 className="truncate font-display text-sm font-bold text-slate-800 dark:text-slate-200">
+                {title}
+              </h3>
+              {badge ? <TileBadge>{badge}</TileBadge> : null}
+            </div>
             <p className="truncate text-xs text-slate-500 dark:text-slate-400">{description}</p>
           </div>
           <span aria-hidden className="shrink-0 text-sm text-slate-400 dark:text-slate-500">

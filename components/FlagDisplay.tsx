@@ -280,8 +280,8 @@ function getTileBorderClass(
       return "[filter:drop-shadow(0_0_0_2px_rgb(251_113_133))_drop-shadow(0_2px_0_rgb(253_164_175))] dark:[filter:drop-shadow(0_0_0_2px_rgb(244_63_94))]";
     }
     return revealed
-      ? "[filter:drop-shadow(0_0_0_2px_rgb(226_232_240))_drop-shadow(0_2px_0_rgb(226_232_240))] dark:[filter:drop-shadow(0_0_0_2px_rgb(71_85_105))]"
-      : "[filter:drop-shadow(0_0_0_2px_rgb(226_232_240))_drop-shadow(0_3px_0_rgb(226_232_240))] dark:[filter:drop-shadow(0_0_0_2px_rgb(71_85_105))] hover:[filter:drop-shadow(0_0_0_2px_rgb(125_211_252))_drop-shadow(0_3px_0_rgb(125_211_252))]";
+      ? "[filter:drop-shadow(0_0_0_2px_rgb(148_163_184))_drop-shadow(0_2px_0_rgb(148_163_184))] dark:[filter:drop-shadow(0_0_0_2px_rgb(71_85_105))]"
+      : "[filter:drop-shadow(0_0_0_2px_rgb(148_163_184))_drop-shadow(0_3px_0_rgb(148_163_184))] dark:[filter:drop-shadow(0_0_0_2px_rgb(71_85_105))] hover:[filter:drop-shadow(0_0_0_2px_rgb(56_189_248))_drop-shadow(0_3px_0_rgb(56_189_248))]";
   }
 
   if (isCorrect) {
@@ -298,12 +298,12 @@ function getTileBorderClass(
   }
   if (revealed) {
     return cn(
-      "overflow-hidden border-2 border-slate-200 bg-white shadow-[0_2px_0_var(--color-slate-200)] dark:border-slate-600 dark:bg-slate-800 dark:shadow-[0_2px_0_var(--color-slate-700)]",
+      "overflow-hidden border-2 border-slate-400 bg-white shadow-[0_2px_0_var(--color-slate-400)] dark:border-slate-600 dark:bg-slate-800 dark:shadow-[0_2px_0_var(--color-slate-700)]",
       tileRadius,
     );
   }
   return cn(
-    "overflow-hidden border-2 border-slate-200 bg-white shadow-[0_3px_0_var(--color-slate-200)] transition-all duration-100 hover:border-sky-300 active:translate-y-[3px] active:shadow-none dark:border-slate-600 dark:bg-slate-800 dark:shadow-[0_3px_0_var(--color-slate-700)] dark:hover:border-sky-500",
+    "overflow-hidden border-2 border-slate-400 bg-white shadow-[0_3px_0_var(--color-slate-400)] transition-all duration-100 hover:border-sky-400 active:translate-y-[3px] active:shadow-none dark:border-slate-600 dark:bg-slate-800 dark:shadow-[0_3px_0_var(--color-slate-700)] dark:hover:border-sky-500",
     tileRadius,
   );
 }

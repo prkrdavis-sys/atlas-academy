@@ -4,11 +4,14 @@ import type { ButtonHTMLAttributes, ReactNode } from "react";
 type GameActionButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   icon: string;
   children: ReactNode;
+  /** Smaller line under the label, e.g. a summary of what will start. */
+  subtitle?: ReactNode;
 };
 
 export function GameActionButton({
   icon,
   children,
+  subtitle,
   className,
   type = "button",
   ...props
@@ -28,8 +31,15 @@ export function GameActionButton({
       >
         {icon}
       </span>
-      <span className="relative z-10 font-display text-xl font-extrabold tracking-tight transition-transform duration-150 group-active:translate-y-px sm:text-2xl">
-        {children}
+      <span className="relative z-10 block transition-transform duration-150 group-active:translate-y-px">
+        <span className="block font-display text-xl font-extrabold tracking-tight sm:text-2xl">
+          {children}
+        </span>
+        {subtitle ? (
+          <span className="mt-0.5 block text-xs font-semibold text-white/80 sm:text-sm">
+            {subtitle}
+          </span>
+        ) : null}
       </span>
     </button>
   );

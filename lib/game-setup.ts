@@ -1,5 +1,6 @@
 import { getPlayablePoolSize } from "@/lib/countries";
-import { getScopedModeInfo, scopeText } from "@/lib/scope";
+import { getScopedModeInfo, scopeText, SCOPE_INFO } from "@/lib/scope";
+import { getRegionSelectionLabel } from "@/lib/region-presets";
 import { getCommonlyMissedCountries } from "@/lib/stats-helpers";
 import type { GameScope } from "@/lib/types";
 import {
@@ -13,6 +14,7 @@ import {
   SPEED_ROUND_ALL_TYPES,
   US_REGIONS,
   clampRoundQuestionSetting,
+  getDifficultyHint,
   isChallengeModifierActive,
   normalizeRoundQuestionSetting,
   type ChallengeModifier,
@@ -210,6 +212,53 @@ export function getChallengeModifierLabel(challengeModifier: ChallengeModifier):
       return _exhaustive;
     }
   }
+}
+
+export type SettingSummary = {
+  /** Bold current value, e.g. "Normal" or "20 questions". */
+  value: string;
+  /** What that choice means in play, shown in smaller text beneath. */
+  detail: string;
+};
+
+export function getDifficultySummary(mode: GameMode, difficulty: Difficulty): SettingSummary {
+  return {
+    value: DIFFICULTY_LABELS[difficulty],
+    detail: getDifficultyHint(mode, difficulty).replace(/^ - /, ""),
+  };
+}
+
+export function getRoundLengthSummary(
+  mode: GameMode,
+  roundQuestionCount: RoundQuestionSetting,
+  challengeModifier: ChallengeModifier,
+  poolSize: number,
+): SettingSummary {
+  if (challengeModifier === "speed-round") {
+    return { value: "⚡ Speed Round", detail: "60 seconds — as many as you can" };
+  }
+  if (challengeModifier === "marathon") {
+    return { value: "🏃 Marathon", detail: "Keep going until your first mistake" };
+  }
+
+  const effective = clampRoundQuestionSetting(roundQuestionCount, poolSize);
+  if (effective === ROUND_ALL_QUESTIONS) {
+    return { value: "Every question", detail: `All ${poolSize} in your selection` };
+  }
+  return { value: `${effective} questions`, detail: `Picked from a pool of ${poolSize}` };
+}
+
+export function getPlacesSummary(
+  continents: Region[],
+  includeTerritories: boolean,
+  scope: GameScope,
+  poolSize: number,
+): SettingSummary {
+  const scopeInfo = SCOPE_INFO[scope];
+  return {
+    value: getRegionSelectionLabel(continents, includeTerritories, scope),
+    detail: `${poolSize} ${poolSize === 1 ? scopeInfo.noun : scopeInfo.nounPlural} in play`,
+  };
 }
 
 export function getActiveGameSummaryParts(

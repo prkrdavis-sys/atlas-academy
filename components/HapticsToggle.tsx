@@ -24,6 +24,7 @@ export function HapticsToggle() {
   return (
     <MenuSwitch
       label="Vibration"
+      emoji="📳"
       checked={enabled}
       onCheckedChange={setEnabled}
     />

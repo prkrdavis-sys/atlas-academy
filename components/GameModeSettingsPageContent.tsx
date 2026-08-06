@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { GameActionButton } from "@/components/GameActionButton";
-import { GameSetupPanel } from "@/components/GameSetupPanel";
+import { RoundSetupCard } from "@/components/RoundSetupCard";
 import { MobileBottomDock } from "@/components/MobileBottomDock";
 import { ScopeSelector } from "@/components/ScopeSelector";
 import { useProfiles, useRequiredProfile } from "@/components/ProfileProvider";
@@ -12,7 +12,10 @@ import type { GameSetupDraft } from "@/lib/game-setup";
 import {
   buildSettingsPatch,
   createSetupDraftFromProfile,
+  getDifficultySummary,
+  getPlacesSummary,
   getPlayablePoolForDraft,
+  getRoundLengthSummary,
 } from "@/lib/game-setup";
 import {
   getScopedModeInfo,
@@ -31,7 +34,7 @@ import {
   type GameMode,
   type GameScope,
 } from "@/lib/types";
-import { cn, subtleBackLinkClass } from "@/lib/utils";
+import { subtleBackLinkClass } from "@/lib/utils";
 
 type GameModeSettingsPageContentProps = {
   mode: GameMode;
@@ -49,8 +52,8 @@ export function GameModeSettingsPageContent({ mode }: GameModeSettingsPageConten
 
   const [draft, setDraft] = useState<GameSetupDraft | null>(null);
   const draftRef = useRef<GameSetupDraft | null>(null);
-  const [startBarPinned, setStartBarPinned] = useState(false);
-  const startBarSentinelRef = useRef<HTMLDivElement>(null);
+  const [playVisible, setPlayVisible] = useState(true);
+  const playRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!scope) return;
@@ -68,18 +71,18 @@ export function GameModeSettingsPageContent({ mode }: GameModeSettingsPageConten
     draftRef.current = draft;
   }, [draft]);
 
+  // The docked Play only appears once the main one is scrolled away, so there is
+  // never more than one Play button on screen.
   useEffect(() => {
-    const sentinel = startBarSentinelRef.current;
-    if (!sentinel) return;
+    const target = playRef.current;
+    if (!target) return;
 
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        setStartBarPinned(!entry.isIntersecting);
-      },
-      { threshold: 0 },
+      ([entry]) => setPlayVisible(entry.isIntersecting),
+      { threshold: 0.35 },
     );
 
-    observer.observe(sentinel);
+    observer.observe(target);
     return () => observer.disconnect();
   }, [mode, draft]);
 
@@ -135,11 +138,6 @@ export function GameModeSettingsPageContent({ mode }: GameModeSettingsPageConten
   const startDisabled =
     (mode === "weak-spots" && !weakSpotCodes?.length) || availableCountryCount === 0;
 
-  const handleDone = () => {
-    persistCurrentDraft();
-    router.push("/");
-  };
-
   const handlePlay = () => {
     if (startDisabled) return;
     persistCurrentDraft();
@@ -164,32 +162,62 @@ export function GameModeSettingsPageContent({ mode }: GameModeSettingsPageConten
     return (
       <div className="space-y-4">
         <p>Unknown game mode.</p>
-        <Link href={`/play/setup${scopeQuery(scope)}`} className="text-sm font-semibold text-teal-700 dark:text-teal-400">
+        <Link
+          href={`/play/setup${scopeQuery(scope)}`}
+          className="text-sm font-semibold text-teal-700 dark:text-teal-400"
+        >
           ← Back to modes
         </Link>
       </div>
     );
   }
 
+  const playSummary = [
+    getRoundLengthSummary(
+      normalizedDraft.mode,
+      normalizedDraft.roundQuestionCount,
+      normalizedDraft.challengeModifier,
+      availableCountryCount,
+    ).value,
+    getDifficultySummary(normalizedDraft.mode, normalizedDraft.difficulty).value,
+    getPlacesSummary(
+      normalizedDraft.continents,
+      normalizedDraft.includeTerritories,
+      scope,
+      availableCountryCount,
+    ).value,
+  ].join("  ·  ");
+
+  const playButton = (
+    <GameActionButton
+      onClick={handlePlay}
+      disabled={startDisabled}
+      icon={scopeInfo.icon}
+      subtitle={startDisabled ? undefined : playSummary}
+    >
+      Play
+    </GameActionButton>
+  );
+
   return (
-    <div className="space-y-5 pb-24 sm:space-y-6">
+    <div className="space-y-4 sm:space-y-5">
       <header>
-        <Link
-          href={setupBackHref}
-          className={subtleBackLinkClass}
-        >
+        <Link href={setupBackHref} className={subtleBackLinkClass}>
           ← Back to modes
         </Link>
         <div className="mt-3 flex flex-wrap items-start justify-between gap-3">
-          <div className="flex min-w-0 items-start gap-3">
-            <span className="text-3xl" aria-hidden>
+          <div className="flex min-w-0 items-center gap-3">
+            <span
+              aria-hidden
+              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-slate-100 text-2xl dark:bg-slate-800"
+            >
               {modeInfo.icon}
             </span>
             <div className="min-w-0">
-              <h1 className="font-display text-2xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 sm:text-3xl">
+              <h1 className="font-display text-xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 sm:text-2xl">
                 {scopeText(modeInfo.title, scope)}
               </h1>
-              <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+              <p className="text-xs leading-snug text-slate-600 dark:text-slate-400 sm:text-sm">
                 {scopeText(modeInfo.description, scope)}
               </p>
             </div>
@@ -198,64 +226,43 @@ export function GameModeSettingsPageContent({ mode }: GameModeSettingsPageConten
         </div>
       </header>
 
-      <div ref={startBarSentinelRef} className="pointer-events-none -mb-2 h-px" aria-hidden />
-      <div
-        className={cn(
-          "sticky top-[var(--app-header-offset)] z-40 -mx-4 px-4 pb-1 pt-1 transition-[background-color,border-color,box-shadow] duration-200 sm:mx-0 sm:px-0",
-          startBarPinned &&
-            "border-b border-slate-200 bg-white/85 backdrop-blur-xl dark:border-slate-700 dark:bg-slate-900/85",
-        )}
-      >
-        <GameActionButton onClick={handlePlay} disabled={startDisabled} icon={scopeInfo.icon}>
-          Start Game
-        </GameActionButton>
-      </div>
+      <div ref={playRef}>{playButton}</div>
 
-      <GameSetupPanel
-          mode={normalizedDraft.mode}
-          scope={scope}
-          challengeModifier={normalizedDraft.challengeModifier}
-          continents={normalizedDraft.continents}
-          includeTerritories={normalizedDraft.includeTerritories}
-          difficulty={normalizedDraft.difficulty}
-          roundQuestionCount={normalizedDraft.roundQuestionCount}
-          availableCountryCount={availableCountryCount}
-          weakSpotWarning={normalizedDraft.mode === "weak-spots" && !weakSpotCodes?.length}
-          onChallengeModifierChange={(challengeModifier: ChallengeModifier) =>
-            setDraft((current) => (current ? { ...current, challengeModifier } : current))
-          }
-          onContinentsChange={(continents) =>
-            setDraft((current) => (current ? { ...current, continents } : current))
-          }
-          onIncludeTerritoriesChange={(includeTerritories) =>
-            setDraft((current) => (current ? { ...current, includeTerritories } : current))
-          }
-          onDifficultyChange={(difficulty) =>
-            setDraft((current) => (current ? { ...current, difficulty } : current))
-          }
-          onRoundQuestionCountChange={(roundQuestionCount) =>
-            setDraft((current) => (current ? { ...current, roundQuestionCount } : current))
-          }
-        />
+      <RoundSetupCard
+        mode={normalizedDraft.mode}
+        scope={scope}
+        challengeModifier={normalizedDraft.challengeModifier}
+        continents={normalizedDraft.continents}
+        includeTerritories={normalizedDraft.includeTerritories}
+        difficulty={normalizedDraft.difficulty}
+        roundQuestionCount={normalizedDraft.roundQuestionCount}
+        availableCountryCount={availableCountryCount}
+        weakSpotWarning={normalizedDraft.mode === "weak-spots" && !weakSpotCodes?.length}
+        onChallengeModifierChange={(challengeModifier: ChallengeModifier) =>
+          setDraft((current) => (current ? { ...current, challengeModifier } : current))
+        }
+        onContinentsChange={(continents) =>
+          setDraft((current) => (current ? { ...current, continents } : current))
+        }
+        onIncludeTerritoriesChange={(includeTerritories) =>
+          setDraft((current) => (current ? { ...current, includeTerritories } : current))
+        }
+        onDifficultyChange={(difficulty) =>
+          setDraft((current) => (current ? { ...current, difficulty } : current))
+        }
+        onRoundQuestionCountChange={(roundQuestionCount) =>
+          setDraft((current) => (current ? { ...current, roundQuestionCount } : current))
+        }
+      />
 
-      <div className="hidden sm:block">
-        <button
-          type="button"
-          onClick={handleDone}
-          className="mx-auto flex min-h-11 w-full max-w-md items-center justify-center rounded-2xl border-2 border-slate-200 bg-white px-6 py-2.5 font-display text-sm font-extrabold text-slate-700 transition-colors hover:border-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+      {playVisible ? null : (
+        <MobileBottomDock
+          className="z-30"
+          barClassName="px-4 pb-[calc(4.25rem+env(safe-area-inset-bottom))]"
         >
-          Save & return home
-        </button>
-      </div>
-      <MobileBottomDock className="z-30" barClassName="px-4 pb-[calc(4.25rem+env(safe-area-inset-bottom))]">
-        <button
-          type="button"
-          onClick={handleDone}
-          className="mx-auto flex min-h-11 w-full max-w-5xl items-center justify-center rounded-2xl border-2 border-slate-200 bg-white px-6 py-2.5 font-display text-sm font-extrabold text-slate-700 transition-colors hover:border-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
-        >
-          Save & return home
-        </button>
-      </MobileBottomDock>
+          {playButton}
+        </MobileBottomDock>
+      )}
     </div>
   );
 }

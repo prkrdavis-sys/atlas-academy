@@ -468,6 +468,12 @@ export function parseSvgViewBox(viewBox: string): SvgViewBox {
  * Wider framing for interactive library maps. At panzoom scale 1 the user sees
  * this crop (extra surroundings for beginners); the focused close-up is restored
  * by zooming in so the starting frame matches the static library map.
+ *
+ * Never returns a crop tighter than `focusedViewBox`. Large places whose library
+ * close-up already exceeds the continent overview keep that close-up as the
+ * minimum frame and expand around it for zoom-out room — otherwise panzoom
+ * cannot restore the library framing and the country appears clipped inside a
+ * nearby continent view.
  */
 export function computeInteractiveSurroundingsViewBox(
   focusedViewBox: SvgViewBox,
@@ -487,37 +493,53 @@ export function computeInteractiveSurroundingsViewBox(
   const [fx, fy, fw, fh] = focusedViewBox;
   const [ox, oy, ow, oh] = overviewViewBox;
 
-  if (fw <= 0 || fh <= 0 || ow <= 0 || oh <= 0) {
-    return overviewViewBox;
-  }
-
-  // Already nearly as wide as the overview — little room to zoom out.
-  if (fw >= ow * 0.92 || fh >= oh * 0.92) {
+  if (fw <= 0 || fh <= 0) {
     return overviewViewBox;
   }
 
   const aspectRatio = fw / fh;
-  let width = Math.max(fw * expandRatio, ow * minOverviewFraction);
-  let height = Math.max(fh * expandRatio, oh * minOverviewFraction);
-
-  if (width / height < aspectRatio) {
-    width = height * aspectRatio;
-  } else {
-    height = width / aspectRatio;
-  }
-
-  width = Math.min(width, ow);
-  height = Math.min(height, oh);
-  if (width / height < aspectRatio) {
-    height = width / aspectRatio;
-  } else {
-    width = height * aspectRatio;
-  }
-  width = Math.min(width, ow);
-  height = Math.min(height, oh);
+  const overviewUsable = ow > 0 && oh > 0;
+  const overviewContainsFocus =
+    overviewUsable &&
+    ox <= fx + 1e-6 &&
+    oy <= fy + 1e-6 &&
+    ox + ow >= fx + fw - 1e-6 &&
+    oy + oh >= fy + fh - 1e-6;
 
   const focusCenterX = fx + fw / 2;
   const focusCenterY = fy + fh / 2;
+
+  // When the library close-up already exceeds the continent overview (large
+  // places / wide aspect crops), keep that close-up as the pan base. Expanding
+  // further only adds empty ocean and softens the terrain texture.
+  if (!overviewContainsFocus) {
+    return focusedViewBox;
+  }
+
+  let width = Math.max(fw * expandRatio, ow * minOverviewFraction, fw);
+  let height = Math.max(fh * expandRatio, oh * minOverviewFraction, fh);
+
+  if (width / height < aspectRatio) {
+    width = height * aspectRatio;
+  } else {
+    height = width / aspectRatio;
+  }
+
+  width = Math.min(width, ow);
+  height = Math.min(height, oh);
+  if (width / height < aspectRatio) {
+    height = width / aspectRatio;
+  } else {
+    width = height * aspectRatio;
+  }
+  width = Math.min(width, ow);
+  height = Math.min(height, oh);
+
+  // Final guard: never tighter than the static library crop.
+  if (width < fw - 1e-6 || height < fh - 1e-6) {
+    return focusedViewBox;
+  }
+
   let x = focusCenterX - width / 2;
   let y = focusCenterY - height / 2;
 

@@ -22,6 +22,7 @@
     "fetch-state-flags": "bash scripts/fetch-state-flags.sh",
     "generate-state-shapes": "tsx scripts/generate-state-shapes.ts",
     "generate-country-shapes": "tsx scripts/generate-country-shapes.ts",
+    "generate-continent-shapes": "tsx scripts/generate-continent-shapes.ts",
     "audit-geography": "tsx scripts/audit-geography-assets.ts",
     "generate-context-maps": "tsx scripts/generate-context-maps.ts && tsx scripts/generate-usa-context-map.ts",
     "generate-usa-context-map": "tsx scripts/generate-usa-context-map.ts",

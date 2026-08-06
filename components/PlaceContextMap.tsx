@@ -536,7 +536,6 @@ export function PlaceContextMap({
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<HTMLDivElement>(null);
   const panzoomRef = useRef<ReturnType<typeof Panzoom> | null>(null);
-  const hasInitialFocusRef = useRef(false);
   const [map, setMap] = useState<ParsedContextMap | null>(() =>
     templateCache.get(getContextMapTemplateKey(country)) ?? null,
   );
@@ -545,7 +544,6 @@ export function PlaceContextMap({
   );
   const [loadFailed, setLoadFailed] = useState(false);
   const [panzoomReady, setPanzoomReady] = useState(false);
-  const [initialFocusApplied, setInitialFocusApplied] = useState(!interactive);
   const isState = isStateCode(country.code);
   const templateKey = getContextMapTemplateKey(country);
   const cropOptions = CROP_OPTIONS[variant];
@@ -599,14 +597,16 @@ export function PlaceContextMap({
       aspectRatio: cropOptions.aspectRatio,
     });
     const surroundings = computeInteractiveSurroundingsViewBox(focused, overview);
+    const rawScale = Math.min(
+      surroundings[2] / focused[2],
+      surroundings[3] / focused[3],
+    );
     return {
       focused,
       surroundings,
       surroundingsViewBox: formatSvgViewBox(surroundings),
-      initialScale: Math.min(
-        surroundings[2] / focused[2],
-        surroundings[3] / focused[3],
-      ),
+      // Scale 1 is the surroundings crop; >=1 zooms to the library close-up.
+      initialScale: Number.isFinite(rawScale) ? Math.max(1, rawScale) : 1,
     };
   }, [interactive, boundsManifest, focusedViewBox, templateKey, cropOptions]);
 
@@ -635,15 +635,6 @@ export function PlaceContextMap({
   }, [templateKey]);
 
   useEffect(() => {
-    if (!interactive) {
-      setInitialFocusApplied(true);
-      return;
-    }
-    setInitialFocusApplied(false);
-    hasInitialFocusRef.current = false;
-  }, [interactive, country.code, templateKey]);
-
-  useEffect(() => {
     if (!interactive) return;
     const element = mapRef.current;
     if (!element || !map || !interactiveViewBoxes || !ready) return;
@@ -654,12 +645,18 @@ export function PlaceContextMap({
     );
 
     panzoomRef.current?.destroy();
+    // Start at the library close-up scale immediately so the country is framed
+    // correctly (surroundings are centered on the focus, so startScale alone matches
+    // the static library crop).
     panzoomRef.current = Panzoom(element, {
       ...MAP_PANZOOM_OPTIONS,
       maxScale,
+      startScale: interactiveViewBoxes.initialScale,
     });
-    setPanzoomReady(true);
-    hasInitialFocusRef.current = false;
+    // Reveal after Panzoom's startScale transform rAF commits (registered above).
+    const revealFrame = requestAnimationFrame(() => {
+      setPanzoomReady(true);
+    });
 
     const container = containerRef.current;
     const finePointer = window.matchMedia("(pointer: fine)");
@@ -683,6 +680,7 @@ export function PlaceContextMap({
     container?.addEventListener("wheel", onWheel, { passive: false });
 
     return () => {
+      cancelAnimationFrame(revealFrame);
       container?.removeEventListener("wheel", onWheel);
       panzoomRef.current?.destroy();
       panzoomRef.current = null;
@@ -690,11 +688,15 @@ export function PlaceContextMap({
     };
   }, [interactive, map, interactiveViewBoxes, ready]);
 
+  // Refine focal point after layout when zoomed in past the surroundings base.
   useEffect(() => {
     if (!interactive || !interactiveViewBoxes || !panzoomReady || !panzoomRef.current) {
       return;
     }
-    if (!containerRef.current || hasInitialFocusRef.current) return;
+    if (!containerRef.current) return;
+    if (interactiveViewBoxes.initialScale <= MAP_PANZOOM_OPTIONS.minScale + 0.01) {
+      return;
+    }
 
     const panzoom = panzoomRef.current;
     const container = containerRef.current;
@@ -706,8 +708,6 @@ export function PlaceContextMap({
         animate: false,
         maxScale,
       });
-      hasInitialFocusRef.current = true;
-      setInitialFocusApplied(true);
     });
 
     return () => {
@@ -742,7 +742,12 @@ export function PlaceContextMap({
           className={cn(
             "h-full w-full",
             interactive && "origin-center",
-            interactive && !initialFocusApplied && "opacity-0",
+            // Hide the wider surroundings crop until panzoom applies startScale.
+            interactive &&
+              !panzoomReady &&
+              interactiveViewBoxes !== null &&
+              interactiveViewBoxes.initialScale > 1.01 &&
+              "opacity-0",
           )}
         >
           <ContextMapSvg

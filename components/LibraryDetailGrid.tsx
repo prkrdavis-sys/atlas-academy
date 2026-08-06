@@ -17,6 +17,7 @@ import { formatDisplayCode } from "@/lib/scope";
 import type { Country } from "@/lib/types";
 
 type LibraryDetail = {
+  icon: string;
   label: string;
   value: string;
   descriptor?: string;
@@ -31,26 +32,27 @@ export function LibraryDetailGrid({ country, isState }: LibraryDetailGridProps) 
   const { displayCurrencyCode, displayCurrency, displayRate, rates } = useCurrency();
 
   const airportDetails: LibraryDetail[] = country.largestAirport
-    ? [{ label: "Largest airport", value: formatAirportChip(country.largestAirport) }]
+    ? [{ icon: "✈️", label: "Largest airport", value: formatAirportChip(country.largestAirport) }]
     : country.travelAccess
       ? [
-          { label: "Typical travel", value: country.travelAccess.mode },
-          { label: "Travel from", value: country.travelAccess.from },
+          { icon: "🧳", label: "Typical travel", value: country.travelAccess.mode },
+          { icon: "📍", label: "Travel from", value: country.travelAccess.from },
         ]
       : [];
 
   const altitudeDetail: LibraryDetail[] = country.elevation
-    ? [{ label: "Altitude range", value: formatAltitudeRange(country.elevation) }]
+    ? [{ icon: "⛰️", label: "Altitude range", value: formatAltitudeRange(country.elevation) }]
     : [];
 
   const ecosystemDetail: LibraryDetail[] = country.ecosystem
-    ? [{ label: "Ecosystem", value: country.ecosystem }]
+    ? [{ icon: "🌿", label: "Ecosystem", value: country.ecosystem }]
     : [];
 
   const incomeDetail: LibraryDetail[] =
     country.medianHouseholdIncomeUsd != null
       ? [
           {
+            icon: "💵",
             label: "Median household income",
             value: formatMedianHouseholdIncome(
               country.medianHouseholdIncomeUsd,
@@ -66,6 +68,7 @@ export function LibraryDetailGrid({ country, isState }: LibraryDetailGridProps) 
     country.medianRentUsd != null
       ? [
           {
+            icon: "🏠",
             label: "Median rent",
             value: formatMedianRent(country.medianRentUsd, displayCurrencyCode, displayRate),
             descriptor: `${displayCurrencyCode} equivalent`,
@@ -76,6 +79,7 @@ export function LibraryDetailGrid({ country, isState }: LibraryDetailGridProps) 
   const currencyDetails: LibraryDetail[] = country.currency
     ? [
         {
+          icon: "💱",
           label: formatCurrencyChipLabel(
             country.currency,
             displayCurrencyCode,
@@ -93,23 +97,25 @@ export function LibraryDetailGrid({ country, isState }: LibraryDetailGridProps) 
 
   const emblemDetails: LibraryDetail[] = [
     ...(country.bird
-      ? [{ label: isState ? "State bird" : "National bird", value: country.bird }]
+      ? [{ icon: "🐦", label: isState ? "State bird" : "National bird", value: country.bird }]
       : []),
     ...(country.plant
-      ? [{ label: isState ? "State flower" : "National flower", value: country.plant }]
+      ? [{ icon: "🌸", label: isState ? "State flower" : "National flower", value: country.plant }]
       : []),
   ];
 
   const details: LibraryDetail[] = isState
     ? [
-        { label: "Capital", value: country.capital || "No official capital" },
-        { label: "Region", value: country.continent },
-        { label: "Division", value: country.subregion || "Not listed" },
+        { icon: "🏛️", label: "Capital", value: country.capital || "No official capital" },
+        { icon: "🌍", label: "Region", value: country.continent },
+        { icon: "🗺️", label: "Division", value: country.subregion || "Not listed" },
         {
+          icon: "👥",
           label: "Population",
           value: country.population > 0 ? formatPopulation(country.population) : "Not available",
         },
         {
+          icon: "📐",
           label: "Area",
           value: country.area > 0 ? `${formatPopulation(country.area)} km²` : "Not available",
         },
@@ -118,22 +124,24 @@ export function LibraryDetailGrid({ country, isState }: LibraryDetailGridProps) 
         ...altitudeDetail,
         ...ecosystemDetail,
         ...emblemDetails,
-        { label: "State code", value: formatDisplayCode(country.code) },
+        { icon: "🏷️", label: "State code", value: formatDisplayCode(country.code) },
         ...airportDetails,
       ]
     : [
-        { label: "Capital", value: country.capital || "No official capital" },
+        { icon: "🏛️", label: "Capital", value: country.capital || "No official capital" },
         ...(country.nativeName
-          ? [{ label: "Native name", value: country.nativeName }]
+          ? [{ icon: "🌐", label: "Native name", value: country.nativeName }]
           : []),
-        { label: "Language", value: country.languages || "Not listed" },
+        { icon: "🗣️", label: "Language", value: country.languages || "Not listed" },
         ...currencyDetails,
-        { label: "Region", value: country.subregion || "Not listed" },
+        { icon: "🌍", label: "Region", value: country.subregion || "Not listed" },
         {
+          icon: "👥",
           label: "Population",
           value: country.population > 0 ? formatPopulation(country.population) : "Not available",
         },
         {
+          icon: "📐",
           label: "Area",
           value: country.area > 0 ? `${formatPopulation(country.area)} km²` : "Not available",
         },
@@ -142,7 +150,7 @@ export function LibraryDetailGrid({ country, isState }: LibraryDetailGridProps) 
         ...altitudeDetail,
         ...ecosystemDetail,
         ...emblemDetails,
-        { label: "Country codes", value: `${country.code} / ${country.code3}` },
+        { icon: "🏷️", label: "Country codes", value: `${country.code} / ${country.code3}` },
         ...airportDetails,
       ];
 
@@ -161,7 +169,12 @@ export function LibraryDetailGrid({ country, isState }: LibraryDetailGridProps) 
               key={detail.label}
               className="rounded-2xl border-2 border-slate-200 bg-white/80 p-4 dark:border-slate-700 dark:bg-slate-900/80"
             >
-              <dt className="text-xs font-bold text-slate-500 dark:text-slate-400">{detail.label}</dt>
+              <dt className="flex items-start gap-1 text-xs font-bold text-slate-500 dark:text-slate-400">
+                <span aria-hidden="true" className="shrink-0 text-sm leading-none">
+                  {detail.icon}
+                </span>
+                <span>{detail.label}</span>
+              </dt>
               <dd className="mt-1 font-display text-base font-extrabold leading-snug text-slate-900 dark:text-slate-100 sm:text-lg">
                 <span className="block">{detail.value}</span>
                 {detail.descriptor ? (

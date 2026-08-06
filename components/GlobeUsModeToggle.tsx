@@ -4,9 +4,9 @@ import type { GlobeUsMode } from "@/lib/globe-texture";
 import { useGlobeUsMode } from "@/lib/use-globe-us-mode";
 import { cn } from "@/lib/utils";
 
-const OPTIONS: { mode: GlobeUsMode; label: string }[] = [
-  { mode: "states", label: "50 states" },
-  { mode: "country", label: "One country" },
+const OPTIONS: { mode: GlobeUsMode; emoji: string; label: string }[] = [
+  { mode: "states", emoji: "🧩", label: "50 states" },
+  { mode: "country", emoji: "🇺🇸", label: "One country" },
 ];
 
 /**
@@ -26,7 +26,7 @@ export function GlobeUsModeToggle() {
         role="group"
         aria-label="USA rendering on the globe"
       >
-        {OPTIONS.map(({ mode, label }) => {
+        {OPTIONS.map(({ mode, emoji, label }) => {
           const selected = usMode === mode;
           return (
             <button
@@ -35,13 +35,16 @@ export function GlobeUsModeToggle() {
               onClick={() => setUsMode(mode)}
               aria-pressed={selected}
               className={cn(
-                "truncate rounded-full px-1.5 text-xs font-medium transition-colors",
+                "inline-flex items-center justify-center gap-1 truncate rounded-full px-1.5 text-xs font-medium transition-colors",
                 selected
                   ? "bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-slate-100"
                   : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200",
               )}
             >
-              {label}
+              <span aria-hidden className="shrink-0">
+                {emoji}
+              </span>
+              <span className="truncate">{label}</span>
             </button>
           );
         })}

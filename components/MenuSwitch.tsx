@@ -4,6 +4,8 @@ import { cn } from "@/lib/utils";
 
 type MenuSwitchProps = {
   label: string;
+  /** Decorative emoji shown next to the switch control. */
+  emoji?: string;
   checked: boolean;
   onCheckedChange: (next: boolean) => void;
   className?: string;
@@ -12,6 +14,7 @@ type MenuSwitchProps = {
 /** Compact label + oval on/off switch for the header main menu. */
 export function MenuSwitch({
   label,
+  emoji,
   checked,
   onCheckedChange,
   className,
@@ -26,27 +29,34 @@ export function MenuSwitch({
       <span className="min-w-0 text-sm font-medium leading-snug text-slate-700 dark:text-slate-200">
         {label}
       </span>
-      <button
-        type="button"
-        role="switch"
-        aria-checked={checked}
-        aria-label={label}
-        onClick={() => onCheckedChange(!checked)}
-        className={cn(
-          "relative h-7 w-12 shrink-0 rounded-full transition-colors",
-          checked
-            ? "bg-teal-600 dark:bg-teal-500"
-            : "bg-slate-200 dark:bg-slate-700",
-        )}
-      >
-        <span
-          aria-hidden
+      <div className="flex shrink-0 items-center gap-1.5">
+        {emoji ? (
+          <span aria-hidden className="text-base leading-none">
+            {emoji}
+          </span>
+        ) : null}
+        <button
+          type="button"
+          role="switch"
+          aria-checked={checked}
+          aria-label={label}
+          onClick={() => onCheckedChange(!checked)}
           className={cn(
-            "absolute top-0.5 left-0.5 h-6 w-6 rounded-full bg-white shadow-sm transition-transform",
-            checked && "translate-x-5",
+            "relative h-7 w-12 shrink-0 rounded-full transition-colors",
+            checked
+              ? "bg-teal-600 dark:bg-teal-500"
+              : "bg-slate-200 dark:bg-slate-700",
           )}
-        />
-      </button>
+        >
+          <span
+            aria-hidden
+            className={cn(
+              "absolute top-0.5 left-0.5 h-6 w-6 rounded-full bg-white shadow-sm transition-transform",
+              checked && "translate-x-5",
+            )}
+          />
+        </button>
+      </div>
     </div>
   );
 }

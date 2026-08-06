@@ -46,73 +46,97 @@ function MenuPanelContent({
   return (
     <>
       <div className="border-b border-slate-100 p-2 dark:border-slate-800">
-        {displayProfile && (
-          <div className="mb-1 rounded-xl bg-emerald-50 px-3 py-2 dark:bg-emerald-950/50">
-            <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-400">
-              Active profile
-            </p>
-            <div className="mt-1 flex min-h-11 items-center gap-3 text-sm">
-              <ProfileAvatar
-                avatarId={displayProfile.avatarId}
-                avatarColor={displayProfile.avatarColor}
-                size="md"
-              />
-              <span className="font-medium">{displayProfile.name}</span>
-            </div>
-          </div>
-        )}
-
-        <Link
-          href="/profiles"
-          role="menuitem"
-          className="mb-1 flex min-h-11 w-full items-center justify-center rounded-xl px-3 py-2 text-sm font-semibold text-emerald-700 transition-colors hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950/50"
-          onClick={onClose}
-        >
-          {hydrated && profiles.length === 0 ? "Create profile" : "Manage profiles"}
-        </Link>
-
-        <Link
-          href="/stats"
-          role="menuitem"
-          aria-current={pathname.startsWith("/stats") ? "page" : undefined}
-          className={cn(
-            "mb-1 flex min-h-11 items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors hover:bg-slate-50 dark:hover:bg-slate-800",
-            pathname.startsWith("/stats")
-              ? "text-teal-700 dark:text-teal-300"
-              : "text-slate-700 dark:text-slate-200",
-          )}
-          onClick={onClose}
-        >
-          <span className="text-lg leading-none" aria-hidden>📊</span>
-          Stats
-        </Link>
-
-        {inactiveProfiles.length > 0 && (
-          <div>
-            <p className="px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-              Switch profile
-            </p>
-            {inactiveProfiles.map((profile) => (
-              <button
-                key={profile.id}
-                type="button"
-                role="menuitem"
-                onClick={() => {
-                  onSwitchProfile(profile.id);
-                  onClose();
-                }}
-                className="flex min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-800"
-              >
+        <div className="rounded-xl bg-slate-50 p-1 dark:bg-slate-800/60">
+          {displayProfile && (
+            <div className="rounded-lg bg-emerald-50 px-3 py-2 dark:bg-emerald-950/50">
+              <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-400">
+                Active profile
+              </p>
+              <div className="mt-1 flex min-h-11 items-center gap-3 text-sm">
                 <ProfileAvatar
-                  avatarId={profile.avatarId}
-                  avatarColor={profile.avatarColor}
+                  avatarId={displayProfile.avatarId}
+                  avatarColor={displayProfile.avatarColor}
                   size="md"
                 />
-                <span className="font-medium">{profile.name}</span>
-              </button>
-            ))}
-          </div>
-        )}
+                <span className="min-w-0 flex-1 truncate font-medium">{displayProfile.name}</span>
+                <Link
+                  href="/stats"
+                  role="menuitem"
+                  aria-current={pathname.startsWith("/stats") ? "page" : undefined}
+                  aria-label="Stats"
+                  className={cn(
+                    "inline-flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-colors",
+                    pathname.startsWith("/stats")
+                      ? "bg-teal-100 text-teal-800 dark:bg-teal-950/60 dark:text-teal-200"
+                      : "bg-white/80 text-slate-700 hover:bg-white dark:bg-slate-800/80 dark:text-slate-200 dark:hover:bg-slate-700",
+                  )}
+                  onClick={onClose}
+                >
+                  <span className="text-sm leading-none" aria-hidden>
+                    📊
+                  </span>
+                  Stats
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {!displayProfile && (
+            <Link
+              href="/stats"
+              role="menuitem"
+              aria-current={pathname.startsWith("/stats") ? "page" : undefined}
+              className={cn(
+                "flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-white/80 dark:hover:bg-slate-700/80",
+                pathname.startsWith("/stats")
+                  ? "text-teal-700 dark:text-teal-300"
+                  : "text-slate-700 dark:text-slate-200",
+              )}
+              onClick={onClose}
+            >
+              <span className="text-lg leading-none" aria-hidden>
+                📊
+              </span>
+              Stats
+            </Link>
+          )}
+
+          {inactiveProfiles.length > 0 && (
+            <div className="mt-1">
+              <p className="px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                Switch profile
+              </p>
+              {inactiveProfiles.map((profile) => (
+                <button
+                  key={profile.id}
+                  type="button"
+                  role="menuitem"
+                  onClick={() => {
+                    onSwitchProfile(profile.id);
+                    onClose();
+                  }}
+                  className="flex min-h-11 w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm hover:bg-white/80 dark:hover:bg-slate-700/80"
+                >
+                  <ProfileAvatar
+                    avatarId={profile.avatarId}
+                    avatarColor={profile.avatarColor}
+                    size="md"
+                  />
+                  <span className="font-medium">{profile.name}</span>
+                </button>
+              ))}
+            </div>
+          )}
+
+          <Link
+            href="/profiles"
+            role="menuitem"
+            className="mt-1 flex min-h-11 w-full items-center justify-center rounded-lg px-3 py-2 text-sm font-semibold text-emerald-700 transition-colors hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950/50"
+            onClick={onClose}
+          >
+            {hydrated && profiles.length === 0 ? "Create profile" : "Manage profiles"}
+          </Link>
+        </div>
       </div>
 
       <div className="border-t border-slate-100 dark:border-slate-800">
@@ -271,11 +295,11 @@ export function ProfileSwitcher({ compact = false }: { compact?: boolean }) {
           role="menu"
           className={cn(
             MENU_PANEL_CLASS,
-            "absolute right-0 z-50 mt-2 max-h-[min(32rem,calc(100dvh-6rem))]",
+            "absolute right-0 z-50 mt-2 max-h-[calc(100dvh-5rem)]",
             MENU_PANEL_WIDTH,
           )}
         >
-          <div className="max-h-[min(32rem,calc(100dvh-6rem))] overflow-y-auto overscroll-contain">
+          <div className="max-h-[calc(100dvh-5rem)] overflow-y-auto overscroll-contain">
             {menuPanelContent}
           </div>
         </div>

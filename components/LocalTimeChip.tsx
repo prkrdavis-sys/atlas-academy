@@ -33,7 +33,12 @@ export function LocalTimeChip({ timeZone }: LocalTimeChipProps) {
 
   return (
     <div className="rounded-2xl border-2 border-slate-200 bg-white/80 p-4 dark:border-slate-700 dark:bg-slate-900/80">
-      <dt className="text-xs font-bold text-slate-500 dark:text-slate-400">Local time</dt>
+      <dt className="flex items-start gap-1 text-xs font-bold text-slate-500 dark:text-slate-400">
+        <span aria-hidden="true" className="shrink-0 text-sm leading-none">
+          🕒
+        </span>
+        <span>Local time</span>
+      </dt>
       <dd className="mt-1 font-display text-base font-extrabold leading-snug text-slate-900 dark:text-slate-100 sm:text-lg">
         <span className="block tabular-nums">{clock}</span>
         <span className="mt-0.5 block text-xs font-bold text-slate-500 dark:text-slate-400 sm:text-sm">
