@@ -172,7 +172,7 @@ function InlineLearnCard({
     >
       <div
         className={cn(
-          "shrink-0 border-b px-4 py-2.5 text-center sm:px-6 sm:py-3",
+          "shrink-0 border-b px-3 py-2 text-center sm:px-6 sm:py-3",
           wasCorrect
             ? "border-emerald-100 bg-emerald-50/80 dark:border-emerald-900/60 dark:bg-emerald-950/30"
             : "border-rose-100 bg-rose-50/80 dark:border-rose-900/60 dark:bg-rose-950/30",
@@ -183,21 +183,29 @@ function InlineLearnCard({
         </p>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4 py-3 sm:hidden">
-        {country.hasFlag && (
-          <div className="mb-2.5 flex shrink-0 justify-center">
-            <FlagImage
-              code={country.code}
-              alt={country.name}
-              width={240}
-              frame="md"
-              className="mx-auto block w-full max-w-[11rem]"
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden px-3 py-2 sm:hidden">
+        {/* Visuals shrink first on short phones so Capital/Population/Language never clip. */}
+        <div className="flex min-h-0 flex-1 flex-col justify-center gap-1.5 overflow-hidden">
+          {country.hasFlag && (
+            <div className="flex min-h-0 shrink justify-center">
+              <FlagImage
+                code={country.code}
+                alt={country.name}
+                width={240}
+                frame="md"
+                className="mx-auto block h-auto max-h-[4.75rem] w-full max-w-[8rem] object-contain"
+              />
+            </div>
+          )}
+
+          <div className="min-h-0 w-full shrink overflow-hidden">
+            <PlaceContextMap
+              country={country}
+              variant="learn"
+              highlightNeighbors
+              className="min-h-0 max-h-[5.25rem]"
             />
           </div>
-        )}
-
-        <div className="mb-3 w-full shrink-0">
-          <PlaceContextMap country={country} variant="learn" highlightNeighbors />
         </div>
 
         {compareCountryCode && (
@@ -208,29 +216,39 @@ function InlineLearnCard({
           />
         )}
 
-        <dl className="grid w-full shrink-0 grid-cols-2 content-start gap-x-6 gap-y-3 self-stretch pb-1 text-sm">
-          <div>
-            <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Capital</dt>
-            <dd className="mt-1 text-base font-semibold text-slate-800 dark:text-slate-200">{country.capital || "N/A"}</dd>
+        <dl className="mt-2 grid w-full shrink-0 grid-cols-2 content-start gap-x-4 gap-y-2 self-stretch text-sm">
+          <div className="min-w-0">
+            <dt className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+              Capital
+            </dt>
+            <dd className="mt-0.5 text-sm font-semibold leading-snug text-slate-800 dark:text-slate-200">
+              {country.capital || "N/A"}
+            </dd>
           </div>
-          <div>
-            <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Region</dt>
-            <dd className="mt-1 text-base font-semibold text-slate-800 dark:text-slate-200">
+          <div className="min-w-0">
+            <dt className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+              Region
+            </dt>
+            <dd className="mt-0.5 text-sm font-semibold leading-snug text-slate-800 dark:text-slate-200">
               <RegionValue country={country} isState={isState} />
             </dd>
           </div>
           {!compareCountryCode && (
-            <div>
-              <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Population</dt>
-              <dd className="mt-1 text-base font-semibold text-slate-800 dark:text-slate-200">{formatPopulation(country.population)}</dd>
+            <div className="min-w-0">
+              <dt className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                Population
+              </dt>
+              <dd className="mt-0.5 text-sm font-semibold leading-snug text-slate-800 dark:text-slate-200">
+                {formatPopulation(country.population)}
+              </dd>
             </div>
           )}
-          <div className={compareCountryCode ? "col-span-2" : ""}>
+          <div className={cn("min-w-0", compareCountryCode ? "col-span-2" : "")}>
             <LanguageOrNeighbors
               country={country}
               isState={isState}
-              dtClassName="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400"
-              ddClassName="mt-1 text-base font-semibold text-slate-800 dark:text-slate-200"
+              dtClassName="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400"
+              ddClassName="mt-0.5 text-sm font-semibold leading-snug text-slate-800 dark:text-slate-200"
             />
           </div>
         </dl>
@@ -305,7 +323,7 @@ function InlineLearnCard({
         />
       </div>
 
-      <p className="shrink-0 border-t border-slate-100 px-4 py-2.5 text-center text-xs font-medium text-slate-400 dark:border-slate-800 dark:text-slate-500 sm:px-6 sm:py-2">
+      <p className="shrink-0 border-t border-slate-100 px-3 py-2 text-center text-xs font-medium text-slate-400 dark:border-slate-800 dark:text-slate-500 sm:px-6 sm:py-2">
         Tap anywhere to continue
       </p>
     </div>

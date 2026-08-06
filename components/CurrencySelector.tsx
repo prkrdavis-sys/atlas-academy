@@ -29,10 +29,10 @@ export function CurrencySelector() {
   const asOfDate = formatAsOfDate(ratesAsOf);
 
   return (
-    <div className="border-b border-slate-100 px-3 py-3 dark:border-slate-800">
+    <div className="border-t border-slate-100 px-2.5 py-2.5 dark:border-slate-800">
       <label
         htmlFor="base-currency"
-        className="mb-2 block text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400"
+        className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200"
       >
         Base currency
       </label>
@@ -42,7 +42,7 @@ export function CurrencySelector() {
         onChange={(event) => setCurrency(event.target.value)}
         disabled={!hydrated || !ratesReady}
         className={cn(
-          "min-h-11 w-full rounded-xl border-2 border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-700 outline-none transition-colors focus:border-teal-400 focus:ring-2 focus:ring-teal-200 disabled:cursor-wait disabled:opacity-70 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:focus:border-teal-500 dark:focus:ring-teal-900/60",
+          "min-h-10 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 outline-none transition-colors focus:border-teal-400 focus:ring-2 focus:ring-teal-200 disabled:cursor-wait disabled:opacity-70 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:focus:border-teal-500 dark:focus:ring-teal-900/60",
         )}
         aria-describedby="base-currency-status"
       >
@@ -54,7 +54,7 @@ export function CurrencySelector() {
       </select>
       <p
         id="base-currency-status"
-        className="mt-2 text-xs font-semibold leading-relaxed text-slate-500 dark:text-slate-400"
+        className="mt-1.5 text-xs leading-relaxed text-slate-500 dark:text-slate-400"
         aria-live="polite"
       >
         {ratesLoading && !ratesReady
@@ -64,17 +64,18 @@ export function CurrencySelector() {
               ? ratesError
               : "Rates unavailable. USD values remain in use."
             : asOfDate
-              ? `Reference rates as of ${asOfDate}.`
+              ? `Rates as of ${asOfDate}.`
               : "Daily reference rates."}
+        {" "}
+        <a
+          href="https://frankfurter.dev/"
+          target="_blank"
+          rel="noreferrer"
+          className="font-semibold text-teal-700 underline decoration-teal-300 underline-offset-2 hover:text-teal-900 dark:text-teal-300 dark:decoration-teal-700 dark:hover:text-teal-100"
+        >
+          Frankfurter
+        </a>
       </p>
-      <a
-        href="https://frankfurter.dev/"
-        target="_blank"
-        rel="noreferrer"
-        className="mt-1 inline-flex min-h-8 items-center text-xs font-bold text-teal-700 underline decoration-teal-300 underline-offset-2 hover:text-teal-900 dark:text-teal-300 dark:decoration-teal-700 dark:hover:text-teal-100"
-      >
-        Rates by Frankfurter
-      </a>
     </div>
   );
 }

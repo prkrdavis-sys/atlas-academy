@@ -24,7 +24,7 @@ function getAvatarSelection(avatarId: ProfileAvatarId): ProfileAvatarSelection {
 
 export default function ProfilesPage() {
   const router = useRouter();
-  const { user, signOut } = useAuth();
+  const { user, isGuest, signOut, exitGuest } = useAuth();
   const { profiles, activeProfile, hydrated, addProfile, switchProfile, removeProfile, updateProfile, refresh } =
     useProfiles();
   const [name, setName] = useState("");
@@ -102,6 +102,11 @@ export default function ProfilesPage() {
   async function handleLogout() {
     setAccountError("");
     setLoggingOut(true);
+    if (isGuest) {
+      exitGuest();
+      setLoggingOut(false);
+      return;
+    }
     const result = await signOut();
     setLoggingOut(false);
     if (result.error) {
@@ -415,14 +420,14 @@ export default function ProfilesPage() {
                 <div className="flex items-end justify-between gap-3">
                   <div className="min-w-0">
                     <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                      Account username
+                      {isGuest ? "Account" : "Account username"}
                     </p>
                     <p className="mt-1 truncate text-sm font-medium text-slate-800 dark:text-slate-200">
-                      {user?.email ?? "Unavailable"}
+                      {isGuest ? "Guest (this device only)" : (user?.email ?? "Unavailable")}
                     </p>
                   </div>
                   <Button type="button" variant="secondary" onClick={handleLogout} disabled={loggingOut}>
-                    {loggingOut ? "Logging out…" : "Log out"}
+                    {loggingOut ? "Logging out…" : isGuest ? "Exit guest" : "Log out"}
                   </Button>
                 </div>
                 {accountError && (

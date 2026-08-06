@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import type { Session, User } from "@supabase/supabase-js";
+import { isGuestModeEnabled, setGuestModeEnabled } from "@/lib/guest-mode";
 import { createClient } from "@/lib/supabase/client";
 
 type AuthActionResult = {
@@ -20,6 +21,9 @@ type AuthContextValue = {
   user: User | null;
   session: Session | null;
   hydrated: boolean;
+  isGuest: boolean;
+  continueAsGuest: () => void;
+  exitGuest: () => void;
   signIn: (email: string, password: string) => Promise<AuthActionResult>;
   signUp: (email: string, password: string) => Promise<AuthActionResult>;
   signOut: () => Promise<AuthActionResult>;
@@ -32,9 +36,14 @@ function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : "Something went wrong. Please try again.";
 }
 
+function clearGuestMode() {
+  setGuestModeEnabled(false);
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
+  const [isGuest, setIsGuest] = useState(false);
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
@@ -45,9 +54,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (error) {
         setUser(null);
         setSession(null);
+        setIsGuest(isGuestModeEnabled());
       } else {
+        const nextUser = data.session?.user ?? null;
         setSession(data.session);
-        setUser(data.session?.user ?? null);
+        setUser(nextUser);
+        if (nextUser) {
+          clearGuestMode();
+          setIsGuest(false);
+        } else {
+          setIsGuest(isGuestModeEnabled());
+        }
       }
       setHydrated(true);
     });
@@ -56,8 +73,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, nextSession) => {
       if (!mounted) return;
+      const nextUser = nextSession?.user ?? null;
       setSession(nextSession);
-      setUser(nextSession?.user ?? null);
+      setUser(nextUser);
+      if (nextUser) {
+        clearGuestMode();
+        setIsGuest(false);
+      } else {
+        setIsGuest(isGuestModeEnabled());
+      }
       setHydrated(true);
     });
 
@@ -67,11 +91,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  const continueAsGuest = useCallback(() => {
+    setGuestModeEnabled(true);
+    setIsGuest(true);
+  }, []);
+
+  const exitGuest = useCallback(() => {
+    clearGuestMode();
+    setIsGuest(false);
+  }, []);
+
   const signIn = useCallback(async (email: string, password: string): Promise<AuthActionResult> => {
     const { error } = await supabase.auth.signInWithPassword({
       email: email.trim(),
       password,
     });
+
+    if (!error) {
+      clearGuestMode();
+      setIsGuest(false);
+    }
 
     return { error: error?.message ?? null };
   }, []);
@@ -83,6 +122,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     if (error) return { error: error.message };
+    if (data.session) {
+      clearGuestMode();
+      setIsGuest(false);
+    }
     return {
       error: null,
       needsConfirmation: !data.session,
@@ -90,13 +133,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signOut = useCallback(async (): Promise<AuthActionResult> => {
+    clearGuestMode();
+    setIsGuest(false);
     const { error } = await supabase.auth.signOut();
     return { error: error ? getErrorMessage(error) : null };
   }, []);
 
   const value = useMemo(
-    () => ({ user, session, hydrated, signIn, signUp, signOut }),
-    [user, session, hydrated, signIn, signUp, signOut],
+    () => ({
+      user,
+      session,
+      hydrated,
+      isGuest,
+      continueAsGuest,
+      exitGuest,
+      signIn,
+      signUp,
+      signOut,
+    }),
+    [user, session, hydrated, isGuest, continueAsGuest, exitGuest, signIn, signUp, signOut],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

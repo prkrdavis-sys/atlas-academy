@@ -17,6 +17,7 @@ import { CurrencySelector } from "@/components/CurrencySelector";
 
 const MENU_PANEL_CLASS =
   "overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl dark:border-slate-700 dark:bg-slate-900";
+const MENU_PANEL_WIDTH = "w-[min(24rem,calc(100vw-2rem))]";
 
 /**
  * The "main menu": the header profile dropdown that holds app-wide toggles
@@ -62,6 +63,15 @@ function MenuPanelContent({
         )}
 
         <Link
+          href="/profiles"
+          role="menuitem"
+          className="mb-1 flex min-h-11 w-full items-center justify-center rounded-xl px-3 py-2 text-sm font-semibold text-emerald-700 transition-colors hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950/50"
+          onClick={onClose}
+        >
+          {hydrated && profiles.length === 0 ? "Create profile" : "Manage profiles"}
+        </Link>
+
+        <Link
           href="/stats"
           role="menuitem"
           aria-current={pathname.startsWith("/stats") ? "page" : undefined}
@@ -105,25 +115,20 @@ function MenuPanelContent({
         )}
       </div>
 
-      <div className="border-b border-slate-100 dark:border-slate-800">
+      <div className="border-t border-slate-100 dark:border-slate-800">
+        <div className="p-1">
+          <ThemeToggle variant="menu" />
+          <div className="grid grid-cols-2 gap-0.5">
+            <SoundToggle />
+            <HapticsToggle />
+          </div>
+          <div className="grid grid-cols-2 gap-0.5">
+            <ShowMapProgressToggle />
+            <GlobeDayNightToggle />
+          </div>
+          <GlobeUsModeToggle />
+        </div>
         <CurrencySelector />
-        <ThemeToggle variant="menu" />
-        <SoundToggle />
-        <HapticsToggle />
-        <ShowMapProgressToggle />
-        <GlobeDayNightToggle />
-        <GlobeUsModeToggle />
-      </div>
-
-      <div className="p-2">
-        <Link
-          href="/profiles"
-          role="menuitem"
-          className="flex min-h-11 w-full items-center justify-center rounded-xl px-3 py-2 text-sm font-semibold text-emerald-700 transition-colors hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950/50"
-          onClick={onClose}
-        >
-          {hydrated && profiles.length === 0 ? "Create profile" : "Manage profiles"}
-        </Link>
       </div>
     </>
   );
@@ -248,7 +253,8 @@ export function ProfileSwitcher({ compact = false }: { compact?: boolean }) {
                 role="menu"
                 className={cn(
                   MENU_PANEL_CLASS,
-                  "absolute right-4 top-[calc(env(safe-area-inset-top)+3.75rem)] z-10 flex w-[min(20rem,calc(100vw-2rem))] max-h-[calc(100dvh-env(safe-area-inset-top)-4.5rem-env(safe-area-inset-bottom)-0.75rem)] flex-col",
+                  "absolute right-4 top-[calc(env(safe-area-inset-top)+3.75rem)] z-10 flex max-h-[calc(100dvh-env(safe-area-inset-top)-4.5rem-env(safe-area-inset-bottom)-0.75rem)] flex-col",
+                  MENU_PANEL_WIDTH,
                 )}
               >
                 <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
@@ -265,7 +271,8 @@ export function ProfileSwitcher({ compact = false }: { compact?: boolean }) {
           role="menu"
           className={cn(
             MENU_PANEL_CLASS,
-            "absolute right-0 z-50 mt-2 w-[min(20rem,calc(100vw-2rem))] max-h-[min(32rem,calc(100dvh-6rem))]",
+            "absolute right-0 z-50 mt-2 max-h-[min(32rem,calc(100dvh-6rem))]",
+            MENU_PANEL_WIDTH,
           )}
         >
           <div className="max-h-[min(32rem,calc(100dvh-6rem))] overflow-y-auto overscroll-contain">

@@ -608,7 +608,7 @@ export function PlaceContextMap({
         variant === "compact"
           ? "h-20 sm:h-24"
           : variant === "learn"
-            ? "aspect-[11/5] w-full min-h-[9rem] sm:min-h-[7rem]"
+            ? "aspect-[11/5] w-full min-h-[5rem] sm:min-h-[7rem]"
             : "aspect-[16/10] w-full",
         interactive && "touch-none",
         className,

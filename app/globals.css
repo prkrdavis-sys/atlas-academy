@@ -6,6 +6,8 @@
   --background: #f2f8f4;
   --foreground: #1e293b;
   --app-header-offset: calc(3.5rem + env(safe-area-inset-top));
+  /* Tab row (4rem) + home-indicator safe area — keep in sync with MobileBottomDock nav. */
+  --app-bottom-nav-offset: calc(4rem + env(safe-area-inset-bottom, 0px));
   color-scheme: light;
 }
 
@@ -13,6 +15,10 @@
   --background: #0f172a;
   --foreground: #e2e8f0;
   color-scheme: dark;
+}
+
+html {
+  background-color: var(--background);
 }
 
 @theme inline {

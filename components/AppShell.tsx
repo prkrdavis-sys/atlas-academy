@@ -12,21 +12,25 @@ import { cn } from "@/lib/utils";
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, hydrated: authHydrated } = useAuth();
+  const { user, isGuest, hydrated: authHydrated } = useAuth();
   const { syncError } = useProfiles();
   const isAuthRoute = pathname === "/auth";
+  const isDevPreviewRoute = pathname.startsWith("/dev/");
   const isActiveGameRoute = pathname.startsWith("/play/") && !pathname.startsWith("/play/setup");
   // Home and map share one persistent globe page that slides between panes.
   const isGlobeExperienceRoute = pathname === "/" || isMapRoute(pathname);
+  const canAccessApp = Boolean(user) || isGuest;
 
   useEffect(() => {
     if (!authHydrated) return;
-    if (!user && !isAuthRoute) {
+    if (!canAccessApp && !isAuthRoute && !isDevPreviewRoute) {
       router.replace("/auth");
     } else if (user && isAuthRoute) {
       router.replace("/");
+    } else if (isGuest && isAuthRoute) {
+      router.replace("/profiles");
     }
-  }, [authHydrated, isAuthRoute, router, user]);
+  }, [authHydrated, canAccessApp, isAuthRoute, isDevPreviewRoute, isGuest, router, user]);
 
   if (!authHydrated) {
     return (
@@ -36,11 +40,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (isAuthRoute) {
+  if (isAuthRoute || isDevPreviewRoute) {
     return <main id="main-content">{children}</main>;
   }
 
-  if (!user) {
+  if (!canAccessApp) {
     return (
       <main className="flex min-h-dvh items-center justify-center bg-slate-950 text-sm text-slate-300">
         Redirecting to sign in…

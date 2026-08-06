@@ -5,6 +5,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { GameActionButton } from "@/components/GameActionButton";
 import { GameSetupPanel } from "@/components/GameSetupPanel";
+import { MobileBottomDock } from "@/components/MobileBottomDock";
 import { ScopeSelector } from "@/components/ScopeSelector";
 import { useProfiles, useRequiredProfile } from "@/components/ProfileProvider";
 import type { GameSetupDraft } from "@/lib/game-setup";
@@ -237,15 +238,24 @@ export function GameModeSettingsPageContent({ mode }: GameModeSettingsPageConten
           }
         />
 
-      <div className="fixed inset-x-0 bottom-[calc(4.25rem+env(safe-area-inset-bottom))] z-30 px-4 sm:static sm:px-0 sm:pb-0">
+      <div className="hidden sm:block">
         <button
           type="button"
           onClick={handleDone}
-          className="mx-auto flex min-h-11 w-full max-w-5xl items-center justify-center rounded-2xl border-2 border-slate-200 bg-white px-6 py-2.5 font-display text-sm font-extrabold text-slate-700 transition-colors hover:border-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 sm:max-w-md"
+          className="mx-auto flex min-h-11 w-full max-w-md items-center justify-center rounded-2xl border-2 border-slate-200 bg-white px-6 py-2.5 font-display text-sm font-extrabold text-slate-700 transition-colors hover:border-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
         >
           Save & return home
         </button>
       </div>
+      <MobileBottomDock className="z-30" barClassName="px-4 pb-[calc(4.25rem+env(safe-area-inset-bottom))]">
+        <button
+          type="button"
+          onClick={handleDone}
+          className="mx-auto flex min-h-11 w-full max-w-5xl items-center justify-center rounded-2xl border-2 border-slate-200 bg-white px-6 py-2.5 font-display text-sm font-extrabold text-slate-700 transition-colors hover:border-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+        >
+          Save & return home
+        </button>
+      </MobileBottomDock>
     </div>
   );
 }

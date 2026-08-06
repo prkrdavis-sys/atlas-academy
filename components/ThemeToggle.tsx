@@ -91,14 +91,16 @@ export function ThemeToggle({ className, variant = "icon" }: ThemeToggleProps) {
   if (!ready) {
     if (variant === "menu") {
       return (
-        <div className={cn("px-3 py-2", className)} suppressHydrationWarning>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-            Appearance
-          </p>
-          <div className="grid h-11 grid-cols-3 gap-1 rounded-xl bg-slate-100 p-1 dark:bg-slate-800">
-            <span className="rounded-lg" />
-            <span className="rounded-lg" />
-            <span className="rounded-lg" />
+        <div className={cn("px-2.5 py-2", className)} suppressHydrationWarning>
+          <div className="mb-1.5 flex items-center justify-between gap-2">
+            <p className="text-sm font-medium text-slate-700 dark:text-slate-200">
+              Appearance
+            </p>
+            <div className="grid h-8 w-[9.5rem] grid-cols-3 gap-0.5 rounded-full bg-slate-100 p-0.5 dark:bg-slate-800">
+              <span className="rounded-full" />
+              <span className="rounded-full" />
+              <span className="rounded-full" />
+            </div>
           </div>
         </div>
       );
@@ -117,13 +119,21 @@ export function ThemeToggle({ className, variant = "icon" }: ThemeToggleProps) {
   }
 
   if (variant === "menu") {
+    const segmentClass = (selected: boolean) =>
+      cn(
+        "flex items-center justify-center rounded-full transition-colors",
+        selected
+          ? "bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-slate-100"
+          : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200",
+      );
+
     return (
-      <div className={cn("px-3 py-2", className)}>
-        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+      <div className={cn("flex min-h-11 items-center justify-between gap-2 px-2.5 py-2", className)}>
+        <p className="text-sm font-medium text-slate-700 dark:text-slate-200">
           Appearance
         </p>
         <div
-          className="grid h-11 grid-cols-3 gap-1 rounded-xl bg-slate-100 p-1 dark:bg-slate-800"
+          className="grid h-8 w-[9.5rem] shrink-0 grid-cols-3 gap-0.5 rounded-full bg-slate-100 p-0.5 dark:bg-slate-800"
           role="group"
           aria-label="Theme"
         >
@@ -131,43 +141,28 @@ export function ThemeToggle({ className, variant = "icon" }: ThemeToggleProps) {
             type="button"
             onClick={() => setTheme("light")}
             aria-pressed={preference === "light"}
-            className={cn(
-              "flex items-center justify-center gap-1 rounded-lg text-sm font-medium transition-colors",
-              preference === "light"
-                ? "bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-slate-100"
-                : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200",
-            )}
+            aria-label="Light"
+            className={segmentClass(preference === "light")}
           >
-            <LightIcon className="h-4 w-4 shrink-0" />
-            Light
+            <LightIcon className="h-4 w-4" />
           </button>
           <button
             type="button"
             onClick={() => setTheme("system")}
             aria-pressed={preference === "system"}
-            className={cn(
-              "flex items-center justify-center gap-1 rounded-lg text-sm font-medium transition-colors",
-              preference === "system"
-                ? "bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-slate-100"
-                : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200",
-            )}
+            aria-label="Auto"
+            className={segmentClass(preference === "system")}
           >
-            <AutoIcon className="h-4 w-4 shrink-0" />
-            Auto
+            <AutoIcon className="h-4 w-4" />
           </button>
           <button
             type="button"
             onClick={() => setTheme("dark")}
             aria-pressed={preference === "dark"}
-            className={cn(
-              "flex items-center justify-center gap-1 rounded-lg text-sm font-medium transition-colors",
-              preference === "dark"
-                ? "bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-slate-100"
-                : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200",
-            )}
+            aria-label="Dark"
+            className={segmentClass(preference === "dark")}
           >
-            <DarkIcon className="h-4 w-4 shrink-0" />
-            Dark
+            <DarkIcon className="h-4 w-4" />
           </button>
         </div>
       </div>

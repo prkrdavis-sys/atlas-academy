@@ -132,7 +132,8 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     setStorageAccount(nextUserId);
 
     if (!nextUserId) {
-      setState(EMPTY_STATE);
+      // Guest / signed-out: progress lives in the anonymous localStorage key.
+      setState(loadState());
       setHydrated(true);
       return () => {
         cancelled = true;

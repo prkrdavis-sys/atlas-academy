@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Suspense } from "react";
 import { HeaderStreakChip } from "@/components/HeaderStreakChip";
 import { LibraryScrollKeeper } from "@/components/LibraryScrollKeeper";
+import { MobileBottomDock } from "@/components/MobileBottomDock";
 import { PlayModeSwitcher } from "@/components/PlayModeSwitcher";
 import { ProfileSwitcher } from "@/components/ProfileSwitcher";
 import { getPrimaryNavHref, isExploreRoute } from "@/lib/navigation";
@@ -61,33 +62,41 @@ export function AppHeader() {
         </div>
       </header>
 
-      <nav
-        aria-label="Primary navigation"
-        className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200/90 bg-white/92 pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_30px_rgb(15_23_42_/_0.08)] backdrop-blur-xl dark:border-slate-700/90 dark:bg-slate-900/92 dark:shadow-[0_-8px_30px_rgb(0_0_0_/_0.3)] sm:hidden"
-      >
-        <div className="mx-auto grid h-16 max-w-md grid-cols-3 px-2">
-          {MOBILE_NAV_ITEMS.map((item) => {
-            const href = item.href === "library" ? libraryHref : item.href;
-            const active = isMobileNavItemActive(pathname, item);
-            return (
-              <Link
-                key={item.label}
-                href={href}
-                scroll={item.href === "library" && !onLibraryTab ? false : undefined}
-                aria-current={active ? "page" : undefined}
-                className={cn(
-                  "relative flex min-h-11 flex-col items-center justify-center gap-0.5 rounded-xl text-[11px] font-bold transition-colors active:bg-slate-100 dark:active:bg-slate-800",
-                  active ? "text-teal-700 dark:text-teal-300" : "text-slate-500 dark:text-slate-400",
-                )}
-              >
-                <span className="text-xl leading-none" aria-hidden>{item.icon}</span>
-                <span>{item.label}</span>
-                {active && <span className="absolute bottom-1 h-1 w-5 rounded-full bg-teal-600 dark:bg-teal-400" />}
-              </Link>
-            );
-          })}
-        </div>
-      </nav>
+      <MobileBottomDock>
+        <nav
+          aria-label="Primary navigation"
+          className="relative pb-[env(safe-area-inset-bottom)]"
+        >
+          {/* Glass on an absolute child so Safari 26 Liquid Glass doesn't sample
+              background/backdrop-filter from the fixed shell itself. */}
+          <div
+            aria-hidden
+            className="absolute inset-0 border-t border-slate-200/90 bg-white/92 shadow-[0_-8px_30px_rgb(15_23_42_/_0.08)] backdrop-blur-xl dark:border-slate-700/90 dark:bg-slate-900/92 dark:shadow-[0_-8px_30px_rgb(0_0_0_/_0.3)]"
+          />
+          <div className="relative mx-auto grid h-16 max-w-md grid-cols-3 px-2">
+            {MOBILE_NAV_ITEMS.map((item) => {
+              const href = item.href === "library" ? libraryHref : item.href;
+              const active = isMobileNavItemActive(pathname, item);
+              return (
+                <Link
+                  key={item.label}
+                  href={href}
+                  scroll={item.href === "library" && !onLibraryTab ? false : undefined}
+                  aria-current={active ? "page" : undefined}
+                  className={cn(
+                    "relative flex min-h-11 flex-col items-center justify-center gap-0.5 rounded-xl text-[11px] font-bold transition-colors active:bg-slate-100 dark:active:bg-slate-800",
+                    active ? "text-teal-700 dark:text-teal-300" : "text-slate-500 dark:text-slate-400",
+                  )}
+                >
+                  <span className="text-xl leading-none" aria-hidden>{item.icon}</span>
+                  <span>{item.label}</span>
+                  {active && <span className="absolute bottom-1 h-1 w-5 rounded-full bg-teal-600 dark:bg-teal-400" />}
+                </Link>
+              );
+            })}
+          </div>
+        </nav>
+      </MobileBottomDock>
     </>
   );
 }

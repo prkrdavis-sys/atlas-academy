@@ -9,7 +9,7 @@ type AuthMode = "sign-in" | "sign-up";
 
 export function AuthScreen() {
   const router = useRouter();
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, continueAsGuest } = useAuth();
   const [mode, setMode] = useState<AuthMode>("sign-in");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,6 +26,13 @@ export function AuthScreen() {
     setMessage("");
     setPassword("");
     setConfirmPassword("");
+  }
+
+  function handleContinueAsGuest() {
+    setError("");
+    setMessage("");
+    continueAsGuest();
+    router.push("/profiles");
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -76,7 +83,7 @@ export function AuthScreen() {
             Atlas Academy
           </h1>
           <p className="mt-2 text-sm text-teal-100">
-            Sign in to keep every profile, streak, and stat with you.
+            Sign in to sync progress across devices, or continue as a guest on this device.
           </p>
         </div>
 
@@ -182,6 +189,26 @@ export function AuthScreen() {
               {busy ? "Please wait…" : isSignUp ? "Create account" : "Sign in"}
             </Button>
           </form>
+
+          <div className="mt-5 flex items-center gap-3" aria-hidden>
+            <div className="h-px flex-1 bg-slate-200 dark:bg-slate-700" />
+            <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">or</span>
+            <div className="h-px flex-1 bg-slate-200 dark:bg-slate-700" />
+          </div>
+
+          <Button
+            type="button"
+            variant="secondary"
+            size="lg"
+            className="mt-5 w-full"
+            onClick={handleContinueAsGuest}
+            disabled={busy}
+          >
+            Sign in as guest
+          </Button>
+          <p className="mt-3 text-center text-xs text-slate-500 dark:text-slate-400">
+            Guest progress stays on this device only. You can create an account later to sync it.
+          </p>
         </section>
       </main>
     </div>
