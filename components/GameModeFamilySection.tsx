@@ -19,8 +19,6 @@ export function GameModeFamilySection({
   twists,
   scope,
 }: GameModeFamilySectionProps) {
-  const modeCount = primary.length + twists.length;
-
   return (
     <section className="rounded-2xl bg-slate-100/80 p-3 dark:bg-slate-950/50 sm:p-4">
       <div className="flex items-center gap-3">
@@ -30,14 +28,9 @@ export function GameModeFamilySection({
         >
           {icon}
         </span>
-        <div className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-2">
-          <h2 className="font-display text-base font-extrabold text-slate-900 dark:text-slate-100 sm:text-lg">
-            {title}
-          </h2>
-          <span className="text-xs font-semibold text-slate-400 dark:text-slate-500">
-            {modeCount} {modeCount === 1 ? "mode" : "modes"}
-          </span>
-        </div>
+        <h2 className="min-w-0 flex-1 font-display text-base font-extrabold text-slate-900 dark:text-slate-100 sm:text-lg">
+          {title}
+        </h2>
       </div>
 
       <div className="mt-3 grid gap-2 sm:grid-cols-2">
