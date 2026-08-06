@@ -40,6 +40,56 @@ export const GLOBE_ATMOSPHERE_SEGMENTS_BY_TIER: Record<GlobePerfTier, number> = 
   desktop: 48,
 };
 
+/** Cloud clusters drifting in the low atmosphere. Deliberately sparse. */
+export const GLOBE_CLOUD_COUNT_BY_TIER: Record<GlobePerfTier, number> = {
+  phone: 6,
+  tablet: 10,
+  desktop: 14,
+};
+
+/** Edge length of the shared tiling cloud-noise canvas texture. */
+export const GLOBE_CLOUD_NOISE_SIZE_BY_TIER: Record<GlobePerfTier, number> = {
+  phone: 256,
+  tablet: 512,
+  desktop: 512,
+};
+
+/** Which ISS sub-assemblies to build. Phones get the silhouette only. */
+export type GlobeIssDetail = {
+  /** Truss segments per side of the central stack. */
+  trussSegments: number;
+  radiators: boolean;
+  dockedCapsule: boolean;
+  /** Side modules beyond the core stack (Columbus, Kibo, airlock). */
+  sideModules: boolean;
+  /** Radial segments for module cylinders. */
+  cylinderSegments: number;
+};
+
+export const GLOBE_ISS_DETAIL_BY_TIER: Record<GlobePerfTier, GlobeIssDetail> = {
+  phone: {
+    trussSegments: 1,
+    radiators: false,
+    dockedCapsule: false,
+    sideModules: false,
+    cylinderSegments: 8,
+  },
+  tablet: {
+    trussSegments: 2,
+    radiators: true,
+    dockedCapsule: true,
+    sideModules: true,
+    cylinderSegments: 12,
+  },
+  desktop: {
+    trussSegments: 3,
+    radiators: true,
+    dockedCapsule: true,
+    sideModules: true,
+    cylinderSegments: 16,
+  },
+};
+
 /** drei Stars point count in dark mode. */
 export const GLOBE_STAR_COUNT_BY_TIER: Record<GlobePerfTier, number> = {
   phone: 400,

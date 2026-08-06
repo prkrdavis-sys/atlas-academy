@@ -30,6 +30,8 @@ import {
   useGlobeSceneEnvironment,
 } from "@/components/globe/globe-scene";
 import { GlobeCloseupLayer } from "@/components/globe/GlobeCloseupLayer";
+import { GlobeClouds } from "@/components/globe/GlobeClouds";
+import { GlobeOrbitISS } from "@/components/globe/GlobeOrbitISS";
 import { GlobeGrabOrbit } from "@/components/globe/GlobeGrabOrbit";
 import { SpaceBackdrop, StaticStarfield } from "@/components/globe/SpaceBackdrop";
 import { SpaceFlybys } from "@/components/globe/SpaceFlybys";
@@ -619,19 +621,25 @@ function ViewSettleAnimation({
   return null;
 }
 
-/** Keeps demand-mode frameloop alive while OrbitControls damping/autoRotate run. */
+/**
+ * Keeps demand-mode frameloop alive while OrbitControls damping/autoRotate run,
+ * or while the scene has continuous motion of its own.
+ */
 function KeepFrameloopAlive({
   controlsRef,
   autoSpin,
+  ambientMotion,
   onActivity,
 }: {
   controlsRef: RefObject<OrbitControlsImpl | null>;
   autoSpin: boolean;
+  /** Continuous scene motion (drifting clouds, the orbiting ISS). */
+  ambientMotion: boolean;
   onActivity: () => void;
 }) {
   const invalidate = useThree((state) => state.invalidate);
   useFrame(() => {
-    if (autoSpin) {
+    if (autoSpin || ambientMotion) {
       onActivity();
       invalidate();
       return;
@@ -652,9 +660,14 @@ type GlobeSceneProps = {
   dayNight: boolean;
   selectedCode: string | null;
   perfTier: GlobePerfTier;
+  reducedMotion: boolean;
+  /** False once the globe fills the viewport — parks the ISS orbit. */
+  outerSpaceVisible: boolean;
   spinGroupRef: RefObject<THREE.Group | null>;
   controlsRef: RefObject<OrbitControlsImpl | null>;
   onPickPlace: (code: string | null) => void;
+  /** Keeps the demand frameloop alive for clouds and the orbiting station. */
+  onAmbientMotion: () => void;
   onGrabStart?: () => void;
   onPointerDownOnGlobe?: () => void;
 };
@@ -668,9 +681,12 @@ function PickableGlobe({
   dayNight,
   selectedCode,
   perfTier,
+  reducedMotion,
+  outerSpaceVisible,
   spinGroupRef,
   controlsRef,
   onPickPlace,
+  onAmbientMotion,
   onGrabStart,
   onPointerDownOnGlobe,
 }: GlobeSceneProps) {
@@ -719,6 +735,19 @@ function PickableGlobe({
         // does not fire after GlobeGrabOrbit selects on pointerup (click follows).
         meshProps={{ onClick: () => {} }}
       />
+      <GlobeClouds
+        isDark={isDark}
+        perfTier={perfTier}
+        reducedMotion={reducedMotion}
+        onActivity={onAmbientMotion}
+      />
+      {isDark && outerSpaceVisible ? (
+        <GlobeOrbitISS
+          perfTier={perfTier}
+          reducedMotion={reducedMotion}
+          onActivity={onAmbientMotion}
+        />
+      ) : null}
       <GlobeGrabOrbit
         controlsRef={controlsRef}
         onGrabStart={onGrabStart}
@@ -1085,8 +1114,11 @@ export default function InteractiveGlobe({
               dayNight={dayNight}
               selectedCode={highlightedCode}
               perfTier={perfTier}
+              reducedMotion={reducedMotion}
+              outerSpaceVisible={outerSpaceVisible}
               spinGroupRef={spinGroupRef}
               controlsRef={controlsRef}
+              onAmbientMotion={bumpActivity}
               onGrabStart={noteUserInteraction}
               onPointerDownOnGlobe={ensureControlsReady}
               onPickPlace={(code) => {
@@ -1112,6 +1144,7 @@ export default function InteractiveGlobe({
             <KeepFrameloopAlive
               controlsRef={controlsRef}
               autoSpin={autoSpinActive}
+              ambientMotion={!reducedMotion}
               onActivity={bumpActivity}
             />
             <OrbitControls

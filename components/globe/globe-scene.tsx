@@ -440,10 +440,121 @@ export function useGlobeTexture(
   return maps;
 }
 
+/** Outer edge of the stratified atmosphere shell, in planet radii. */
+const ATMOSPHERE_SHELL_RADIUS = 1.16;
+/** Ground-hugging haze shell so the horizon isn't hollow when zoomed in. */
+const ATMOSPHERE_HAZE_RADIUS = 1.012;
+
+const ATMOSPHERE_VERTEX_SHADER = /* glsl */ `
+  uniform vec3 uSunDir;
+  varying vec3 vViewPos;
+  varying vec3 vViewCenter;
+  varying vec3 vSunView;
+  void main() {
+    vec4 viewPos = modelViewMatrix * vec4(position, 1.0);
+    vViewPos = viewPos.xyz;
+    vViewCenter = (modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
+    // The sun vector is given in the planet's own frame; normalMatrix carries it
+    // into view space so it can be compared against the limb point below.
+    vSunView = normalize(normalMatrix * uSunDir);
+    gl_Position = projectionMatrix * viewPos;
+  }
+`;
+
 /**
- * Additive atmosphere halo around the planet's rim. When `controlsRef` is set
- * (map explorer), opacity fades out as the globe fills the viewport so the
- * low-poly shell cannot wash the ocean in rectangular bands.
+ * Altitude comes from the view ray's impact parameter (its closest approach to
+ * the planet centre), not from a rim dot product — so the bands stay at fixed
+ * altitudes instead of sliding around as the camera moves. Only back faces are
+ * drawn, so fragments whose ray would hit the planet are already depth-rejected
+ * by the opaque surface and the visible range is exactly one planet radius out
+ * to the shell edge.
+ */
+const ATMOSPHERE_FRAGMENT_SHADER = /* glsl */ `
+  uniform vec3 uTroposphere;
+  uniform vec3 uStratosphere;
+  uniform vec3 uMesosphere;
+  uniform vec3 uExosphere;
+  uniform float uOpacity;
+  uniform float uInnerRadius;
+  uniform float uOuterRadius;
+  varying vec3 vViewPos;
+  varying vec3 vViewCenter;
+  varying vec3 vSunView;
+
+  float layer(float h, float center, float width) {
+    float d = (h - center) / width;
+    return exp(-d * d);
+  }
+
+  void main() {
+    // Camera sits at the view-space origin.
+    vec3 dir = normalize(vViewPos);
+    float along = dot(vViewCenter, dir);
+    vec3 closest = dir * along - vViewCenter;
+    float impact = length(closest);
+    float h = (impact - uInnerRadius) / max(uOuterRadius - uInnerRadius, 1e-4);
+    if (h < 0.0 || h > 1.0) discard;
+
+    // Dense troposphere, a bright thin stratosphere line, a faint mesosphere
+    // wash, then the exosphere trailing off into space.
+    float tropo = 1.15 * layer(h, 0.015, 0.10);
+    float strato = 0.62 * layer(h, 0.165, 0.06);
+    float meso = 0.38 * layer(h, 0.36, 0.14);
+    float exo = 0.18 * layer(h, 0.64, 0.24);
+    float density = tropo + strato + meso + exo + 0.3 * exp(-h * 2.8);
+
+    vec3 color = uTroposphere;
+    color = mix(color, uStratosphere, smoothstep(0.05, 0.22, h));
+    color = mix(color, uMesosphere, smoothstep(0.2, 0.48, h));
+    color = mix(color, uExosphere, smoothstep(0.45, 0.9, h));
+
+    // Lit limb glows; the night limb keeps only a thin trace of airglow. The
+    // sample point is where the ray grazes closest, which is the air we see.
+    float lit = smoothstep(-0.45, 0.3, dot(normalize(closest), vSunView));
+    density *= mix(0.2, 1.0, lit);
+    // Feather the outermost edge so the shell silhouette never shows.
+    density *= 1.0 - smoothstep(0.82, 1.0, h);
+
+    gl_FragColor = vec4(color, clamp(density, 0.0, 1.0) * uOpacity);
+  }
+`;
+
+type AtmospherePalette = {
+  troposphere: string;
+  stratosphere: string;
+  mesosphere: string;
+  exosphere: string;
+  opacity: number;
+  hazeColor: string;
+  hazeOpacity: number;
+};
+
+/** Teal aura in dark space; a warm haze against the light-mode sunset sky. */
+const DARK_ATMOSPHERE_PALETTE: AtmospherePalette = {
+  troposphere: "#2dd4bf",
+  stratosphere: "#5eead4",
+  mesosphere: "#38bdf8",
+  exosphere: "#4f46e5",
+  opacity: 0.42,
+  hazeColor: "#2dd4bf",
+  hazeOpacity: 0.07,
+};
+
+const LIGHT_ATMOSPHERE_PALETTE: AtmospherePalette = {
+  troposphere: "#ffb27d",
+  stratosphere: "#ffd8a8",
+  mesosphere: "#8ec5ff",
+  exosphere: "#6366f1",
+  opacity: 0.4,
+  hazeColor: "#ffc79a",
+  hazeOpacity: 0.1,
+};
+
+/**
+ * Stratified atmosphere around the planet's rim: a shader shell whose colour
+ * and density are banded by real altitude, plus a thin ground-hugging haze.
+ * When `controlsRef` is set (map explorer), both fade out as the globe fills
+ * the viewport so the low-poly shells cannot wash the ocean in bands.
  */
 export function GlobeAtmosphere({
   isDark,
@@ -454,50 +565,95 @@ export function GlobeAtmosphere({
   perfTier?: GlobePerfTier;
   controlsRef?: RefObject<OrbitControlsImpl | null>;
 }) {
-  const materialRef = useRef<THREE.MeshBasicMaterial>(null);
+  const shellRef = useRef<THREE.ShaderMaterial>(null);
+  const hazeRef = useRef<THREE.MeshBasicMaterial>(null);
   const camera = useThree((s) => s.camera);
   const size = useThree((s) => s.size);
   const segments = getGlobeAtmosphereSegments(perfTier);
-  const baseOpacity = isDark ? 0.1 : 0.16;
+  const palette = isDark ? DARK_ATMOSPHERE_PALETTE : LIGHT_ATMOSPHERE_PALETTE;
+
+  const uniforms = useMemo(
+    () => ({
+      uTroposphere: { value: new THREE.Color() },
+      uStratosphere: { value: new THREE.Color() },
+      uMesosphere: { value: new THREE.Color() },
+      uExosphere: { value: new THREE.Color() },
+      uSunDir: { value: new THREE.Vector3(1, 0, 0) },
+      uOpacity: { value: 0 },
+      // View-space units, where the planet's radius is 1 and the shell's outer
+      // edge is its scale factor.
+      uInnerRadius: { value: 1 },
+      uOuterRadius: { value: ATMOSPHERE_SHELL_RADIUS },
+    }),
+    [],
+  );
+
+  useLayoutEffect(() => {
+    (uniforms.uTroposphere.value as THREE.Color).set(palette.troposphere);
+    (uniforms.uStratosphere.value as THREE.Color).set(palette.stratosphere);
+    (uniforms.uMesosphere.value as THREE.Color).set(palette.mesosphere);
+    (uniforms.uExosphere.value as THREE.Color).set(palette.exosphere);
+  }, [uniforms, palette]);
 
   useFrame(() => {
-    const mat = materialRef.current;
-    if (!mat) return;
+    const shell = shellRef.current;
+    const haze = hazeRef.current;
+    if (!shell) return;
+
+    const sun = subsolarDirection();
+    (shell.uniforms.uSunDir.value as THREE.Vector3).set(sun.x, sun.y, sun.z);
+
     const controls = controlsRef?.current;
-    if (!controls || !(camera instanceof THREE.PerspectiveCamera)) {
-      mat.opacity = baseOpacity;
-      return;
-    }
-    const fillAt = globeFillDistance(
-      camera.fov,
-      size.width / Math.max(size.height, 1),
-    );
-    const distance = controls.getDistance();
-    const fadeStart = fillAt * 1.35;
-    const fadeEnd = fillAt * 0.95;
     let strength = 1;
-    if (distance <= fadeEnd) strength = 0;
-    else if (distance < fadeStart) {
-      const t = (distance - fadeEnd) / (fadeStart - fadeEnd);
-      strength = t * t * (3 - 2 * t);
+    if (controls && camera instanceof THREE.PerspectiveCamera) {
+      const fillAt = globeFillDistance(
+        camera.fov,
+        size.width / Math.max(size.height, 1),
+      );
+      const distance = controls.getDistance();
+      const fadeStart = fillAt * 1.35;
+      const fadeEnd = fillAt * 0.95;
+      if (distance <= fadeEnd) strength = 0;
+      else if (distance < fadeStart) {
+        const t = (distance - fadeEnd) / (fadeStart - fadeEnd);
+        strength = t * t * (3 - 2 * t);
+      }
     }
-    mat.opacity = baseOpacity * strength;
+
+    shell.uniforms.uOpacity.value = palette.opacity * strength;
+    if (haze) haze.opacity = palette.hazeOpacity * strength;
   });
 
   return (
-    <mesh scale={1.07} raycast={ignoreRaycast}>
-      <sphereGeometry args={[1, segments, segments]} />
-      <meshBasicMaterial
-        ref={materialRef}
-        // Teal aura in dark space; a warm haze against the light-mode sunset sky.
-        color={isDark ? "#2dd4bf" : "#ffb27d"}
-        transparent
-        opacity={baseOpacity}
-        side={THREE.BackSide}
-        blending={THREE.AdditiveBlending}
-        depthWrite={false}
-      />
-    </mesh>
+    <>
+      <mesh scale={ATMOSPHERE_SHELL_RADIUS} raycast={ignoreRaycast}>
+        <sphereGeometry args={[1, segments, segments]} />
+        <shaderMaterial
+          ref={shellRef}
+          vertexShader={ATMOSPHERE_VERTEX_SHADER}
+          fragmentShader={ATMOSPHERE_FRAGMENT_SHADER}
+          uniforms={uniforms}
+          transparent
+          side={THREE.BackSide}
+          blending={THREE.AdditiveBlending}
+          depthWrite={false}
+          toneMapped={false}
+        />
+      </mesh>
+      <mesh scale={ATMOSPHERE_HAZE_RADIUS} raycast={ignoreRaycast}>
+        <sphereGeometry args={[1, segments, segments]} />
+        <meshBasicMaterial
+          ref={hazeRef}
+          color={palette.hazeColor}
+          transparent
+          opacity={palette.hazeOpacity}
+          side={THREE.BackSide}
+          blending={THREE.AdditiveBlending}
+          depthWrite={false}
+          toneMapped={false}
+        />
+      </mesh>
+    </>
   );
 }
 
