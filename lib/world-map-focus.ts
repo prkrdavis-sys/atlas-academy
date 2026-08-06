@@ -1,4 +1,5 @@
 import type Panzoom from "@panzoom/panzoom";
+import type { SvgViewBox } from "@/lib/map-bounds";
 
 type PanzoomInstance = ReturnType<typeof Panzoom>;
 
@@ -64,4 +65,45 @@ export function focusWorldMapOnPaths(
   );
 
   return true;
+}
+
+/**
+ * Zoom/pan so `focusViewBox` fills the container, assuming the SVG currently
+ * displays `baseViewBox` at panzoom scale 1 (same aspect, edge-to-edge).
+ * Used by the library map to keep the static close-up as the starting frame.
+ */
+export function focusPanzoomOnViewBoxRegion(
+  container: HTMLElement,
+  panzoom: PanzoomInstance,
+  baseViewBox: SvgViewBox,
+  focusViewBox: SvgViewBox,
+  options: { animate?: boolean; maxScale?: number } = {},
+): number {
+  const { animate = false, maxScale = panzoom.getOptions().maxScale ?? 16 } = options;
+  const [, , baseWidth, baseHeight] = baseViewBox;
+  const [focusX, focusY, focusWidth, focusHeight] = focusViewBox;
+  const [baseX, baseY] = baseViewBox;
+
+  if (baseWidth <= 0 || baseHeight <= 0 || focusWidth <= 0 || focusHeight <= 0) {
+    return 1;
+  }
+
+  panzoom.reset({ animate: false });
+
+  const minScale = panzoom.getOptions().minScale ?? 1;
+  const rawScale = Math.min(baseWidth / focusWidth, baseHeight / focusHeight);
+  const targetScale = Math.min(maxScale, Math.max(minScale, rawScale));
+
+  if (targetScale <= minScale + 0.01) {
+    return targetScale;
+  }
+
+  const containerRect = container.getBoundingClientRect();
+  const focusCenterX = focusX + focusWidth / 2;
+  const focusCenterY = focusY + focusHeight / 2;
+  const clientX = containerRect.left + ((focusCenterX - baseX) / baseWidth) * containerRect.width;
+  const clientY = containerRect.top + ((focusCenterY - baseY) / baseHeight) * containerRect.height;
+
+  panzoom.zoomToPoint(targetScale, { clientX, clientY }, { animate });
+  return targetScale;
 }

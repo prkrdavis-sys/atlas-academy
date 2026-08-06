@@ -30,7 +30,8 @@ export function LibraryPlaceMapSection({ country }: LibraryPlaceMapSectionProps)
           <p className="mt-1 text-sm font-semibold text-slate-600 dark:text-slate-400">
             {isState
               ? `${country.name} highlighted within the United States.`
-              : `${country.name} highlighted within ${country.continent}.`}
+              : `${country.name} highlighted within ${country.continent}.`}{" "}
+            Drag to pan · scroll or pinch to zoom out for more context.
           </p>
         </div>
         <Link
@@ -40,7 +41,7 @@ export function LibraryPlaceMapSection({ country }: LibraryPlaceMapSectionProps)
           Open on Map
         </Link>
       </div>
-      <PlaceContextMap country={country} variant="hero" />
+      <PlaceContextMap country={country} variant="hero" interactive />
     </section>
   );
 }

@@ -261,6 +261,28 @@ export class GameEngine {
     return this.pool.length;
   }
 
+  /** Cursor after the current question has been dealt (learn-card / mid-round). */
+  getQuestionIndex(): number {
+    return this.questionIndex;
+  }
+
+  getRoundCountryCodes(): string[] {
+    return this.roundCountries.map((country) => country.code);
+  }
+
+  /**
+   * Restores mid-round progress after remounting from a learn-card → library visit.
+   * Daily challenge rebuilds from seed; other modes need the shuffled country order.
+   */
+  restoreResumeProgress(questionIndex: number, roundCountryCodes: string[] = []): void {
+    this.questionIndex = Math.max(0, questionIndex);
+    if (this.mode === "daily-challenge") return;
+    if (roundCountryCodes.length === 0) return;
+    this.roundCountries = roundCountryCodes
+      .map((code) => getCountryByCode(code))
+      .filter((country): country is Country => country !== undefined);
+  }
+
   private buildDailyQuestionTypeSequence(): DailyChallengeQuestionType[] {
     const types = [...DAILY_CHALLENGE_QUESTION_TYPES];
     const baseTypes: DailyChallengeQuestionType[] = [...types, ...types];

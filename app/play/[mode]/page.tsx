@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { GameBoard } from "@/components/GameBoard";
 import { QuickStartOverlay } from "@/components/QuickStartOverlay";
 import { useProfiles, useRequiredProfile } from "@/components/ProfileProvider";
@@ -20,6 +20,11 @@ import {
   hasCompletedDailyToday,
   hasPlayedDailyToday,
 } from "@/lib/game-engine";
+import {
+  clearGameResumeSnapshot,
+  consumeGameResumeSnapshot,
+  type GameResumeSnapshot,
+} from "@/lib/game-resume";
 import { getScopedModeInfo, scopedDailyKey, scopedHref } from "@/lib/scope";
 import { getCommonlyMissedCountries } from "@/lib/stats-helpers";
 import { recordModeSelection, updateProfileSettings } from "@/lib/storage";
@@ -30,22 +35,22 @@ import {
   US_REGIONS,
   clampRoundQuestionSetting,
   isChallengeModifierActive,
-  type Continent,
   type Difficulty,
   type GameMode,
   type Region,
-  type UsRegion,
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 function PlayPageInner() {
   const params = useParams<{ mode: string }>();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { refresh } = useProfiles();
   const profile = useRequiredProfile();
   const requestedMode = params.mode as GameMode;
   const scope = useResolvedGameScope();
   const isUsa = scope === "usa";
+  const wantsResume = searchParams.get("resume") === "1";
 
   const resolved = resolvePlayConfig(
     {
@@ -94,6 +99,7 @@ function PlayPageInner() {
   const [showOverlay, setShowOverlay] = useState(false);
   const [sessionKey, setSessionKey] = useState(0);
   const [countStats, setCountStats] = useState(true);
+  const [resumeSnapshot, setResumeSnapshot] = useState<GameResumeSnapshot | null>(null);
   const autoStartedRef = useRef(false);
 
   useEffect(() => {
@@ -107,11 +113,33 @@ function PlayPageInner() {
   useLayoutEffect(() => {
     if (!scope) return;
     if (autoStartedRef.current || started) return;
+
+    if (wantsResume) {
+      const snapshot = consumeGameResumeSnapshot(requestedMode, scope);
+      if (snapshot) {
+        autoStartedRef.current = true;
+        setResumeSnapshot(snapshot);
+        setCountStats(snapshot.countStats);
+        if (snapshot.mode === "daily-challenge" && snapshot.countStats) {
+          sessionStorage.setItem(
+            DAILY_COUNTING_SESSION_KEY,
+            scopedDailyKey(getDailyDateKey(), scope),
+          );
+        }
+        setSessionKey((key) => key + 1);
+        setStarted(true);
+        setShowOverlay(false);
+        router.replace(scopedHref(`/play/${snapshot.mode}`, scope));
+        return;
+      }
+    }
+
     if (!modeInfo) return;
     if (mode === "weak-spots" && !weakSpotCodes?.length) return;
     if (!isDailyChallenge && availableCountryCount === 0) return;
 
     autoStartedRef.current = true;
+    clearGameResumeSnapshot();
 
     if (isDailyChallenge) {
       const today = scopedDailyKey(getDailyDateKey(), scope);
@@ -139,11 +167,12 @@ function PlayPageInner() {
   /* eslint-enable react-hooks/set-state-in-effect */
 
   function handlePlayAgain() {
+    setResumeSnapshot(null);
     setSessionKey((key) => key + 1);
     setShowOverlay(true);
   }
 
-  if (!modeInfo && !isDailyChallenge) {
+  if (!modeInfo && !isDailyChallenge && !resumeSnapshot) {
     return <p>Unknown game mode.</p>;
   }
 
@@ -157,25 +186,43 @@ function PlayPageInner() {
 
   const challengeActive = isChallengeModifierActive(activeChallengeModifier);
 
-  const gameProps = {
-    mode,
-    scope,
-    challengeModifier: activeChallengeModifier,
-    continents: isDailyChallenge ? dailyContinents : draft.continents,
-    includeTerritories: isDailyChallenge ? false : draft.includeTerritories,
-    difficulty: isDailyChallenge ? dailyDifficulty : draft.difficulty,
-    weakSpotCodes,
-    seed: isDailyChallenge ? getDailySeed(scope) : undefined,
-    timed: challengeActive && activeChallengeModifier === "speed-round",
-    stopOnWrong: challengeActive && activeChallengeModifier === "marathon",
-    maxQuestions: isDailyChallenge
-      ? DAILY_CHALLENGE_QUESTION_COUNT
-      : challengeActive
-        ? undefined
-        : effectiveRoundQuestionCount,
-    countStats: isDailyChallenge ? countStats : true,
-    interactionLocked: showOverlay,
-  };
+  const gameProps = resumeSnapshot
+    ? {
+        mode: resumeSnapshot.mode,
+        scope: resumeSnapshot.scope,
+        challengeModifier: resumeSnapshot.challengeModifier,
+        continents: resumeSnapshot.continents,
+        includeTerritories: resumeSnapshot.includeTerritories,
+        difficulty: resumeSnapshot.difficulty,
+        weakSpotCodes: resumeSnapshot.weakSpotCodes,
+        seed: resumeSnapshot.seed,
+        timed: resumeSnapshot.timed,
+        stopOnWrong: resumeSnapshot.stopOnWrong,
+        maxQuestions: resumeSnapshot.maxQuestions,
+        countStats: resumeSnapshot.countStats,
+        interactionLocked: false,
+        resumeSnapshot,
+      }
+    : {
+        mode,
+        scope,
+        challengeModifier: activeChallengeModifier,
+        continents: isDailyChallenge ? dailyContinents : draft.continents,
+        includeTerritories: isDailyChallenge ? false : draft.includeTerritories,
+        difficulty: isDailyChallenge ? dailyDifficulty : draft.difficulty,
+        weakSpotCodes,
+        seed: isDailyChallenge ? getDailySeed(scope) : undefined,
+        timed: challengeActive && activeChallengeModifier === "speed-round",
+        stopOnWrong: challengeActive && activeChallengeModifier === "marathon",
+        maxQuestions: isDailyChallenge
+          ? DAILY_CHALLENGE_QUESTION_COUNT
+          : challengeActive
+            ? undefined
+            : effectiveRoundQuestionCount,
+        countStats: isDailyChallenge ? countStats : true,
+        interactionLocked: showOverlay,
+        resumeSnapshot: null,
+      };
 
   return (
     <div className="relative flex h-full min-h-0 flex-col pt-[max(0.75rem,env(safe-area-inset-top,0px))] sm:pt-5">

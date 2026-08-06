@@ -25,7 +25,7 @@ import { GameActionButton } from "@/components/GameActionButton";
 import { Button } from "@/components/ui/Button";
 import { useProfiles, useRequiredProfile } from "@/components/ProfileProvider";
 import { getCountryName, getCountryByCode } from "@/lib/countries";
-import { GameEngine, formatDailyDate } from "@/lib/game-engine";
+import { GameEngine, formatDailyDate, getDailyDateKey } from "@/lib/game-engine";
 import {
   checkAchievements,
   loadState,
@@ -42,7 +42,12 @@ import {
   toMapProgressDifficulty,
 } from "@/lib/map-progress";
 import { buildLibraryDetailHref, LIBRARY_ICON } from "@/lib/library";
-import { getQuestionTaskLabel, getTypeInPlacePlaceholder, isStateCode, scopeText, SCOPE_INFO } from "@/lib/scope";
+import {
+  buildGameResumePlayHref,
+  saveGameResumeSnapshot,
+  type GameResumeSnapshot,
+} from "@/lib/game-resume";
+import { getQuestionTaskLabel, getTypeInPlacePlaceholder, isStateCode, scopedDailyKey, scopeText, SCOPE_INFO } from "@/lib/scope";
 import { getStatsMode } from "@/lib/game-setup";
 import { useIsDark } from "@/lib/use-is-dark";
 import { setStoredMapProgressDifficulty } from "@/lib/use-map-progress-difficulty";
@@ -70,6 +75,7 @@ type GameBoardProps = {
   countStats?: boolean;
   onPlayAgain?: () => void;
   interactionLocked?: boolean;
+  resumeSnapshot?: GameResumeSnapshot | null;
 };
 
 export function GameBoard({
@@ -87,6 +93,7 @@ export function GameBoard({
   countStats = true,
   onPlayAgain,
   interactionLocked = false,
+  resumeSnapshot = null,
 }: GameBoardProps) {
   const router = useRouter();
   const { refresh } = useProfiles();
@@ -107,6 +114,17 @@ export function GameBoard({
       scope,
       challengeModifier,
     );
+    if (resumeSnapshot) {
+      gameEngine.restoreResumeProgress(
+        resumeSnapshot.questionIndex,
+        resumeSnapshot.roundCountryCodes,
+      );
+      return {
+        engine: gameEngine,
+        firstQuestion: resumeSnapshot.question,
+        sessionQuestionLimit: gameEngine.getRoundQuestionLimit(),
+      };
+    }
     return {
       engine: gameEngine,
       firstQuestion: gameEngine.nextQuestion(),
@@ -114,28 +132,39 @@ export function GameBoard({
     };
   });
   const [question, setQuestion] = useState<Question | null>(firstQuestion);
-  const [streak, setStreak] = useState(() =>
-    mode === "daily-challenge" && !countStats
+  const [streak, setStreak] = useState(() => {
+    if (resumeSnapshot) return resumeSnapshot.streak;
+    return mode === "daily-challenge" && !countStats
       ? 0
-      : getGlobalStreakOrZero(activeProfile, difficulty, scope).currentStreak,
-  );
+      : getGlobalStreakOrZero(activeProfile, difficulty, scope).currentStreak;
+  });
   /** Streak length captured when a miss ends the round (marathon / stop-on-wrong). */
-  const [endedStreak, setEndedStreak] = useState(0);
-  const [showLearnCard, setShowLearnCard] = useState(false);
-  const [lastCorrect, setLastCorrect] = useState(true);
-  const [lastSelectedAnswer, setLastSelectedAnswer] = useState<string | null>(null);
-  const [lastSelectedCode, setLastSelectedCode] = useState<string | null>(null);
-  const [disabled, setDisabled] = useState(false);
-  const [hiddenOptions, setHiddenOptions] = useState<string[]>([]);
-  const [usedFiftyFifty, setUsedFiftyFifty] = useState(false);
-  const [usedSkip, setUsedSkip] = useState(false);
-  const [questionCount, setQuestionCount] = useState(0);
-  const [correctAnswers, setCorrectAnswers] = useState(0);
-  const [skippedAnswers, setSkippedAnswers] = useState(0);
-  const [hintsUsed, setHintsUsed] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(60);
-  const [gameOver, setGameOver] = useState(false);
-  const [sessionComplete, setSessionComplete] = useState(false);
+  const [endedStreak, setEndedStreak] = useState(() => resumeSnapshot?.endedStreak ?? 0);
+  const [showLearnCard, setShowLearnCard] = useState(() => Boolean(resumeSnapshot));
+  const [lastCorrect, setLastCorrect] = useState(() => resumeSnapshot?.lastCorrect ?? true);
+  const [lastSelectedAnswer, setLastSelectedAnswer] = useState<string | null>(
+    () => resumeSnapshot?.lastSelectedAnswer ?? null,
+  );
+  const [lastSelectedCode, setLastSelectedCode] = useState<string | null>(
+    () => resumeSnapshot?.lastSelectedCode ?? null,
+  );
+  const [disabled, setDisabled] = useState(() => resumeSnapshot?.disabled ?? false);
+  const [hiddenOptions, setHiddenOptions] = useState<string[]>(
+    () => resumeSnapshot?.hiddenOptions ?? [],
+  );
+  const [usedFiftyFifty, setUsedFiftyFifty] = useState(
+    () => resumeSnapshot?.usedFiftyFifty ?? false,
+  );
+  const [usedSkip, setUsedSkip] = useState(() => resumeSnapshot?.usedSkip ?? false);
+  const [questionCount, setQuestionCount] = useState(() => resumeSnapshot?.questionCount ?? 0);
+  const [correctAnswers, setCorrectAnswers] = useState(() => resumeSnapshot?.correctAnswers ?? 0);
+  const [skippedAnswers, setSkippedAnswers] = useState(() => resumeSnapshot?.skippedAnswers ?? 0);
+  const [hintsUsed, setHintsUsed] = useState(() => resumeSnapshot?.hintsUsed ?? 0);
+  const [timeLeft, setTimeLeft] = useState(() => resumeSnapshot?.timeLeft ?? 60);
+  const [gameOver, setGameOver] = useState(() => resumeSnapshot?.gameOver ?? false);
+  const [sessionComplete, setSessionComplete] = useState(
+    () => resumeSnapshot?.sessionComplete ?? false,
+  );
   const [exitedEarly, setExitedEarly] = useState(false);
   const [newAchievements, setNewAchievements] = useState<string[]>([]);
   const [initialMapProgress] = useState(() => {
@@ -243,6 +272,56 @@ export function GameBoard({
       }
     };
   }, [mode, countStats]);
+
+  useEffect(() => {
+    if (!resumeSnapshot || mode !== "daily-challenge" || !countStats) return;
+    if (typeof window === "undefined") return;
+    // Keep the counting session alive across learn-card → library → resume.
+    sessionStorage.setItem(
+      "daily-counting-session",
+      scopedDailyKey(getDailyDateKey(), scope),
+    );
+  }, [resumeSnapshot, mode, countStats, scope]);
+
+  function persistLearnCardResume() {
+    if (!question || !showLearnCard) return;
+    saveGameResumeSnapshot({
+      version: 1,
+      playHref: buildGameResumePlayHref(mode, scope),
+      createdAt: Date.now(),
+      mode,
+      challengeModifier,
+      continents,
+      scope,
+      includeTerritories,
+      difficulty,
+      ...(weakSpotCodes ? { weakSpotCodes } : {}),
+      ...(seed !== undefined ? { seed } : {}),
+      timed,
+      stopOnWrong,
+      ...(maxQuestions !== undefined ? { maxQuestions } : {}),
+      countStats,
+      questionIndex: engine.getQuestionIndex(),
+      roundCountryCodes: engine.getRoundCountryCodes(),
+      question,
+      streak,
+      endedStreak,
+      lastCorrect,
+      lastSelectedAnswer,
+      lastSelectedCode,
+      disabled: true,
+      hiddenOptions,
+      usedFiftyFifty,
+      usedSkip,
+      questionCount,
+      correctAnswers,
+      skippedAnswers,
+      hintsUsed,
+      timeLeft,
+      gameOver,
+      sessionComplete,
+    });
+  }
 
   const hasFinishedQuestions = !question && questionCount > 0;
   const hasReachedQuestionLimit = Boolean(
@@ -739,7 +818,10 @@ export function GameBoard({
             {showLearnCard && (
               <Link
                 href={learnCardLibraryHref}
-                onClick={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  persistLearnCardResume();
+                }}
                 aria-label={`Open ${getCountryName(learnCardCountryCode)} in library`}
                 className={cn(
                   "inline-flex min-h-10 items-center justify-center gap-1.5 rounded-2xl border-2 border-slate-200 bg-white px-3 py-2 text-sm font-extrabold text-slate-700 shadow-[0_3px_0_var(--color-slate-200)] transition-all duration-100 hover:border-sky-300 hover:text-sky-700 active:translate-y-[3px] active:shadow-none dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:shadow-[0_3px_0_var(--color-slate-700)] dark:hover:border-sky-500 dark:hover:text-sky-300 sm:px-4",

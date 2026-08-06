@@ -455,3 +455,74 @@ export function formatSvgViewBox(viewBox: SvgViewBox): string {
   const [x, y, width, height] = viewBox;
   return `${x.toFixed(2)} ${y.toFixed(2)} ${width.toFixed(2)} ${height.toFixed(2)}`;
 }
+
+export function parseSvgViewBox(viewBox: string): SvgViewBox {
+  const parts = viewBox.trim().split(/\s+/).map(Number);
+  if (parts.length !== 4 || parts.some((part) => Number.isNaN(part))) {
+    return [0, 0, 100, 100];
+  }
+  return [parts[0], parts[1], parts[2], parts[3]];
+}
+
+/**
+ * Wider framing for interactive library maps. At panzoom scale 1 the user sees
+ * this crop (extra surroundings for beginners); the focused close-up is restored
+ * by zooming in so the starting frame matches the static library map.
+ */
+export function computeInteractiveSurroundingsViewBox(
+  focusedViewBox: SvgViewBox,
+  overviewViewBox: SvgViewBox,
+  options: {
+    /** Linear grow vs the focused crop. Default 3.5. */
+    expandRatio?: number;
+    /**
+     * Floor so microstates still zoom out to a readable regional frame
+     * (fraction of the continent/USA overview width/height). Default 0.06.
+     */
+    minOverviewFraction?: number;
+  } = {},
+): SvgViewBox {
+  const expandRatio = options.expandRatio ?? 3.5;
+  const minOverviewFraction = options.minOverviewFraction ?? 0.06;
+  const [fx, fy, fw, fh] = focusedViewBox;
+  const [ox, oy, ow, oh] = overviewViewBox;
+
+  if (fw <= 0 || fh <= 0 || ow <= 0 || oh <= 0) {
+    return overviewViewBox;
+  }
+
+  // Already nearly as wide as the overview — little room to zoom out.
+  if (fw >= ow * 0.92 || fh >= oh * 0.92) {
+    return overviewViewBox;
+  }
+
+  const aspectRatio = fw / fh;
+  let width = Math.max(fw * expandRatio, ow * minOverviewFraction);
+  let height = Math.max(fh * expandRatio, oh * minOverviewFraction);
+
+  if (width / height < aspectRatio) {
+    width = height * aspectRatio;
+  } else {
+    height = width / aspectRatio;
+  }
+
+  width = Math.min(width, ow);
+  height = Math.min(height, oh);
+  if (width / height < aspectRatio) {
+    height = width / aspectRatio;
+  } else {
+    width = height * aspectRatio;
+  }
+  width = Math.min(width, ow);
+  height = Math.min(height, oh);
+
+  const focusCenterX = fx + fw / 2;
+  const focusCenterY = fy + fh / 2;
+  let x = focusCenterX - width / 2;
+  let y = focusCenterY - height / 2;
+
+  x = Math.min(Math.max(x, ox), ox + ow - width);
+  y = Math.min(Math.max(y, oy), oy + oh - height);
+
+  return [x, y, width, height];
+}

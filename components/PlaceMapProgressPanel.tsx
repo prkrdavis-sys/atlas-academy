@@ -256,7 +256,7 @@ export function PlaceMapProgressPanel({
         ) : null}
       </div>
       <p className="mt-0.5 text-xs font-semibold text-slate-600 dark:text-slate-400">
-        {level}/4 categories · {DIFFICULTY_LABELS[difficulty]}
+        {level}/4 categories mastered for this country
       </p>
       <ul className="mt-2 grid grid-cols-2 gap-1.5" aria-label="Completed categories">
         {MAP_PROGRESS_CATEGORIES.map((category) => (

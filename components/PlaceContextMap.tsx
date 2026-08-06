@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useMemo, useRef, useState } from "react";
+import Panzoom from "@panzoom/panzoom";
 import { MapMasteryFxDefs } from "@/components/MapMasteryFxDefs";
 import {
   countryHasContextMap,
@@ -13,7 +14,11 @@ import {
 } from "@/lib/context-maps";
 import {
   computeFocusedViewBox,
+  computeInteractiveSurroundingsViewBox,
+  formatSvgViewBox,
+  getMapOverviewViewBox,
   loadMapBoundsManifest,
+  parseSvgViewBox,
   type MapBoundsManifest,
 } from "@/lib/map-bounds";
 import {
@@ -40,11 +45,13 @@ import {
   renderMapSurfaceTextureCrop,
   shouldUseRuntimeMapTexture,
 } from "@/lib/map-land-texture-runtime";
+import { MAP_PANZOOM_OPTIONS } from "@/lib/map-panzoom";
 import { getCountryByCode } from "@/lib/countries";
 import { isStateCode } from "@/lib/scope";
 import type { Country } from "@/lib/types";
 import { useIsDark } from "@/lib/use-is-dark";
 import { cn } from "@/lib/utils";
+import { focusPanzoomOnViewBoxRegion } from "@/lib/world-map-focus";
 
 export type ParsedContextMap = {
   viewBox: string;
@@ -182,6 +189,7 @@ type PlaceContextMapProps = {
   /** Crop and render only the featured country (no neighbors or other land). */
   countryOnly?: boolean;
   className?: string;
+  /** Enable drag-to-pan and scroll/pinch zoom (no zoom toolbar). */
   interactive?: boolean;
 };
 
@@ -525,6 +533,10 @@ export function PlaceContextMap({
   interactive = false,
 }: PlaceContextMapProps) {
   const { isDark, ready } = useIsDark();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<HTMLDivElement>(null);
+  const panzoomRef = useRef<ReturnType<typeof Panzoom> | null>(null);
+  const hasInitialFocusRef = useRef(false);
   const [map, setMap] = useState<ParsedContextMap | null>(() =>
     templateCache.get(getContextMapTemplateKey(country)) ?? null,
   );
@@ -532,8 +544,11 @@ export function PlaceContextMap({
     () => boundsCache.data,
   );
   const [loadFailed, setLoadFailed] = useState(false);
+  const [panzoomReady, setPanzoomReady] = useState(false);
+  const [initialFocusApplied, setInitialFocusApplied] = useState(!interactive);
   const isState = isStateCode(country.code);
   const templateKey = getContextMapTemplateKey(country);
+  const cropOptions = CROP_OPTIONS[variant];
 
   const highlightIds = useMemo(() => new Set(getContextMapPathIds(country)), [country]);
   const neighborIds = useMemo(() => {
@@ -567,12 +582,37 @@ export function PlaceContextMap({
     if (!template) return undefined;
 
     return computeFocusedViewBox(template, getContextMapPathIds(country), {
-      ...CROP_OPTIONS[variant],
+      ...cropOptions,
       // Restrict surroundings completion to land-border neighbors so a wide
       // aspect crop cannot cascade to distant countries and shove the subject off-center.
       neighborPathIds: getNeighborContextMapPathIds(country),
     });
-  }, [boundsManifest, templateKey, country, variant]);
+  }, [boundsManifest, templateKey, country, cropOptions]);
+
+  const interactiveViewBoxes = useMemo(() => {
+    if (!interactive || !boundsManifest || !focusedViewBox) return null;
+    const template = boundsManifest[templateKey];
+    if (!template) return null;
+
+    const focused = parseSvgViewBox(focusedViewBox);
+    const overview = getMapOverviewViewBox(template, {
+      aspectRatio: cropOptions.aspectRatio,
+    });
+    const surroundings = computeInteractiveSurroundingsViewBox(focused, overview);
+    return {
+      focused,
+      surroundings,
+      surroundingsViewBox: formatSvgViewBox(surroundings),
+      initialScale: Math.min(
+        surroundings[2] / focused[2],
+        surroundings[3] / focused[3],
+      ),
+    };
+  }, [interactive, boundsManifest, focusedViewBox, templateKey, cropOptions]);
+
+  const activeViewBox = interactive
+    ? interactiveViewBoxes?.surroundingsViewBox
+    : focusedViewBox;
 
   useEffect(() => {
     let cancelled = false;
@@ -594,6 +634,87 @@ export function PlaceContextMap({
     };
   }, [templateKey]);
 
+  useEffect(() => {
+    if (!interactive) {
+      setInitialFocusApplied(true);
+      return;
+    }
+    setInitialFocusApplied(false);
+    hasInitialFocusRef.current = false;
+  }, [interactive, country.code, templateKey]);
+
+  useEffect(() => {
+    if (!interactive) return;
+    const element = mapRef.current;
+    if (!element || !map || !interactiveViewBoxes || !ready) return;
+
+    const maxScale = Math.max(
+      MAP_PANZOOM_OPTIONS.maxScale,
+      interactiveViewBoxes.initialScale * 4,
+    );
+
+    panzoomRef.current?.destroy();
+    panzoomRef.current = Panzoom(element, {
+      ...MAP_PANZOOM_OPTIONS,
+      maxScale,
+    });
+    setPanzoomReady(true);
+    hasInitialFocusRef.current = false;
+
+    const container = containerRef.current;
+    const finePointer = window.matchMedia("(pointer: fine)");
+    const onWheel = (event: WheelEvent) => {
+      if (!panzoomRef.current) return;
+
+      // Desktop: at min/max scale, let the wheel scroll the page instead of
+      // trapping the cursor over a map that can't zoom further.
+      if (finePointer.matches && event.deltaY !== 0) {
+        const scale = panzoomRef.current.getScale();
+        const eps = 1e-3;
+        const atMin = scale <= MAP_PANZOOM_OPTIONS.minScale + eps;
+        const atMax = scale >= maxScale - eps;
+        const wantsOut = event.deltaY > 0;
+        const wantsIn = event.deltaY < 0;
+        if ((wantsOut && atMin) || (wantsIn && atMax)) return;
+      }
+
+      panzoomRef.current.zoomWithWheel(event);
+    };
+    container?.addEventListener("wheel", onWheel, { passive: false });
+
+    return () => {
+      container?.removeEventListener("wheel", onWheel);
+      panzoomRef.current?.destroy();
+      panzoomRef.current = null;
+      setPanzoomReady(false);
+    };
+  }, [interactive, map, interactiveViewBoxes, ready]);
+
+  useEffect(() => {
+    if (!interactive || !interactiveViewBoxes || !panzoomReady || !panzoomRef.current) {
+      return;
+    }
+    if (!containerRef.current || hasInitialFocusRef.current) return;
+
+    const panzoom = panzoomRef.current;
+    const container = containerRef.current;
+    const { focused, surroundings, initialScale } = interactiveViewBoxes;
+    const maxScale = Math.max(MAP_PANZOOM_OPTIONS.maxScale, initialScale * 4);
+
+    const frame = requestAnimationFrame(() => {
+      focusPanzoomOnViewBoxRegion(container, panzoom, surroundings, focused, {
+        animate: false,
+        maxScale,
+      });
+      hasInitialFocusRef.current = true;
+      setInitialFocusApplied(true);
+    });
+
+    return () => {
+      cancelAnimationFrame(frame);
+    };
+  }, [interactive, interactiveViewBoxes, panzoomReady]);
+
   if (!countryHasContextMap(country)) {
     return null;
   }
@@ -603,6 +724,7 @@ export function PlaceContextMap({
 
   return (
     <div
+      ref={containerRef}
       className={cn(
         "overflow-hidden rounded-2xl border border-teal-100 bg-sky-50 dark:border-teal-900/50 dark:bg-slate-950",
         variant === "compact"
@@ -610,23 +732,32 @@ export function PlaceContextMap({
           : variant === "learn"
             ? "aspect-[11/5] w-full min-h-[5rem] sm:min-h-[7rem]"
             : "aspect-[16/10] w-full",
-        interactive && "touch-none",
+        interactive && "relative touch-none",
         className,
       )}
     >
-      {map && ready ? (
-        <ContextMapSvg
-          map={{ ...map, paths: visiblePaths }}
-          highlightIds={highlightIds}
-          neighborIds={neighborIds}
-          pathStyleResolver={pathStyleResolver}
-          ariaLabel={ariaLabel}
-          isDark={isDark}
-          viewBox={focusedViewBox}
-          scaleStrokesWithMap={variant === "learn" || variant === "hero"}
-          landTexture={landTexture}
-          mapTemplateKey={templateKey}
-        />
+      {map && ready && (!interactive || (interactiveViewBoxes && activeViewBox)) ? (
+        <div
+          ref={interactive ? mapRef : undefined}
+          className={cn(
+            "h-full w-full",
+            interactive && "origin-center",
+            interactive && !initialFocusApplied && "opacity-0",
+          )}
+        >
+          <ContextMapSvg
+            map={{ ...map, paths: visiblePaths }}
+            highlightIds={highlightIds}
+            neighborIds={neighborIds}
+            pathStyleResolver={pathStyleResolver}
+            ariaLabel={ariaLabel}
+            isDark={isDark}
+            viewBox={activeViewBox}
+            scaleStrokesWithMap={variant === "learn" || variant === "hero"}
+            landTexture={landTexture}
+            mapTemplateKey={templateKey}
+          />
+        </div>
       ) : loadFailed ? (
         <div className="flex h-full items-center justify-center px-4 text-center text-xs font-semibold text-slate-500 dark:text-slate-400">
           Map unavailable
