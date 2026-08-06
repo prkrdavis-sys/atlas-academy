@@ -19,6 +19,7 @@ export function emptyModeStats(): ModeStats {
     currentStreak: 0,
     bestStreak: 0,
     totalCorrect: 0,
+    bestGameCorrect: 0,
     totalPlayed: 0,
     missedCountries: [],
   };

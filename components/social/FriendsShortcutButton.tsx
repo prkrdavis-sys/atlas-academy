@@ -38,15 +38,15 @@ export function FriendsShortcutButton({
         <span className="font-display text-sm font-extrabold text-slate-900 dark:text-white">
           Friends
         </span>
-        {enabled ? (
-          <span className="text-[0.7rem] font-medium text-slate-500 dark:text-slate-400">
-            {onlineCount > 0
+        <span className="text-[0.7rem] font-medium text-slate-500 dark:text-slate-400">
+          {enabled
+            ? onlineCount > 0
               ? `${onlineCount} online`
               : friends.length > 0
                 ? `${friends.length} added`
-                : "Add a friend"}
-          </span>
-        ) : null}
+                : "Add a friend"
+            : "Challenge a friend"}
+        </span>
         {enabled && inboxCount > 0 ? (
           <span
             aria-label={`${inboxCount} pending`}

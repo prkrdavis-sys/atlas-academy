@@ -357,6 +357,7 @@ export type ModeStats = {
   currentStreak: number;
   bestStreak: number;
   totalCorrect: number;
+  bestGameCorrect: number;
   totalPlayed: number;
   missedCountries: string[];
 };

@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { ModeBestFraction } from "@/components/ModeBestFraction";
+import { useProfiles } from "@/components/ProfileProvider";
 import { modeCountsTowardMapProgress } from "@/lib/map-progress";
 import { getScopedModeInfo, scopeQuery, scopeText } from "@/lib/scope";
 import type { GameMode, GameScope } from "@/lib/types";
@@ -48,6 +50,7 @@ export function GameModeTile({
   badge,
   className,
 }: GameModeTileProps) {
+  const { activeProfile: profile } = useProfiles();
   const modeInfo = getScopedModeInfo(mode, scope);
   if (!modeInfo) return null;
 
@@ -86,12 +89,20 @@ export function GameModeTile({
               {description}
             </p>
           </div>
-          <span
-            aria-hidden
-            className="shrink-0 text-lg font-bold text-teal-600 transition-transform group-hover:translate-x-0.5 dark:text-teal-400"
-          >
-            →
-          </span>
+          <div className="flex shrink-0 items-center gap-2">
+            <ModeBestFraction
+              profile={profile}
+              mode={mode}
+              scope={scope}
+              className="text-[0.7rem] text-teal-700 dark:text-teal-300"
+            />
+            <span
+              aria-hidden
+              className="text-lg font-bold text-teal-600 transition-transform group-hover:translate-x-0.5 dark:text-teal-400"
+            >
+              →
+            </span>
+          </div>
         </Link>
       );
 
@@ -122,12 +133,15 @@ export function GameModeTile({
               {description}
             </p>
           </div>
-          <span
-            aria-hidden
-            className="shrink-0 text-base font-bold text-slate-300 transition-transform group-hover:translate-x-0.5 group-hover:text-teal-500 dark:text-slate-500 dark:group-hover:text-teal-400"
-          >
-            ›
-          </span>
+          <div className="flex shrink-0 items-center gap-2">
+            <ModeBestFraction profile={profile} mode={mode} scope={scope} />
+            <span
+              aria-hidden
+              className="text-base font-bold text-slate-300 transition-transform group-hover:translate-x-0.5 group-hover:text-teal-500 dark:text-slate-500 dark:group-hover:text-teal-400"
+            >
+              ›
+            </span>
+          </div>
         </Link>
       );
 
@@ -156,9 +170,12 @@ export function GameModeTile({
             </div>
             <p className="truncate text-xs text-slate-500 dark:text-slate-400">{description}</p>
           </div>
-          <span aria-hidden className="shrink-0 text-sm text-slate-400 dark:text-slate-500">
-            ›
-          </span>
+          <div className="flex shrink-0 items-center gap-2">
+            <ModeBestFraction profile={profile} mode={mode} scope={scope} />
+            <span aria-hidden className="text-sm text-slate-400 dark:text-slate-500">
+              ›
+            </span>
+          </div>
         </Link>
       );
 

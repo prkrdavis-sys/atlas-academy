@@ -12,6 +12,7 @@ import {
 } from "@/lib/home-hero-tagline";
 import { DailyCalendarIcon } from "@/components/DailyCalendarIcon";
 import { HomeHeroTaglineContent } from "@/components/HomeHeroTaglineContent";
+import { ModeBestFraction } from "@/components/ModeBestFraction";
 import { ProfileRequiredDialog } from "@/components/ProfileRequiredDialog";
 import { GLOBE_TAP_TRAVEL_THRESHOLD } from "@/components/globe/globe-scene";
 import type { GlobeHandle } from "@/components/globe/InteractiveGlobe";
@@ -197,6 +198,14 @@ export function HomePlayHero({
               </h1>
             </header>
 
+            <DailyChallengeBadge
+              profile={profile}
+              scope={scope}
+              dailyRun={dailyRun}
+              playedToday={dailyPlayedToday}
+              completedToday={dailyCompletedToday}
+            />
+
             <GlobeDragZone href={GLOBE_MAP_HREF} globeHandleRef={globeHandleRef} />
 
             {/* Hero actions stay in the lower 40% so more of the globe shows. */}
@@ -211,12 +220,6 @@ export function HomePlayHero({
               </button>
 
               <ModeLoadoutRow profile={profile} mode={activeMode} scope={scope} />
-
-              <DailyChallengeCard
-                scope={scope}
-                dailyRun={dailyRun}
-                playedToday={dailyPlayedToday}
-              />
 
               <button
                 type="button"
@@ -396,6 +399,7 @@ function ModeLoadoutRow({ profile, mode, scope }: ModeLoadoutRowProps) {
       <span className="min-w-0 flex-1 truncate text-sm font-semibold text-slate-700 dark:text-slate-200">
         {summary}
       </span>
+      <ModeBestFraction profile={profile} mode={mode} scope={scope} />
       <span className="flex shrink-0 items-center gap-1 text-sm font-extrabold text-slate-900 dark:text-white">
         Change
         <span aria-hidden>›</span>
@@ -404,44 +408,76 @@ function ModeLoadoutRow({ profile, mode, scope }: ModeLoadoutRowProps) {
   );
 }
 
-type DailyChallengeCardProps = {
+type DailyChallengeBadgeProps = {
+  profile: Profile;
   scope: GameScope;
   dailyRun: number;
   playedToday: boolean;
+  completedToday: boolean;
 };
 
-/** Compact daily-challenge row — title + streak + CTA, no subtitle. */
-function DailyChallengeCard({ scope, dailyRun, playedToday }: DailyChallengeCardProps) {
+/** Floating daily-challenge entry point that keeps the globe unobstructed. */
+function DailyChallengeBadge({
+  profile,
+  scope,
+  dailyRun,
+  playedToday,
+  completedToday,
+}: DailyChallengeBadgeProps) {
+  const statusLabel = completedToday
+    ? "Completed today. Review your results."
+    : playedToday
+      ? "In progress. Continue today's challenge."
+      : "Play today's challenge.";
+
   return (
     <Link
       href={scopedHref("/play/daily-challenge", scope, { autostart: "1" })}
-      aria-label={`Daily challenge. ${playedToday ? "Completed today — review your results." : "Play today's challenge."} Daily run: ${dailyRun} ${dailyRun === 1 ? "day" : "days"}.`}
-      className="group flex min-h-11 items-center gap-2.5 rounded-2xl border border-amber-500/30 bg-white/60 px-3 py-2 backdrop-blur-md transition-all hover:border-amber-500/60 hover:bg-white/80 dark:border-amber-300/25 dark:bg-white/[0.07] dark:hover:border-amber-300/60 dark:hover:bg-white/10"
+      aria-label={`Daily challenge. ${statusLabel} Daily run: ${dailyRun} ${dailyRun === 1 ? "day" : "days"}.`}
+      title={`Daily challenge. ${statusLabel}`}
+      className={cn(
+        "daily-challenge-badge absolute right-2 top-[5.5rem] z-20 flex size-[4.75rem] items-center justify-center rounded-full border-2 p-1.5 transition-transform duration-200 hover:scale-105 focus-visible:scale-105 active:scale-95 sm:right-4 sm:top-24 sm:size-24 sm:p-2",
+        completedToday
+          ? "daily-challenge-badge-completed"
+          : "daily-challenge-badge-incomplete",
+      )}
     >
-      <DailyCalendarIcon
-        variant="solid"
-        className="w-9 shrink-0 drop-shadow-sm transition-transform group-hover:scale-105"
-      />
-      <div className="flex min-w-0 flex-1 items-center gap-2">
-        <h2 className="truncate font-display text-sm font-extrabold text-slate-900 dark:text-white sm:text-base">
-          Daily Challenge
-        </h2>
-        {dailyRun > 0 ? (
-          <span className="inline-flex shrink-0 items-center gap-0.5 rounded-full bg-orange-400/20 px-1.5 py-0.5 text-[0.7rem] font-extrabold tabular-nums text-orange-600 dark:text-orange-300">
-            <span aria-hidden>🔥</span> {dailyRun}
-          </span>
-        ) : null}
-      </div>
       <span
-        className={cn(
-          "flex min-h-8 shrink-0 items-center justify-center rounded-lg px-3 font-display text-xs font-extrabold transition-transform group-hover:scale-105 sm:text-sm",
-          playedToday
-            ? "border border-amber-500/40 bg-white/70 text-amber-700 dark:border-amber-300/40 dark:bg-white/10 dark:text-amber-200"
-            : "bg-amber-500 text-white shadow-[0_2px_0_var(--color-amber-600)]",
-        )}
+        aria-hidden
+        className="daily-challenge-badge-surface relative flex size-[4.1rem] items-center justify-center rounded-full sm:size-[5.25rem]"
       >
-        {playedToday ? "Review" : "Play"}
+        <DailyCalendarIcon
+          variant="solid"
+          className="w-[3.15rem] drop-shadow-[0_2px_2px_rgb(120_53_15_/_0.3)] sm:w-[4.2rem]"
+        />
       </span>
+
+      <ModeBestFraction
+        profile={profile}
+        mode="daily-challenge"
+        scope={scope}
+        difficulty="medium"
+        className="absolute right-1 top-1 rounded-full border border-amber-500/40 bg-white/90 px-1.5 py-0.5 text-[0.55rem] text-amber-800 shadow-sm dark:border-amber-300/40 dark:bg-slate-900/90 dark:text-amber-200"
+      />
+
+      {completedToday ? (
+        <span
+          aria-hidden
+          className="absolute bottom-0.5 right-0.5 flex size-5 items-center justify-center rounded-full border-2 border-white bg-emerald-500 font-display text-xs font-black text-white shadow-md dark:border-slate-900 sm:bottom-1 sm:right-1 sm:size-6 sm:text-sm"
+        >
+          ✓
+        </span>
+      ) : null}
+
+      {dailyRun > 0 ? (
+        <span
+          aria-hidden
+          className="absolute -bottom-1 -left-1 inline-flex min-h-6 min-w-7 items-center justify-center gap-0.5 rounded-full border-2 border-white bg-orange-500 px-1.5 font-display text-[0.7rem] font-black tabular-nums text-white shadow-md dark:border-slate-900 sm:-bottom-1.5 sm:-left-1.5 sm:min-h-7 sm:min-w-8 sm:text-xs"
+        >
+          <span>🔥</span>
+          {dailyRun}
+        </span>
+      ) : null}
     </Link>
   );
 }

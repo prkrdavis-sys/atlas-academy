@@ -141,11 +141,17 @@ function migrateLegacyStats(profile: LegacyProfile): LegacyProfile {
 
   for (const scope of ["world", "usa"] as const) {
     for (const mode of GAME_MODES) {
-      const modeStats = profile.stats[scope][mode.id] as unknown;
+      const modeStatsByDifficulty = profile.stats[scope][mode.id];
+      if (!modeStatsByDifficulty) {
+        profile.stats[scope][mode.id] = createEmptyModeStatsByDifficulty();
+        continue;
+      }
+      const modeStats = modeStatsByDifficulty as unknown;
       if (isLegacyFlatModeStats(modeStats)) {
         profile.stats[scope][mode.id] = {
           easy: {
             ...modeStats,
+            bestGameCorrect: modeStats.bestGameCorrect ?? 0,
             missedCountries: [...modeStats.missedCountries],
           },
           medium: emptyModeStats(),
@@ -155,6 +161,11 @@ function migrateLegacyStats(profile: LegacyProfile): LegacyProfile {
         for (const difficulty of DIFFICULTIES) {
           if (!profile.stats[scope][mode.id][difficulty]) {
             profile.stats[scope][mode.id][difficulty] = emptyModeStats();
+          } else if (
+            !Number.isFinite(profile.stats[scope][mode.id][difficulty].bestGameCorrect) ||
+            profile.stats[scope][mode.id][difficulty].bestGameCorrect < 0
+          ) {
+            profile.stats[scope][mode.id][difficulty].bestGameCorrect = 0;
           }
         }
       }
@@ -317,6 +328,18 @@ export function normalizeProfile(profile: Profile): Profile {
     for (const mode of GAME_MODES) {
       if (!normalized.stats[scope][mode.id]) {
         normalized.stats[scope][mode.id] = createEmptyModeStatsByDifficulty();
+        continue;
+      }
+      for (const difficulty of DIFFICULTIES) {
+        const modeStats = normalized.stats[scope][mode.id][difficulty];
+        if (!modeStats) {
+          normalized.stats[scope][mode.id][difficulty] = emptyModeStats();
+        } else if (
+          !Number.isFinite(modeStats.bestGameCorrect) ||
+          modeStats.bestGameCorrect < 0
+        ) {
+          modeStats.bestGameCorrect = 0;
+        }
       }
     }
   }
@@ -574,6 +597,26 @@ export function recordAnswer(
 
   saveState(state);
   return { state, stats };
+}
+
+export function recordBestGameScore(
+  profileId: string,
+  mode: GameMode,
+  difficulty: Difficulty,
+  correctAnswers: number,
+  scope: GameScope = "world",
+) {
+  const state = loadState();
+  const profile = state.profiles.find((p) => p.id === profileId);
+  if (!profile || !Number.isFinite(correctAnswers) || correctAnswers < 0) return state;
+
+  const stats = profile.stats[scope][mode][difficulty];
+  const nextBest = Math.max(stats.bestGameCorrect, Math.floor(correctAnswers));
+  if (nextBest === stats.bestGameCorrect) return state;
+
+  stats.bestGameCorrect = nextBest;
+  saveState(state);
+  return state;
 }
 
 export type DailyLoginResult = {

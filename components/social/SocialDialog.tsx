@@ -11,6 +11,8 @@ type SocialDialogProps = {
   eyebrow: string;
   icon: string;
   children: React.ReactNode;
+  /** Optional control between the title and the close button (e.g. Inbox). */
+  headerAction?: React.ReactNode;
   footer?: React.ReactNode;
   className?: string;
 };
@@ -26,6 +28,7 @@ export function SocialDialog({
   eyebrow,
   icon,
   children,
+  headerAction,
   footer,
   className,
 }: SocialDialogProps) {
@@ -88,6 +91,7 @@ export function SocialDialog({
               {title}
             </h2>
           </div>
+          {headerAction}
           <button
             type="button"
             onClick={onClose}

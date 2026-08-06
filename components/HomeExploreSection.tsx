@@ -3,11 +3,11 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { ModeBestFraction } from "@/components/ModeBestFraction";
 import { ProfileRequiredDialog } from "@/components/ProfileRequiredDialog";
 import { FriendsShortcutButton } from "@/components/social/FriendsShortcutButton";
 import { resolvePlayConfig } from "@/lib/game-setup";
 import { getLoginStreak } from "@/lib/login-streak";
-import { GLOBE_MAP_HREF } from "@/lib/navigation";
 import { getScopedModeInfo, scopedHref, scopeQuery, SCOPE_INFO } from "@/lib/scope";
 import { playSound } from "@/lib/sound";
 import {
@@ -181,8 +181,16 @@ export function HomeExploreSection({
               {modeInfo?.description ?? "A fresh mode each visit"}
             </p>
           </div>
-          <span className="flex min-h-10 shrink-0 items-center justify-center rounded-xl bg-teal-600 px-4 font-display text-sm font-extrabold text-white shadow-[0_3px_0_var(--color-teal-800)] transition-transform group-hover:scale-105 dark:bg-teal-500">
-            Play
+          <span className="flex min-h-10 shrink-0 flex-col items-center justify-center rounded-xl bg-teal-600 px-4 font-display text-sm font-extrabold text-white shadow-[0_3px_0_var(--color-teal-800)] transition-transform group-hover:scale-105 dark:bg-teal-500">
+            {suggestedMode ? (
+              <ModeBestFraction
+                profile={profile}
+                mode={suggestedMode}
+                scope={scope}
+                className="text-[0.65rem] text-white/90"
+              />
+            ) : null}
+            <span>Play</span>
           </span>
         </button>
 
@@ -194,8 +202,6 @@ export function HomeExploreSection({
           <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3">
             <ShortcutButton href="/stats" icon="📊" label="Stats" />
             <FriendsShortcutButton scope={scope} />
-            <ShortcutButton href={GLOBE_MAP_HREF} icon="🗺️" label="Progress map" />
-            <ShortcutButton href="/library" icon="📚" label="Library" />
             <button type="button" onClick={startWeakSpots} className={shortcutClassName}>
               <span aria-hidden className="text-xl">
                 🎯
@@ -209,12 +215,6 @@ export function HomeExploreSection({
                   : "Weak spots"}
               </span>
             </button>
-            <ShortcutButton
-              href={scopedHref("/play/atlasle", scope, { autostart: "1" })}
-              icon="🔤"
-              label="Atlasle"
-            />
-            <ShortcutButton href="/profiles" icon="👤" label="Profiles" />
           </div>
         </section>
 
@@ -325,9 +325,12 @@ export function HomeExploreSection({
                       {info.description}
                     </span>
                   </span>
-                  <span aria-hidden className="text-slate-400 dark:text-slate-500">
-                    ›
-                  </span>
+                  <div className="flex shrink-0 items-center gap-2">
+                    <ModeBestFraction profile={profile} mode={mode} scope={scope} />
+                    <span aria-hidden className="text-slate-400 dark:text-slate-500">
+                      ›
+                    </span>
+                  </div>
                 </Link>
               );
             })}

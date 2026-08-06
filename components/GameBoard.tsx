@@ -26,6 +26,7 @@ import {
   checkAchievements,
   loadState,
   markDailyChallengePlayed,
+  recordBestGameScore,
   recordAnswer,
   recordDailyChallengeCompletion,
 } from "@/lib/storage";
@@ -177,6 +178,7 @@ export function GameBoard({
   const speedSessionCheckedRef = useRef(false);
   const dailyCompletionRecordedRef = useRef(false);
   const summaryAchievementsCheckedRef = useRef(false);
+  const bestGameScoreRecordedRef = useRef(false);
 
   function maybeRecordDailyCompletion(completedQuestions: number) {
     if (
@@ -371,6 +373,12 @@ export function GameBoard({
       return;
     }
     summaryAchievementsCheckedRef.current = true;
+
+    if (!bestGameScoreRecordedRef.current) {
+      bestGameScoreRecordedRef.current = true;
+      recordBestGameScore(activeProfile.id, mode, difficulty, correctAnswers, scope);
+      refresh();
+    }
 
     if (
       mode === "daily-challenge" &&
@@ -931,7 +939,7 @@ export function GameBoard({
               <div
                 className={
                   question.displayType === "flags-grid"
-                    ? "mx-auto flex min-h-0 w-full max-w-2xl shrink-0 flex-col"
+                    ? "mx-auto flex min-h-0 w-full max-w-2xl flex-1 flex-col"
                     : "mx-auto flex min-h-0 w-full max-w-2xl flex-1 flex-col sm:shrink-0"
                 }
               >

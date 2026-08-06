@@ -22,13 +22,13 @@ export type PlaySoundOptions = {
   lostStreak?: number;
 };
 
-/** Sample-backed cues (Mixkit Trumpet fanfare — free Mixkit License). */
+/** Sample-backed cues (Mixkit Orchestra triumphant trumpets — free Mixkit License). */
 const SAMPLE_URLS = {
   complete: "/sounds/complete-fanfare.mp3",
 } as const;
 
 const SAMPLE_GAIN = {
-  complete: 0.42,
+  complete: 0.48,
 } as const;
 
 type SampleSoundKind = keyof typeof SAMPLE_URLS;

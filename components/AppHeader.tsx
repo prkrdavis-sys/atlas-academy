@@ -9,7 +9,7 @@ import { LibraryScrollKeeper } from "@/components/LibraryScrollKeeper";
 import { MobileBottomDock } from "@/components/MobileBottomDock";
 import { PlayModeSwitcher } from "@/components/PlayModeSwitcher";
 import { ProfileSwitcher } from "@/components/ProfileSwitcher";
-import { InboxButton } from "@/components/social/InboxButton";
+import { FriendsHeaderButton } from "@/components/social/FriendsHeaderButton";
 import { getPrimaryNavHref, isExploreRoute } from "@/lib/navigation";
 import { useLibraryNavHref } from "@/lib/use-library-nav-href";
 import { LIBRARY_ICON } from "@/lib/library";
@@ -55,12 +55,12 @@ export function AppHeader() {
                 <PlayModeSwitcher />
               </div>
               <div className="ml-auto flex items-center gap-1 sm:hidden">
-                <InboxButton compact />
+                <FriendsHeaderButton compact />
                 <HeaderStreakChip />
                 <ProfileSwitcher compact />
               </div>
               <div className="hidden items-center gap-1.5 sm:flex">
-                <InboxButton />
+                <FriendsHeaderButton />
                 <HeaderStreakChip />
                 <ProfileSwitcher />
               </div>
