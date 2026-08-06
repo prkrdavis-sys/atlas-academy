@@ -655,7 +655,7 @@ export const GAME_MODES: {
   {
     id: "mixed",
     title: "Mixed",
-    description: "Flags, capitals, shapes, trivia, and flag picking — shuffled",
+    description: "All mastery progression modes, shuffled",
     icon: "🎲",
     phase: 2,
   },
