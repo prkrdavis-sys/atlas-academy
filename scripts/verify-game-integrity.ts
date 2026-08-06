@@ -495,8 +495,11 @@ if (resolveMapProgressCategory(invertedFlagToCountryQuestion) !== "flag") {
 if (resolveMapProgressCategory(invertedFlagCropToCountryQuestion) !== "flag") {
   fail("Inverted Flag Close-Up should count toward Flag map progress");
 }
-if (resolveMapProgressCategory(countryToLanguageQuestion) !== "trivia") {
-  fail("Languages from countries should count toward Trivia map progress");
+if (resolveMapProgressCategory(countryToLanguageQuestion) !== null) {
+  fail("Languages from countries should not count toward map progress");
+}
+if (modeCountsTowardMapProgress("country-to-language")) {
+  fail("Languages from countries should not show a Mastery chip");
 }
 
 if (
