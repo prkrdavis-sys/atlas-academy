@@ -4,7 +4,6 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { getCloudNoiseTexture } from "@/lib/globe-cloud-noise";
-import { loadCumulusGeometries } from "@/lib/globe-cloud-meshes";
 import { loadHurricaneTexture } from "@/lib/globe-hurricane-texture";
 import {
   GLOBE_CLOUD_COUNT_BY_TIER,
@@ -134,43 +133,8 @@ function pickTropicalCycloneSpawn(random: () => number): TropicalCycloneSpawn {
 }
 
 /**
- * Soft white volume shading for the cumulus meshes. Fresnel falloff keeps the
- * silhouette airy so the low-poly blobs read as cloud rather than styrofoam.
- */
-const CUMULUS_VERTEX_SHADER = /* glsl */ `
-  varying vec3 vWorldNormal;
-  varying vec3 vViewDir;
-  void main() {
-    vec4 worldPos = modelMatrix * vec4(position, 1.0);
-    vWorldNormal = normalize(mat3(modelMatrix) * normal);
-    vViewDir = normalize(cameraPosition - worldPos.xyz);
-    gl_Position = projectionMatrix * viewMatrix * worldPos;
-  }
-`;
-
-const CUMULUS_FRAGMENT_SHADER = /* glsl */ `
-  uniform vec3 uLitColor;
-  uniform vec3 uShadowColor;
-  uniform float uAlpha;
-  uniform float uLight;
-  varying vec3 vWorldNormal;
-  varying vec3 vViewDir;
-
-  void main() {
-    float fresnel = pow(1.0 - abs(dot(normalize(vWorldNormal), normalize(vViewDir))), 1.35);
-    float light = clamp(uLight, 0.0, 1.0);
-    vec3 color = mix(uShadowColor, uLitColor, light);
-    color = mix(color, uLitColor, (1.0 - fresnel) * 0.18 * light);
-    float alpha = uAlpha * mix(0.92, 0.38, fresnel) * mix(0.72, 1.0, light);
-    if (alpha <= 0.01) discard;
-    gl_FragColor = vec4(color, alpha);
-  }
-`;
-
-/**
  * Cloud puff meshes are already bent onto their spherical shell in cluster-local
  * space (see createShellPatchGeometry), so the vertex stage is a straight pass.
- * Used for high cirrus sheets only — thick weather uses solid cumulus meshes.
  */
 const CLOUD_VERTEX_SHADER = /* glsl */ `
   varying vec2 vUv;
@@ -372,15 +336,10 @@ const LIGHT_CLOUD_PALETTE: CloudPalette = {
 type PuffSpec = {
   /** Offset in the cluster's tangent frame (x, y tangent; z outward). */
   offset: [number, number, number];
-  /**
-   * Volume size in cluster-local units: width (tangent x), radial thickness
-   * (outward), depth (tangent y). Cirrus planes use width × depth only.
-   */
-  scale: [number, number, number];
-  /** Optional yaw inside the local tangent plane. */
+  /** Surface-patch width and height in local tangent units. */
+  scale: [number, number];
+  /** Optional rotation inside the local tangent plane. */
   rotation?: number;
-  /** Which cumulus hero mesh to instance (ignored for cirrus planes). */
-  meshIndex?: number;
   seed: number;
   alpha: number;
   layer: CloudLayer;
@@ -484,45 +443,6 @@ function pickRegions(count: number, random: () => number): WeatherRegion[] {
 }
 
 /**
- * Map a weather-layer footprint onto a 3D cumulus mesh. Base/anvil stay
- * squat; towers stretch radially so the cell reads as real vertical weather.
- */
-function volumeScale(
-  width: number,
-  layer: Exclude<CloudLayer, "cirrus">,
-  random: () => number,
-): [number, number, number] {
-  switch (layer) {
-    case "base":
-      return [
-        width,
-        width * lerp(0.28, 0.42, random()),
-        width * lerp(0.7, 0.95, random()),
-      ];
-    case "tower":
-      return [
-        width * lerp(0.9, 1.15, random()),
-        width * lerp(0.75, 1.1, random()),
-        width * lerp(0.65, 0.9, random()),
-      ];
-    case "anvil":
-      return [
-        width * lerp(1.25, 1.7, random()),
-        width * lerp(0.16, 0.28, random()),
-        width * lerp(0.85, 1.2, random()),
-      ];
-    default: {
-      const exhaustive: never = layer;
-      return exhaustive;
-    }
-  }
-}
-
-function pickMeshIndex(random: () => number): number {
-  return Math.floor(random() * 4);
-}
-
-/**
  * Cumulonimbus: a ragged low base, a narrowing tower punching through the
  * middle level, and a broad flat anvil spreading out at the tropopause.
  */
@@ -541,8 +461,7 @@ function buildConvectiveCell(random: () => number): PuffSpec[] {
         (random() - 0.5) * baseSpread * 0.5,
         altitude(lerp(LOW_BASE_MIN_KM, LOW_BASE_MAX_KM, random())),
       ],
-      scale: volumeScale(width, "base", random),
-      meshIndex: pickMeshIndex(random),
+      scale: [width, width * lerp(0.5, 0.72, random())],
       seed: random(),
       alpha: lerp(BASE_ALPHA_MIN, BASE_ALPHA_MAX, random()),
       layer: "base",
@@ -560,8 +479,7 @@ function buildConvectiveCell(random: () => number): PuffSpec[] {
         (random() - 0.5) * width * 0.3,
         altitude(lerp(TOWER_BASE_KM, TOWER_TOP_KM, progress)),
       ],
-      scale: volumeScale(width, "tower", random),
-      meshIndex: pickMeshIndex(random),
+      scale: [width * lerp(1.05, 1.3, random()), width * lerp(0.5, 0.74, random())],
       seed: random(),
       alpha: lerp(TOWER_ALPHA_MIN, TOWER_ALPHA_MAX, random()),
       layer: "tower",
@@ -575,8 +493,7 @@ function buildConvectiveCell(random: () => number): PuffSpec[] {
           (random() - 0.5) * width * 0.36,
           altitude(TOWER_BASE_KM * 0.8),
         ],
-        scale: volumeScale(width * 0.85, "tower", random),
-        meshIndex: pickMeshIndex(random),
+        scale: [width * 0.9, width * lerp(0.44, 0.64, random())],
         seed: random(),
         alpha: lerp(TOWER_ALPHA_MIN * 0.8, TOWER_ALPHA_MAX * 0.9, random()),
         layer: "tower",
@@ -594,8 +511,7 @@ function buildConvectiveCell(random: () => number): PuffSpec[] {
         (random() - 0.5) * anvilSpread * 0.3,
         altitude(ANVIL_KM + lerp(-1.2, 1.2, random())),
       ],
-      scale: volumeScale(width, "anvil", random),
-      meshIndex: pickMeshIndex(random),
+      scale: [width * lerp(1.3, 1.8, random()), width * lerp(0.3, 0.48, random())],
       seed: random(),
       alpha: lerp(ANVIL_ALPHA_MIN, ANVIL_ALPHA_MAX, random()),
       layer: "anvil",
@@ -625,8 +541,7 @@ function buildFrontalBand(random: () => number): PuffSpec[] {
         along * Math.sin(tilt) + (random() - 0.5) * width * 0.2,
         altitude(lerp(LOW_BASE_MIN_KM, LOW_BASE_MAX_KM, random())),
       ],
-      scale: volumeScale(width, "base", random),
-      meshIndex: pickMeshIndex(random),
+      scale: [width, width * lerp(0.34, 0.5, random())],
       rotation: tilt + lerp(-0.2, 0.2, random()),
       seed: random(),
       alpha: lerp(BASE_ALPHA_MIN, BASE_ALPHA_MAX, random()),
@@ -644,8 +559,7 @@ function buildFrontalBand(random: () => number): PuffSpec[] {
         along * Math.sin(tilt),
         altitude(lerp(TOWER_BASE_KM, TOWER_TOP_KM * 0.7, random())),
       ],
-      scale: volumeScale(width, "tower", random),
-      meshIndex: pickMeshIndex(random),
+      scale: [width, width * lerp(0.42, 0.6, random())],
       rotation: tilt,
       seed: random(),
       alpha: lerp(TOWER_ALPHA_MIN * 0.7, TOWER_ALPHA_MAX * 0.8, random()),
@@ -672,8 +586,7 @@ function buildStratocumulusSheet(random: () => number): PuffSpec[] {
         (random() - 0.5) * sheetSpread * 0.6,
         altitude(lerp(LOW_BASE_MIN_KM, LOW_BASE_MIN_KM + 0.6, random())),
       ],
-      scale: volumeScale(width, "base", random),
-      meshIndex: pickMeshIndex(random),
+      scale: [width, width * lerp(0.42, 0.62, random())],
       rotation: lerp(-0.5, 0.5, random()),
       seed: random(),
       alpha: lerp(BASE_ALPHA_MIN * 0.8, BASE_ALPHA_MAX * 0.85, random()),
@@ -739,7 +652,7 @@ function buildCirrusClusters(count: number): ClusterSpec[] {
           (random() - 0.5) * patchSpread * 0.45,
           altitude(lerp(CIRRUS_MIN_KM, CIRRUS_MAX_KM, random())),
         ],
-        scale: [length, length * 0.02, length * lerp(0.1, 0.18, random())],
+        scale: [length, length * lerp(0.1, 0.18, random())],
         rotation: heading + lerp(-0.12, 0.12, random()),
         seed: random(),
         alpha: lerp(CIRRUS_ALPHA_MIN, CIRRUS_ALPHA_MAX, random()),
@@ -759,9 +672,9 @@ function buildCirrusClusters(count: number): ClusterSpec[] {
   return clusters;
 }
 
-/** Wider cirrus sheets need denser tessellation or the spherical bend looks faceted. */
-function cloudGridSegments(width: number, depth: number): number {
-  const size = Math.max(width, depth);
+/** Wider puffs need denser tessellation or the spherical bend still looks faceted. */
+function cloudGridSegments(scale: [number, number]): number {
+  const size = Math.max(scale[0], scale[1]);
   if (size > 0.45) return 48;
   if (size > 0.25) return 36;
   if (size > 0.12) return 24;
@@ -769,29 +682,9 @@ function cloudGridSegments(width: number, depth: number): number {
 }
 
 /**
- * Project a tangent offset onto the spherical shell at this altitude so wide
- * systems follow the planet instead of sitting on a flat tangent plane.
- */
-function shellPosition(
-  clusterRadius: number,
-  offset: [number, number, number],
-): [number, number, number] {
-  const [x, y, z] = offset;
-  let fx = x;
-  let fy = y;
-  let fz = z + clusterRadius;
-  const shellR = clusterRadius + z;
-  const len = Math.hypot(fx, fy, fz) || 1;
-  const s = shellR / len;
-  fx *= s;
-  fy *= s;
-  fz *= s;
-  return [fx, fy, fz - clusterRadius];
-}
-
-/**
  * Build a plane already wrapped onto the spherical shell at this puff's
- * altitude. Used for high cirrus sheets — thick weather uses solid meshes.
+ * altitude. Doing the bend on the CPU means wide sheets follow the planet at
+ * the limb instead of sticking out as flat chords into space.
  */
 function createShellPatchGeometry(
   clusterRadius: number,
@@ -834,7 +727,6 @@ function createShellPatchGeometry(
 type CloudPuffProps = {
   spec: PuffSpec;
   clusterRadius: number;
-  geometries: THREE.BufferGeometry[];
   noise: THREE.Texture;
   palette: CloudPalette;
   /** Shared per-cluster light factor, updated by the parent each frame. */
@@ -842,87 +734,26 @@ type CloudPuffProps = {
   timeRef: { current: number };
 };
 
-/** Model +Y maps to cluster +Z (radial / "up" from the planet). */
-const MESH_RADIAL_TILT = -Math.PI / 2;
-
-function CumulusMeshPuff({
-  spec,
-  clusterRadius,
-  geometries,
-  palette,
-  lightRef,
-}: Omit<CloudPuffProps, "noise" | "timeRef">) {
-  const materialRef = useRef<THREE.ShaderMaterial>(null);
-  const meshIndex = (spec.meshIndex ?? 0) % Math.max(geometries.length, 1);
-  const geometry = geometries[meshIndex] ?? geometries[0];
-  const position = useMemo(
-    () => shellPosition(clusterRadius, spec.offset),
-    [clusterRadius, spec.offset],
-  );
-
-  const uniforms = useMemo(
-    () => ({
-      uLitColor: { value: new THREE.Color(palette.litColor) },
-      uShadowColor: { value: new THREE.Color(palette.shadowColor) },
-      uAlpha: { value: spec.alpha * palette.alphaScale },
-      uLight: { value: 1 },
-    }),
-    [palette, spec.alpha],
-  );
-
-  useFrame(() => {
-    const material = materialRef.current;
-    if (!material) return;
-    material.uniforms.uLight.value = lightRef.current;
-  });
-
-  if (!geometry) return null;
-
-  return (
-    <mesh
-      geometry={geometry}
-      position={position}
-      rotation={[MESH_RADIAL_TILT, 0, spec.rotation ?? 0]}
-      scale={spec.scale}
-      raycast={ignoreRaycast}
-      renderOrder={CLOUD_RENDER_ORDER}
-    >
-      <shaderMaterial
-        ref={materialRef}
-        vertexShader={CUMULUS_VERTEX_SHADER}
-        fragmentShader={CUMULUS_FRAGMENT_SHADER}
-        uniforms={uniforms}
-        transparent
-        depthWrite={false}
-        side={THREE.DoubleSide}
-        toneMapped={false}
-      />
-    </mesh>
-  );
-}
-
-function CirrusPlanePuff({
+function CloudPuff({
   spec,
   clusterRadius,
   noise,
   palette,
   lightRef,
   timeRef,
-}: Omit<CloudPuffProps, "geometries">) {
+}: CloudPuffProps) {
   const materialRef = useRef<THREE.ShaderMaterial>(null);
-  const width = spec.scale[0];
-  const depth = spec.scale[2];
-  const segments = cloudGridSegments(width, depth);
+  const segments = cloudGridSegments(spec.scale);
   const geometry = useMemo(
     () =>
       createShellPatchGeometry(
         clusterRadius,
         spec.offset,
-        [width, depth],
+        spec.scale,
         spec.rotation ?? 0,
         segments,
       ),
-    [clusterRadius, depth, segments, spec.offset, spec.rotation, width],
+    [clusterRadius, segments, spec.offset, spec.rotation, spec.scale],
   );
 
   useEffect(() => () => geometry.dispose(), [geometry]);
@@ -936,9 +767,9 @@ function CirrusPlanePuff({
       uSeed: { value: spec.seed },
       uAlpha: { value: spec.alpha * palette.alphaScale },
       uLight: { value: 1 },
-      uLayer: { value: CLOUD_LAYER_INDEX.cirrus },
+      uLayer: { value: CLOUD_LAYER_INDEX[spec.layer] },
     }),
-    [noise, palette, spec.alpha, spec.seed],
+    [noise, palette, spec.alpha, spec.layer, spec.seed],
   );
 
   useFrame(() => {
@@ -964,30 +795,6 @@ function CirrusPlanePuff({
         toneMapped={false}
       />
     </mesh>
-  );
-}
-
-function CloudPuff(props: CloudPuffProps) {
-  if (props.spec.layer === "cirrus") {
-    return (
-      <CirrusPlanePuff
-        spec={props.spec}
-        clusterRadius={props.clusterRadius}
-        noise={props.noise}
-        palette={props.palette}
-        lightRef={props.lightRef}
-        timeRef={props.timeRef}
-      />
-    );
-  }
-  return (
-    <CumulusMeshPuff
-      spec={props.spec}
-      clusterRadius={props.clusterRadius}
-      geometries={props.geometries}
-      palette={props.palette}
-      lightRef={props.lightRef}
-    />
   );
 }
 
@@ -1182,7 +989,6 @@ function HurricaneStorm({
 
 type CloudClusterProps = {
   spec: ClusterSpec;
-  geometries: THREE.BufferGeometry[];
   noise: THREE.Texture;
   palette: CloudPalette;
   sunRef: { current: THREE.Vector3 };
@@ -1191,7 +997,6 @@ type CloudClusterProps = {
 
 function CloudCluster({
   spec,
-  geometries,
   noise,
   palette,
   sunRef,
@@ -1225,7 +1030,6 @@ function CloudCluster({
           key={index}
           spec={puff}
           clusterRadius={spec.radius}
-          geometries={geometries}
           noise={noise}
           palette={palette}
           lightRef={lightRef}
@@ -1246,10 +1050,10 @@ type GlobeCloudsProps = {
 
 /**
  * Translucent weather systems placed in Earth's real cloud belts: convective
- * cumulonimbus (solid cumulus meshes) in the tropics, frontal bands on the
- * storm tracks, marine stratocumulus over the cold currents, jet-stream cirrus
- * far above them all, and one rare Pacific cyclone. Mount inside the globe's
- * spin group so every cloud shares one global circulation.
+ * cumulonimbus in the tropics, frontal bands on the storm tracks, marine
+ * stratocumulus over the cold currents, jet-stream cirrus far above them all,
+ * and one rare tropical cyclone. Mount inside the globe's spin group so every
+ * cloud shares one global circulation.
  */
 export function GlobeClouds({
   isDark,
@@ -1272,31 +1076,11 @@ export function GlobeClouds({
   const sunRef = useRef(new THREE.Vector3(1, 0, 0));
   const timeRef = useRef(STATIC_TIME);
   const cloudsGroupRef = useRef<THREE.Group>(null);
-  const [cumulusGeometries, setCumulusGeometries] = useState<THREE.BufferGeometry[]>(
-    [],
-  );
   const [hurricaneTexture, setHurricaneTexture] = useState<THREE.Texture | null>(null);
   const [hurricaneActive, setHurricaneActive] = useState(false);
   const [hurricaneSpawn, setHurricaneSpawn] = useState<TropicalCycloneSpawn | null>(null);
   const hurricaneEventAttemptedRef = useRef(false);
   const invalidate = useThree((state) => state.invalidate);
-
-  useEffect(() => {
-    let cancelled = false;
-    loadCumulusGeometries()
-      .then((geometries) => {
-        if (!cancelled) {
-          setCumulusGeometries(geometries);
-          invalidate();
-        }
-      })
-      .catch(() => {
-        // Cirrus planes still render if the volume library fails to load.
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [invalidate]);
 
   useEffect(() => {
     let cancelled = false;
@@ -1362,7 +1146,6 @@ export function GlobeClouds({
         <CloudCluster
           key={index}
           spec={cluster}
-          geometries={cumulusGeometries}
           noise={noise}
           palette={palette}
           sunRef={sunRef}
