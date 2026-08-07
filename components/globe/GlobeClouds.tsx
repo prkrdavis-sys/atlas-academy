@@ -70,6 +70,9 @@ const HURRICANE_EVENT_CHANCE = 1;
 const HURRICANE_EVENT_VISIBLE_MS = 24_000;
 /** Slight independent spin: NH counterclockwise, SH clockwise (local outward axis). */
 const HURRICANE_SPIN_SPEED = 0.14;
+/** Opacity ease when the storm appears / disappears. */
+const HURRICANE_FADE_IN_DAMP = 2.1;
+const HURRICANE_FADE_OUT_DAMP = 3.2;
 const HURRICANE_RADIUS = CLOUD_DECK_RADIUS;
 
 type TropicalCycloneRegion = {
@@ -806,7 +809,6 @@ type HurricaneStormLayerProps = {
   lightRef: { current: number };
   strengthRef: { current: number };
   timeRef: { current: number };
-  active: boolean;
 };
 
 function HurricaneStormLayer({
@@ -817,7 +819,6 @@ function HurricaneStormLayer({
   lightRef,
   strengthRef,
   timeRef,
-  active,
 }: HurricaneStormLayerProps) {
   const materialRef = useRef<THREE.ShaderMaterial>(null);
   const geometry = useMemo(
@@ -850,23 +851,13 @@ function HurricaneStormLayer({
     [noise, palette, spec.depth, spec.seed, texture],
   );
 
-  useEffect(() => {
-    const material = materialRef.current;
-    if (!material || !active) return;
-    material.uniforms.uOpacity.value =
-      spec.opacity * palette.alphaScale * Math.max(strengthRef.current, 1);
-  }, [active, palette, spec.opacity, strengthRef]);
-
   useFrame(() => {
     const material = materialRef.current;
     if (!material) return;
     material.uniforms.uTime.value = timeRef.current;
     material.uniforms.uLight.value = lightRef.current;
-    const strength = active
-      ? Math.max(strengthRef.current, 1)
-      : strengthRef.current;
     material.uniforms.uOpacity.value =
-      spec.opacity * palette.alphaScale * strength;
+      spec.opacity * palette.alphaScale * strengthRef.current;
   });
 
   return (
@@ -926,9 +917,9 @@ function HurricaneStorm({
       if (spinGroupRef.current) spinGroupRef.current.rotation.z = 0;
       return;
     }
+    strengthRef.current = 0;
     onActivity?.();
     invalidate();
-    strengthRef.current = 1;
   }, [active, invalidate, onActivity]);
 
   useFrame((_state, delta) => {
@@ -947,8 +938,12 @@ function HurricaneStorm({
     lightRef.current = THREE.MathUtils.smoothstep(radial.dot(sun), -0.25, 0.3);
 
     const target = active ? 1 : 0;
-    const damp = reducedMotion ? 12 : 3.2;
     const elapsed = Math.min(delta, 0.1);
+    const damp = reducedMotion
+      ? 12
+      : active
+        ? HURRICANE_FADE_IN_DAMP
+        : HURRICANE_FADE_OUT_DAMP;
     strengthRef.current = THREE.MathUtils.damp(
       strengthRef.current,
       target,
@@ -956,7 +951,7 @@ function HurricaneStorm({
       elapsed,
     );
 
-    if (active && !reducedMotion && strengthRef.current > 0.01) {
+    if (active && !reducedMotion && strengthRef.current > 0.05) {
       spinAngleRef.current += elapsed * HURRICANE_SPIN_SPEED * spawn.spinSign;
       if (spinGroupRef.current) {
         spinGroupRef.current.rotation.z = spinAngleRef.current;
@@ -979,7 +974,6 @@ function HurricaneStorm({
             lightRef={lightRef}
             strengthRef={strengthRef}
             timeRef={timeRef}
-            active={active}
           />
         ))}
       </group>
