@@ -54,6 +54,16 @@ export async function respondToMatchInvite(
   return data as MatchRow;
 }
 
+/** Host-only: withdraw an unanswered invite without counting a forfeit. */
+export async function cancelMatchInvite(matchId: string): Promise<MatchRow> {
+  const { data, error } = await supabase.rpc("cancel_match_invite", {
+    p_match_id: matchId,
+  });
+
+  if (error) throw error;
+  return data as MatchRow;
+}
+
 export async function submitMatchAnswer(
   matchId: string,
   questionIndex: number,

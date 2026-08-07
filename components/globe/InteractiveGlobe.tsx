@@ -36,7 +36,7 @@ import { GlobeGrabOrbit } from "@/components/globe/GlobeGrabOrbit";
 import { SpaceBackdrop, StaticStarfield } from "@/components/globe/SpaceBackdrop";
 import { SpaceFlybys } from "@/components/globe/SpaceFlybys";
 import { ProgressMapContainer } from "@/components/ProgressMapOverlays";
-import { orbitCameraByScreenDelta } from "@/lib/globe-grab";
+import { orbitCameraToKeepGrab, pointerGlobeUnit } from "@/lib/globe-grab";
 import { pickGlobePlaceAtClient } from "@/lib/globe-picking";
 import {
   GLOBE_DEFAULT_POLAR,
@@ -773,10 +773,20 @@ function PickableGlobe({
  * drag zone and the map pane's floating zoom chips).
  */
 export type GlobeHandle = {
-  /** Spin the globe by a pointer movement in pixels (any direction). */
-  spinByPixels: (deltaX: number, deltaY?: number) => void;
-  /** Pause/resume auto-spin while an external drag is in progress. */
-  setDragging: (dragging: boolean) => void;
+  /**
+   * Start a home-overlay drag. Uses the same grab-to-keep-orbit feel as map
+   * mode when the pointer is on the disc; otherwise screen-delta orbiting.
+   */
+  beginDrag: (clientX: number, clientY: number) => void;
+  /** Continue a home-overlay drag (same math as `GlobeGrabOrbit`). */
+  dragTo: (
+    clientX: number,
+    clientY: number,
+    deltaX: number,
+    deltaY: number,
+  ) => void;
+  /** End a home-overlay drag and re-arm idle auto-spin. */
+  endDrag: () => void;
   zoomIn: () => void;
   zoomOut: () => void;
   resetView: () => void;
@@ -989,34 +999,87 @@ export default function InteractiveGlobe({
     [noteUserInteraction, maxCameraDistance],
   );
 
+  // Persistent grab state for the home overlay drag zone — mirrors GlobeGrabOrbit.
+  const homeGrabRef = useRef({
+    active: false,
+    screenDragOnly: false,
+    grabUnit: new THREE.Vector3(),
+    lastPointerUnit: new THREE.Vector3(),
+    probeUnit: new THREE.Vector3(),
+  });
+
   // Imperative controls for chrome above the canvas: the home drag zone spins
   // the planet, and the map pane's floating chips drive zoom/reset.
   useEffect(() => {
     if (!handleRef) return;
     handleRef.current = {
-      spinByPixels: (deltaX, deltaY = 0) => {
+      beginDrag: (clientX, clientY) => {
         const controls = controlsRef.current;
-        const container = containerRef.current;
-        if (!controls || !container) return;
+        if (!controls) return;
         const camera = controls.object;
         if (!(camera instanceof THREE.PerspectiveCamera)) return;
-        bumpActivity();
-        orbitCameraByScreenDelta(
+
+        noteUserInteraction();
+        const rect = controls.domElement.getBoundingClientRect();
+        const grab = homeGrabRef.current;
+        const hit = pointerGlobeUnit(
+          clientX,
+          clientY,
+          rect,
           camera,
           controls.target,
-          deltaX,
-          deltaY,
-          container.getBoundingClientRect(),
+          1,
+          grab.grabUnit,
+        );
+        grab.screenDragOnly = hit !== "hit";
+        if (hit === "hit") {
+          grab.lastPointerUnit.copy(grab.grabUnit);
+        }
+        grab.active = true;
+      },
+      dragTo: (clientX, clientY, deltaX, deltaY) => {
+        const controls = controlsRef.current;
+        const grab = homeGrabRef.current;
+        if (!controls || !grab.active) return;
+        const camera = controls.object;
+        if (!(camera instanceof THREE.PerspectiveCamera)) return;
+
+        bumpActivity();
+        const rect = controls.domElement.getBoundingClientRect();
+        if (
+          !grab.screenDragOnly &&
+          pointerGlobeUnit(
+            clientX,
+            clientY,
+            rect,
+            camera,
+            controls.target,
+            1,
+            grab.probeUnit,
+          ) !== "hit"
+        ) {
+          grab.screenDragOnly = true;
+        }
+
+        orbitCameraToKeepGrab(
+          camera,
+          controls.target,
+          grab.grabUnit,
+          grab.lastPointerUnit,
+          clientX,
+          clientY,
+          rect,
+          1,
           controls.minPolarAngle,
           controls.maxPolarAngle,
+          grab.screenDragOnly,
+          deltaX,
+          deltaY,
         );
         controls.update();
       },
-      setDragging: (dragging) => {
-        if (dragging) {
-          noteUserInteraction();
-          return;
-        }
+      endDrag: () => {
+        homeGrabRef.current.active = false;
         bumpActivity();
         armIdleAutoSpin();
       },

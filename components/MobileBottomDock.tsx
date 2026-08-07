@@ -14,9 +14,10 @@ type MobileBottomDockProps = {
 /**
  * Pins children to the visible bottom edge on phones.
  *
- * Uses a full visual-viewport fixed shell (`top` + `height`, no transform) so
- * the bar stays docked on modern iOS Safari where layout-viewport `bottom: 0`
- * can float mid-screen after keyboard or chrome changes.
+ * While the soft keyboard is closed, the shell fills the layout viewport so
+ * rubber-band overscroll cannot lift the bar. While the keyboard is open, it
+ * tracks visualViewport (`top` + `height`) so the bar stays above the keyboard
+ * on modern iOS Safari.
  */
 export function MobileBottomDock({
   children,
@@ -31,7 +32,9 @@ export function MobileBottomDock({
       className={cn("pointer-events-none fixed inset-x-0 z-40 sm:hidden", className)}
       style={{
         ...(frame
-          ? { top: frame.offsetTop, height: frame.height }
+          ? frame.pinToLayout
+            ? { top: 0, bottom: 0 }
+            : { top: frame.offsetTop, height: frame.height }
           : { top: 0, bottom: 0 }),
         ...style,
       }}

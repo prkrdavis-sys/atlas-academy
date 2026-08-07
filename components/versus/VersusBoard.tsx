@@ -21,7 +21,7 @@ import { triggerHaptic } from "@/lib/haptics";
 import { isTextOnlyPrompt } from "@/lib/question-presentation";
 import { playSound } from "@/lib/sound";
 import { useVersusMatch } from "@/lib/social/use-versus-match";
-import { VERSUS_DIFFICULTY } from "@/lib/social/versus";
+import { cancelMatchInvite, VERSUS_DIFFICULTY } from "@/lib/social/versus";
 import type { MatchRow, PlayerRow } from "@/lib/social/types";
 import { normalizeRoundQuestionSetting, type Question } from "@/lib/types";
 
@@ -65,6 +65,7 @@ export function VersusBoard({
   const { activeProfile } = useProfiles();
   const versus = useVersusMatch(matchId, userId);
   const [bursts, setBursts] = useState<FeedbackBurst[]>([]);
+  const [cancelling, setCancelling] = useState(false);
   const revealedIndexRef = useRef<number | null>(null);
 
   const { match, phase, questionIndex, yourAnswer, opponentAnswer } = versus;
@@ -117,6 +118,22 @@ export function VersusBoard({
       <CenteredNotice
         title={`Waiting for ${opponent.display_name} to accept…`}
         description="The round starts the moment they join."
+        action={{
+          label: cancelling ? "Cancelling…" : "Cancel invite",
+          variant: "secondary",
+          disabled: cancelling,
+          onClick: () => {
+            if (cancelling) return;
+            setCancelling(true);
+            void cancelMatchInvite(matchId)
+              .then(() => {
+                router.push("/");
+              })
+              .catch(() => {
+                setCancelling(false);
+              });
+          },
+        }}
       />
     );
   }
@@ -242,8 +259,15 @@ function CenteredNotice({
 }: {
   title: string;
   description?: string;
-  action?: { label: string; onClick: () => void };
+  action?: {
+    label: string;
+    onClick: () => void;
+    disabled?: boolean;
+    variant?: "primary" | "secondary";
+  };
 }) {
+  const variant = action?.variant ?? "primary";
+
   return (
     <div className="flex h-full items-center justify-center p-6">
       <div className="max-w-sm text-center">
@@ -259,7 +283,12 @@ function CenteredNotice({
           <button
             type="button"
             onClick={action.onClick}
-            className="mt-5 inline-flex min-h-11 items-center justify-center rounded-2xl bg-emerald-500 px-6 py-3 text-base font-bold text-white shadow-[0_3px_0_var(--color-emerald-700)] transition-all duration-100 hover:bg-emerald-400 active:translate-y-[3px] active:shadow-none"
+            disabled={action.disabled}
+            className={
+              variant === "secondary"
+                ? "mt-5 inline-flex min-h-11 items-center justify-center rounded-2xl border-2 border-slate-300 bg-white px-6 py-3 text-base font-bold text-slate-700 shadow-[0_3px_0_rgb(148_163_184)] transition-all duration-100 hover:bg-slate-50 active:translate-y-[3px] active:shadow-none disabled:pointer-events-none disabled:opacity-60 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:shadow-[0_3px_0_rgb(51_65_85)] dark:hover:bg-slate-700"
+                : "mt-5 inline-flex min-h-11 items-center justify-center rounded-2xl bg-emerald-500 px-6 py-3 text-base font-bold text-white shadow-[0_3px_0_var(--color-emerald-700)] transition-all duration-100 hover:bg-emerald-400 active:translate-y-[3px] active:shadow-none disabled:pointer-events-none disabled:opacity-60"
+            }
           >
             {action.label}
           </button>

@@ -122,7 +122,7 @@ export function useVersusMatch(matchId: string, userId: string | null) {
   // Presence tells us the opponent is still here; broadcast carries their
   // answers with less latency than waiting on a poll.
   useEffect(() => {
-    if (!userId || !match) return;
+    if (!userId) return;
 
     const channel = supabase.channel(`match:${matchId}`, {
       config: { private: true, presence: { key: userId } },
@@ -152,18 +152,63 @@ export function useVersusMatch(matchId: string, userId: string | null) {
     void channel.subscribe((status) => {
       if (status !== "SUBSCRIBED") return;
       void channel.track({ userId });
+      // Guest joins after accept; this wakes the host still sitting on "invited".
+      void channel.send({
+        type: "broadcast",
+        event: "match-updated",
+        payload: {},
+      });
     });
 
     return () => {
       channelRef.current = null;
       void supabase.removeChannel(channel);
     };
-  }, [matchId, userId, match, mergeAnswers]);
+  }, [matchId, userId, mergeAnswers]);
+
+  // Authoritative path for invite → active (and cancel/decline): the accept RPC
+  // updates Postgres but does not broadcast on this channel.
+  useEffect(() => {
+    if (!userId) return;
+
+    const channel = supabase
+      .channel(`match-row-${matchId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "matches",
+          filter: `id=eq.${matchId}`,
+        },
+        () => {
+          void loadMatch(matchId).then((next) => {
+            if (next) setMatch(next);
+          });
+        },
+      );
+
+    void channel.subscribe();
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [matchId, userId]);
 
   useEffect(() => {
     const interval = window.setInterval(() => setNowMs(Date.now()), 200);
     return () => window.clearInterval(interval);
   }, []);
+
+  // Safety net while the invite is outstanding — covers missed realtime events.
+  useEffect(() => {
+    if (!match || match.status !== "invited") return;
+    const interval = window.setInterval(() => {
+      void loadMatch(matchId).then((next) => {
+        if (next) setMatch(next);
+      });
+    }, RECONCILE_INTERVAL_MS);
+    return () => window.clearInterval(interval);
+  }, [match, matchId]);
 
   useEffect(() => {
     if (!match || match.status !== "active") return;

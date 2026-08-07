@@ -18,7 +18,9 @@
 }
 
 html {
+  /* Root fill shows through iOS rubber-band overscroll beyond the document. */
   background-color: var(--background);
+  overscroll-behavior-y: none;
 }
 
 @theme inline {
@@ -30,11 +32,27 @@ html {
 }
 
 body {
+  position: relative;
+  isolation: isolate;
   min-width: 320px;
   min-height: 100dvh;
   overflow-x: hidden;
   color: var(--foreground);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
+  background-color: var(--background);
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+  text-rendering: optimizeLegibility;
+}
+
+/* Fixed atmosphere layer so overscroll bounce never reveals blank white —
+   gradients stay pinned to the viewport in both light and dark mode. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
   background-color: var(--background);
   background-image:
     radial-gradient(ellipse 900px 520px at 12% -8%, rgb(16 185 129 / 0.14), transparent 62%),
@@ -42,12 +60,9 @@ body {
     radial-gradient(ellipse 760px 520px at 50% 108%, rgb(251 191 36 / 0.1), transparent 58%),
     radial-gradient(rgb(15 118 110 / 0.05) 1px, transparent 1px);
   background-size: 100% 100%, 100% 100%, 100% 100%, 26px 26px;
-  -webkit-tap-highlight-color: transparent;
-  overscroll-behavior-y: none;
-  text-rendering: optimizeLegibility;
 }
 
-.dark body {
+.dark body::before {
   background-image:
     radial-gradient(ellipse 900px 520px at 12% -8%, rgb(16 185 129 / 0.08), transparent 62%),
     radial-gradient(ellipse 820px 480px at 92% 4%, rgb(56 189 248 / 0.08), transparent 60%),
@@ -77,10 +92,6 @@ input:focus-visible {
 @media (min-width: 640px) {
   :root {
     --app-header-offset: calc(4rem + env(safe-area-inset-top));
-  }
-
-  body {
-    background-attachment: fixed;
   }
 
   .play-main {

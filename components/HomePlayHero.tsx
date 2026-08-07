@@ -291,10 +291,11 @@ type GlobeDragZoneProps = {
 };
 
 /**
- * The open space over the planet. Dragging it spins the globe in any direction
- * (via the imperative handle, since this overlay sits above the canvas), while
- * a plain tap, click, or keyboard activation opens the progress map. Touch
- * scrolling is disabled here so mobile gestures move the globe, not the page.
+ * The open space over the planet. Dragging it orbits the globe with the same
+ * grab-to-keep feel as map mode (via the imperative handle, since this overlay
+ * sits above the canvas), while a plain tap, click, or keyboard activation
+ * opens the progress map. Touch scrolling is disabled here so mobile gestures
+ * move the globe, not the page.
  */
 function GlobeDragZone({ href, globeHandleRef }: GlobeDragZoneProps) {
   const dragRef = useRef<{ pointerId: number; lastX: number; lastY: number } | null>(null);
@@ -319,7 +320,7 @@ function GlobeDragZone({ href, globeHandleRef }: GlobeDragZoneProps) {
   function endDrag(event: React.PointerEvent<HTMLAnchorElement>) {
     if (dragRef.current?.pointerId !== event.pointerId) return;
     dragRef.current = null;
-    globeHandleRef?.current?.setDragging(false);
+    globeHandleRef?.current?.endDrag();
     try {
       event.currentTarget.releasePointerCapture(event.pointerId);
     } catch {
@@ -344,7 +345,7 @@ function GlobeDragZone({ href, globeHandleRef }: GlobeDragZoneProps) {
           lastY: event.clientY,
         };
         traveledRef.current = 0;
-        globeHandleRef?.current?.setDragging(true);
+        globeHandleRef?.current?.beginDrag(event.clientX, event.clientY);
         try {
           event.currentTarget.setPointerCapture(event.pointerId);
         } catch {
@@ -359,7 +360,12 @@ function GlobeDragZone({ href, globeHandleRef }: GlobeDragZoneProps) {
         drag.lastX = event.clientX;
         drag.lastY = event.clientY;
         traveledRef.current += Math.hypot(deltaX, deltaY);
-        globeHandleRef?.current?.spinByPixels(deltaX, deltaY);
+        globeHandleRef?.current?.dragTo(
+          event.clientX,
+          event.clientY,
+          deltaX,
+          deltaY,
+        );
       }}
       onPointerUp={endDrag}
       onPointerCancel={endDrag}

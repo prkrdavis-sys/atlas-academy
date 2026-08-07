@@ -65,7 +65,8 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  // Keep the layout viewport stable; the bottom tab bar docks to visualViewport.
+  // Keep the layout viewport stable; the bottom tab bar pins to the layout
+  // viewport normally and only tracks visualViewport while the keyboard is open.
   interactiveWidget: "overlays-content",
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#f2f8f4" },
