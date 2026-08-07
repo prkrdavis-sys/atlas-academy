@@ -739,35 +739,34 @@ export function GlobeExperience({ children }: { children?: ReactNode }) {
                 onPointerCancel={handleSwipePointerCancel}
                 onClickCapture={handleSwipeClickCapture}
                 style={{ touchAction: "pan-y" }}
-                className="pointer-events-auto relative h-full w-full shrink-0 overflow-y-auto overscroll-contain pb-[calc(6.5rem+env(safe-area-inset-bottom))] sm:pb-8"
+                className="pointer-events-auto relative h-full w-full shrink-0 overflow-y-auto overscroll-contain px-4 pb-[calc(6.5rem+env(safe-area-inset-bottom))] pt-5 sm:pb-8 sm:pt-8"
               >
-                {/* Challenges pin under the app header; friend requests stay in inbox. */}
-                <ChallengeInviteBanner />
-                <div className="px-4 pt-5 sm:pt-8">
-                  <HomePlayHero
-                    profile={profile}
-                    scope={scope}
-                    onRefresh={refresh}
-                    streak={globalStreak}
-                    todayBest={todayBest}
-                    storedTodayBest={storedTodayBest}
-                    dailyRun={dailyRun}
-                    dailyCompletedToday={dailyCompletedToday}
-                    globeHandleRef={globeHandleRef}
-                    heroRef={heroRef}
-                  />
-                  <HomeExploreSection
-                    profile={profile}
-                    scope={scope}
-                    streak={globalStreak}
-                    todayBest={todayBest}
-                    dailyRun={dailyRun}
-                    dailyCompletedToday={dailyCompletedToday}
-                    active={mode === "home"}
-                    onRefresh={refresh}
-                    className="[content-visibility:auto] [contain-intrinsic-size:auto_48rem]"
-                  />
-                </div>
+                {/* Challenges pin under the app header; friend requests stay in inbox.
+                    Bleed into the pane padding so the hero stays a direct min-h-full
+                    child of this h-full scrollport (first viewport fill). */}
+                <ChallengeInviteBanner className="-mx-4 -mt-5 mb-3 sm:-mt-8" />
+                <HomePlayHero
+                  profile={profile}
+                  scope={scope}
+                  onRefresh={refresh}
+                  streak={globalStreak}
+                  todayBest={todayBest}
+                  storedTodayBest={storedTodayBest}
+                  dailyRun={dailyRun}
+                  dailyCompletedToday={dailyCompletedToday}
+                  globeHandleRef={globeHandleRef}
+                  heroRef={heroRef}
+                />
+                <HomeExploreSection
+                  profile={profile}
+                  scope={scope}
+                  streak={globalStreak}
+                  todayBest={todayBest}
+                  dailyRun={dailyRun}
+                  dailyCompletedToday={dailyCompletedToday}
+                  active={mode === "home"}
+                  onRefresh={refresh}
+                />
               </section>
 
               {/* ---- Library pane ---- */}
