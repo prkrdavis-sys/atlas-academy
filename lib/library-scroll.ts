@@ -151,6 +151,23 @@ export function isLibraryListPath(pathname: string): boolean {
   return pathname === "/library";
 }
 
+/** Scrollport for the warm library list pane inside `GlobeExperience`. */
+export const LIBRARY_LIST_SCROLL_ROOT_ATTR = "data-library-list-scroll";
+
+function getLibraryListScrollRoot(): HTMLElement | null {
+  return document.querySelector<HTMLElement>(`[${LIBRARY_LIST_SCROLL_ROOT_ATTR}]`);
+}
+
+function getLibraryListScrollY(): number {
+  return getLibraryListScrollRoot()?.scrollTop ?? window.scrollY;
+}
+
+function getLibraryListMaxScrollY(): number {
+  const root = getLibraryListScrollRoot();
+  if (!root) return getMaxScrollY();
+  return Math.max(0, root.scrollHeight - root.clientHeight);
+}
+
 export function captureLibraryListScrollState(
   scope: GameScope,
   filter: LibraryFilter,
@@ -159,7 +176,7 @@ export function captureLibraryListScrollState(
   if (typeof window === "undefined") return;
 
   const state: LibraryListScrollState = {
-    y: window.scrollY,
+    y: getLibraryListScrollY(),
     scope,
     filter,
     sort,
@@ -235,5 +252,11 @@ export function consumeLibraryListScrollState(): LibraryListScrollState | null {
 }
 
 export function restoreLibraryListScrollState(state: LibraryListScrollState): void {
-  window.scrollTo(0, Math.min(Math.max(0, state.y), getMaxScrollY()));
+  const y = Math.min(Math.max(0, state.y), getLibraryListMaxScrollY());
+  const root = getLibraryListScrollRoot();
+  if (root) {
+    root.scrollTop = y;
+    return;
+  }
+  window.scrollTo(0, y);
 }

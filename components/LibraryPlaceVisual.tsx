@@ -41,6 +41,8 @@ export function LibraryPlaceVisual({
         <img
           src={getCapitalPath(country.code)}
           alt={variant === "hero" ? `Skyline of ${country.capital}` : ""}
+          loading={variant === "card" ? "lazy" : undefined}
+          decoding="async"
           className={
             variant === "hero"
               ? "h-full w-full rounded-2xl object-cover"
@@ -58,6 +60,8 @@ export function LibraryPlaceVisual({
       <img
         src={getShapePath(country.code3)}
         alt={variant === "hero" ? `Outline of ${country.name}` : ""}
+        loading={variant === "card" ? "lazy" : undefined}
+        decoding="async"
         className={
           variant === "hero"
             ? `max-h-64 w-full object-contain ${shapeFilterHero}`

@@ -42,7 +42,7 @@ type SocialContextValue = {
   friends: Friend[];
   requests: FriendRequest[];
   invites: MatchInvite[];
-  /** Drives the red badge on the inbox button. */
+  /** Drives the red badge on the Friends inbox (friend requests only). */
   inboxCount: number;
   refresh: () => void;
 };
@@ -281,7 +281,8 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
       friends,
       requests,
       invites,
-      inboxCount: requests.length + invites.length,
+      // Badge is friend requests only — challenges surface on the home banner.
+      inboxCount: requests.length,
       refresh,
     }),
     [enabled, ready, self, friends, requests, invites, refresh],

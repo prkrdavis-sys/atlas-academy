@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
+  Suspense,
   useCallback,
   useEffect,
   useMemo,
@@ -16,6 +17,8 @@ import {
 } from "react";
 import { HomeExploreSection } from "@/components/HomeExploreSection";
 import { HomePlayHero } from "@/components/HomePlayHero";
+import { ChallengeInviteBanner } from "@/components/social/ChallengeInviteBanner";
+import { LibraryPageFallback } from "@/components/LibraryPageFallback";
 import { MapStatsButton } from "@/components/MapStatsButton";
 import { MapStatsSheet } from "@/components/MapStatsSheet";
 import { MapZoomControls } from "@/components/MapZoomControls";
@@ -56,8 +59,8 @@ const SWIPE_COMMIT_FRACTION = 0.18;
 
 const MAP_VIEW_STORAGE_KEY = "atlas-academy-map-view";
 
-/** Keep in sync with the slide `duration-[420ms]` classes below. */
-const SLIDE_DURATION_MS = 420;
+/** Keep in sync with the slide `duration-[480ms]` classes below. */
+const SLIDE_DURATION_MS = 480;
 
 const MAP_VIEW_INFO: Record<MapView, { icon: string; label: string }> = {
   globe: { icon: "🌐", label: "Globe" },
@@ -116,6 +119,14 @@ const InteractiveProgressMap = dynamic(
     loading: () => (
       <div className="aspect-[2/1] animate-pulse rounded-[1.75rem] border-2 border-slate-200 bg-slate-200/60 dark:border-slate-700 dark:bg-slate-700/60" />
     ),
+  },
+);
+
+const LibraryPageContent = dynamic(
+  () => import("@/components/LibraryPageContent").then((module) => module.LibraryPageContent),
+  {
+    ssr: false,
+    loading: () => <LibraryPageFallback />,
   },
 );
 
@@ -233,10 +244,13 @@ export function GlobeExperience({ children }: { children?: ReactNode }) {
   const suppressSwipeClickRef = useRef(false);
   const [swipeOffset, setSwipeOffset] = useState(0);
   const [swipeDragging, setSwipeDragging] = useState(false);
+  const [libraryWarmed, setLibraryWarmed] = useState(false);
+  const [paneSliding, setPaneSliding] = useState(false);
   const wasGlobeRouteRef = useRef(isGlobeExperienceRoute);
   const heroRef = useRef<HTMLElement>(null);
   const { scope } = useGameScope({ layoutAnchorRef: heroRef });
   const paneIndex = PANE_ORDER.indexOf(mode);
+  const prevPaneIndexRef = useRef(paneIndex);
 
   const getPaneHref = useCallback(
     (targetMode: PaneMode) => {
@@ -404,6 +418,36 @@ export function GlobeExperience({ children }: { children?: ReactNode }) {
     setSwipeOffset(0);
   }, [isGlobeExperienceRoute, mode]);
 
+  // Keep the library list mounted across Map / Play / Library once warmed so
+  // tab slides do not remount ~250 place cards.
+  useEffect(() => {
+    if (!isGlobeExperienceRoute) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setLibraryWarmed(false);
+      return;
+    }
+    if (mode === "library" || isLibraryRoute) {
+      setLibraryWarmed(true);
+      return;
+    }
+
+    const warm = () => setLibraryWarmed(true);
+    if (typeof window.requestIdleCallback === "function") {
+      const idleId = window.requestIdleCallback(warm, { timeout: 2200 });
+      return () => window.cancelIdleCallback(idleId);
+    }
+    const timer = window.setTimeout(warm, 900);
+    return () => window.clearTimeout(timer);
+  }, [isGlobeExperienceRoute, isLibraryRoute, mode]);
+
+  useEffect(() => {
+    if (prevPaneIndexRef.current === paneIndex) return;
+    prevPaneIndexRef.current = paneIndex;
+    setPaneSliding(true);
+    const timer = window.setTimeout(() => setPaneSliding(false), SLIDE_DURATION_MS + 40);
+    return () => window.clearTimeout(timer);
+  }, [paneIndex]);
+
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setStoredView(getStoredMapView());
@@ -568,9 +612,10 @@ export function GlobeExperience({ children }: { children?: ReactNode }) {
             <div
               ref={sliderRef}
               className={cn(
-                "flex h-full w-full motion-reduce:transition-none",
+                "flex h-full w-full transform-gpu motion-reduce:transition-none",
                 !swipeDragging &&
-                  "transition-transform duration-[420ms] ease-[cubic-bezier(0.32,0.72,0,1)]",
+                  "transition-transform duration-[480ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
+                (swipeDragging || paneSliding) && "will-change-transform",
               )}
               style={{
                 transform: `translateX(calc(-${paneIndex * 100}% + ${swipeOffset}px))`,
@@ -694,30 +739,35 @@ export function GlobeExperience({ children }: { children?: ReactNode }) {
                 onPointerCancel={handleSwipePointerCancel}
                 onClickCapture={handleSwipeClickCapture}
                 style={{ touchAction: "pan-y" }}
-                className="pointer-events-auto relative h-full w-full shrink-0 overflow-y-auto overscroll-contain px-4 pb-[calc(6.5rem+env(safe-area-inset-bottom))] pt-5 sm:pb-8 sm:pt-8"
+                className="pointer-events-auto relative h-full w-full shrink-0 overflow-y-auto overscroll-contain pb-[calc(6.5rem+env(safe-area-inset-bottom))] sm:pb-8"
               >
-                <HomePlayHero
-                  profile={profile}
-                  scope={scope}
-                  onRefresh={refresh}
-                  streak={globalStreak}
-                  todayBest={todayBest}
-                  storedTodayBest={storedTodayBest}
-                  dailyRun={dailyRun}
-                  dailyCompletedToday={dailyCompletedToday}
-                  globeHandleRef={globeHandleRef}
-                  heroRef={heroRef}
-                />
-                <HomeExploreSection
-                  profile={profile}
-                  scope={scope}
-                  streak={globalStreak}
-                  todayBest={todayBest}
-                  dailyRun={dailyRun}
-                  dailyCompletedToday={dailyCompletedToday}
-                  active={mode === "home"}
-                  onRefresh={refresh}
-                />
+                {/* Challenges pin under the app header; friend requests stay in inbox. */}
+                <ChallengeInviteBanner />
+                <div className="px-4 pt-5 sm:pt-8">
+                  <HomePlayHero
+                    profile={profile}
+                    scope={scope}
+                    onRefresh={refresh}
+                    streak={globalStreak}
+                    todayBest={todayBest}
+                    storedTodayBest={storedTodayBest}
+                    dailyRun={dailyRun}
+                    dailyCompletedToday={dailyCompletedToday}
+                    globeHandleRef={globeHandleRef}
+                    heroRef={heroRef}
+                  />
+                  <HomeExploreSection
+                    profile={profile}
+                    scope={scope}
+                    streak={globalStreak}
+                    todayBest={todayBest}
+                    dailyRun={dailyRun}
+                    dailyCompletedToday={dailyCompletedToday}
+                    active={mode === "home"}
+                    onRefresh={refresh}
+                    className="[content-visibility:auto] [contain-intrinsic-size:auto_48rem]"
+                  />
+                </div>
               </section>
 
               {/* ---- Library pane ---- */}
@@ -725,18 +775,47 @@ export function GlobeExperience({ children }: { children?: ReactNode }) {
                 aria-label="Library"
                 inert={mode !== "library" || undefined}
                 className={cn(
-                  "pointer-events-auto relative h-full w-full shrink-0 overflow-y-auto overscroll-contain px-4 pb-[calc(6.5rem+env(safe-area-inset-bottom))] sm:pb-8",
-                  isLibraryDetailRoute ? "pt-0" : "pt-5 sm:pt-8",
+                  "pointer-events-auto relative h-full w-full shrink-0",
                   libraryOpaque ? "bg-[var(--background)]" : "bg-slate-950/[0.04]",
                 )}
-                onPointerDown={handleSwipePointerDown}
-                onPointerMove={handleSwipePointerMove}
-                onPointerUp={handleSwipePointerUp}
-                onPointerCancel={handleSwipePointerCancel}
-                onClickCapture={handleSwipeClickCapture}
-                style={{ touchAction: "pan-y" }}
               >
-                {children}
+                {/* Warm list keeps its own scrollport so Map/Play/detail swaps do not remount it. */}
+                <div
+                  data-library-list-scroll=""
+                  className={cn(
+                    "h-full overflow-y-auto overscroll-contain px-4 pb-[calc(6.5rem+env(safe-area-inset-bottom))] pt-5 sm:pb-8 sm:pt-8",
+                    isLibraryDetailRoute &&
+                      "pointer-events-none invisible absolute inset-0",
+                  )}
+                  aria-hidden={isLibraryDetailRoute || undefined}
+                  inert={isLibraryDetailRoute || undefined}
+                  onPointerDown={isLibraryDetailRoute ? undefined : handleSwipePointerDown}
+                  onPointerMove={isLibraryDetailRoute ? undefined : handleSwipePointerMove}
+                  onPointerUp={isLibraryDetailRoute ? undefined : handleSwipePointerUp}
+                  onPointerCancel={isLibraryDetailRoute ? undefined : handleSwipePointerCancel}
+                  onClickCapture={isLibraryDetailRoute ? undefined : handleSwipeClickCapture}
+                  style={{ touchAction: "pan-y" }}
+                >
+                  {libraryWarmed ? (
+                    <Suspense fallback={<LibraryPageFallback />}>
+                      <LibraryPageContent />
+                    </Suspense>
+                  ) : null}
+                </div>
+
+                {isLibraryDetailRoute ? (
+                  <div
+                    className="h-full overflow-y-auto overscroll-contain px-4 pb-[calc(6.5rem+env(safe-area-inset-bottom))] pt-0 sm:pb-8"
+                    onPointerDown={handleSwipePointerDown}
+                    onPointerMove={handleSwipePointerMove}
+                    onPointerUp={handleSwipePointerUp}
+                    onPointerCancel={handleSwipePointerCancel}
+                    onClickCapture={handleSwipeClickCapture}
+                    style={{ touchAction: "pan-y" }}
+                  >
+                    {children}
+                  </div>
+                ) : null}
               </section>
             </div>
           </div>

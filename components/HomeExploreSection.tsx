@@ -52,6 +52,7 @@ type HomeExploreSectionProps = {
   /** Re-roll the random suggestion whenever this becomes true (home visits). */
   active: boolean;
   onRefresh: () => void;
+  className?: string;
 };
 
 export function HomeExploreSection({
@@ -63,6 +64,7 @@ export function HomeExploreSection({
   dailyCompletedToday,
   active,
   onRefresh,
+  className,
 }: HomeExploreSectionProps) {
   const router = useRouter();
   const [showProfileDialog, setShowProfileDialog] = useState(false);
@@ -150,7 +152,7 @@ export function HomeExploreSection({
         </div>
       ) : null}
 
-      <div className="mx-auto w-full max-w-xl space-y-5 pb-6 pt-8">
+      <div className={cn("mx-auto w-full max-w-xl space-y-5 pb-6 pt-8", className)}>
         <div className="flex flex-col items-center gap-1 text-slate-500 dark:text-slate-400">
           <span className="text-[0.65rem] font-bold uppercase tracking-[0.18em]">
             Explore

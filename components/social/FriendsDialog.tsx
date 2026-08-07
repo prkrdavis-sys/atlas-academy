@@ -111,7 +111,7 @@ export function FriendsDialog({ open, onClose, scope }: FriendsDialogProps) {
         }
       >
         {showingInbox ? (
-          <InboxPanel onAcceptedChallenge={handleClose} />
+          <InboxPanel />
         ) : (
           <div className="space-y-5">
             <section>

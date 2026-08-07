@@ -96,6 +96,7 @@ function FlagImg({
         src={getFlagPath(code)}
         alt={alt}
         decoding="async"
+        loading={priority ? "eager" : "lazy"}
         className={
           isHeightConstrained
             ? "absolute inset-0 h-full w-full max-w-none"

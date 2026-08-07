@@ -1,17 +1,7 @@
-import { Suspense } from "react";
-import { LibraryPageContent } from "@/components/LibraryPageContent";
-import { GLASS_PANEL_CLASS } from "@/lib/glass";
-
+/**
+ * The library list UI is rendered by the persistent `GlobeExperience` shell so
+ * Map / Play / Library can slide without remounting the country grid.
+ */
 export default function LibraryPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="space-y-5 sm:space-y-7">
-          <div className={`${GLASS_PANEL_CLASS} h-44 animate-pulse rounded-[1.75rem]`} />
-        </div>
-      }
-    >
-      <LibraryPageContent />
-    </Suspense>
-  );
+  return null;
 }

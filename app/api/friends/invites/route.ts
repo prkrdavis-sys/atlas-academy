@@ -60,7 +60,8 @@ export async function POST() {
       inviterName: player?.display_name ?? "An Atlas Academy player",
       expiresAt: expiresAt.toISOString(),
     });
-  } catch {
+  } catch (error) {
+    console.error("Failed to create friend invite", error);
     return NextResponse.json({ error: "Could not create a friend invite." }, { status: 500 });
   }
 }

@@ -72,6 +72,82 @@ function isCloseTimeResult(
   });
 }
 
+function accuracyColorClass(accuracy: number): string {
+  if (accuracy >= 90) return "text-emerald-600 dark:text-emerald-400";
+  if (accuracy >= 70) return "text-sky-600 dark:text-sky-400";
+  if (accuracy >= 50) return "text-amber-600 dark:text-amber-400";
+  return "text-rose-600 dark:text-rose-400";
+}
+
+function podiumStyles(rank: number, isCurrentProfile: boolean) {
+  const isPodium = rank >= 1 && rank <= 3;
+  if (rank === 1) {
+    return {
+      isPodium,
+      row: "border-[3px] border-amber-400 bg-gradient-to-r from-amber-50 to-yellow-50 px-3.5 py-4 dark:border-amber-500 dark:from-amber-950/50 dark:to-yellow-950/30",
+      rank: "text-amber-600 dark:text-amber-400",
+      name: "text-base",
+      detail: "text-sm",
+      accuracy: "text-3xl",
+      time: "text-base",
+      avatarSize: "md" as const,
+    };
+  }
+  if (rank === 2) {
+    return {
+      isPodium,
+      row: "border-[3px] border-slate-300 bg-gradient-to-r from-slate-50 to-slate-100/80 px-3.5 py-4 dark:border-slate-400 dark:from-slate-800/90 dark:to-slate-800/50",
+      rank: "text-slate-500 dark:text-slate-300",
+      name: "text-base",
+      detail: "text-sm",
+      accuracy: "text-3xl",
+      time: "text-base",
+      avatarSize: "md" as const,
+    };
+  }
+  if (rank === 3) {
+    return {
+      isPodium,
+      row: "border-[3px] border-orange-400 bg-gradient-to-r from-orange-50 to-amber-50/70 px-3.5 py-4 dark:border-orange-600 dark:from-orange-950/40 dark:to-amber-950/20",
+      rank: "text-orange-700 dark:text-orange-400",
+      name: "text-base",
+      detail: "text-sm",
+      accuracy: "text-3xl",
+      time: "text-base",
+      avatarSize: "md" as const,
+    };
+  }
+  return {
+    isPodium,
+    row: isCurrentProfile
+      ? "border-amber-300 bg-amber-50 px-3 py-2.5 dark:border-amber-700 dark:bg-amber-950/40"
+      : "border-slate-200 bg-white/80 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-900/70",
+    rank: "text-slate-500 dark:text-slate-400",
+    name: "text-sm",
+    detail: "text-xs",
+    accuracy: "text-xl",
+    time: "text-sm",
+    avatarSize: "sm" as const,
+  };
+}
+
+function CrownIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden
+      className={className}
+    >
+      <path d="M3.5 17.5 5 8l4.2 4.5L12 5l2.8 7.5L19 8l1.5 9.5H3.5Z" />
+      <path d="M4 19h16v1.5H4V19Z" />
+      <circle cx="5" cy="7.2" r="1.35" />
+      <circle cx="12" cy="4.2" r="1.45" />
+      <circle cx="19" cy="7.2" r="1.35" />
+    </svg>
+  );
+}
+
 function LeaderboardRow({
   entry,
   showCentiseconds,
@@ -82,36 +158,68 @@ function LeaderboardRow({
   isCurrentProfile: boolean;
 }) {
   const accuracy = Math.round((entry.correctCount / entry.questionCount) * 100);
+  const styles = podiumStyles(entry.rank, isCurrentProfile);
   return (
     <li
       className={cn(
-        "flex items-center gap-3 rounded-2xl border-2 px-3 py-3",
-        isCurrentProfile
-          ? "border-amber-300 bg-amber-50 dark:border-amber-700 dark:bg-amber-950/40"
-          : "border-slate-200 bg-white/80 dark:border-slate-700 dark:bg-slate-900/70",
+        "flex items-center gap-3 rounded-2xl",
+        styles.isPodium ? null : "border-2",
+        styles.row,
       )}
     >
-      <span className="w-8 text-center font-display text-lg font-black text-slate-500 dark:text-slate-400">
+      <span
+        className={cn(
+          "w-8 shrink-0 text-center font-display font-black",
+          styles.isPodium ? "text-xl" : "text-base",
+          styles.rank,
+        )}
+      >
         {entry.rank}
       </span>
       <ProfileAvatar
         avatarId={entry.avatarId ?? undefined}
         avatarColor={entry.avatarColor}
-        size="sm"
+        size={styles.avatarSize}
         alt=""
       />
       <div className="min-w-0 flex-1">
-        <p className="truncate font-bold text-slate-900 dark:text-slate-100">
-          {entry.displayName}
-          {isCurrentProfile ? <span className="ml-1 text-xs text-amber-700 dark:text-amber-300">(you)</span> : null}
+        <p
+          className={cn(
+            "flex items-center gap-1.5 truncate font-bold text-slate-900 dark:text-slate-100",
+            styles.name,
+          )}
+        >
+          {entry.rank === 1 ? (
+            <CrownIcon className="size-5 shrink-0 text-amber-500 dark:text-amber-400" />
+          ) : null}
+          <span className="truncate">
+            {entry.displayName}
+            {isCurrentProfile ? <span className="ml-1 text-xs text-amber-700 dark:text-amber-300">(you)</span> : null}
+          </span>
         </p>
-        <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-          {entry.correctCount}/{entry.questionCount} correct · {accuracy}%
+        <p className={cn("font-semibold text-slate-500 dark:text-slate-400", styles.detail)}>
+          {entry.correctCount}/{entry.questionCount} correct
         </p>
       </div>
-      <p className="shrink-0 font-display text-lg font-black text-teal-700 dark:text-teal-300">
-        {formatDailyElapsedTime(entry.elapsedCentiseconds, showCentiseconds)}
-      </p>
+      <div className="shrink-0 text-right">
+        <p
+          className={cn(
+            "font-display font-black tabular-nums leading-none",
+            styles.accuracy,
+            accuracyColorClass(accuracy),
+          )}
+        >
+          {accuracy}%
+        </p>
+        <p
+          className={cn(
+            "mt-1 font-display font-bold tabular-nums text-slate-600 dark:text-slate-300",
+            styles.time,
+          )}
+        >
+          {formatDailyElapsedTime(entry.elapsedCentiseconds, showCentiseconds)}
+        </p>
+      </div>
     </li>
   );
 }
@@ -168,6 +276,9 @@ function DailyChallengeLeaderboardContent({ profile }: { profile: Profile }) {
   const canGoNext = viewMonthKey < todayKey.slice(0, 7) + "-01";
   const selectedDateCompleted = dateIsCompleted(completedDates, selectedDateKey);
   const playerResult = profile.dailyChallengeResults?.[selectedDateKey];
+  const playerAccuracy = playerResult
+    ? Math.round((playerResult.correctAnswers / playerResult.questionCount) * 100)
+    : null;
 
   useEffect(() => {
     let cancelled = false;
@@ -239,26 +350,10 @@ function DailyChallengeLeaderboardContent({ profile }: { profile: Profile }) {
 
   return (
     <div className="mx-auto w-full max-w-4xl space-y-5">
-      <header className="rounded-[1.75rem] border-2 border-amber-200 bg-gradient-to-br from-amber-50 to-white p-5 shadow-sm dark:border-amber-800/70 dark:from-amber-950/40 dark:to-slate-900 sm:p-7">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <p className="text-xs font-black uppercase tracking-[0.18em] text-amber-700 dark:text-amber-300">
-              Daily challenge
-            </p>
-            <h1 className="mt-1 font-display text-3xl font-black text-slate-900 dark:text-slate-100">
-              The daily leaderboard
-            </h1>
-            <p className="mt-2 max-w-xl text-sm leading-6 text-slate-600 dark:text-slate-300">
-              One shared challenge for every explorer. Accuracy comes first; your fastest time breaks ties.
-            </p>
-          </div>
-          <Link
-            href={`/play/daily-challenge?date=${todayKey}`}
-            className="inline-flex min-h-11 items-center justify-center rounded-2xl bg-emerald-500 px-4 py-2.5 text-sm font-bold text-white shadow-[0_3px_0_var(--color-emerald-700)] transition-all hover:bg-emerald-400 active:translate-y-[3px] active:shadow-none"
-          >
-            Play today
-          </Link>
-        </div>
+      <header>
+        <h1 className="font-display text-3xl font-black text-slate-900 dark:text-slate-100">
+          The daily leaderboard
+        </h1>
       </header>
 
       <section className="rounded-[1.75rem] border-2 border-slate-200 bg-white/85 p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900/80 sm:p-6">
@@ -435,14 +530,28 @@ function DailyChallengeLeaderboardContent({ profile }: { profile: Profile }) {
                       ? "Your score is saved on this device, but it has not reached the global board yet."
                       : "No global scores are available for this date yet."}
                   </p>
-                  {playerResult ? (
+                  {playerResult && playerAccuracy !== null ? (
                     <>
-                      <div className="rounded-2xl border-2 border-amber-300 bg-amber-50 px-3 py-3 dark:border-amber-700 dark:bg-amber-950/40">
-                        <p className="font-bold text-slate-900 dark:text-slate-100">{profile.name} (you)</p>
-                        <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                          {playerResult.correctAnswers}/{playerResult.questionCount} correct ·{" "}
-                          {formatDailyElapsedTime(playerResult.elapsedCentiseconds)}
-                        </p>
+                      <div className="flex items-center justify-between gap-3 rounded-2xl border-2 border-amber-300 bg-amber-50 px-3 py-3 dark:border-amber-700 dark:bg-amber-950/40">
+                        <div className="min-w-0">
+                          <p className="font-bold text-slate-900 dark:text-slate-100">{profile.name} (you)</p>
+                          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                            {playerResult.correctAnswers}/{playerResult.questionCount} correct
+                          </p>
+                        </div>
+                        <div className="shrink-0 text-right">
+                          <p
+                            className={cn(
+                              "font-display text-2xl font-black tabular-nums leading-none",
+                              accuracyColorClass(playerAccuracy),
+                            )}
+                          >
+                            {playerAccuracy}%
+                          </p>
+                          <p className="mt-1 font-display text-sm font-bold tabular-nums text-slate-600 dark:text-slate-300">
+                            {formatDailyElapsedTime(playerResult.elapsedCentiseconds)}
+                          </p>
+                        </div>
                       </div>
                       <Button
                         variant="secondary"

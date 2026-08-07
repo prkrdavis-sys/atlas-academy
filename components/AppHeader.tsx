@@ -34,6 +34,9 @@ export function AppHeader() {
   const libraryHref = useLibraryNavHref();
   const onLibraryTab = isExploreRoute(pathname);
   const hideHeader = pathname.startsWith("/play/") && !pathname.startsWith("/play/setup");
+  const activeNavIndex = MOBILE_NAV_ITEMS.findIndex((item) =>
+    isMobileNavItemActive(pathname, item),
+  );
 
   return (
     <>
@@ -79,6 +82,15 @@ export function AppHeader() {
                 className="absolute inset-0 border-t border-slate-200/90 bg-white/92 shadow-[0_-8px_30px_rgb(15_23_42_/_0.08)] backdrop-blur-xl dark:border-slate-700/90 dark:bg-slate-900/92 dark:shadow-[0_-8px_30px_rgb(0_0_0_/_0.3)]"
               />
               <div className="relative mx-auto grid h-16 max-w-md grid-cols-3 px-2">
+                {activeNavIndex >= 0 ? (
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute bottom-1 left-2 flex h-1 w-[calc((100%-1rem)/3)] justify-center transition-transform duration-[480ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+                    style={{ transform: `translateX(${activeNavIndex * 100}%)` }}
+                  >
+                    <span className="block h-1 w-5 rounded-full bg-teal-600 dark:bg-teal-400" />
+                  </span>
+                ) : null}
                 {MOBILE_NAV_ITEMS.map((item) => {
                   const href = item.href === "library" ? libraryHref : item.href;
                   const active = isMobileNavItemActive(pathname, item);
@@ -89,13 +101,12 @@ export function AppHeader() {
                       scroll={item.href === "library" && !onLibraryTab ? false : undefined}
                       aria-current={active ? "page" : undefined}
                       className={cn(
-                        "relative flex min-h-11 flex-col items-center justify-center gap-0.5 rounded-xl text-[11px] font-bold transition-colors active:bg-slate-100 dark:active:bg-slate-800",
+                        "relative flex min-h-11 flex-col items-center justify-center gap-0.5 rounded-xl text-[11px] font-bold transition-colors duration-300 active:bg-slate-100 dark:active:bg-slate-800",
                         active ? "text-teal-700 dark:text-teal-300" : "text-slate-500 dark:text-slate-400",
                       )}
                     >
                       <span className="text-xl leading-none" aria-hidden>{item.icon}</span>
                       <span>{item.label}</span>
-                      {active && <span className="absolute bottom-1 h-1 w-5 rounded-full bg-teal-600 dark:bg-teal-400" />}
                     </Link>
                   );
                 })}

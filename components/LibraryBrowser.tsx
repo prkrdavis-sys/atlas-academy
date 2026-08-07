@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { FlagImage } from "@/components/FlagDisplay";
 import { LibraryListScrollRestore } from "@/components/LibraryListScrollRestore";
 import { LibraryPlaceVisual } from "@/components/LibraryPlaceVisual";
@@ -24,7 +24,12 @@ import {
   type LibraryFilter,
   type LibrarySort,
 } from "@/lib/library";
-import { captureLibraryListScrollState, clearLibraryScrollRestore } from "@/lib/library-scroll";
+import {
+  captureLibraryListScrollState,
+  clearLibraryScrollRestore,
+  LIBRARY_LIST_SCROLL_ROOT_ATTR,
+  LIBRARY_SCROLL_RESTORE_KEY,
+} from "@/lib/library-scroll";
 import { SCOPE_INFO, setStoredLibraryScope } from "@/lib/scope";
 import { getCommonlyMissedCountries } from "@/lib/stats-helpers";
 import { GAME_SCOPES, type GameScope } from "@/lib/types";
@@ -38,12 +43,31 @@ const SORT_OPTIONS: { value: LibrarySort; label: string }[] = [
   { value: "commonly-missed", label: "Commonly missed" },
 ];
 
+/** First paint stays light; more cards mount as the list scrollport approaches the end. */
+const LIBRARY_LIST_INITIAL_COUNT = 24;
+const LIBRARY_LIST_BATCH_COUNT = 24;
+
+function readShouldExpandLibraryList(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return sessionStorage.getItem(LIBRARY_SCROLL_RESTORE_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
 export function LibraryBrowser({ scope = "world" }: LibraryBrowserProps) {
+  const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
   const { activeProfile } = useProfiles();
   const [filter, setFilter] = useState<LibraryFilter>("All");
   const [sort, setSort] = useState<LibrarySort>("alphabetical");
+  const [visibleCount, setVisibleCount] = useState(() =>
+    readShouldExpandLibraryList() ? Number.POSITIVE_INFINITY : LIBRARY_LIST_INITIAL_COUNT,
+  );
+  const loadMoreRef = useRef<HTMLLIElement>(null);
+  const onLibraryList = pathname === "/library";
 
   const scopeInfo = SCOPE_INFO[scope];
   const filterOptions = getLibraryFilterOptions(scope);
@@ -76,30 +100,75 @@ export function LibraryBrowser({ scope = "world" }: LibraryBrowserProps) {
 
     const storedFilter = getStoredLibraryFilter(scope);
     const storedSort = getStoredLibrarySort(scope);
-    if (storedFilter !== "All" || storedSort !== "alphabetical") {
+
+    // Only rewrite the URL while the Library list route is active — warm mounts
+    // on Map/Play must not steal navigation.
+    if (onLibraryList && (storedFilter !== "All" || storedSort !== "alphabetical")) {
       router.replace(buildLibraryListHref(scope, storedFilter, storedSort));
       return;
     }
 
-    setFilter("All");
-  }, [scope, searchParams, router]);
+    setFilter(storedFilter);
+    setSort(storedSort);
+  }, [scope, searchParams, router, onLibraryList]);
 
   const updateFilter = (next: LibraryFilter) => {
     setFilter(next);
     setStoredLibraryFilter(scope, next);
-    router.replace(buildLibraryListHref(scope, next, sort));
+    if (onLibraryList) {
+      router.replace(buildLibraryListHref(scope, next, sort));
+    }
   };
 
   const updateSort = (next: LibrarySort) => {
     setSort(next);
     setStoredLibrarySort(scope, next);
-    router.replace(buildLibraryListHref(scope, filter, next));
+    if (onLibraryList) {
+      router.replace(buildLibraryListHref(scope, filter, next));
+    }
   };
 
   const filteredCountries = useMemo(
     () => getFilteredLibraryPlaces(scope, filter, sort, commonlyMissedCodes),
     [scope, filter, sort, commonlyMissedCodes],
   );
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setVisibleCount(
+      readShouldExpandLibraryList() ? Number.POSITIVE_INFINITY : LIBRARY_LIST_INITIAL_COUNT,
+    );
+  }, [scope, filter, sort]);
+
+  const renderedCountries = useMemo(
+    () => filteredCountries.slice(0, Math.min(visibleCount, filteredCountries.length)),
+    [filteredCountries, visibleCount],
+  );
+  const hasMorePlaces = renderedCountries.length < filteredCountries.length;
+
+  useEffect(() => {
+    if (!hasMorePlaces) return;
+
+    const sentinel = loadMoreRef.current;
+    if (!sentinel) return;
+
+    const root =
+      document.querySelector<HTMLElement>(`[${LIBRARY_LIST_SCROLL_ROOT_ATTR}]`) ?? null;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return;
+        setVisibleCount((current) => {
+          if (!Number.isFinite(current)) return current;
+          return Math.min(current + LIBRARY_LIST_BATCH_COUNT, filteredCountries.length);
+        });
+      },
+      { root, rootMargin: "320px 0px" },
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasMorePlaces, filteredCountries.length, renderedCountries.length]);
 
   const missedInViewCount = useMemo(
     () => filteredCountries.filter((country) => commonlyMissedSet.has(country.code)).length,
@@ -228,10 +297,13 @@ export function LibraryBrowser({ scope = "world" }: LibraryBrowserProps) {
 
       {filteredCountries.length > 0 ? (
         <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
-          {filteredCountries.map((country) => {
+          {renderedCountries.map((country) => {
             const isCommonlyMissed = commonlyMissedSet.has(country.code);
             return (
-              <li key={country.code}>
+              <li
+                key={country.code}
+                className="[content-visibility:auto] [contain-intrinsic-size:auto_14rem]"
+              >
                 <Link
                   href={buildLibraryDetailHref(country.code, scope, filter, sort)}
                   onClick={openDetailFromList}
@@ -265,6 +337,13 @@ export function LibraryBrowser({ scope = "world" }: LibraryBrowserProps) {
               </li>
             );
           })}
+          {hasMorePlaces ? (
+            <li
+              ref={loadMoreRef}
+              aria-hidden
+              className="col-span-full h-px w-full list-none"
+            />
+          ) : null}
         </ul>
       ) : (
         <div
