@@ -809,6 +809,12 @@ type InteractiveGlobeProps = {
   selectedCode: string | null;
   /** Place code from ?place= — highlights immediately and triggers fly-to. */
   initialPlaceCode?: string | null;
+  /** Gameplay-controlled place focus, used for answer reveals. */
+  focusPlaceCode?: string | null;
+  /** Disable idle rotation for game surfaces that require deliberate searching. */
+  autoSpinEnabled?: boolean;
+  /** Hide the map progress panel while keeping place highlighting and picking. */
+  showSelectionPanel?: boolean;
   onSelectPlace: (code: string | null) => void;
   className?: string;
   handleRef?: RefObject<GlobeHandle | null>;
@@ -924,6 +930,9 @@ export default function InteractiveGlobe({
   active = true,
   selectedCode,
   initialPlaceCode = null,
+  focusPlaceCode = null,
+  autoSpinEnabled = true,
+  showSelectionPanel = true,
   onSelectPlace,
   className,
   handleRef,
@@ -946,7 +955,8 @@ export default function InteractiveGlobe({
   const [settleKey, setSettleKey] = useState(0);
   /** False once the globe fills the viewport — gates CSS shooting stars. */
   const [outerSpaceVisible, setOuterSpaceVisible] = useState(true);
-  const placeFocusTarget = initialPlaceCode ? getGlobeFocusTarget(initialPlaceCode) : null;
+  const effectiveFocusCode = focusPlaceCode ?? initialPlaceCode;
+  const placeFocusTarget = effectiveFocusCode ? getGlobeFocusTarget(effectiveFocusCode) : null;
   const usePlaceFocus = placeFocusTarget !== null;
   // Parent owns selection (including the initial ?place= highlight). Do not fall
   // back to initialPlaceCode here or ocean/reset clears snap the highlight back.
@@ -961,6 +971,7 @@ export default function InteractiveGlobe({
   // `autoSpin`, or returning from a background tab restarts the idle wait.
   const autoSpinActive =
     autoSpin &&
+    autoSpinEnabled &&
     selectedCode === null &&
     active &&
     pageVisible &&
@@ -980,7 +991,7 @@ export default function InteractiveGlobe({
   const { armIdleAutoSpin, clearIdleAutoSpinTimer, idleAutoSpinTimerRef } = useGlobeIdleAutoSpin({
     active,
     reducedMotion,
-    initialPlaceCode,
+    initialPlaceCode: effectiveFocusCode,
     selectedCode,
     settleMode,
     bumpActivity,
@@ -1022,7 +1033,7 @@ export default function InteractiveGlobe({
   }, []);
 
   useEffect(() => {
-    if (!initialPlaceCode) return;
+    if (!effectiveFocusCode) return;
     if (spinGroupRef.current) {
       spinGroupRef.current.rotation.set(0, GLOBE_MESH_Y_ROTATION, 0);
     }
@@ -1034,7 +1045,7 @@ export default function InteractiveGlobe({
     setSettleMode(null);
     bumpActivity();
     clearIdleAutoSpinTimer();
-  }, [initialPlaceCode, bumpActivity, clearIdleAutoSpinTimer]);
+  }, [effectiveFocusCode, bumpActivity, clearIdleAutoSpinTimer]);
 
   const zoomBy = useCallback(
     (factor: number) => {
@@ -1160,7 +1171,7 @@ export default function InteractiveGlobe({
         wrapperClassName="absolute inset-0"
         className="relative h-full w-full touch-none"
         hoverLabel={null}
-        selectedCode={mode === "map" ? highlightedCode : null}
+        selectedCode={mode === "map" && showSelectionPanel ? highlightedCode : null}
         profile={profile}
         difficulty={difficulty}
         scope={panelScope}
@@ -1253,6 +1264,7 @@ export default function InteractiveGlobe({
             <SpaceFlybys
               enabled={!reducedMotion && outerSpaceVisible}
               isDark={isDark}
+              profile={profile}
               perfTier={perfTier}
               onActivity={bumpActivity}
             />
@@ -1312,7 +1324,7 @@ export default function InteractiveGlobe({
             ) : null}
             {usePlaceFocus && placeFocusTarget ? (
               <PlaceFocusIntro
-                key={initialPlaceCode ?? "none"}
+                key={effectiveFocusCode ?? "none"}
                 controlsRef={controlsRef}
                 spinGroupRef={spinGroupRef}
                 focusTarget={placeFocusTarget}

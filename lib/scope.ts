@@ -215,6 +215,8 @@ export function getQuestionTaskLabel(
     case "shape-to-country":
     case "capital-to-country":
       return getNamePlaceTaskLabel(scope, isTerritory);
+    case "globe-hunt":
+      return scopeText("Find the country", scope);
     case "country-to-flag":
     case "inverted-country-to-flag":
       return isTerritory ? "Pick the territory's flag" : "Pick the flag";

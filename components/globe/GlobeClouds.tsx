@@ -1,9 +1,10 @@
 "use client";
 
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { getCloudNoiseTexture } from "@/lib/globe-cloud-noise";
+import { loadCumulusGeometries } from "@/lib/globe-cloud-meshes";
 import { loadHurricaneTexture } from "@/lib/globe-hurricane-texture";
 import {
   GLOBE_CLOUD_COUNT_BY_TIER,
@@ -64,17 +65,112 @@ const STATIC_TIME = 12;
 const CLOUD_RENDER_ORDER = 7;
 
 /** One storm event per mounted globe at most, with a long quiet lead-in. */
-const HURRICANE_EVENT_MIN_DELAY_MS = 45_000;
-const HURRICANE_EVENT_MAX_DELAY_MS = 90_000;
-const HURRICANE_EVENT_CHANCE = 0.16;
+const HURRICANE_EVENT_MIN_DELAY_MS = 5_000;
+const HURRICANE_EVENT_MAX_DELAY_MS = 5_000;
+const HURRICANE_EVENT_CHANCE = 1;
 const HURRICANE_EVENT_VISIBLE_MS = 24_000;
-const HURRICANE_LATITUDE = THREE.MathUtils.degToRad(16);
-const HURRICANE_LONGITUDE = THREE.MathUtils.degToRad(142);
+/** Slight independent spin: NH counterclockwise, SH clockwise (local outward axis). */
+const HURRICANE_SPIN_SPEED = 0.14;
 const HURRICANE_RADIUS = CLOUD_DECK_RADIUS;
+
+type TropicalCycloneRegion = {
+  /** Degrees. Longitude matches the planet texture (east positive). */
+  latitude: number;
+  longitude: number;
+  latitudeSpread: number;
+  longitudeSpread: number;
+  weight: number;
+};
+
+/**
+ * Spawn only inside real tropical-cyclone basins — Atlantic hurricanes, eastern
+ * Pacific storms, western Pacific typhoons, Indian Ocean cyclones, and the
+ * southern-hemisphere belts. Weights bias toward the busiest basins without
+ * excluding quieter ones.
+ */
+const TROPICAL_CYCLONE_REGIONS: TropicalCycloneRegion[] = [
+  { latitude: 18, longitude: -72, latitudeSpread: 8, longitudeSpread: 18, weight: 1.1 },
+  { latitude: 14, longitude: -55, latitudeSpread: 6, longitudeSpread: 12, weight: 1 },
+  { latitude: 24, longitude: -88, latitudeSpread: 5, longitudeSpread: 10, weight: 0.9 },
+  { latitude: 14, longitude: -125, latitudeSpread: 6, longitudeSpread: 15, weight: 1 },
+  { latitude: 10, longitude: -145, latitudeSpread: 5, longitudeSpread: 12, weight: 0.85 },
+  { latitude: 16, longitude: 128, latitudeSpread: 8, longitudeSpread: 22, weight: 1.2 },
+  { latitude: 12, longitude: 142, latitudeSpread: 6, longitudeSpread: 18, weight: 1.1 },
+  { latitude: 22, longitude: 118, latitudeSpread: 5, longitudeSpread: 14, weight: 0.95 },
+  { latitude: 14, longitude: 86, latitudeSpread: 5, longitudeSpread: 10, weight: 0.9 },
+  { latitude: 12, longitude: 64, latitudeSpread: 5, longitudeSpread: 12, weight: 0.75 },
+  { latitude: -16, longitude: 148, latitudeSpread: 6, longitudeSpread: 14, weight: 0.95 },
+  { latitude: -18, longitude: 118, latitudeSpread: 6, longitudeSpread: 16, weight: 0.9 },
+  { latitude: -22, longitude: 55, latitudeSpread: 5, longitudeSpread: 14, weight: 0.8 },
+  { latitude: -18, longitude: -35, latitudeSpread: 5, longitudeSpread: 20, weight: 0.7 },
+];
+
+type TropicalCycloneSpawn = {
+  latitudeRad: number;
+  longitudeRad: number;
+  /** +1 northern hemisphere (counterclockwise), -1 southern (clockwise). */
+  spinSign: number;
+};
+
+function pickTropicalCycloneSpawn(random: () => number): TropicalCycloneSpawn {
+  const totalWeight = TROPICAL_CYCLONE_REGIONS.reduce((sum, region) => sum + region.weight, 0);
+  let roll = random() * totalWeight;
+  let region = TROPICAL_CYCLONE_REGIONS[0];
+  for (const candidate of TROPICAL_CYCLONE_REGIONS) {
+    roll -= candidate.weight;
+    if (roll <= 0) {
+      region = candidate;
+      break;
+    }
+  }
+
+  const latDeg = region.latitude + (random() - 0.5) * 2 * region.latitudeSpread;
+  const lonDeg = region.longitude + (random() - 0.5) * 2 * region.longitudeSpread;
+  const latitudeRad = THREE.MathUtils.degToRad(THREE.MathUtils.clamp(latDeg, -35, 35));
+  const longitudeRad = THREE.MathUtils.degToRad(lonDeg);
+  const spinSign = latitudeRad >= 0 ? 1 : -1;
+
+  return { latitudeRad, longitudeRad, spinSign };
+}
+
+/**
+ * Soft white volume shading for the cumulus meshes. Fresnel falloff keeps the
+ * silhouette airy so the low-poly blobs read as cloud rather than styrofoam.
+ */
+const CUMULUS_VERTEX_SHADER = /* glsl */ `
+  varying vec3 vWorldNormal;
+  varying vec3 vViewDir;
+  void main() {
+    vec4 worldPos = modelMatrix * vec4(position, 1.0);
+    vWorldNormal = normalize(mat3(modelMatrix) * normal);
+    vViewDir = normalize(cameraPosition - worldPos.xyz);
+    gl_Position = projectionMatrix * viewMatrix * worldPos;
+  }
+`;
+
+const CUMULUS_FRAGMENT_SHADER = /* glsl */ `
+  uniform vec3 uLitColor;
+  uniform vec3 uShadowColor;
+  uniform float uAlpha;
+  uniform float uLight;
+  varying vec3 vWorldNormal;
+  varying vec3 vViewDir;
+
+  void main() {
+    float fresnel = pow(1.0 - abs(dot(normalize(vWorldNormal), normalize(vViewDir))), 1.35);
+    float light = clamp(uLight, 0.0, 1.0);
+    vec3 color = mix(uShadowColor, uLitColor, light);
+    color = mix(color, uLitColor, (1.0 - fresnel) * 0.18 * light);
+    float alpha = uAlpha * mix(0.92, 0.38, fresnel) * mix(0.72, 1.0, light);
+    if (alpha <= 0.01) discard;
+    gl_FragColor = vec4(color, alpha);
+  }
+`;
 
 /**
  * Cloud puff meshes are already bent onto their spherical shell in cluster-local
  * space (see createShellPatchGeometry), so the vertex stage is a straight pass.
+ * Used for high cirrus sheets only — thick weather uses solid cumulus meshes.
  */
 const CLOUD_VERTEX_SHADER = /* glsl */ `
   varying vec2 vUv;
@@ -230,27 +326,27 @@ type HurricaneLayerSpec = {
  */
 const HURRICANE_LAYERS: HurricaneLayerSpec[] = [
   {
-    scale: [0.46, 0.46],
+    scale: [0.52, 0.52],
     offset: [0, 0, altitude(1.5)],
     rotation: 0.08,
     depth: 0.028,
-    opacity: 0.48,
+    opacity: 0.62,
     seed: 0.17,
   },
   {
-    scale: [0.58, 0.54],
+    scale: [0.66, 0.6],
     offset: [-0.018, 0.008, altitude(TOWER_TOP_KM)],
     rotation: -0.11,
     depth: 0.018,
-    opacity: 0.2,
+    opacity: 0.3,
     seed: 0.43,
   },
   {
-    scale: [0.76, 0.68],
+    scale: [0.84, 0.74],
     offset: [0.024, 0.014, altitude(CIRRUS_MIN_KM)],
     rotation: 0.21,
     depth: 0.012,
-    opacity: 0.095,
+    opacity: 0.14,
     seed: 0.71,
   },
 ];
@@ -276,10 +372,15 @@ const LIGHT_CLOUD_PALETTE: CloudPalette = {
 type PuffSpec = {
   /** Offset in the cluster's tangent frame (x, y tangent; z outward). */
   offset: [number, number, number];
-  /** Surface-patch width and height in local tangent units. */
-  scale: [number, number];
-  /** Optional rotation inside the local tangent plane. */
+  /**
+   * Volume size in cluster-local units: width (tangent x), radial thickness
+   * (outward), depth (tangent y). Cirrus planes use width × depth only.
+   */
+  scale: [number, number, number];
+  /** Optional yaw inside the local tangent plane. */
   rotation?: number;
+  /** Which cumulus hero mesh to instance (ignored for cirrus planes). */
+  meshIndex?: number;
   seed: number;
   alpha: number;
   layer: CloudLayer;
@@ -383,6 +484,45 @@ function pickRegions(count: number, random: () => number): WeatherRegion[] {
 }
 
 /**
+ * Map a weather-layer footprint onto a 3D cumulus mesh. Base/anvil stay
+ * squat; towers stretch radially so the cell reads as real vertical weather.
+ */
+function volumeScale(
+  width: number,
+  layer: Exclude<CloudLayer, "cirrus">,
+  random: () => number,
+): [number, number, number] {
+  switch (layer) {
+    case "base":
+      return [
+        width,
+        width * lerp(0.28, 0.42, random()),
+        width * lerp(0.7, 0.95, random()),
+      ];
+    case "tower":
+      return [
+        width * lerp(0.9, 1.15, random()),
+        width * lerp(0.75, 1.1, random()),
+        width * lerp(0.65, 0.9, random()),
+      ];
+    case "anvil":
+      return [
+        width * lerp(1.25, 1.7, random()),
+        width * lerp(0.16, 0.28, random()),
+        width * lerp(0.85, 1.2, random()),
+      ];
+    default: {
+      const exhaustive: never = layer;
+      return exhaustive;
+    }
+  }
+}
+
+function pickMeshIndex(random: () => number): number {
+  return Math.floor(random() * 4);
+}
+
+/**
  * Cumulonimbus: a ragged low base, a narrowing tower punching through the
  * middle level, and a broad flat anvil spreading out at the tropopause.
  */
@@ -401,7 +541,8 @@ function buildConvectiveCell(random: () => number): PuffSpec[] {
         (random() - 0.5) * baseSpread * 0.5,
         altitude(lerp(LOW_BASE_MIN_KM, LOW_BASE_MAX_KM, random())),
       ],
-      scale: [width, width * lerp(0.5, 0.72, random())],
+      scale: volumeScale(width, "base", random),
+      meshIndex: pickMeshIndex(random),
       seed: random(),
       alpha: lerp(BASE_ALPHA_MIN, BASE_ALPHA_MAX, random()),
       layer: "base",
@@ -419,7 +560,8 @@ function buildConvectiveCell(random: () => number): PuffSpec[] {
         (random() - 0.5) * width * 0.3,
         altitude(lerp(TOWER_BASE_KM, TOWER_TOP_KM, progress)),
       ],
-      scale: [width * lerp(1.05, 1.3, random()), width * lerp(0.5, 0.74, random())],
+      scale: volumeScale(width, "tower", random),
+      meshIndex: pickMeshIndex(random),
       seed: random(),
       alpha: lerp(TOWER_ALPHA_MIN, TOWER_ALPHA_MAX, random()),
       layer: "tower",
@@ -433,7 +575,8 @@ function buildConvectiveCell(random: () => number): PuffSpec[] {
           (random() - 0.5) * width * 0.36,
           altitude(TOWER_BASE_KM * 0.8),
         ],
-        scale: [width * 0.9, width * lerp(0.44, 0.64, random())],
+        scale: volumeScale(width * 0.85, "tower", random),
+        meshIndex: pickMeshIndex(random),
         seed: random(),
         alpha: lerp(TOWER_ALPHA_MIN * 0.8, TOWER_ALPHA_MAX * 0.9, random()),
         layer: "tower",
@@ -451,7 +594,8 @@ function buildConvectiveCell(random: () => number): PuffSpec[] {
         (random() - 0.5) * anvilSpread * 0.3,
         altitude(ANVIL_KM + lerp(-1.2, 1.2, random())),
       ],
-      scale: [width * lerp(1.3, 1.8, random()), width * lerp(0.3, 0.48, random())],
+      scale: volumeScale(width, "anvil", random),
+      meshIndex: pickMeshIndex(random),
       seed: random(),
       alpha: lerp(ANVIL_ALPHA_MIN, ANVIL_ALPHA_MAX, random()),
       layer: "anvil",
@@ -481,7 +625,8 @@ function buildFrontalBand(random: () => number): PuffSpec[] {
         along * Math.sin(tilt) + (random() - 0.5) * width * 0.2,
         altitude(lerp(LOW_BASE_MIN_KM, LOW_BASE_MAX_KM, random())),
       ],
-      scale: [width, width * lerp(0.34, 0.5, random())],
+      scale: volumeScale(width, "base", random),
+      meshIndex: pickMeshIndex(random),
       rotation: tilt + lerp(-0.2, 0.2, random()),
       seed: random(),
       alpha: lerp(BASE_ALPHA_MIN, BASE_ALPHA_MAX, random()),
@@ -499,7 +644,8 @@ function buildFrontalBand(random: () => number): PuffSpec[] {
         along * Math.sin(tilt),
         altitude(lerp(TOWER_BASE_KM, TOWER_TOP_KM * 0.7, random())),
       ],
-      scale: [width, width * lerp(0.42, 0.6, random())],
+      scale: volumeScale(width, "tower", random),
+      meshIndex: pickMeshIndex(random),
       rotation: tilt,
       seed: random(),
       alpha: lerp(TOWER_ALPHA_MIN * 0.7, TOWER_ALPHA_MAX * 0.8, random()),
@@ -526,7 +672,8 @@ function buildStratocumulusSheet(random: () => number): PuffSpec[] {
         (random() - 0.5) * sheetSpread * 0.6,
         altitude(lerp(LOW_BASE_MIN_KM, LOW_BASE_MIN_KM + 0.6, random())),
       ],
-      scale: [width, width * lerp(0.42, 0.62, random())],
+      scale: volumeScale(width, "base", random),
+      meshIndex: pickMeshIndex(random),
       rotation: lerp(-0.5, 0.5, random()),
       seed: random(),
       alpha: lerp(BASE_ALPHA_MIN * 0.8, BASE_ALPHA_MAX * 0.85, random()),
@@ -592,7 +739,7 @@ function buildCirrusClusters(count: number): ClusterSpec[] {
           (random() - 0.5) * patchSpread * 0.45,
           altitude(lerp(CIRRUS_MIN_KM, CIRRUS_MAX_KM, random())),
         ],
-        scale: [length, length * lerp(0.1, 0.18, random())],
+        scale: [length, length * 0.02, length * lerp(0.1, 0.18, random())],
         rotation: heading + lerp(-0.12, 0.12, random()),
         seed: random(),
         alpha: lerp(CIRRUS_ALPHA_MIN, CIRRUS_ALPHA_MAX, random()),
@@ -612,9 +759,9 @@ function buildCirrusClusters(count: number): ClusterSpec[] {
   return clusters;
 }
 
-/** Wider puffs need denser tessellation or the spherical bend still looks faceted. */
-function cloudGridSegments(scale: [number, number]): number {
-  const size = Math.max(scale[0], scale[1]);
+/** Wider cirrus sheets need denser tessellation or the spherical bend looks faceted. */
+function cloudGridSegments(width: number, depth: number): number {
+  const size = Math.max(width, depth);
   if (size > 0.45) return 48;
   if (size > 0.25) return 36;
   if (size > 0.12) return 24;
@@ -622,9 +769,29 @@ function cloudGridSegments(scale: [number, number]): number {
 }
 
 /**
+ * Project a tangent offset onto the spherical shell at this altitude so wide
+ * systems follow the planet instead of sitting on a flat tangent plane.
+ */
+function shellPosition(
+  clusterRadius: number,
+  offset: [number, number, number],
+): [number, number, number] {
+  const [x, y, z] = offset;
+  let fx = x;
+  let fy = y;
+  let fz = z + clusterRadius;
+  const shellR = clusterRadius + z;
+  const len = Math.hypot(fx, fy, fz) || 1;
+  const s = shellR / len;
+  fx *= s;
+  fy *= s;
+  fz *= s;
+  return [fx, fy, fz - clusterRadius];
+}
+
+/**
  * Build a plane already wrapped onto the spherical shell at this puff's
- * altitude. Doing the bend on the CPU means wide sheets follow the planet at
- * the limb instead of sticking out as flat chords into space.
+ * altitude. Used for high cirrus sheets — thick weather uses solid meshes.
  */
 function createShellPatchGeometry(
   clusterRadius: number,
@@ -667,6 +834,7 @@ function createShellPatchGeometry(
 type CloudPuffProps = {
   spec: PuffSpec;
   clusterRadius: number;
+  geometries: THREE.BufferGeometry[];
   noise: THREE.Texture;
   palette: CloudPalette;
   /** Shared per-cluster light factor, updated by the parent each frame. */
@@ -674,26 +842,87 @@ type CloudPuffProps = {
   timeRef: { current: number };
 };
 
-function CloudPuff({
+/** Model +Y maps to cluster +Z (radial / "up" from the planet). */
+const MESH_RADIAL_TILT = -Math.PI / 2;
+
+function CumulusMeshPuff({
+  spec,
+  clusterRadius,
+  geometries,
+  palette,
+  lightRef,
+}: Omit<CloudPuffProps, "noise" | "timeRef">) {
+  const materialRef = useRef<THREE.ShaderMaterial>(null);
+  const meshIndex = (spec.meshIndex ?? 0) % Math.max(geometries.length, 1);
+  const geometry = geometries[meshIndex] ?? geometries[0];
+  const position = useMemo(
+    () => shellPosition(clusterRadius, spec.offset),
+    [clusterRadius, spec.offset],
+  );
+
+  const uniforms = useMemo(
+    () => ({
+      uLitColor: { value: new THREE.Color(palette.litColor) },
+      uShadowColor: { value: new THREE.Color(palette.shadowColor) },
+      uAlpha: { value: spec.alpha * palette.alphaScale },
+      uLight: { value: 1 },
+    }),
+    [palette, spec.alpha],
+  );
+
+  useFrame(() => {
+    const material = materialRef.current;
+    if (!material) return;
+    material.uniforms.uLight.value = lightRef.current;
+  });
+
+  if (!geometry) return null;
+
+  return (
+    <mesh
+      geometry={geometry}
+      position={position}
+      rotation={[MESH_RADIAL_TILT, 0, spec.rotation ?? 0]}
+      scale={spec.scale}
+      raycast={ignoreRaycast}
+      renderOrder={CLOUD_RENDER_ORDER}
+    >
+      <shaderMaterial
+        ref={materialRef}
+        vertexShader={CUMULUS_VERTEX_SHADER}
+        fragmentShader={CUMULUS_FRAGMENT_SHADER}
+        uniforms={uniforms}
+        transparent
+        depthWrite={false}
+        side={THREE.DoubleSide}
+        toneMapped={false}
+      />
+    </mesh>
+  );
+}
+
+function CirrusPlanePuff({
   spec,
   clusterRadius,
   noise,
   palette,
   lightRef,
   timeRef,
-}: CloudPuffProps) {
+}: Omit<CloudPuffProps, "geometries">) {
   const materialRef = useRef<THREE.ShaderMaterial>(null);
-  const segments = cloudGridSegments(spec.scale);
+  const width = spec.scale[0];
+  const depth = spec.scale[2];
+  const segments = cloudGridSegments(width, depth);
   const geometry = useMemo(
     () =>
       createShellPatchGeometry(
         clusterRadius,
         spec.offset,
-        spec.scale,
+        [width, depth],
         spec.rotation ?? 0,
         segments,
       ),
-    [clusterRadius, segments, spec.offset, spec.rotation, spec.scale],
+    [clusterRadius, depth, segments, spec.offset, spec.rotation, width],
   );
 
   useEffect(() => () => geometry.dispose(), [geometry]);
@@ -707,9 +936,9 @@ function CloudPuff({
       uSeed: { value: spec.seed },
       uAlpha: { value: spec.alpha * palette.alphaScale },
       uLight: { value: 1 },
-      uLayer: { value: CLOUD_LAYER_INDEX[spec.layer] },
+      uLayer: { value: CLOUD_LAYER_INDEX.cirrus },
     }),
-    [noise, palette, spec.alpha, spec.layer, spec.seed],
+    [noise, palette, spec.alpha, spec.seed],
   );
 
   useFrame(() => {
@@ -738,6 +967,30 @@ function CloudPuff({
   );
 }
 
+function CloudPuff(props: CloudPuffProps) {
+  if (props.spec.layer === "cirrus") {
+    return (
+      <CirrusPlanePuff
+        spec={props.spec}
+        clusterRadius={props.clusterRadius}
+        noise={props.noise}
+        palette={props.palette}
+        lightRef={props.lightRef}
+        timeRef={props.timeRef}
+      />
+    );
+  }
+  return (
+    <CumulusMeshPuff
+      spec={props.spec}
+      clusterRadius={props.clusterRadius}
+      geometries={props.geometries}
+      palette={props.palette}
+      lightRef={props.lightRef}
+    />
+  );
+}
+
 type HurricaneStormLayerProps = {
   spec: HurricaneLayerSpec;
   texture: THREE.Texture;
@@ -746,6 +999,7 @@ type HurricaneStormLayerProps = {
   lightRef: { current: number };
   strengthRef: { current: number };
   timeRef: { current: number };
+  active: boolean;
 };
 
 function HurricaneStormLayer({
@@ -756,6 +1010,7 @@ function HurricaneStormLayer({
   lightRef,
   strengthRef,
   timeRef,
+  active,
 }: HurricaneStormLayerProps) {
   const materialRef = useRef<THREE.ShaderMaterial>(null);
   const geometry = useMemo(
@@ -788,12 +1043,23 @@ function HurricaneStormLayer({
     [noise, palette, spec.depth, spec.seed, texture],
   );
 
+  useEffect(() => {
+    const material = materialRef.current;
+    if (!material || !active) return;
+    material.uniforms.uOpacity.value =
+      spec.opacity * palette.alphaScale * Math.max(strengthRef.current, 1);
+  }, [active, palette, spec.opacity, strengthRef]);
+
   useFrame(() => {
     const material = materialRef.current;
     if (!material) return;
     material.uniforms.uTime.value = timeRef.current;
     material.uniforms.uLight.value = lightRef.current;
-    material.uniforms.uOpacity.value = spec.opacity * palette.alphaScale * strengthRef.current;
+    const strength = active
+      ? Math.max(strengthRef.current, 1)
+      : strengthRef.current;
+    material.uniforms.uOpacity.value =
+      spec.opacity * palette.alphaScale * strength;
   });
 
   return (
@@ -817,6 +1083,7 @@ function HurricaneStormLayer({
 }
 
 type HurricaneStormProps = {
+  spawn: TropicalCycloneSpawn;
   texture: THREE.Texture;
   noise: THREE.Texture;
   palette: CloudPalette;
@@ -829,6 +1096,7 @@ type HurricaneStormProps = {
 const RADIAL_BASIS = new THREE.Vector3(0, 0, 1);
 
 function HurricaneStorm({
+  spawn,
   texture,
   noise,
   palette,
@@ -838,55 +1106,83 @@ function HurricaneStorm({
   onActivity,
 }: HurricaneStormProps) {
   const groupRef = useRef<THREE.Group>(null);
+  const spinGroupRef = useRef<THREE.Group>(null);
   const lightRef = useRef(1);
   const strengthRef = useRef(0);
+  const spinAngleRef = useRef(0);
   const radial = useMemo(() => new THREE.Vector3(), []);
+  const invalidate = useThree((state) => state.invalidate);
+
+  useEffect(() => {
+    if (!active) {
+      spinAngleRef.current = 0;
+      if (spinGroupRef.current) spinGroupRef.current.rotation.z = 0;
+      return;
+    }
+    onActivity?.();
+    invalidate();
+    strengthRef.current = 1;
+  }, [active, invalidate, onActivity]);
 
   useFrame((_state, delta) => {
     const group = groupRef.current;
     if (!group) return;
 
-    const cosLat = Math.cos(HURRICANE_LATITUDE);
+    const cosLat = Math.cos(spawn.latitudeRad);
     radial.set(
-      Math.cos(HURRICANE_LONGITUDE) * cosLat,
-      Math.sin(HURRICANE_LATITUDE),
-      -Math.sin(HURRICANE_LONGITUDE) * cosLat,
+      Math.cos(spawn.longitudeRad) * cosLat,
+      Math.sin(spawn.latitudeRad),
+      -Math.sin(spawn.longitudeRad) * cosLat,
     );
     group.position.copy(radial).multiplyScalar(HURRICANE_RADIUS);
     group.quaternion.setFromUnitVectors(RADIAL_BASIS, radial);
     const sun = subsolarDirection();
     lightRef.current = THREE.MathUtils.smoothstep(radial.dot(sun), -0.25, 0.3);
 
-    const target = active && !reducedMotion ? 1 : 0;
+    const target = active ? 1 : 0;
+    const damp = reducedMotion ? 12 : 3.2;
+    const elapsed = Math.min(delta, 0.1);
     strengthRef.current = THREE.MathUtils.damp(
       strengthRef.current,
       target,
-      3.2,
-      Math.min(delta, 0.1),
+      damp,
+      elapsed,
     );
+
+    if (active && !reducedMotion && strengthRef.current > 0.01) {
+      spinAngleRef.current += elapsed * HURRICANE_SPIN_SPEED * spawn.spinSign;
+      if (spinGroupRef.current) {
+        spinGroupRef.current.rotation.z = spinAngleRef.current;
+      }
+    }
+
     if (strengthRef.current > 0.001) onActivity?.();
   });
 
   return (
     <group ref={groupRef}>
-      {HURRICANE_LAYERS.map((spec) => (
-        <HurricaneStormLayer
-          key={spec.seed}
-          spec={spec}
-          texture={texture}
-          noise={noise}
-          palette={palette}
-          lightRef={lightRef}
-          strengthRef={strengthRef}
-          timeRef={timeRef}
-        />
-      ))}
+      <group ref={spinGroupRef}>
+        {HURRICANE_LAYERS.map((spec) => (
+          <HurricaneStormLayer
+            key={spec.seed}
+            spec={spec}
+            texture={texture}
+            noise={noise}
+            palette={palette}
+            lightRef={lightRef}
+            strengthRef={strengthRef}
+            timeRef={timeRef}
+            active={active}
+          />
+        ))}
+      </group>
     </group>
   );
 }
 
 type CloudClusterProps = {
   spec: ClusterSpec;
+  geometries: THREE.BufferGeometry[];
   noise: THREE.Texture;
   palette: CloudPalette;
   sunRef: { current: THREE.Vector3 };
@@ -895,6 +1191,7 @@ type CloudClusterProps = {
 
 function CloudCluster({
   spec,
+  geometries,
   noise,
   palette,
   sunRef,
@@ -928,6 +1225,7 @@ function CloudCluster({
           key={index}
           spec={puff}
           clusterRadius={spec.radius}
+          geometries={geometries}
           noise={noise}
           palette={palette}
           lightRef={lightRef}
@@ -948,10 +1246,10 @@ type GlobeCloudsProps = {
 
 /**
  * Translucent weather systems placed in Earth's real cloud belts: convective
- * cumulonimbus in the tropics, frontal bands on the storm tracks, marine
- * stratocumulus over the cold currents, jet-stream cirrus far above them all,
- * and one rare Pacific cyclone. Mount inside the globe's spin group so every
- * cloud shares one global circulation.
+ * cumulonimbus (solid cumulus meshes) in the tropics, frontal bands on the
+ * storm tracks, marine stratocumulus over the cold currents, jet-stream cirrus
+ * far above them all, and one rare Pacific cyclone. Mount inside the globe's
+ * spin group so every cloud shares one global circulation.
  */
 export function GlobeClouds({
   isDark,
@@ -974,19 +1272,33 @@ export function GlobeClouds({
   const sunRef = useRef(new THREE.Vector3(1, 0, 0));
   const timeRef = useRef(STATIC_TIME);
   const cloudsGroupRef = useRef<THREE.Group>(null);
+  const [cumulusGeometries, setCumulusGeometries] = useState<THREE.BufferGeometry[]>(
+    [],
+  );
   const [hurricaneTexture, setHurricaneTexture] = useState<THREE.Texture | null>(null);
   const [hurricaneActive, setHurricaneActive] = useState(false);
+  const [hurricaneSpawn, setHurricaneSpawn] = useState<TropicalCycloneSpawn | null>(null);
   const hurricaneEventAttemptedRef = useRef(false);
-  const hurricaneEligible = perfTier !== "phone" && !reducedMotion;
+  const invalidate = useThree((state) => state.invalidate);
 
   useEffect(() => {
-    if (!hurricaneEligible) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setHurricaneTexture(null);
-      setHurricaneActive(false);
-      return;
-    }
+    let cancelled = false;
+    loadCumulusGeometries()
+      .then((geometries) => {
+        if (!cancelled) {
+          setCumulusGeometries(geometries);
+          invalidate();
+        }
+      })
+      .catch(() => {
+        // Cirrus planes still render if the volume library fails to load.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [invalidate]);
 
+  useEffect(() => {
     let cancelled = false;
     loadHurricaneTexture()
       .then((texture) => {
@@ -999,10 +1311,10 @@ export function GlobeClouds({
     return () => {
       cancelled = true;
     };
-  }, [hurricaneEligible]);
+  }, []);
 
   useEffect(() => {
-    if (!hurricaneEligible || hurricaneEventAttemptedRef.current) return;
+    if (hurricaneEventAttemptedRef.current) return;
     hurricaneEventAttemptedRef.current = true;
 
     let eventTimer: ReturnType<typeof setTimeout> | null = null;
@@ -1011,17 +1323,24 @@ export function GlobeClouds({
       HURRICANE_EVENT_MIN_DELAY_MS +
       Math.random() * (HURRICANE_EVENT_MAX_DELAY_MS - HURRICANE_EVENT_MIN_DELAY_MS);
 
+    onActivity?.();
+    invalidate();
+
     eventTimer = setTimeout(() => {
       if (Math.random() >= HURRICANE_EVENT_CHANCE) return;
+      setHurricaneSpawn(pickTropicalCycloneSpawn(Math.random));
       setHurricaneActive(true);
+      onActivity?.();
+      invalidate();
       hideTimer = setTimeout(() => setHurricaneActive(false), HURRICANE_EVENT_VISIBLE_MS);
     }, delay);
 
     return () => {
+      hurricaneEventAttemptedRef.current = false;
       if (eventTimer) clearTimeout(eventTimer);
       if (hideTimer) clearTimeout(hideTimer);
     };
-  }, [hurricaneEligible]);
+  }, [invalidate, onActivity]);
 
   // Runs before the child clusters/puffs read the shared refs: R3F invokes
   // useFrame callbacks in mount order, and this parent mounts first.
@@ -1043,14 +1362,16 @@ export function GlobeClouds({
         <CloudCluster
           key={index}
           spec={cluster}
+          geometries={cumulusGeometries}
           noise={noise}
           palette={palette}
           sunRef={sunRef}
           timeRef={timeRef}
         />
       ))}
-      {hurricaneTexture ? (
+      {hurricaneTexture && hurricaneSpawn ? (
         <HurricaneStorm
+          spawn={hurricaneSpawn}
           texture={hurricaneTexture}
           noise={noise}
           palette={palette}

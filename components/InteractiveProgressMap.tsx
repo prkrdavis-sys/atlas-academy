@@ -39,6 +39,14 @@ import { focusWorldMapOnPaths } from "@/lib/world-map-focus";
 type InteractiveProgressMapProps = {
   scope: GameScope;
   initialPlaceCode?: string | null;
+  /** Controlled place selection for map-based game modes. */
+  selectedPlaceCode?: string | null;
+  /** Focus this place after an answer reveal without changing the selection. */
+  focusPlaceCode?: string | null;
+  /** Enables the controlled selection surface used by Globe Hunt. */
+  gameplay?: boolean;
+  selectionLocked?: boolean;
+  onSelectPlace?: (code: string | null) => void;
   profile: Profile | null;
   difficulty: MapProgressDifficulty;
   /** Shows the double-chevron button beside the legend that pulls up map stats. */
@@ -74,6 +82,11 @@ const SCOPE_COPY: Record<
 export function InteractiveProgressMap({
   scope,
   initialPlaceCode = null,
+  selectedPlaceCode = null,
+  focusPlaceCode = null,
+  gameplay = false,
+  selectionLocked = false,
+  onSelectPlace,
   profile,
   difficulty,
   onOpenStats,
@@ -91,6 +104,11 @@ export function InteractiveProgressMap({
   const [hoveredPathId, setHoveredPathId] = useState<string | null>(null);
   const { isDark, ready } = useIsDark();
   const { enabled: showMapProgress } = useShowMapProgress();
+  const controlledSelectedPlace = selectedPlaceCode
+    ? getCountryByCode(selectedPlaceCode) ?? null
+    : null;
+  const activeSelectedPlace = gameplay ? controlledSelectedPlace : selectedPlace;
+  const activeSelectedCode = activeSelectedPlace?.code ?? null;
 
   const resolveCodeFromPath = useCallback(
     (pathId: string) =>
@@ -113,10 +131,10 @@ export function InteractiveProgressMap({
         fillMap,
         isDark,
         difficulty,
-        selectedPlace?.code,
+        activeSelectedCode,
         hoveredPathId,
       ),
-    [fillMap, isDark, difficulty, selectedPlace, hoveredPathId],
+    [fillMap, isDark, difficulty, activeSelectedCode, hoveredPathId],
   );
 
   const hoveredPlace = useMemo(() => {
@@ -126,23 +144,23 @@ export function InteractiveProgressMap({
   }, [hoveredPathId, resolveCodeFromPath]);
 
   const hoverLabel = useMemo(() => {
-    if (selectedPlace || !hoveredPathId) return null;
+    if (activeSelectedPlace || !hoveredPathId) return null;
     const code = resolveCodeFromPath(hoveredPathId);
     if (!code) return null;
     return formatPlaceProgressLabel(code, profile, difficulty);
-  }, [selectedPlace, hoveredPathId, resolveCodeFromPath, profile, difficulty]);
+  }, [activeSelectedPlace, hoveredPathId, resolveCodeFromPath, profile, difficulty]);
 
   useEffect(() => {
     let cancelled = false;
-    setLoadFailed(false);
-    setSelectedPlace(null);
-    setHoveredPathId(null);
-    setOverviewViewBox(null);
     hasInitialFocusRef.current = false;
 
     Promise.all([loadContextMapTemplate(copy.templateKey), loadMapBoundsManifest()])
       .then(([loaded, manifest]) => {
         if (cancelled) return;
+        setLoadFailed(false);
+        setSelectedPlace(null);
+        setHoveredPathId(null);
+        setOverviewViewBox(null);
         const template = manifest[copy.templateKey];
         // USA artboard already frames AK/HI insets — keep it. World crops empty ocean.
         const overview =
@@ -200,12 +218,16 @@ export function InteractiveProgressMap({
   }, [map, overviewViewBox, ready]);
 
   useEffect(() => {
+    hasInitialFocusRef.current = false;
+  }, [focusPlaceCode, initialPlaceCode]);
+
+  useEffect(() => {
     if (!map || !overviewViewBox || !panzoomReady || !panzoomRef.current || !containerRef.current) {
       return;
     }
     if (hasInitialFocusRef.current) return;
 
-    const resolvedCode = resolvePlaceCodeFromParam(initialPlaceCode);
+    const resolvedCode = resolvePlaceCodeFromParam(focusPlaceCode ?? initialPlaceCode);
     if (!resolvedCode) return;
 
     const place = getCountryByCode(resolvedCode);
@@ -215,13 +237,14 @@ export function InteractiveProgressMap({
     const svg = mapRef.current?.querySelector("svg");
     if (!svg || pathIds.length === 0) return;
 
-    setSelectedPlace(place);
-
     const panzoom = panzoomRef.current;
     const container = containerRef.current;
 
     const frame = requestAnimationFrame(() => {
       try {
+        if (!gameplay) {
+          setSelectedPlace(place);
+        }
         const focused = focusWorldMapOnPaths(svg, container, panzoom, pathIds);
         if (focused) {
           hasInitialFocusRef.current = true;
@@ -234,24 +257,34 @@ export function InteractiveProgressMap({
     return () => {
       cancelAnimationFrame(frame);
     };
-  }, [initialPlaceCode, map, overviewViewBox, panzoomReady, scope]);
+  }, [focusPlaceCode, gameplay, initialPlaceCode, map, overviewViewBox, panzoomReady, scope]);
 
   const handlePathClick = useCallback(
     (pathId: string) => {
+      if (selectionLocked) return;
       const code = resolveCodeFromPath(pathId);
       if (!code) return;
       const place = getCountryByCode(code);
       if (!place) return;
-      setSelectedPlace((current) => (current?.code === place.code ? null : place));
+      if (gameplay) {
+        onSelectPlace?.(place.code);
+      } else {
+        setSelectedPlace((current) => (current?.code === place.code ? null : place));
+      }
     },
-    [resolveCodeFromPath],
+    [gameplay, onSelectPlace, resolveCodeFromPath, selectionLocked],
   );
 
   const handleBackgroundClick = useCallback(() => {
-    setSelectedPlace(null);
-  }, []);
+    if (selectionLocked) return;
+    if (gameplay) {
+      onSelectPlace?.(null);
+    } else {
+      setSelectedPlace(null);
+    }
+  }, [gameplay, onSelectPlace, selectionLocked]);
 
-  const activePlace = selectedPlace ?? hoveredPlace;
+  const activePlace = activeSelectedPlace ?? hoveredPlace;
 
   return (
     <div className="overflow-hidden rounded-[1.75rem] border-2 border-slate-200 bg-white/85 shadow-sm dark:border-slate-700 dark:bg-slate-900/85">
@@ -260,7 +293,7 @@ export function InteractiveProgressMap({
           <p className="truncate font-display text-base font-extrabold text-slate-900 dark:text-slate-100 sm:text-lg">
             {activePlace ? activePlace.name : copy.emptyPrompt}
           </p>
-          {ready ? (
+          {ready && !gameplay ? (
             <div className="mt-1.5 flex items-center gap-2">
               {showMapProgress ? (
                 <MapProgressFillLegend isDark={isDark} difficulty={difficulty} />
@@ -327,7 +360,9 @@ export function InteractiveProgressMap({
       </ProgressMapContainer>
 
       <p className="border-t border-slate-200 px-4 py-2.5 text-center text-xs font-medium text-slate-500 dark:border-slate-700 dark:text-slate-400">
-        {copy.footerHint}
+        {gameplay
+          ? "Drag to pan · scroll or pinch to zoom · click a place, then confirm"
+          : copy.footerHint}
       </p>
     </div>
   );

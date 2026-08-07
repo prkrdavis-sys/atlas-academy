@@ -33,7 +33,7 @@ export function GlobeGrabOrbit({
   onPointerDownOnGlobe,
   onTap,
 }: GlobeGrabOrbitProps) {
-  const { gl, invalidate } = useThree();
+  const { camera, gl, invalidate, raycaster, scene } = useThree();
 
   useEffect(() => {
     const el = gl.domElement;
@@ -161,8 +161,23 @@ export function GlobeGrabOrbit({
       resetPointerSession();
     };
 
+    const pointerHitsUfo = (clientX: number, clientY: number) => {
+      const rect = el.getBoundingClientRect();
+      const pointer = new THREE.Vector2(
+        ((clientX - rect.left) / rect.width) * 2 - 1,
+        -((clientY - rect.top) / rect.height) * 2 + 1,
+      );
+      raycaster.setFromCamera(pointer, camera);
+      return raycaster
+        .intersectObjects(scene.children, true)
+        .some((intersection) => intersection.object.userData.ufoInteractive === true);
+    };
+
     const onPointerDown = (event: PointerEvent) => {
       if (event.pointerType === "mouse" && event.button !== 0) return;
+      // A flyby can sit in front of the planet. Let its R3F handler own the
+      // tap so the globe does not also select the country behind it.
+      if (pointerHitsUfo(event.clientX, event.clientY)) return;
 
       healStalePointerState();
       pressedPointers.add(event.pointerId);
@@ -242,7 +257,18 @@ export function GlobeGrabOrbit({
       window.removeEventListener("blur", onWindowBlur);
       document.removeEventListener("visibilitychange", onVisibilityChange);
     };
-  }, [controlsRef, gl, invalidate, onGrabStart, onPointerDownOnGlobe, onTap, radius]);
+  }, [
+    camera,
+    controlsRef,
+    gl,
+    invalidate,
+    onGrabStart,
+    onPointerDownOnGlobe,
+    onTap,
+    radius,
+    raycaster,
+    scene,
+  ]);
 
   return null;
 }

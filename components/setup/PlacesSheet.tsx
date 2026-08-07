@@ -18,6 +18,7 @@ type PlacesSheetProps = {
   scope: GameScope;
   selected: Region[];
   includeTerritories: boolean;
+  allowTerritories?: boolean;
   poolSize: number;
   onChange: (next: { continents: Region[]; includeTerritories: boolean }) => void;
 };
@@ -28,6 +29,7 @@ export function PlacesSheet({
   scope,
   selected,
   includeTerritories,
+  allowTerritories = true,
   poolSize,
   onChange,
 }: PlacesSheetProps) {
@@ -39,14 +41,15 @@ export function PlacesSheet({
   const mainRegions = isUsa ? regions : regions.filter((region) => region !== "Antarctica");
   const presets = getRegionPresets(scope);
   const activePreset = findMatchingPreset(selected, scope);
-  const nothingSelected = selected.length === 0 && !(includeTerritories && !isUsa);
+  const nothingSelected =
+    selected.length === 0 && !(allowTerritories && includeTerritories && !isUsa);
 
   const toggleRegion = (region: Region) => {
     onChange({
       continents: selected.includes(region)
         ? selected.filter((current) => current !== region)
         : [...selected, region],
-      includeTerritories,
+      includeTerritories: allowTerritories && includeTerritories,
     });
   };
 
@@ -103,7 +106,7 @@ export function PlacesSheet({
                         ...preset.regions,
                         ...(selected.includes("Antarctica") ? (["Antarctica"] as Region[]) : []),
                       ],
-                      includeTerritories,
+                      includeTerritories: allowTerritories && includeTerritories,
                     })
                   }
                   className={cn(
@@ -155,7 +158,7 @@ export function PlacesSheet({
           </div>
         </section>
 
-        {isUsa ? null : (
+        {isUsa || !allowTerritories ? null : (
           <section>
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               Also include

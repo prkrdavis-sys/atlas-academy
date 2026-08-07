@@ -203,6 +203,7 @@ const MODES: GameMode[] = [
   "neighbor-quiz",
   "population-showdown",
   "fact-to-country",
+  "globe-hunt",
 ];
 
 const RUNS = 200;
@@ -283,7 +284,7 @@ for (const { scope, regions } of SCOPE_SETUPS) {
 for (const mode of MODES) {
   const isFlagPickMode = mode === "country-to-flag" || mode === "inverted-country-to-flag";
   const difficulties: ("easy" | "medium" | "hard")[] =
-    isFlagPickMode ? ["easy", "medium", "hard"] : ["easy", "medium"];
+    isFlagPickMode || mode === "globe-hunt" ? ["easy", "medium", "hard"] : ["easy", "medium"];
   for (const difficulty of difficulties) {
     for (let run = 0; run < RUNS; run += 1) {
       const engine = new GameEngine(mode, regions, difficulty, undefined, run, "all", true, scope);
@@ -299,6 +300,23 @@ for (const mode of MODES) {
           fail(`${mode}: question missing a valid randomized orientation`);
         }
         const { options, optionCodes, correctCode, countryCode, correctAnswer, mode: questionMode } = q;
+        if (questionMode === "globe-hunt") {
+          const place = getCountryByCode(countryCode);
+          if (!place) {
+            fail(`${mode}: globe-hunt target is not a known place (${countryCode})`);
+          } else if (scope === "world" && place.isTerritory) {
+            fail(`${mode}: globe-hunt world target cannot be a territory (${countryCode})`);
+          } else if (scope === "usa" && !countryCode.startsWith("US-")) {
+            fail(`${mode}: globe-hunt USA target must be a state (${countryCode})`);
+          }
+          if (options || optionCodes) {
+            fail(`${mode}: globe-hunt questions must not include answer options`);
+          }
+          if (!correctCode || !engine.checkAnswer(q, correctCode, true)) {
+            fail(`${mode}: globe-hunt correct code rejected for ${countryCode}`);
+          }
+          continue;
+        }
         if (!options) {
           fail(`${mode}: question missing options`);
           continue;
@@ -359,6 +377,22 @@ for (const mode of MODES) {
         if (correctIdx === -1) {
           fail(`${mode}: correct answer not among options (${target}: ${optionCodes.join(",")})`);
           continue;
+        }
+        if (questionMode === "neighbor-quiz") {
+          const subject = getCountryByCode(countryCode);
+          const borderSet = new Set(
+            (subject?.borders ?? [])
+              .map((code) => getCountryByCode(code)?.code)
+              .filter((code): code is string => Boolean(code)),
+          );
+          const borderingOptions = optionCodes.filter((code) => borderSet.has(code));
+          if (borderingOptions.length !== 1) {
+            fail(
+              `${mode}: expected exactly one bordering option for ${countryCode}, got ${
+                borderingOptions.join(",") || "(none)"
+              }`,
+            );
+          }
         }
         // duplicate-label ambiguity
         const labels = options.map((o) => o.toLowerCase());
@@ -536,8 +570,34 @@ if (
 if (!modeCountsTowardMapProgress("mixed") || !modeCountsTowardMapProgress("flag-to-country")) {
   fail("Mixed and category modes should show as counting toward map mastery");
 }
-if (modeCountsTowardMapProgress("weak-spots") || modeCountsTowardMapProgress("atlasle")) {
+if (
+  modeCountsTowardMapProgress("weak-spots") ||
+  modeCountsTowardMapProgress("atlasle") ||
+  modeCountsTowardMapProgress("globe-hunt")
+) {
   fail("Practice and non-category modes should not show as counting toward map mastery");
+}
+const globeHuntQuestion: Question = {
+  id: "globe-hunt-integrity",
+  mode: "globe-hunt",
+  countryCode: "FR",
+  prompt: "Find France on the map.",
+  correctAnswer: "France",
+  correctCode: "FR",
+  displayType: "globe",
+};
+if (resolveMapProgressCategory(globeHuntQuestion) !== null) {
+  fail("Globe Hunt should not resolve to a map mastery category");
+}
+if (
+  wouldCountTowardMapProgress({
+    question: globeHuntQuestion,
+    statsMode: "globe-hunt",
+    difficulty: "hard",
+    correct: true,
+  })
+) {
+  fail("Globe Hunt answers should not count toward map progress");
 }
 
 console.log(`Checked ${questionsChecked} generated questions across ${MODES.length} modes.`);

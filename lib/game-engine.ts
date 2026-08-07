@@ -559,14 +559,34 @@ export class GameEngine {
       case "neighbor-quiz": {
         const neighborCode = pickRandomWith(country.borders, this.random);
         const neighbor = getCountryByCode(neighborCode ?? "");
-        const mc = buildNameMcOptions(neighbor ?? country, this.pool, this.difficulty, undefined, 4, this.random);
+        const correctNeighbor = neighbor ?? country;
+        // Borders are often stored as alpha-3 (CIV, TGO) while MC option codes
+        // are alpha-2 (CI, TG). Resolve to canonical codes so other real
+        // neighbors are excluded — otherwise more than one option is correct.
+        const blockedDistractorCodes = new Set<string>([country.code]);
+        for (const borderCode of country.borders) {
+          const border = getCountryByCode(borderCode);
+          const canonical = border?.code ?? borderCode;
+          if (canonical !== correctNeighbor.code) {
+            blockedDistractorCodes.add(canonical);
+          }
+        }
+        const distractorPool = this.pool.filter((c) => !blockedDistractorCodes.has(c.code));
+        const mc = buildNameMcOptions(
+          correctNeighbor,
+          distractorPool,
+          this.difficulty,
+          undefined,
+          4,
+          this.random,
+        );
         return {
           id,
           mode,
           countryCode: country.code,
           prompt: buildNeighborPrompt(country, neighbor, displayScope),
           correctAnswer: neighbor?.name ?? "",
-          correctCode: neighborCode,
+          correctCode: neighbor?.code ?? neighborCode,
           displayType: "text",
           ...mc,
         };
@@ -620,6 +640,16 @@ export class GameEngine {
           ...mc,
         };
       }
+      case "globe-hunt":
+        return {
+          id,
+          mode,
+          countryCode: country.code,
+          prompt: `Find ${country.name} on the map.`,
+          correctAnswer: country.name,
+          correctCode: country.code,
+          displayType: "globe",
+        };
       case "atlasle": {
         const targets = getAtlasleTargets(country);
         if (targets.length === 0) {

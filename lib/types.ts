@@ -142,6 +142,7 @@ export type GameMode =
   | "neighbor-quiz"
   | "population-showdown"
   | "fact-to-country"
+  | "globe-hunt"
   | "atlasle"
   | "daily-challenge"
   | "marathon"
@@ -211,6 +212,10 @@ const TYPE_IN_HARD_MODES: GameMode[] = [
 ];
 
 export function getDifficultyHint(mode: GameMode, level: Difficulty): string {
+  if (mode === "globe-hunt") {
+    return " - find places on the interactive map";
+  }
+
   if (mode === "atlasle") {
     switch (level) {
       case "easy":
@@ -242,6 +247,10 @@ export function getDifficultyHint(mode: GameMode, level: Difficulty): string {
 
 /** Full-sentence version of getDifficultyHint, for the difficulty picker sheet. */
 export function getDifficultyDescription(mode: GameMode, level: Difficulty): string {
+  if (mode === "globe-hunt") {
+    return "Find the target place on the interactive map. Difficulty changes the session setting, not the map controls.";
+  }
+
   if (mode === "atlasle") {
     switch (level) {
       case "easy":
@@ -491,7 +500,16 @@ export type Question = {
   correctCode?: string;
   options?: string[];
   optionCodes?: string[];
-  displayType?: "flag" | "flag-crop" | "shape" | "capital" | "text" | "flags-grid" | "population" | "atlasle";
+  displayType?:
+    | "flag"
+    | "flag-crop"
+    | "shape"
+    | "capital"
+    | "text"
+    | "flags-grid"
+    | "population"
+    | "atlasle"
+    | "globe";
   /** Flag Close-Up: randomized presentation without changing the selected crop. */
   flagCropOrientation?: FlagCropOrientation;
   secondaryCountryCode?: string;
@@ -549,6 +567,7 @@ export const EXTRA_QUIZ_MODES: GameMode[] = [
   "neighbor-quiz",
   "population-showdown",
   "fact-to-country",
+  "globe-hunt",
   "atlasle",
 ];
 
@@ -655,6 +674,13 @@ export const GAME_MODES: {
     phase: 2,
   },
   {
+    id: "globe-hunt",
+    title: "Globe Hunt",
+    description: "Find each country or state on the interactive map",
+    icon: "🌐",
+    phase: 2,
+  },
+  {
     id: "atlasle",
     title: "Atlasle",
     description: "Wordle for places — guess the country or capital; Easy lets you reveal letters",
@@ -729,7 +755,7 @@ export const MODE_FAMILIES: readonly {
     id: "maps",
     title: "Maps & borders",
     icon: "🗺️",
-    primary: ["shape-to-country", "neighbor-quiz"],
+    primary: ["shape-to-country", "neighbor-quiz", "globe-hunt"],
     twists: [],
   },
   {

@@ -13,6 +13,7 @@ import { AnswerTypeIn } from "@/components/AnswerTypeIn";
 import { AchievementToast } from "@/components/AchievementToast";
 import { FlagGrid } from "@/components/FlagDisplay";
 import { GameMapProgressSummary } from "@/components/GameMapProgressSummary";
+import { GlobeHuntSurface } from "@/components/GlobeHuntSurface";
 import { LearnCard } from "@/components/LearnCard";
 import { preloadLearnCardMap } from "@/components/PlaceContextMap";
 import { QuestionMedia } from "@/components/QuestionMedia";
@@ -53,6 +54,7 @@ import {
 import { STREAK_SNUFF_MIN } from "@/lib/streak-tier";
 import {
   getMapProgressSummary,
+  modeCountsTowardMapProgress,
   toMapProgressDifficulty,
 } from "@/lib/map-progress";
 import { buildLibraryDetailHref, LIBRARY_ICON } from "@/lib/library";
@@ -76,12 +78,6 @@ import type {
   RoundQuestionSetting,
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
-
-function learnCardCountryCodeForQuestion(question: Question): string {
-  return question.mode === "neighbor-quiz"
-    ? question.correctCode ?? question.countryCode
-    : question.countryCode;
-}
 
 type GameBoardProps = {
   mode: GameMode;
@@ -129,7 +125,11 @@ export function GameBoard({
   const { isDark, ready: themeReady } = useIsDark();
   const statsMode = getStatsMode(mode, challengeModifier);
   const mapProgressDifficulty = toMapProgressDifficulty(difficulty);
-  const tracksMapProgress = countStats && mapProgressDifficulty !== null && mode !== "weak-spots";
+  const tracksMapProgress =
+    countStats &&
+    mapProgressDifficulty !== null &&
+    mode !== "weak-spots" &&
+    modeCountsTowardMapProgress(mode);
   const isDailyChallenge = mode === "daily-challenge";
   const storedDailyResult = isDailyChallenge
     ? activeProfile.dailyChallengeResults?.[dailyDateKey]
@@ -182,6 +182,11 @@ export function GameBoard({
   const [lastSelectedCode, setLastSelectedCode] = useState<string | null>(
     () => resumeSnapshot?.lastSelectedCode ?? null,
   );
+  const [globeRevealCode, setGlobeRevealCode] = useState<string | null>(() => {
+    if (!resumeSnapshot?.question || resumeSnapshot.question.mode !== "globe-hunt") return null;
+    if (resumeSnapshot.lastCorrect) return null;
+    return resumeSnapshot.question.correctCode ?? resumeSnapshot.question.countryCode;
+  });
   const [disabled, setDisabled] = useState(() => resumeSnapshot?.disabled ?? false);
   const [hiddenOptions, setHiddenOptions] = useState<string[]>(
     () => resumeSnapshot?.hiddenOptions ?? [],
@@ -467,7 +472,7 @@ export function GameBoard({
     let cancelled = false;
 
     void (async () => {
-      await preloadLearnCardMap(learnCardCountryCodeForQuestion(question), isDark);
+      await preloadLearnCardMap(question.countryCode, isDark);
       if (cancelled || showLearnCard) return;
 
       const nextCountry = engine.peekNextCountry();
@@ -543,6 +548,9 @@ export function GameBoard({
 
     const isCodeSelection = code !== undefined;
     const correct = engine.checkAnswer(question, code ?? answer, isCodeSelection);
+    if (question.mode === "globe-hunt") {
+      setGlobeRevealCode(correct ? null : question.correctCode ?? question.countryCode);
+    }
     const lostStreak = !correct && streak >= STREAK_SNUFF_MIN ? streak : undefined;
     const dailyAnswer: DailyChallengeAnswer = {
       questionIndex: questionCount,
@@ -712,6 +720,7 @@ export function GameBoard({
     setUsedSkip(false);
     setLastSelectedAnswer(null);
     setLastSelectedCode(null);
+    setGlobeRevealCode(null);
 
     if (
       gameOver ||
@@ -923,6 +932,7 @@ export function GameBoard({
     ? dailyCompletionElapsedCentiseconds ?? dailyElapsedCentiseconds
     : storedDailyResult?.elapsedCentiseconds ?? 0;
   const isTextOnlyPrompt = isTextOnlyQuestion(question);
+  const isGlobeHuntRound = question.mode === "globe-hunt";
   const isAtlasleRound = question.displayType === "atlasle";
   const isInvertedFlagRound = isInvertedFlagQuestion(question);
   const isMultipleChoiceRound =
@@ -930,7 +940,7 @@ export function GameBoard({
     (question.displayType === "flags-grid" ||
       Boolean(question.options && difficulty !== "hard"));
   const showChoiceReveal = showLearnCard && isMultipleChoiceRound;
-  const learnCardCountryCode = learnCardCountryCodeForQuestion(question);
+  const learnCardCountryCode = question.countryCode;
   const learnCardHeading =
     question.mode === "neighbor-quiz" ? (
       <>
@@ -1077,7 +1087,7 @@ export function GameBoard({
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border-2 border-slate-200 bg-white/90 p-3 shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90 sm:rounded-3xl sm:p-4">
-        {!showChoiceReveal && !isTextOnlyPrompt && (
+        {!showChoiceReveal && !isTextOnlyPrompt && !isGlobeHuntRound && (
           <h2 className="mb-2 hidden shrink-0 text-center font-display text-base font-extrabold leading-tight sm:mb-3 sm:block sm:text-xl">
             {question.prompt}
           </h2>
@@ -1088,7 +1098,10 @@ export function GameBoard({
             showChoiceReveal ? "justify-start overflow-hidden" : "overflow-hidden"
           } ${showChoiceReveal || question.displayType === "flags-grid" ? "sm:justify-start" : "sm:justify-center"}`}
         >
-          {!showChoiceReveal && !(showLearnCard && !isMultipleChoiceRound) && !isAtlasleRound && (
+          {!showChoiceReveal &&
+            !isGlobeHuntRound &&
+            !(showLearnCard && !isMultipleChoiceRound) &&
+            !isAtlasleRound && (
             <>
               <div
                 className={`min-h-0 sm:hidden ${difficulty === "hard" ? "flex-[0.06]" : "flex-[0.24]"}`}
@@ -1141,7 +1154,18 @@ export function GameBoard({
             <div className="min-h-0 flex-[0.76] sm:hidden" aria-hidden />
           )}
 
-          {showChoiceReveal ? (
+          {isGlobeHuntRound ? (
+            <GlobeHuntSurface
+              key={question.id}
+              question={question}
+              scope={questionScope}
+              difficulty={difficulty}
+              disabled={disabled}
+              initialSelectedCode={resumeSnapshot?.lastSelectedCode ?? null}
+              revealedCode={globeRevealCode}
+              onConfirm={(code) => handleAnswer(code, code)}
+            />
+          ) : showChoiceReveal ? (
             <div
               className={`flex min-h-0 w-full flex-col items-stretch ${
                 question.displayType === "flags-grid"
@@ -1209,6 +1233,7 @@ export function GameBoard({
           {/* Hard mode: keep the type-in field high so it stays visible above the keyboard. */}
           {!showLearnCard &&
             difficulty === "hard" &&
+            !isGlobeHuntRound &&
             !isAtlasleRound &&
             question.displayType !== "flags-grid" && (
             <>
@@ -1231,6 +1256,7 @@ export function GameBoard({
         </div>
 
         {(showChoiceReveal || !showLearnCard) &&
+          !isGlobeHuntRound &&
           question.displayType !== "flags-grid" &&
           !isAtlasleRound &&
           difficulty !== "hard" && (

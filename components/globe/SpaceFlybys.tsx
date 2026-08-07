@@ -2,10 +2,13 @@
 
 import { useFrame } from "@react-three/fiber";
 import { useLayoutEffect, useMemo, useRef } from "react";
+import { Billboard } from "@react-three/drei";
 import * as THREE from "three";
 import type { GlobePerfTier } from "@/lib/globe-performance";
+import type { Profile } from "@/lib/types";
+import { playSound } from "@/lib/sound";
 
-/** Skip picking so flybys never steal globe taps. */
+/** Skip picking for decorative flyby meshes; the UFO hit sphere handles taps. */
 function ignoreRaycast() {}
 
 const MAX_METEORS = 2;
@@ -26,6 +29,20 @@ const FLYBY_DURATION_MAX_S = 16;
 const FLYBY_PERIAPSIS_MIN = 1.5;
 const FLYBY_PERIAPSIS_MAX = 3.0;
 const FLYBY_PATH_HALF_LEN = 5.5;
+const EXPLOSION_DURATION_S = 0.82;
+const EXPLOSION_PARTICLE_DIRECTIONS: readonly [number, number, number][] = [
+  [1, 0.2, 0],
+  [-1, 0.15, 0.1],
+  [0.15, 1, 0.1],
+  [-0.12, -1, 0.2],
+  [0.2, 0.1, 1],
+  [-0.1, 0.2, -1],
+  [0.72, 0.68, 0.25],
+  [-0.72, 0.64, -0.2],
+  [0.58, -0.72, -0.3],
+  [-0.6, -0.7, 0.28],
+];
+const EXPLOSION_PARTICLE_COLORS = ["#fff7ae", "#fde047", "#fb923c", "#f97316"];
 
 /** Classic hero palette — generic flying figure, no logos or trademarks. */
 const HERO_SUIT = "#0055a4";
@@ -54,6 +71,12 @@ type FlybyState = {
   duration: number;
   start: THREE.Vector3;
   end: THREE.Vector3;
+};
+
+type ExplosionState = {
+  active: boolean;
+  t: number;
+  position: THREE.Vector3;
 };
 
 const flybyFadeMaterial = {
@@ -146,6 +169,7 @@ function meteorOpacity(t: number) {
 type SpaceFlybysProps = {
   enabled: boolean;
   isDark: boolean;
+  profile: Profile | null;
   perfTier?: GlobePerfTier;
   onActivity: () => void;
 };
@@ -157,6 +181,7 @@ type SpaceFlybysProps = {
 export function SpaceFlybys({
   enabled,
   isDark,
+  profile,
   perfTier = "desktop",
   onActivity,
 }: SpaceFlybysProps) {
@@ -167,6 +192,15 @@ export function SpaceFlybys({
   const flybyGroupRef = useRef<THREE.Group>(null);
   const flybyGlowMatRef = useRef<THREE.MeshBasicMaterial>(null);
   const capeRef = useRef<THREE.Group>(null);
+  const explosionGroupRef = useRef<THREE.Group>(null);
+  const explosionFlashRef = useRef<THREE.Mesh>(null);
+  const explosionCoreRef = useRef<THREE.Mesh>(null);
+  const explosionRingRef = useRef<THREE.Mesh>(null);
+  const explosionFlashMatRef = useRef<THREE.MeshBasicMaterial>(null);
+  const explosionCoreMatRef = useRef<THREE.MeshBasicMaterial>(null);
+  const explosionRingMatRef = useRef<THREE.MeshBasicMaterial>(null);
+  const explosionParticleRefs = useRef<(THREE.Mesh | null)[]>([]);
+  const explosionParticleMats = useRef<(THREE.MeshBasicMaterial | null)[]>([]);
 
   const chordScratch = useMemo<Chord>(
     () => ({ start: new THREE.Vector3(), end: new THREE.Vector3() }),
@@ -192,6 +226,11 @@ export function SpaceFlybys({
     start: new THREE.Vector3(),
     end: new THREE.Vector3(),
   });
+  const explosionRef = useRef<ExplosionState>({
+    active: false,
+    t: 0,
+    position: new THREE.Vector3(),
+  });
   const nextMeteorAtRef = useRef(randRange(METEOR_SPAWN_MIN_S, METEOR_SPAWN_MAX_S));
   const nextFlybyAtRef = useRef(randRange(FLYBY_SPAWN_MIN_S, FLYBY_SPAWN_MAX_S));
   const elapsedRef = useRef(0);
@@ -211,12 +250,16 @@ export function SpaceFlybys({
         if (mat) mat.opacity = 0;
       }
       if (flybyGroupRef.current) flybyGroupRef.current.visible = false;
+      explosionRef.current.active = false;
+      if (explosionGroupRef.current) explosionGroupRef.current.visible = false;
     }
     if (!isDark) {
       for (const slot of meteorsRef.current) slot.active = false;
       for (const mat of meteorMats.current) {
         if (mat) mat.opacity = 0;
       }
+      explosionRef.current.active = false;
+      if (explosionGroupRef.current) explosionGroupRef.current.visible = false;
     }
     if (enabled && !wasEnabledRef.current) {
       elapsedRef.current = 0;
@@ -227,6 +270,27 @@ export function SpaceFlybys({
     }
     wasEnabledRef.current = enabled;
   }, [enabled, isDark]);
+
+  const explodeFlyby = (event: { stopPropagation: () => void }) => {
+    event.stopPropagation();
+    const flyby = flybyRef.current;
+    const flybyGroup = flybyGroupRef.current;
+    const explosion = explosionRef.current;
+    if (!flyby.active || explosion.active || !flybyGroup) return;
+
+    explosion.active = true;
+    explosion.t = 0;
+    explosion.position.copy(flybyGroup.position);
+    flyby.active = false;
+    flybyGroup.visible = false;
+    const explosionGroup = explosionGroupRef.current;
+    if (explosionGroup) {
+      explosionGroup.position.copy(explosion.position);
+      explosionGroup.visible = true;
+    }
+    onActivity();
+    playSound("explosion", profile);
+  };
 
   useFrame((_, delta) => {
     if (!enabled) return;
@@ -365,10 +429,62 @@ export function SpaceFlybys({
       }
     }
 
+    const explosion = explosionRef.current;
+    const explosionGroup = explosionGroupRef.current;
+    if (explosion.active && explosionGroup) {
+      explosion.t += dt / EXPLOSION_DURATION_S;
+      const progress = Math.min(1, explosion.t);
+      if (progress >= 1) {
+        explosion.active = false;
+        explosionGroup.visible = false;
+      } else {
+        anyActive = true;
+        const easeOut = 1 - (1 - progress) ** 3;
+        const flash = explosionFlashRef.current;
+        const core = explosionCoreRef.current;
+        const ring = explosionRingRef.current;
+        if (flash) {
+          flash.scale.setScalar(0.45 + easeOut * 1.9);
+        }
+        if (core) {
+          core.scale.setScalar(0.3 + easeOut * 1.45);
+        }
+        if (ring) {
+          ring.scale.setScalar(0.4 + easeOut * 2.7);
+          ring.rotation.z += dt * 3;
+        }
+        if (explosionFlashMatRef.current) {
+          explosionFlashMatRef.current.opacity = Math.max(0, 1 - progress * 8) * 0.9;
+        }
+        if (explosionCoreMatRef.current) {
+          explosionCoreMatRef.current.opacity = Math.max(0, 1 - progress * 1.35);
+        }
+        if (explosionRingMatRef.current) {
+          explosionRingMatRef.current.opacity = Math.max(0, 1 - progress) * 0.9;
+        }
+
+        const particleDistance = easeOut * 3.7;
+        for (let i = 0; i < explosionParticleRefs.current.length; i++) {
+          const particle = explosionParticleRefs.current[i];
+          const material = explosionParticleMats.current[i];
+          const direction = EXPLOSION_PARTICLE_DIRECTIONS[i];
+          if (!particle || !material || !direction) continue;
+          particle.position.set(
+            direction[0] * particleDistance,
+            direction[1] * particleDistance,
+            direction[2] * particleDistance,
+          );
+          particle.scale.setScalar(Math.max(0.08, 0.8 - progress * 0.7));
+          material.opacity = Math.max(0, 1 - progress * 1.15);
+        }
+      }
+    }
+
     if (anyActive) onActivity();
   });
 
   const flybyScale = simplified ? 0.045 : 0.055;
+  const explosionScale = simplified ? 0.065 : 0.08;
   const heroScale = simplified ? 0.07 : 0.085;
   const limbSegments = simplified ? 6 : 10;
 
@@ -403,38 +519,117 @@ export function SpaceFlybys({
         : null}
 
       {isDark ? (
-        <group ref={flybyGroupRef} visible={false} scale={flybyScale} frustumCulled={false}>
-          <mesh raycast={ignoreRaycast}>
-            <cylinderGeometry args={[1.1, 1.4, 0.22, simplified ? 12 : 20]} />
-            {fadeMaterial(ufoBody, 0.92)}
-          </mesh>
-          <mesh raycast={ignoreRaycast} rotation={[Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
-            <torusGeometry args={[1.15, 0.06, 6, simplified ? 12 : 20]} />
-            {fadeMaterial(isDark ? "#c5ced9" : "#8b95a5", 0.85)}
-          </mesh>
-          <mesh raycast={ignoreRaycast} position={[0, 0.18, 0]}>
-            <sphereGeometry
-              args={[0.45, simplified ? 10 : 16, simplified ? 8 : 12, 0, Math.PI * 2, 0, Math.PI / 2]}
-            />
-            {fadeMaterial(ufoDome, 0.9)}
-          </mesh>
-          {!simplified ? (
-            <mesh raycast={ignoreRaycast} position={[0, -0.08, 0]} rotation={[Math.PI / 2, 0, 0]}>
-              <circleGeometry args={[0.7, 16]} />
-              <meshBasicMaterial
-                ref={flybyGlowMatRef}
-                color={ufoGlow}
-                transparent
-                opacity={0.5}
-                depthWrite={false}
-                depthTest
-                blending={THREE.AdditiveBlending}
-                toneMapped={false}
-                side={THREE.DoubleSide}
-              />
+        <>
+          <group ref={flybyGroupRef} visible={false} scale={flybyScale} frustumCulled={false}>
+            <mesh
+              userData={{ ufoInteractive: true }}
+              onPointerDown={(event) => event.stopPropagation()}
+              onClick={explodeFlyby}
+              frustumCulled={false}
+            >
+              <sphereGeometry args={[1.7, simplified ? 10 : 14, simplified ? 8 : 10]} />
+              <meshBasicMaterial transparent opacity={0} depthWrite={false} />
             </mesh>
-          ) : null}
-        </group>
+            <mesh raycast={ignoreRaycast}>
+              <cylinderGeometry args={[1.1, 1.4, 0.22, simplified ? 12 : 20]} />
+              {fadeMaterial(ufoBody, 0.92)}
+            </mesh>
+            <mesh raycast={ignoreRaycast} rotation={[Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
+              <torusGeometry args={[1.15, 0.06, 6, simplified ? 12 : 20]} />
+              {fadeMaterial(isDark ? "#c5ced9" : "#8b95a5", 0.85)}
+            </mesh>
+            <mesh raycast={ignoreRaycast} position={[0, 0.18, 0]}>
+              <sphereGeometry
+                args={[0.45, simplified ? 10 : 16, simplified ? 8 : 12, 0, Math.PI * 2, 0, Math.PI / 2]}
+              />
+              {fadeMaterial(ufoDome, 0.9)}
+            </mesh>
+            {!simplified ? (
+              <mesh raycast={ignoreRaycast} position={[0, -0.08, 0]} rotation={[Math.PI / 2, 0, 0]}>
+                <circleGeometry args={[0.7, 16]} />
+                <meshBasicMaterial
+                  ref={flybyGlowMatRef}
+                  color={ufoGlow}
+                  transparent
+                  opacity={0.5}
+                  depthWrite={false}
+                  depthTest
+                  blending={THREE.AdditiveBlending}
+                  toneMapped={false}
+                  side={THREE.DoubleSide}
+                />
+              </mesh>
+            ) : null}
+          </group>
+          <group
+            ref={explosionGroupRef}
+            visible={false}
+            scale={explosionScale}
+            frustumCulled={false}
+          >
+            <Billboard follow>
+              <mesh ref={explosionFlashRef} frustumCulled={false}>
+                <circleGeometry args={[1.1, simplified ? 12 : 20]} />
+                <meshBasicMaterial
+                  ref={explosionFlashMatRef}
+                  color="#fff7c2"
+                  transparent
+                  opacity={0}
+                  depthWrite={false}
+                  blending={THREE.AdditiveBlending}
+                  toneMapped={false}
+                  side={THREE.DoubleSide}
+                />
+              </mesh>
+              <mesh ref={explosionCoreRef} frustumCulled={false}>
+                <sphereGeometry args={[0.42, simplified ? 8 : 12, simplified ? 6 : 8]} />
+                <meshBasicMaterial
+                  ref={explosionCoreMatRef}
+                  color="#fb923c"
+                  transparent
+                  opacity={0}
+                  depthWrite={false}
+                  blending={THREE.AdditiveBlending}
+                  toneMapped={false}
+                />
+              </mesh>
+              <mesh ref={explosionRingRef} rotation={[Math.PI / 2, 0, 0]} frustumCulled={false}>
+                <torusGeometry args={[0.68, 0.055, 6, simplified ? 12 : 18]} />
+                <meshBasicMaterial
+                  ref={explosionRingMatRef}
+                  color="#facc15"
+                  transparent
+                  opacity={0}
+                  depthWrite={false}
+                  blending={THREE.AdditiveBlending}
+                  toneMapped={false}
+                />
+              </mesh>
+              {EXPLOSION_PARTICLE_DIRECTIONS.slice(0, simplified ? 7 : 10).map((_, index) => (
+                <mesh
+                  key={index}
+                  ref={(node) => {
+                    explosionParticleRefs.current[index] = node;
+                  }}
+                  frustumCulled={false}
+                >
+                  <sphereGeometry args={[0.1, simplified ? 6 : 8, simplified ? 4 : 6]} />
+                  <meshBasicMaterial
+                    ref={(node) => {
+                      explosionParticleMats.current[index] = node;
+                    }}
+                    color={EXPLOSION_PARTICLE_COLORS[index % EXPLOSION_PARTICLE_COLORS.length]}
+                    transparent
+                    opacity={0}
+                    depthWrite={false}
+                    blending={THREE.AdditiveBlending}
+                    toneMapped={false}
+                  />
+                </mesh>
+              ))}
+            </Billboard>
+          </group>
+        </>
       ) : (
         <group ref={flybyGroupRef} visible={false} scale={heroScale} frustumCulled={false}>
           {/* Prone flying pose along -Z (lookAt forward). */}

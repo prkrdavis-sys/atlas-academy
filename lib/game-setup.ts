@@ -158,7 +158,7 @@ export function buildSettingsPatch(
       ? { lastRegionFilter: draft.continents as UsRegion[] }
       : {
           lastContinentFilter: draft.continents as Continent[],
-          includeTerritories: draft.includeTerritories,
+          includeTerritories: draft.mode === "globe-hunt" ? false : draft.includeTerritories,
         }),
   };
 }

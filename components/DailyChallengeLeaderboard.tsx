@@ -403,13 +403,13 @@ function DailyChallengeLeaderboardContent({ profile }: { profile: Profile }) {
             <Button
               variant="secondary"
               size="sm"
-              className="mt-4 shrink-0 px-2.5"
+              className="mt-4 shrink-0 gap-1.5"
               onClick={toggleCalendar}
               aria-expanded={calendarOpen}
               aria-controls="daily-leaderboard-calendar"
-              aria-label={calendarOpen ? "Hide calendar" : "Change day"}
             >
-              <CalendarGlyph className="size-5" />
+              <CalendarGlyph className="size-4" />
+              {calendarOpen ? "Hide calendar" : "Change date"}
             </Button>
           </div>
           {!selectedDateCompleted ? (

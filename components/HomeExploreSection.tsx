@@ -202,7 +202,6 @@ export function HomeExploreSection({
             Jump in
           </h2>
           <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3">
-            <ShortcutButton href="/stats" icon="📊" label="Stats" />
             <ShortcutButton href="/daily-challenge" icon="🏆" label="Leaderboard" />
             <FriendsShortcutButton scope={scope} />
             <button type="button" onClick={startWeakSpots} className={shortcutClassName}>

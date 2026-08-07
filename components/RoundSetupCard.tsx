@@ -30,6 +30,7 @@ type RoundSetupCardProps = {
   difficulty: Difficulty;
   roundQuestionCount: RoundQuestionSetting;
   availableCountryCount: number;
+  allowTerritories?: boolean;
   weakSpotWarning?: boolean;
   onChallengeModifierChange: (challengeModifier: ChallengeModifier) => void;
   onContinentsChange: (continents: Region[]) => void;
@@ -55,6 +56,7 @@ export function RoundSetupCard({
   difficulty,
   roundQuestionCount,
   availableCountryCount,
+  allowTerritories = true,
   weakSpotWarning = false,
   onChallengeModifierChange,
   onContinentsChange,
@@ -76,7 +78,7 @@ export function RoundSetupCard({
   );
   const placesSummary = getPlacesSummary(
     continents,
-    includeTerritories,
+    allowTerritories && includeTerritories,
     scope,
     availableCountryCount,
   );
@@ -139,11 +141,12 @@ export function RoundSetupCard({
         onClose={closeSheet}
         scope={scope}
         selected={continents}
-        includeTerritories={includeTerritories}
+        includeTerritories={allowTerritories && includeTerritories}
+        allowTerritories={allowTerritories}
         poolSize={availableCountryCount}
         onChange={(next) => {
           onContinentsChange(next.continents);
-          onIncludeTerritoriesChange(next.includeTerritories);
+          onIncludeTerritoriesChange(allowTerritories && next.includeTerritories);
         }}
       />
     </div>

@@ -68,7 +68,10 @@ export function filterCountries(options: FilterOptions): Country[] {
   const scope = options.scope ?? "world";
   const dataset = getPlacesForScope(scope);
   // The USA scope has no territories; the toggle only applies to the world.
-  const includeTerritories = scope === "world" && (options.includeTerritories ?? false);
+  const includeTerritories =
+    scope === "world" &&
+    options.mode !== "globe-hunt" &&
+    (options.includeTerritories ?? false);
   const continentPool = options.continents.length > 0
     ? dataset.filter((c) => matchesContinentSelection(c, options.continents))
     : [];
@@ -81,6 +84,10 @@ export function filterCountries(options: FilterOptions): Country[] {
     byCode.set(country.code, country);
   }
   let pool = [...byCode.values()];
+
+  if (options.mode === "globe-hunt") {
+    pool = pool.filter((c) => !c.isTerritory);
+  }
 
   if (options.mode === "shape-to-country") {
     pool = pool.filter((c) => c.hasShape);

@@ -237,6 +237,7 @@ export function GameModeSettingsPageContent({ mode }: GameModeSettingsPageConten
         difficulty={normalizedDraft.difficulty}
         roundQuestionCount={normalizedDraft.roundQuestionCount}
         availableCountryCount={availableCountryCount}
+        allowTerritories={mode !== "globe-hunt"}
         weakSpotWarning={normalizedDraft.mode === "weak-spots" && !weakSpotCodes?.length}
         onChallengeModifierChange={(challengeModifier: ChallengeModifier) =>
           setDraft((current) => (current ? { ...current, challengeModifier } : current))

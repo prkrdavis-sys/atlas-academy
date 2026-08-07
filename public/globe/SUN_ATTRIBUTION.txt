@@ -45,5 +45,18 @@ License: Public domain (U.S. government work / NASA imagery)
 
 ---
 
-sky-sunset.jpg — AI-generated painted sunset cloudscape used as the
-light-mode backdrop behind the globe. Original artwork for Atlas Academy.
+---
+
+Cumulus cloud meshes for the interactive globe weather layer.
+
+Models: Cumulus Clouds set by S. Paul Michael
+License: Creative Commons Attribution 3.0 (CC-BY 3.0)
+https://creativecommons.org/licenses/by/3.0/
+via Poly Pizza (Google Poly archive):
+https://poly.pizza/m/5ckRCisrnXh
+https://poly.pizza/m/25RmW99gwuv
+https://poly.pizza/m/3wzu2FRYXUi
+
+Normalized unit-box meshes live in public/globe/clouds/; see
+public/globe/clouds/ATTRIBUTION.txt.
+

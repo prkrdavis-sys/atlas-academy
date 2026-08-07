@@ -185,11 +185,7 @@ export function VersusBoard({
           {revealing ? (
             <div className="mx-auto flex min-h-0 w-full max-w-2xl flex-1 flex-col overflow-y-auto">
               <LearnCard
-                countryCode={
-                  question.mode === "neighbor-quiz"
-                    ? question.correctCode ?? question.countryCode
-                    : question.countryCode
-                }
+                countryCode={question.countryCode}
                 wasCorrect={yourAnswer?.is_correct ?? false}
                 variant="inline"
               />

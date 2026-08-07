@@ -13,7 +13,14 @@ import { STREAK_SNUFF_MIN } from "@/lib/streak-tier";
  * Background focus/visibility handlers must not start a shared resume that
  * later gesture code reuses — that pattern silently breaks desktop Safari.
  */
-export type SoundKind = "tap" | "play" | "correct" | "incorrect" | "streak" | "complete";
+export type SoundKind =
+  | "tap"
+  | "play"
+  | "correct"
+  | "incorrect"
+  | "streak"
+  | "complete"
+  | "explosion";
 
 export type PlaySoundOptions = {
   /** Live answer streak after a correct response (1 = first correct in a row). */
@@ -289,7 +296,7 @@ type Note = {
   gain: number;
 };
 
-type SynthSoundKind = Exclude<SoundKind, SampleSoundKind>;
+type SynthSoundKind = Exclude<SoundKind, SampleSoundKind | "explosion">;
 
 const SOUNDS: Record<SynthSoundKind, Note[]> = {
   tap: [{ at: 0, frequency: 520, frequencyEnd: 640, duration: 0.06, type: "sine", gain: 0.12 }],
@@ -484,10 +491,59 @@ function scheduleSound(ctx: AudioContext, kind: SoundKind, options?: PlaySoundOp
     return;
   }
 
+  if (kind === "explosion") {
+    scheduleExplosion(ctx);
+    return;
+  }
+
   scheduleNotes(ctx, kind, options);
 }
 
-function scheduleNotes(ctx: AudioContext, kind: SynthSoundKind, options?: PlaySoundOptions) {
+function scheduleExplosion(ctx: AudioContext): void {
+  const start = ctx.currentTime + 0.01;
+  const duration = 0.46;
+  const noiseBuffer = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * duration), ctx.sampleRate);
+  const noiseData = noiseBuffer.getChannelData(0);
+  for (let i = 0; i < noiseData.length; i++) {
+    const progress = i / noiseData.length;
+    noiseData[i] = (Math.random() * 2 - 1) * (1 - progress) ** 1.4;
+  }
+
+  const noise = ctx.createBufferSource();
+  const filter = ctx.createBiquadFilter();
+  const noiseGain = ctx.createGain();
+  filter.type = "lowpass";
+  filter.frequency.setValueAtTime(1400, start);
+  filter.frequency.exponentialRampToValueAtTime(180, start + duration);
+  noiseGain.gain.setValueAtTime(0, start);
+  noiseGain.gain.linearRampToValueAtTime(0.22, start + 0.012);
+  noiseGain.gain.exponentialRampToValueAtTime(0.001, start + duration);
+  noise.buffer = noiseBuffer;
+  noise.connect(filter);
+  filter.connect(noiseGain);
+  noiseGain.connect(ctx.destination);
+  noise.start(start);
+  noise.stop(start + duration + 0.02);
+
+  const thud = ctx.createOscillator();
+  const thudGain = ctx.createGain();
+  thud.type = "sawtooth";
+  thud.frequency.setValueAtTime(150, start);
+  thud.frequency.exponentialRampToValueAtTime(38, start + 0.3);
+  thudGain.gain.setValueAtTime(0, start);
+  thudGain.gain.linearRampToValueAtTime(0.16, start + 0.008);
+  thudGain.gain.exponentialRampToValueAtTime(0.001, start + 0.34);
+  thud.connect(thudGain);
+  thudGain.connect(ctx.destination);
+  thud.start(start);
+  thud.stop(start + 0.36);
+}
+
+function scheduleNotes(
+  ctx: AudioContext,
+  kind: Exclude<SynthSoundKind, "explosion">,
+  options?: PlaySoundOptions,
+) {
   const notes =
     kind === "correct" && options?.streak !== undefined
       ? getCorrectSoundNotes(options.streak)

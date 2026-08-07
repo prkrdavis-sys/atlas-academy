@@ -1,0 +1,17 @@
+Cumulus cloud meshes for the interactive globe.
+
+Models: Cumulus Clouds set by S. Paul Michael
+License: Creative Commons Attribution 3.0 (CC-BY 3.0)
+https://creativecommons.org/licenses/by/3.0/
+
+Source (via Poly Pizza / Google Poly archive):
+- https://poly.pizza/m/5ckRCisrnXh  (Cumulus Clouds 2)
+- https://poly.pizza/m/25RmW99gwuv (Cumulus Clouds 5)
+- https://poly.pizza/m/3wzu2FRYXUi (Cumulus Clouds 3)
+
+Files in this folder are normalized unit-box meshes derived from the
+original OBJ geometry (centered, scaled to max dimension = 1, normals
+recomputed). Atlas Academy applies its own white translucent materials
+and places instances into WMO altitude bands on the globe.
+
+Attribution required when redistributing.

@@ -51,11 +51,12 @@ function getInviteMessage(
 export default function FriendInvitePage() {
   const params = useParams<{ token: string }>();
   const token = params.token;
-  const { user, isGuest } = useAuth();
+  const { user, isGuest, hydrated } = useAuth();
   const [previewState, setPreviewState] = useState<PreviewState>({ kind: "loading" });
   const [redemptionState, setRedemptionState] = useState<RedemptionState>({
     kind: "idle",
   });
+  const [redeemAttempt, setRedeemAttempt] = useState(0);
 
   useEffect(() => {
     if (!token) return;
@@ -64,6 +65,7 @@ export default function FriendInvitePage() {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setPreviewState({ kind: "loading" });
     setRedemptionState({ kind: "idle" });
+    setRedeemAttempt(0);
 
     void previewFriendInvite(token)
       .then((invite) => {
@@ -84,11 +86,15 @@ export default function FriendInvitePage() {
   }, [token]);
 
   useEffect(() => {
+    // Wait for auth hydration so we don't flash "sending" before knowing the
+    // session. Do not depend on redemptionState — setting "redeeming" used to
+    // re-run this effect, cancel the in-flight request, and leave the UI stuck.
     if (
+      !hydrated ||
       !user ||
       isGuest ||
       previewState.kind !== "ready" ||
-      redemptionState.kind !== "idle"
+      !token
     ) {
       return;
     }
@@ -116,12 +122,12 @@ export default function FriendInvitePage() {
     return () => {
       cancelled = true;
     };
-  }, [isGuest, previewState, redemptionState.kind, token, user]);
+  }, [hydrated, isGuest, previewState.kind, redeemAttempt, token, user?.id]);
 
   const returnTo = `/invite/${encodeURIComponent(token)}`;
   const inviteReady = previewState.kind === "ready";
   const inviterName = inviteReady ? previewState.invite.inviterName : "an Atlas Academy player";
-  const showAuthPrompt = !user || isGuest;
+  const showAuthPrompt = !hydrated || !user || isGuest;
 
   return (
     <div className="flex min-h-dvh items-center justify-center bg-gradient-to-br from-slate-950 via-teal-950 to-slate-900 px-4 py-8">
@@ -178,12 +184,24 @@ export default function FriendInvitePage() {
               <p role="alert" className="font-semibold text-rose-700 dark:text-rose-300">
                 {redemptionState.message}
               </p>
-              <Link
-                href="/"
-                className="mt-5 inline-flex min-h-11 items-center justify-center rounded-2xl bg-emerald-500 px-5 py-2.5 font-bold text-white shadow-[0_3px_0_var(--color-emerald-700)]"
-              >
-                Continue to Atlas Academy
-              </Link>
+              <div className="mt-5 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+                <button
+                  type="button"
+                  className="inline-flex min-h-11 items-center justify-center rounded-2xl bg-emerald-500 px-5 py-2.5 font-bold text-white shadow-[0_3px_0_var(--color-emerald-700)]"
+                  onClick={() => {
+                    setRedemptionState({ kind: "idle" });
+                    setRedeemAttempt((attempt) => attempt + 1);
+                  }}
+                >
+                  Try again
+                </button>
+                <Link
+                  href="/"
+                  className="inline-flex min-h-11 items-center justify-center rounded-2xl border border-slate-300 px-5 py-2.5 font-bold text-slate-700 dark:border-slate-600 dark:text-slate-200"
+                >
+                  Continue to Atlas Academy
+                </Link>
+              </div>
             </div>
           ) : (
             <>

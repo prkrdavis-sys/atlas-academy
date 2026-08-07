@@ -33,8 +33,13 @@ export async function POST(request: Request) {
     });
     if (error) throw error;
 
+    if (data === "unauthenticated") {
+      return NextResponse.json({ error: "You must be signed in to accept an invite." }, { status: 401 });
+    }
+
     return NextResponse.json({ status: data });
-  } catch {
+  } catch (error) {
+    console.error("Failed to redeem friend invite", error);
     return NextResponse.json({ error: "Could not redeem this friend invite." }, { status: 500 });
   }
 }
