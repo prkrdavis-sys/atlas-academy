@@ -191,11 +191,10 @@ export function pickTropicalCycloneSpawn(random: () => number): TropicalCycloneS
   const spawnLat = track.points[0].lat;
   const northernHemisphere = spawnLat >= 0;
   /**
-   * Florence density spirals clockwise in UV space. NH storms need a horizontal
-   * mirror so arms trail counterclockwise rotation; SH uses the raw art with
-   * clockwise spin.
+   * Florence density spirals clockwise in UV space. NH storms mirror the art
+   * and spin counterclockwise; SH uses the raw art with clockwise spin.
    */
-  const spinSign = northernHemisphere ? -1 : 1;
+  const spinSign = northernHemisphere ? 1 : -1;
   const mirrorTexture = northernHemisphere;
   return { track, spinSign, mirrorTexture };
 }
