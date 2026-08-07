@@ -1,22 +1,12 @@
-import { Suspense } from "react";
-import { GlobeExperience } from "@/components/GlobeExperience";
-
 /**
- * Shared layout for `/` and `/map`. The whole experience (globe canvas, home
- * hero, map chrome) lives here so navigating between the two routes never
- * remounts the globe — the page UI just slides between the panes.
+ * Route group for `/` and `/map`. The persistent globe experience is mounted
+ * from `AppShell` so the WebGL canvas also survives navigation to Library and
+ * play routes — these pages only exist so the URL space is grouped.
  */
 export default function GlobeExperienceLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <>
-      <Suspense fallback={null}>
-        <GlobeExperience />
-      </Suspense>
-      {children}
-    </>
-  );
+  return children;
 }

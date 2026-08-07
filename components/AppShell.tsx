@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { AppHeader } from "@/components/AppHeader";
 import { useAuth } from "@/components/AuthProvider";
+import { GlobeExperience } from "@/components/GlobeExperience";
 import { useProfiles } from "@/components/ProfileProvider";
 import { WelcomeDialog } from "@/components/WelcomeDialog";
 import { isMapRoute } from "@/lib/navigation";
@@ -82,6 +83,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               : "px-4 pb-[calc(6.5rem+env(safe-area-inset-bottom))] pt-5 sm:py-8",
         )}
       >
+        {/* Keep the WebGL globe mounted across Library / play routes so Play and
+            Map return with a fully painted planet instead of remounting. */}
+        <Suspense fallback={null}>
+          <GlobeExperience />
+        </Suspense>
         {children}
       </main>
     </div>

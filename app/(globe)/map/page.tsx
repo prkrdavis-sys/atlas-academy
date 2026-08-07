@@ -1,6 +1,6 @@
 /**
- * The map UI is rendered by the persistent `(globe)` layout (see
- * `GlobeExperience`), so the globe canvas survives navigation to /.
+ * The map UI is rendered by the persistent `GlobeExperience` in `AppShell`,
+ * so the globe canvas survives navigation away from and back to this route.
  */
 export default function MapPage() {
   return null;

@@ -48,8 +48,8 @@ const MAP_VIEW_INFO: Record<MapView, { icon: string; label: string }> = {
 const FLOATING_PANEL_CLASS =
   "pointer-events-auto rounded-xl border border-slate-200/60 bg-white/85 shadow-sm backdrop-blur dark:border-slate-700/60 dark:bg-slate-900/75";
 
-// The globe stays mounted in the persistent (globe) layout, so this chunk
-// loads exactly once for both the home hero and the map view.
+// The globe stays mounted in AppShell across Library / play routes, so this
+// chunk loads once and the WebGL canvas parks (instead of remounting) while away.
 const InteractiveGlobe = dynamic(() => import("@/components/globe/InteractiveGlobe"), {
   ssr: false,
 });
@@ -130,8 +130,10 @@ function MapViewToggle({
 /**
  * The single page behind both `/` and `/map`: one persistent full-screen
  * globe, with the home hero and the map view as two panes of a horizontal
- * slider. Navigating between the routes slides the UI as if it were one page
- * while the planet underneath never remounts or moves.
+ * slider. The canvas is mounted from AppShell so it also survives Library and
+ * play routes (hidden + frameloop parked). Navigating between home and map
+ * slides the UI as if it were one page while the planet underneath never
+ * remounts or moves.
  */
 export function GlobeExperience() {
   const pathname = usePathname();
@@ -139,6 +141,7 @@ export function GlobeExperience() {
   const router = useRouter();
   const { activeProfile, hydrated, refresh } = useProfiles();
   const profile = hydrated ? activeProfile : null;
+  const isGlobeRoute = pathname === "/" || isMapRoute(pathname);
   const mode: "home" | "map" = isMapRoute(pathname) ? "map" : "home";
 
   const initialPlaceCode = searchParams.get("place");
@@ -159,6 +162,7 @@ export function GlobeExperience() {
   const { enabled: showMapProgress } = useShowMapProgress();
   const { isDark, ready: themeReady } = useIsDark();
   const globeHandleRef = useRef<GlobeHandle | null>(null);
+  const wasGlobeRouteRef = useRef(isGlobeRoute);
   const heroRef = useRef<HTMLElement>(null);
   const { scope } = useGameScope({ layoutAnchorRef: heroRef });
 
@@ -191,6 +195,22 @@ export function GlobeExperience() {
       setSelectedGlobePlace(null);
     }
   }, [mode]);
+
+  // Returning from Library / play: settle the camera on the default framing so
+  // Play and Map open on the fully loaded planet at its resting spot.
+  useEffect(() => {
+    const wasGlobeRoute = wasGlobeRouteRef.current;
+    wasGlobeRouteRef.current = isGlobeRoute;
+    if (wasGlobeRoute || !isGlobeRoute) return;
+
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setStatsOpen(false);
+    setSelectedGlobePlace(null);
+    const frame = requestAnimationFrame(() => {
+      globeHandleRef.current?.resetView();
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [isGlobeRoute]);
 
   const requestedView = paramView ?? storedView;
   // Devices without WebGL fall back to the 2D USA map, with a small notice.
@@ -252,9 +272,10 @@ export function GlobeExperience() {
   );
 
   // The globe canvas stays mounted at all times; it only hides (and parks its
-  // frameloop) while a 2D map view covers the page. Hiding is delayed so the
-  // planet stays visible under the pane while it slides in.
-  const is2dView = mode === "map" && view === "usa";
+  // frameloop) while away from Play/Map or while a 2D map view covers the page.
+  // Hiding for 2D is delayed so the planet stays visible under the pane while
+  // it slides in.
+  const is2dView = isGlobeRoute && mode === "map" && view === "usa";
   const [globeLayerActive, setGlobeLayerActive] = useState(true);
   useEffect(() => {
     if (!is2dView) {
@@ -265,6 +286,8 @@ export function GlobeExperience() {
     const timer = setTimeout(() => setGlobeLayerActive(false), SLIDE_DURATION_MS + 80);
     return () => clearTimeout(timer);
   }, [is2dView]);
+
+  const globeActive = isGlobeRoute && globeLayerActive;
 
   // Panels + stats follow the selection: world summary by default, USA
   // regions while a state is selected.
@@ -294,153 +317,157 @@ export function GlobeExperience() {
         difficulty={mapDifficulty}
         usMode={usMode}
         mode={mode}
-        active={globeLayerActive}
-        selectedCode={mode === "map" ? activeGlobeSelection : null}
-        initialPlaceCode={mode === "map" ? resolvedInitialPlace : null}
+        active={globeActive}
+        selectedCode={isGlobeRoute && mode === "map" ? activeGlobeSelection : null}
+        initialPlaceCode={isGlobeRoute && mode === "map" ? resolvedInitialPlace : null}
         onSelectPlace={handleGlobeSelectPlace}
         handleRef={globeHandleRef}
         className="fixed inset-0 z-0"
       />
 
-      {/* Two panes of one page: [map | home]. The globe behind never moves. */}
-      <div className="pointer-events-none relative z-10 min-h-0 w-full flex-1 overflow-hidden">
-        <div
-          className={cn(
-            "flex h-full w-full transition-transform duration-[420ms] ease-[cubic-bezier(0.32,0.72,0,1)] motion-reduce:transition-none",
-            mode === "home" ? "-translate-x-full" : "translate-x-0",
-          )}
-        >
-          {/* ---- Map pane ---- */}
-          <section
-            aria-label="Progress map"
-            inert={mode !== "map" || undefined}
-            className="pointer-events-none relative h-full w-full shrink-0"
-          >
-            {is2dView && view ? (
-              <div className="pointer-events-auto absolute inset-0 overflow-y-auto overscroll-contain bg-[var(--background)] px-4 pb-[calc(6.5rem+env(safe-area-inset-bottom))] pt-[4.5rem] sm:pb-8 sm:pt-16">
-                {showGlobeFallbackNotice ? (
-                  <div
-                    role="status"
-                    className="mb-4 flex items-start justify-between gap-3 rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm font-medium text-sky-900 dark:border-sky-800 dark:bg-sky-950/40 dark:text-sky-200"
-                  >
-                    <span>
-                      The 3D globe needs WebGL, which this device doesn&apos;t support — showing
-                      the 2D USA map instead.
-                    </span>
-                    <button
-                      type="button"
-                      aria-label="Dismiss"
-                      className="shrink-0 rounded-lg px-2 py-0.5 font-bold hover:bg-sky-100 dark:hover:bg-sky-900/60"
-                      onClick={() => setShowGlobeFallbackNotice(false)}
-                    >
-                      ✕
-                    </button>
-                  </div>
-                ) : null}
-                <InteractiveProgressMap
-                  key={view}
-                  scope={view as GameScope}
-                  initialPlaceCode={initialPlaceCode}
-                  profile={profile}
-                  difficulty={mapDifficulty}
-                  onOpenStats={openStats}
-                />
-              </div>
-            ) : null}
-
-            {/* Map surface nav + progress-track filter. One wrapping row so the
-                chips don't collide on narrow phones; corners stay clear on wider screens. */}
-            <div className="pointer-events-auto absolute inset-x-3 top-3 z-10 flex flex-wrap items-start justify-between gap-2">
-              <MapViewToggle view={view ?? "globe"} views={availableViews} onSelect={setView} />
-              <div className="ml-auto flex flex-col items-end gap-2">
-                {showMapProgress ? (
-                  <MapProgressDifficultySelector
-                    value={mapDifficulty}
-                    onChange={setMapDifficulty}
-                    className={cn(FLOATING_PANEL_CLASS, "rounded-2xl")}
-                  />
-                ) : null}
-                {!is2dView ? (
-                  <MapZoomControls
-                    variant="overlay"
-                    className="flex-col"
-                    onZoomIn={() => globeHandleRef.current?.zoomIn()}
-                    onZoomOut={() => globeHandleRef.current?.zoomOut()}
-                    onReset={() => globeHandleRef.current?.resetView()}
-                  />
-                ) : null}
-              </div>
-            </div>
-
-            {!is2dView ? (
-              <>
-                <p className="pointer-events-none absolute bottom-4 left-4 z-10 hidden max-w-44 text-xs font-medium leading-relaxed text-slate-600 drop-shadow-sm dark:text-slate-400 lg:block">
-                  {showMapProgress
-                    ? "Drag to spin · scroll or pinch to zoom · tap a country or state for progress"
-                    : "Drag to spin · scroll or pinch to zoom · tap a country or state"}
-                </p>
-
-                {themeReady ? (
-                  <div className="pointer-events-none absolute inset-x-0 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-10 flex items-end justify-center gap-2 px-4 sm:bottom-4">
-                    {showMapProgress ? (
+      {isGlobeRoute ? (
+        <>
+          {/* Two panes of one page: [map | home]. The globe behind never moves. */}
+          <div className="pointer-events-none relative z-10 min-h-0 w-full flex-1 overflow-hidden">
+            <div
+              className={cn(
+                "flex h-full w-full transition-transform duration-[420ms] ease-[cubic-bezier(0.32,0.72,0,1)] motion-reduce:transition-none",
+                mode === "home" ? "-translate-x-full" : "translate-x-0",
+              )}
+            >
+              {/* ---- Map pane ---- */}
+              <section
+                aria-label="Progress map"
+                inert={mode !== "map" || undefined}
+                className="pointer-events-none relative h-full w-full shrink-0"
+              >
+                {is2dView && view ? (
+                  <div className="pointer-events-auto absolute inset-0 overflow-y-auto overscroll-contain bg-[var(--background)] px-4 pb-[calc(6.5rem+env(safe-area-inset-bottom))] pt-[4.5rem] sm:pb-8 sm:pt-16">
+                    {showGlobeFallbackNotice ? (
                       <div
-                        className={cn(
-                          FLOATING_PANEL_CLASS,
-                          "flex items-center px-2.5 py-1.5",
-                        )}
+                        role="status"
+                        className="mb-4 flex items-start justify-between gap-3 rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm font-medium text-sky-900 dark:border-sky-800 dark:bg-sky-950/40 dark:text-sky-200"
                       >
-                        <MapProgressFillLegend isDark={isDark} difficulty={mapDifficulty} />
+                        <span>
+                          The 3D globe needs WebGL, which this device doesn&apos;t support — showing
+                          the 2D USA map instead.
+                        </span>
+                        <button
+                          type="button"
+                          aria-label="Dismiss"
+                          className="shrink-0 rounded-lg px-2 py-0.5 font-bold hover:bg-sky-100 dark:hover:bg-sky-900/60"
+                          onClick={() => setShowGlobeFallbackNotice(false)}
+                        >
+                          ✕
+                        </button>
                       </div>
                     ) : null}
-                    <div className={cn(FLOATING_PANEL_CLASS, "flex items-center")}>
-                      <MapStatsButton onClick={openStats} className="size-8 rounded-xl" />
-                    </div>
+                    <InteractiveProgressMap
+                      key={view}
+                      scope={view as GameScope}
+                      initialPlaceCode={initialPlaceCode}
+                      profile={profile}
+                      difficulty={mapDifficulty}
+                      onOpenStats={openStats}
+                    />
                   </div>
                 ) : null}
-              </>
-            ) : null}
-          </section>
 
-          {/* ---- Home pane ---- */}
-          {/* Default hero fills the first viewport; explore scrolls in below. */}
-          <section
-            aria-label="Play"
-            inert={mode !== "home" || undefined}
-            className="pointer-events-auto relative h-full w-full shrink-0 overflow-y-auto overscroll-contain px-4 pb-[calc(6.5rem+env(safe-area-inset-bottom))] pt-5 sm:pb-8 sm:pt-8"
-          >
-            <HomePlayHero
-              profile={profile}
-              scope={scope}
-              onRefresh={refresh}
-              streak={globalStreak}
-              todayBest={todayBest}
-              storedTodayBest={storedTodayBest}
-              dailyRun={dailyRun}
-              dailyCompletedToday={dailyCompletedToday}
-              globeHandleRef={globeHandleRef}
-              heroRef={heroRef}
-            />
-            <HomeExploreSection
-              profile={profile}
-              scope={scope}
-              streak={globalStreak}
-              todayBest={todayBest}
-              dailyRun={dailyRun}
-              dailyCompletedToday={dailyCompletedToday}
-              active={mode === "home"}
-              onRefresh={refresh}
-            />
-          </section>
-        </div>
-      </div>
+                {/* Map surface nav + progress-track filter. One wrapping row so the
+                    chips don't collide on narrow phones; corners stay clear on wider screens. */}
+                <div className="pointer-events-auto absolute inset-x-3 top-3 z-10 flex flex-wrap items-start justify-between gap-2">
+                  <MapViewToggle view={view ?? "globe"} views={availableViews} onSelect={setView} />
+                  <div className="ml-auto flex flex-col items-end gap-2">
+                    {showMapProgress ? (
+                      <MapProgressDifficultySelector
+                        value={mapDifficulty}
+                        onChange={setMapDifficulty}
+                        className={cn(FLOATING_PANEL_CLASS, "rounded-2xl")}
+                      />
+                    ) : null}
+                    {!is2dView ? (
+                      <MapZoomControls
+                        variant="overlay"
+                        className="flex-col"
+                        onZoomIn={() => globeHandleRef.current?.zoomIn()}
+                        onZoomOut={() => globeHandleRef.current?.zoomOut()}
+                        onReset={() => globeHandleRef.current?.resetView()}
+                      />
+                    ) : null}
+                  </div>
+                </div>
 
-      <MapStatsSheet
-        open={statsOpen && mode === "map"}
-        onClose={closeStats}
-        scope={panelScope}
-        profile={profile}
-        difficulty={mapDifficulty}
-      />
+                {!is2dView ? (
+                  <>
+                    <p className="pointer-events-none absolute bottom-4 left-4 z-10 hidden max-w-44 text-xs font-medium leading-relaxed text-slate-600 drop-shadow-sm dark:text-slate-400 lg:block">
+                      {showMapProgress
+                        ? "Drag to spin · scroll or pinch to zoom · tap a country or state for progress"
+                        : "Drag to spin · scroll or pinch to zoom · tap a country or state"}
+                    </p>
+
+                    {themeReady ? (
+                      <div className="pointer-events-none absolute inset-x-0 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-10 flex items-end justify-center gap-2 px-4 sm:bottom-4">
+                        {showMapProgress ? (
+                          <div
+                            className={cn(
+                              FLOATING_PANEL_CLASS,
+                              "flex items-center px-2.5 py-1.5",
+                            )}
+                          >
+                            <MapProgressFillLegend isDark={isDark} difficulty={mapDifficulty} />
+                          </div>
+                        ) : null}
+                        <div className={cn(FLOATING_PANEL_CLASS, "flex items-center")}>
+                          <MapStatsButton onClick={openStats} className="size-8 rounded-xl" />
+                        </div>
+                      </div>
+                    ) : null}
+                  </>
+                ) : null}
+              </section>
+
+              {/* ---- Home pane ---- */}
+              {/* Default hero fills the first viewport; explore scrolls in below. */}
+              <section
+                aria-label="Play"
+                inert={mode !== "home" || undefined}
+                className="pointer-events-auto relative h-full w-full shrink-0 overflow-y-auto overscroll-contain px-4 pb-[calc(6.5rem+env(safe-area-inset-bottom))] pt-5 sm:pb-8 sm:pt-8"
+              >
+                <HomePlayHero
+                  profile={profile}
+                  scope={scope}
+                  onRefresh={refresh}
+                  streak={globalStreak}
+                  todayBest={todayBest}
+                  storedTodayBest={storedTodayBest}
+                  dailyRun={dailyRun}
+                  dailyCompletedToday={dailyCompletedToday}
+                  globeHandleRef={globeHandleRef}
+                  heroRef={heroRef}
+                />
+                <HomeExploreSection
+                  profile={profile}
+                  scope={scope}
+                  streak={globalStreak}
+                  todayBest={todayBest}
+                  dailyRun={dailyRun}
+                  dailyCompletedToday={dailyCompletedToday}
+                  active={mode === "home"}
+                  onRefresh={refresh}
+                />
+              </section>
+            </div>
+          </div>
+
+          <MapStatsSheet
+            open={statsOpen && mode === "map"}
+            onClose={closeStats}
+            scope={panelScope}
+            profile={profile}
+            difficulty={mapDifficulty}
+          />
+        </>
+      ) : null}
     </>
   );
 }
