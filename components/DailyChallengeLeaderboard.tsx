@@ -8,12 +8,14 @@ import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/components/AuthProvider";
 import { useProfiles } from "@/components/ProfileProvider";
 import {
+  ensureDailyChallengeResultSubmitted,
   formatDailyElapsedTime,
   loadDailyChallengeLeaderboard,
   loadDailyChallengeSnapshot,
   type DailyChallengeLeaderboardEntry,
 } from "@/lib/daily-challenge";
 import {
+  buildDailyChallengeSnapshot,
   dailyDateKeyToDate,
   getDailyCalendarParts,
   getDailyDateKey,
@@ -157,6 +159,7 @@ function DailyChallengeLeaderboardContent({ profile }: { profile: Profile }) {
   const [snapshot, setSnapshot] = useState<DailyChallengeSnapshot | null>(null);
   const [loadedDateKey, setLoadedDateKey] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [submitRetryKey, setSubmitRetryKey] = useState(0);
 
   const viewParts = getDailyCalendarParts(dailyDateKeyToDate(viewMonthKey));
   const [viewYear, viewMonth] = viewMonthKey.split("-").map(Number);
@@ -170,28 +173,53 @@ function DailyChallengeLeaderboardContent({ profile }: { profile: Profile }) {
     let cancelled = false;
     if (!user || isGuest || !selectedDateCompleted) return;
 
-    void Promise.all([
-      loadDailyChallengeLeaderboard(selectedDateKey, profile.id),
-      loadDailyChallengeSnapshot(selectedDateKey, profile.id),
-    ])
-      .then(([nextEntries, nextSnapshot]) => {
+    async function loadBoard() {
+      let syncError: string | null = null;
+
+      if (playerResult) {
+        try {
+          // Local completion unlocks the page; cloud submit can still be missing if
+          // an earlier attempt failed. Re-submit before reading so the board is live.
+          await ensureDailyChallengeResultSubmitted(profile, playerResult);
+        } catch {
+          syncError = "We couldn't sync your score to the global leaderboard yet.";
+        }
+      }
+
+      try {
+        const [nextEntries, nextSnapshot] = await Promise.all([
+          loadDailyChallengeLeaderboard(selectedDateKey, profile.id),
+          loadDailyChallengeSnapshot(selectedDateKey, profile.id),
+        ]);
         if (cancelled) return;
         setEntries(nextEntries);
-        setSnapshot(nextSnapshot);
+        setSnapshot(nextSnapshot ?? buildDailyChallengeSnapshot(selectedDateKey));
         setLoadedDateKey(selectedDateKey);
-        setError(null);
-      })
-      .catch(() => {
+        setError(nextEntries.length ? null : syncError);
+      } catch {
         if (!cancelled) {
-          setError("The leaderboard could not be loaded right now.");
+          setError(syncError ?? "The leaderboard could not be loaded right now.");
           setLoadedDateKey(selectedDateKey);
+          setSnapshot(buildDailyChallengeSnapshot(selectedDateKey));
+          setEntries([]);
         }
-      });
+      }
+    }
+
+    void loadBoard();
 
     return () => {
       cancelled = true;
     };
-  }, [isGuest, profile.id, selectedDateCompleted, selectedDateKey, user]);
+  }, [
+    isGuest,
+    playerResult,
+    profile,
+    selectedDateCompleted,
+    selectedDateKey,
+    submitRetryKey,
+    user,
+  ]);
 
   function moveMonth(direction: -1 | 1) {
     const nextMonthKey = offsetDailyDateKey(
@@ -333,7 +361,52 @@ function DailyChallengeLeaderboardContent({ profile }: { profile: Profile }) {
         ) : loadedDateKey !== selectedDateKey ? (
           <p className="mt-6 text-center text-sm font-semibold text-slate-500">Loading leaderboard…</p>
         ) : error ? (
-          <p role="alert" className="mt-6 text-center text-sm font-semibold text-rose-600 dark:text-rose-300">{error}</p>
+          <div className="mt-6 space-y-3 text-center">
+            <p role="alert" className="text-sm font-semibold text-rose-600 dark:text-rose-300">{error}</p>
+            {playerResult ? (
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => {
+                  setLoadedDateKey(null);
+                  setSubmitRetryKey((key) => key + 1);
+                }}
+              >
+                Sync my score
+              </Button>
+            ) : null}
+            {visibleSnapshot ? (
+              <div className="mt-6 text-left">
+                <h3 className="font-display text-xl font-black">Questions included</h3>
+                <ol className="mt-3 space-y-2">
+                  {visibleSnapshot.questions.map((question, index) => (
+                    <li
+                      key={question.id}
+                      className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-700 dark:bg-slate-800/70"
+                    >
+                      <p className="text-xs font-black uppercase tracking-[0.12em] text-slate-400">
+                        Question {index + 1}
+                      </p>
+                      <p className="mt-1 text-xs font-bold text-slate-500 dark:text-slate-400">
+                        {formatQuestionType(question.mode)}
+                      </p>
+                      <p className="mt-1 font-semibold text-slate-800 dark:text-slate-100">{question.prompt}</p>
+                      <p className="mt-1 text-sm font-bold text-emerald-700 dark:text-emerald-300">
+                        Answer: {question.correctAnswer}
+                      </p>
+                      {playerResult?.answers?.[index] ? (
+                        <p className="mt-1 text-sm font-semibold text-slate-600 dark:text-slate-300">
+                          Your answer: {playerResult.answers[index].skipped ? "Skipped" : playerResult.answers[index].answer}
+                          {" · "}
+                          {playerResult.answers[index].correct ? "Correct" : "Incorrect"}
+                        </p>
+                      ) : null}
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            ) : null}
+          </div>
         ) : (
           <div className="mt-5 space-y-6">
             <div>
@@ -353,9 +426,34 @@ function DailyChallengeLeaderboardContent({ profile }: { profile: Profile }) {
                   ))}
                 </ol>
               ) : (
-                <p className="mt-3 rounded-2xl bg-slate-100 p-4 text-sm font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
-                  Your completion is recorded, but the leaderboard is still warming up.
-                </p>
+                <div className="mt-3 space-y-3 rounded-2xl bg-slate-100 p-4 dark:bg-slate-800">
+                  <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">
+                    {playerResult
+                      ? "Your score is saved on this device, but it has not reached the global board yet."
+                      : "No global scores are available for this date yet."}
+                  </p>
+                  {playerResult ? (
+                    <>
+                      <div className="rounded-2xl border-2 border-amber-300 bg-amber-50 px-3 py-3 dark:border-amber-700 dark:bg-amber-950/40">
+                        <p className="font-bold text-slate-900 dark:text-slate-100">{profile.name} (you)</p>
+                        <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                          {playerResult.correctAnswers}/{playerResult.questionCount} correct ·{" "}
+                          {formatDailyElapsedTime(playerResult.elapsedCentiseconds)}
+                        </p>
+                      </div>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => {
+                          setLoadedDateKey(null);
+                          setSubmitRetryKey((key) => key + 1);
+                        }}
+                      >
+                        Sync my score
+                      </Button>
+                    </>
+                  ) : null}
+                </div>
               )}
             </div>
             {visibleSnapshot ? (

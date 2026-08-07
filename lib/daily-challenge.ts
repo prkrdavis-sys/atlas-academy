@@ -1,7 +1,14 @@
+import { saveCloudProfile } from "@/lib/cloud-profiles";
+import {
+  buildDailyChallengeSnapshot,
+  DAILY_CHALLENGE_CONTENT_VERSION,
+  getDailySeedForDateKey,
+} from "@/lib/game-engine";
 import { createClient } from "@/lib/supabase/client";
 import type {
   DailyChallengeSnapshot,
   DailyChallengeLocalResult,
+  Profile,
   Question,
 } from "@/lib/types";
 
@@ -73,6 +80,15 @@ function normalizeLeaderboardEntry(row: DailyChallengeResultRow): DailyChallenge
   };
 }
 
+function resolveSubmitQuestions(
+  result: DailyChallengeLocalResult,
+  questions?: Question[],
+): Question[] {
+  if (questions?.length) return questions;
+  if (result.questions?.length) return result.questions;
+  return buildDailyChallengeSnapshot(result.dateKey).questions;
+}
+
 export async function loadDailyChallengeSnapshot(
   dateKey: string,
   profileId: string,
@@ -101,16 +117,19 @@ export async function loadDailyChallengeLeaderboard(
 export async function submitDailyChallengeResult(
   profileId: string,
   result: DailyChallengeLocalResult,
-  seed: number,
-  contentVersion: string,
+  seed = getDailySeedForDateKey(result.dateKey),
+  contentVersion = DAILY_CHALLENGE_CONTENT_VERSION,
+  questions?: Question[],
 ): Promise<DailyChallengeLeaderboardEntry | null> {
-  if (!result.questions?.length) return null;
+  const questionSpecs = resolveSubmitQuestions(result, questions);
+  if (!questionSpecs.length) return null;
+
   const { data, error } = await supabase.rpc("submit_daily_challenge_result", {
     p_profile_id: profileId,
     p_challenge_date: result.dateKey,
     p_seed: seed,
     p_content_version: contentVersion,
-    p_question_specs: result.questions,
+    p_question_specs: questionSpecs,
     p_question_count: result.questionCount,
     p_correct_count: result.correctAnswers,
     p_skipped_count: result.skippedAnswers,
@@ -119,6 +138,34 @@ export async function submitDailyChallengeResult(
   if (error) throw error;
   const row = Array.isArray(data) ? data[0] : data;
   return row ? normalizeLeaderboardEntry(row as DailyChallengeResultRow) : null;
+}
+
+/**
+ * Make sure the active cloud profile exists, then submit the local first-attempt
+ * result. Used after gameplay and again when opening the leaderboard so players
+ * who completed before a failed submit still appear.
+ */
+export async function ensureDailyChallengeResultSubmitted(
+  profile: Profile,
+  result: DailyChallengeLocalResult,
+  questions?: Question[],
+): Promise<DailyChallengeLeaderboardEntry | null> {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  const userId = session?.user?.id;
+  if (!userId) {
+    throw new Error("Sign in to submit your daily challenge result.");
+  }
+
+  await saveCloudProfile(userId, profile);
+  return submitDailyChallengeResult(
+    profile.id,
+    result,
+    getDailySeedForDateKey(result.dateKey),
+    DAILY_CHALLENGE_CONTENT_VERSION,
+    questions,
+  );
 }
 
 export function loadDailyTimerSession(dateKey: string): DailyTimerSession | null {
@@ -159,4 +206,3 @@ export function formatDailyElapsedTime(
   const base = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
   return showCentiseconds ? `${base}.${String(centiseconds).padStart(2, "0")}` : base;
 }
-

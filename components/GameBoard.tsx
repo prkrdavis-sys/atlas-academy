@@ -24,17 +24,16 @@ import { useProfiles, useRequiredProfile } from "@/components/ProfileProvider";
 import { getCountryName, getCountryByCode } from "@/lib/countries";
 import {
   DAILY_COUNTING_SESSION_KEY,
-  DAILY_CHALLENGE_CONTENT_VERSION,
   GameEngine,
   formatDailyDateKey,
   getDailyDateKey,
 } from "@/lib/game-engine";
 import {
   clearDailyTimerSession,
+  ensureDailyChallengeResultSubmitted,
   formatDailyElapsedTime,
   loadDailyTimerSession,
   saveDailyTimerSession,
-  submitDailyChallengeResult,
 } from "@/lib/daily-challenge";
 import {
   checkAchievements,
@@ -275,12 +274,11 @@ export function GameBoard({
       sessionStorage.removeItem(DAILY_COUNTING_SESSION_KEY);
     }
     refresh();
-    if (user && dailyQuestionsForResult.length) {
-      void submitDailyChallengeResult(
-        activeProfile.id,
+    if (user) {
+      void ensureDailyChallengeResultSubmitted(
+        activeProfile,
         result,
-        seed ?? 0,
-        DAILY_CHALLENGE_CONTENT_VERSION,
+        dailyQuestionsForResult,
       ).catch(() => undefined);
     }
   }

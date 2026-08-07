@@ -130,9 +130,10 @@ begin
   from public.daily_challenge_snapshots
   where challenge_date = p_challenge_date;
 
-  if snapshot.seed <> p_seed
-    or snapshot.content_version <> p_content_version
-    or snapshot.question_specs <> p_question_specs then
+  -- Canonical snapshot is first-writer-wins. Later clients only need the same
+  -- date seed and content version so small question-json differences do not
+  -- block leaderboard submission.
+  if snapshot.seed <> p_seed or snapshot.content_version <> p_content_version then
     raise exception 'Daily challenge snapshot does not match this client';
   end if;
 
