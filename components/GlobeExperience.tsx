@@ -73,11 +73,24 @@ type SwipeGesture = {
   startX: number;
   startY: number;
   axis: SwipeAxis;
+  captureTarget: HTMLElement | null;
 };
 
+/**
+ * Taps on real controls must not start a pane-swipe. Capturing the pointer on
+ * those targets (or suppressing the following click) breaks Next.js <Link>
+ * navigation — including Daily Challenge and Leaderboard on the home pane.
+ */
 function isSwipeExcludedTarget(target: EventTarget | null): boolean {
   if (!(target instanceof Element)) return false;
   if (target.closest("[data-tab-swipe-ignore]")) return true;
+  if (
+    target.closest(
+      'a[href], button, input, textarea, select, label, summary, [role="button"], [role="link"], [contenteditable="true"]',
+    )
+  ) {
+    return true;
+  }
 
   let current: Element | null = target;
   while (current) {
@@ -243,16 +256,14 @@ export function GlobeExperience({ children }: { children?: ReactNode }) {
     [libraryHref],
   );
 
-  const releaseSwipePointer = useCallback(
-    (event: ReactPointerEvent<HTMLElement>) => {
-      try {
-        event.currentTarget.releasePointerCapture(event.pointerId);
-      } catch {
-        // The pointer may already have been released or cancelled.
-      }
-    },
-    [],
-  );
+  const releaseSwipePointer = useCallback((pointerId: number, target: HTMLElement | null) => {
+    if (!target) return;
+    try {
+      target.releasePointerCapture(pointerId);
+    } catch {
+      // The pointer may already have been released or cancelled.
+    }
+  }, []);
 
   const handleSwipePointerDown = useCallback<PointerEventHandler<HTMLElement>>(
     (event) => {
@@ -265,14 +276,11 @@ export function GlobeExperience({ children }: { children?: ReactNode }) {
         startX: event.clientX,
         startY: event.clientY,
         axis: null,
+        // Capture only after the gesture locks horizontal so plain taps on
+        // links/buttons still receive their click / navigation.
+        captureTarget: event.currentTarget,
       };
       suppressSwipeClickRef.current = false;
-
-      try {
-        event.currentTarget.setPointerCapture(event.pointerId);
-      } catch {
-        // Pointer capture is an enhancement; the gesture still works without it.
-      }
     },
     [isGlobeExperienceRoute],
   );
@@ -290,6 +298,11 @@ export function GlobeExperience({ children }: { children?: ReactNode }) {
         gesture.axis = Math.abs(deltaX) > Math.abs(deltaY) ? "horizontal" : "vertical";
         if (gesture.axis === "vertical") return;
         setSwipeDragging(true);
+        try {
+          gesture.captureTarget?.setPointerCapture(event.pointerId);
+        } catch {
+          // Pointer capture is an enhancement; the gesture still works without it.
+        }
       }
 
       if (gesture.axis !== "horizontal") return;
@@ -313,7 +326,7 @@ export function GlobeExperience({ children }: { children?: ReactNode }) {
       if (!gesture || gesture.pointerId !== event.pointerId) return;
 
       swipeGestureRef.current = null;
-      releaseSwipePointer(event);
+      releaseSwipePointer(event.pointerId, gesture.captureTarget);
 
       const deltaX = event.clientX - gesture.startX;
       if (cancelled || gesture.axis !== "horizontal") {

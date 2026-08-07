@@ -355,7 +355,7 @@ function ShortcutButton({
   label: string;
 }) {
   return (
-    <Link href={href} className={shortcutClassName}>
+    <Link href={href} data-tab-swipe-ignore className={shortcutClassName}>
       <span aria-hidden className="text-xl">
         {icon}
       </span>

@@ -198,14 +198,15 @@ export function HomePlayHero({
               </h1>
             </header>
 
+            <GlobeDragZone href={GLOBE_MAP_HREF} globeHandleRef={globeHandleRef} />
+
+            {/* After the drag zone so the badge stays above the globe hit target. */}
             <DailyChallengeBadge
               scope={scope}
               dailyRun={dailyRun}
               playedToday={dailyPlayedToday}
               completedToday={dailyCompletedToday}
             />
-
-            <GlobeDragZone href={GLOBE_MAP_HREF} globeHandleRef={globeHandleRef} />
 
             {/* Lower 40%: overflow visible so Play glow/scale aren't clipped. */}
             <div className="mx-auto flex h-[40%] min-h-0 w-full max-w-xl shrink-0 flex-col justify-end gap-2 overflow-visible px-2 pt-8 sm:gap-2.5 sm:px-3 sm:pt-10">
@@ -439,8 +440,9 @@ function DailyChallengeBadge({
       href={scopedHref("/play/daily-challenge", scope, { autostart: "1" })}
       aria-label={`Daily challenge. ${statusLabel} Daily run: ${dailyRun} ${dailyRun === 1 ? "day" : "days"}.`}
       title={`Daily challenge. ${statusLabel}`}
+      data-tab-swipe-ignore
       className={cn(
-        "daily-challenge-badge absolute right-2 top-[5.5rem] z-20 flex size-[4.75rem] items-center justify-center rounded-full border-2 p-1.5 transition-transform duration-200 hover:scale-105 focus-visible:scale-105 active:scale-95 sm:right-4 sm:top-24 sm:size-24 sm:p-2",
+        "daily-challenge-badge absolute right-2 top-[5.5rem] z-30 flex size-[4.75rem] items-center justify-center rounded-full border-2 p-1.5 transition-transform duration-200 hover:scale-105 focus-visible:scale-105 active:scale-95 sm:right-4 sm:top-24 sm:size-24 sm:p-2",
         completedToday
           ? "daily-challenge-badge-completed"
           : "daily-challenge-badge-incomplete",
