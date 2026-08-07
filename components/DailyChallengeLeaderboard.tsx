@@ -148,6 +148,26 @@ function CrownIcon({ className }: { className?: string }) {
   );
 }
 
+function CalendarGlyph({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+      className={className}
+    >
+      <rect x="3" y="5" width="18" height="16" rx="2" />
+      <path d="M3 10h18" />
+      <path d="M8 3v4" />
+      <path d="M16 3v4" />
+    </svg>
+  );
+}
+
 function LeaderboardRow({
   entry,
   showCentiseconds,
@@ -263,6 +283,7 @@ function DailyChallengeLeaderboardContent({ profile }: { profile: Profile }) {
   );
   const [selectedDateKey, setSelectedDateKey] = useState(initialDateKey);
   const [viewMonthKey, setViewMonthKey] = useState(initialDateKey.slice(0, 7) + "-01");
+  const [calendarOpen, setCalendarOpen] = useState(false);
   const [entries, setEntries] = useState<DailyChallengeLeaderboardEntry[]>([]);
   const [snapshot, setSnapshot] = useState<DailyChallengeSnapshot | null>(null);
   const [loadedDateKey, setLoadedDateKey] = useState<string | null>(null);
@@ -343,6 +364,20 @@ function DailyChallengeLeaderboardContent({ profile }: { profile: Profile }) {
     setViewMonthKey(`${nextMonthKey.slice(0, 7)}-01`);
   }
 
+  function selectDate(dateKey: string) {
+    setSelectedDateKey(dateKey);
+    setCalendarOpen(false);
+  }
+
+  function toggleCalendar() {
+    setCalendarOpen((open) => {
+      if (!open) {
+        setViewMonthKey(`${selectedDateKey.slice(0, 7)}-01`);
+      }
+      return !open;
+    });
+  }
+
   const currentProfileId = profile.id;
   const visibleEntries = loadedDateKey === selectedDateKey ? entries : [];
   const visibleSnapshot = loadedDateKey === selectedDateKey ? snapshot : null;
@@ -357,73 +392,25 @@ function DailyChallengeLeaderboardContent({ profile }: { profile: Profile }) {
       </header>
 
       <section className="rounded-[1.75rem] border-2 border-slate-200 bg-white/85 p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900/80 sm:p-6">
-        <div className="flex items-center justify-between gap-3">
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => moveMonth(-1)}
-            disabled={!canGoPrevious}
-            aria-label="Previous month"
-          >
-            ←
-          </Button>
-          <h2 className="font-display text-xl font-black">{formatMonth(viewMonthKey)}</h2>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => moveMonth(1)}
-            disabled={!canGoNext}
-            aria-label="Next month"
-          >
-            →
-          </Button>
-        </div>
-        <div className="mt-4 grid grid-cols-7 gap-1.5 text-center text-[10px] font-black uppercase text-slate-400 sm:gap-2 sm:text-xs">
-          {WEEKDAY_LABELS.map((label) => <span key={label}>{label}</span>)}
-        </div>
-        <div className="mt-2 grid grid-cols-7 gap-1.5 sm:gap-2">
-          {Array.from({ length: viewParts.firstWeekday }, (_, index) => (
-            <span key={`empty-${index}`} aria-hidden />
-          ))}
-          {datesInMonth.map((dateKey) => {
-            const isFuture = dateKey > todayKey;
-            const isAvailable = dateKey >= FEATURE_LAUNCH_DATE_KEY && !isFuture;
-            const completed = dateIsCompleted(completedDates, dateKey);
-            const selected = selectedDateKey === dateKey;
-            return (
-              <button
-                key={dateKey}
-                type="button"
-                disabled={!isAvailable}
-                onClick={() => setSelectedDateKey(dateKey)}
-                className={cn(
-                  "relative flex aspect-square min-h-10 items-center justify-center rounded-xl border-2 text-sm font-black transition-colors",
-                  selected
-                    ? "border-teal-500 bg-teal-50 text-teal-800 dark:bg-teal-950/50 dark:text-teal-200"
-                    : "border-transparent text-slate-700 hover:border-slate-200 dark:text-slate-200 dark:hover:border-slate-700",
-                  !isAvailable && "cursor-not-allowed text-slate-300 dark:text-slate-700",
-                  completed && !selected && "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300",
-                )}
-                aria-label={`${dateKey}${completed ? ", completed" : ""}${isFuture ? ", unavailable" : ""}`}
-              >
-                {Number(dateKey.slice(-2))}
-                {completed ? <span className="absolute bottom-1 size-1 rounded-full bg-emerald-500" aria-hidden /> : null}
-              </button>
-            );
-          })}
-        </div>
-        <p className="mt-4 text-xs font-semibold text-slate-500 dark:text-slate-400">
-          Green dates are completed. Locked dates can be played to unlock their results.
-        </p>
-      </section>
-
-      <section className="rounded-[1.75rem] border-2 border-slate-200 bg-white/85 p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900/80 sm:p-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <p className="text-xs font-black uppercase tracking-[0.16em] text-teal-700 dark:text-teal-300">
-              {selectedDateKey === todayKey ? "Today" : "Selected date"}
-            </p>
-            <h2 className="mt-1 font-display text-2xl font-black">{formatDailyDateKey(selectedDateKey)}</h2>
+          <div className="flex min-w-0 items-center gap-2.5">
+            <div className="min-w-0">
+              <p className="text-xs font-black uppercase tracking-[0.16em] text-teal-700 dark:text-teal-300">
+                {selectedDateKey === todayKey ? "Today" : "Selected date"}
+              </p>
+              <h2 className="mt-1 font-display text-2xl font-black">{formatDailyDateKey(selectedDateKey)}</h2>
+            </div>
+            <Button
+              variant="secondary"
+              size="sm"
+              className="mt-4 shrink-0 px-2.5"
+              onClick={toggleCalendar}
+              aria-expanded={calendarOpen}
+              aria-controls="daily-leaderboard-calendar"
+              aria-label={calendarOpen ? "Hide calendar" : "Change day"}
+            >
+              <CalendarGlyph className="size-5" />
+            </Button>
           </div>
           {!selectedDateCompleted ? (
             <Link
@@ -434,6 +421,72 @@ function DailyChallengeLeaderboardContent({ profile }: { profile: Profile }) {
             </Link>
           ) : null}
         </div>
+
+        {calendarOpen ? (
+          <div
+            id="daily-leaderboard-calendar"
+            className="mt-5 rounded-2xl border-2 border-slate-200 bg-slate-50/80 p-3 dark:border-slate-700 dark:bg-slate-800/50 sm:p-4"
+          >
+            <div className="flex items-center justify-between gap-3">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => moveMonth(-1)}
+                disabled={!canGoPrevious}
+                aria-label="Previous month"
+              >
+                ←
+              </Button>
+              <h3 className="font-display text-lg font-black sm:text-xl">{formatMonth(viewMonthKey)}</h3>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => moveMonth(1)}
+                disabled={!canGoNext}
+                aria-label="Next month"
+              >
+                →
+              </Button>
+            </div>
+            <div className="mt-4 grid grid-cols-7 gap-1.5 text-center text-[10px] font-black uppercase text-slate-400 sm:gap-2 sm:text-xs">
+              {WEEKDAY_LABELS.map((label) => <span key={label}>{label}</span>)}
+            </div>
+            <div className="mt-2 grid grid-cols-7 gap-1.5 sm:gap-2">
+              {Array.from({ length: viewParts.firstWeekday }, (_, index) => (
+                <span key={`empty-${index}`} aria-hidden />
+              ))}
+              {datesInMonth.map((dateKey) => {
+                const isFuture = dateKey > todayKey;
+                const isAvailable = dateKey >= FEATURE_LAUNCH_DATE_KEY && !isFuture;
+                const completed = dateIsCompleted(completedDates, dateKey);
+                const selected = selectedDateKey === dateKey;
+                return (
+                  <button
+                    key={dateKey}
+                    type="button"
+                    disabled={!isAvailable}
+                    onClick={() => selectDate(dateKey)}
+                    className={cn(
+                      "relative flex aspect-square min-h-10 items-center justify-center rounded-xl border-2 text-sm font-black transition-colors",
+                      selected
+                        ? "border-teal-500 bg-teal-50 text-teal-800 dark:bg-teal-950/50 dark:text-teal-200"
+                        : "border-transparent text-slate-700 hover:border-slate-200 dark:text-slate-200 dark:hover:border-slate-700",
+                      !isAvailable && "cursor-not-allowed text-slate-300 dark:text-slate-700",
+                      completed && !selected && "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300",
+                    )}
+                    aria-label={`${dateKey}${completed ? ", completed" : ""}${isFuture ? ", unavailable" : ""}`}
+                  >
+                    {Number(dateKey.slice(-2))}
+                    {completed ? <span className="absolute bottom-1 size-1 rounded-full bg-emerald-500" aria-hidden /> : null}
+                  </button>
+                );
+              })}
+            </div>
+            <p className="mt-4 text-xs font-semibold text-slate-500 dark:text-slate-400">
+              Green dates are completed. Locked dates can be played to unlock their results.
+            </p>
+          </div>
+        ) : null}
 
         {!selectedDateCompleted ? (
           <div className="mt-5 rounded-2xl border-2 border-dashed border-slate-300 p-5 text-center dark:border-slate-600">
