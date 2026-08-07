@@ -8,6 +8,7 @@ import { LibraryListScrollRestore } from "@/components/LibraryListScrollRestore"
 import { LibraryPlaceVisual } from "@/components/LibraryPlaceVisual";
 import { LibrarySearch } from "@/components/LibrarySearch";
 import { useProfiles } from "@/components/ProfileProvider";
+import { GLASS_CONTROL_CLASS, GLASS_INSET_CLASS, GLASS_PANEL_CLASS } from "@/lib/glass";
 import {
   buildLibraryDetailHref,
   buildLibraryListHref,
@@ -61,6 +62,8 @@ export function LibraryBrowser({ scope = "world" }: LibraryBrowserProps) {
     const regionParam = searchParams.get("region");
     const sortParam = searchParams.get("sort");
     const nextSort = normalizeLibrarySort(sortParam);
+    // URL and stored preferences are external state synchronized on navigation.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSort(nextSort);
     setStoredLibrarySort(scope, nextSort);
 
@@ -113,7 +116,7 @@ export function LibraryBrowser({ scope = "world" }: LibraryBrowserProps) {
   return (
     <div className="space-y-5 sm:space-y-7">
       <LibraryListScrollRestore scope={scope} filter={filter} sort={sort} />
-      <header className="rounded-[1.75rem] border-2 border-teal-100 bg-white/80 p-5 shadow-sm backdrop-blur dark:border-teal-900/70 dark:bg-slate-900/80 sm:p-8">
+      <header className={`${GLASS_PANEL_CLASS} rounded-[1.75rem] p-5 shadow-sm sm:p-8`}>
         <h1 className="font-display text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 sm:text-4xl">
           {scopeInfo.libraryTitle}
         </h1>
@@ -122,7 +125,11 @@ export function LibraryBrowser({ scope = "world" }: LibraryBrowserProps) {
             ? "Browse flags, outlines, capitals, populations, neighbors, and geographic profiles for all 50 US states."
             : "Browse flags, outlines, capitals, populations, neighbors, and geographic profiles for every country and territory."}
         </p>
-        <div className="mt-4 inline-flex rounded-2xl bg-slate-100 p-1 dark:bg-slate-800" role="group" aria-label="Library scope">
+        <div
+          className={`${GLASS_INSET_CLASS} mt-4 inline-flex rounded-2xl p-1`}
+          role="group"
+          aria-label="Library scope"
+        >
           {GAME_SCOPES.map((option) => {
             const active = scope === option;
             return (
@@ -137,8 +144,8 @@ export function LibraryBrowser({ scope = "world" }: LibraryBrowserProps) {
                 onClick={() => setStoredLibraryScope(option)}
                 className={`min-h-10 rounded-xl px-4 py-2 font-display text-sm font-extrabold transition-all ${
                   active
-                    ? "bg-white text-teal-800 shadow-sm dark:bg-slate-900 dark:text-teal-300"
-                    : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
+                    ? "bg-teal-600 text-white shadow-sm dark:bg-teal-500 dark:text-white"
+                    : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
                 }`}
               >
                 {SCOPE_INFO[option].icon} {SCOPE_INFO[option].shortLabel}
@@ -157,7 +164,10 @@ export function LibraryBrowser({ scope = "world" }: LibraryBrowserProps) {
         onNavigateToDetail={openDetailFromList}
       />
 
-      <section aria-labelledby="library-filter-heading">
+      <section
+        aria-labelledby="library-filter-heading"
+        className={`${GLASS_PANEL_CLASS} rounded-[1.75rem] p-4 sm:p-5`}
+      >
         <div className="mb-3 flex flex-wrap items-end justify-between gap-4">
           <h2 id="library-filter-heading" className="font-display text-lg font-extrabold text-slate-800 dark:text-slate-100">
             Browse by {isUsa ? "region" : "continent"}
@@ -171,7 +181,7 @@ export function LibraryBrowser({ scope = "world" }: LibraryBrowserProps) {
                 id="library-sort"
                 value={sort}
                 onChange={(event) => updateSort(normalizeLibrarySort(event.target.value))}
-                className="min-h-10 rounded-full border-2 border-slate-200 bg-white/80 px-3 py-1.5 text-sm font-bold text-slate-700 focus:border-teal-400 focus:outline-none focus:ring-2 focus:ring-teal-200 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-200 dark:focus:border-teal-500 dark:focus:ring-teal-900/60"
+                className={`${GLASS_CONTROL_CLASS} min-h-10 rounded-full px-3 py-1.5 text-sm font-bold text-slate-700 focus:border-teal-400 focus:outline-none focus:ring-2 focus:ring-teal-200 dark:text-slate-200 dark:focus:border-teal-500 dark:focus:ring-teal-900/60`}
               >
                 {SORT_OPTIONS.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -206,7 +216,7 @@ export function LibraryBrowser({ scope = "world" }: LibraryBrowserProps) {
                 className={`min-h-11 shrink-0 rounded-full border-2 px-4 py-2 text-sm font-bold transition-all active:scale-[0.98] ${
                   active
                     ? "border-teal-600 bg-teal-600 text-white shadow-sm dark:border-teal-400 dark:bg-teal-400 dark:text-slate-950"
-                    : "border-slate-200 bg-white/80 text-slate-700 hover:border-teal-400 hover:text-teal-700 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-300 dark:hover:border-teal-500 dark:hover:text-teal-300"
+                    : `${GLASS_CONTROL_CLASS} text-slate-700 hover:border-teal-400 hover:text-teal-700 dark:text-slate-300 dark:hover:border-teal-500 dark:hover:text-teal-300`
                 }`}
               >
                 {option}
@@ -225,14 +235,16 @@ export function LibraryBrowser({ scope = "world" }: LibraryBrowserProps) {
                 <Link
                   href={buildLibraryDetailHref(country.code, scope, filter, sort)}
                   onClick={openDetailFromList}
-                  className="group relative flex h-full min-h-48 flex-col overflow-hidden rounded-2xl border-2 border-slate-200 bg-white/85 p-3 shadow-sm transition-all hover:-translate-y-0.5 hover:border-teal-400 hover:shadow-md active:translate-y-0 dark:border-slate-700 dark:bg-slate-900/85 dark:hover:border-teal-500 sm:min-h-56 sm:p-4"
+                  className={`${GLASS_PANEL_CLASS} group relative flex h-full min-h-48 flex-col overflow-hidden rounded-2xl p-3 shadow-sm transition-all hover:-translate-y-0.5 hover:border-teal-400 hover:shadow-md active:translate-y-0 dark:hover:border-teal-500 sm:min-h-56 sm:p-4`}
                 >
                   {isCommonlyMissed ? (
                     <span className="absolute right-2 top-2 z-10 rounded-full bg-rose-100 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-rose-800 dark:bg-rose-950/80 dark:text-rose-200">
                       Missed
                     </span>
                   ) : null}
-                  <div className="flex min-h-28 flex-1 items-center justify-center rounded-xl bg-slate-50 p-3 dark:bg-slate-800/70 sm:min-h-32">
+                  <div
+                    className={`${GLASS_INSET_CLASS} flex min-h-28 flex-1 items-center justify-center rounded-xl p-3 sm:min-h-32`}
+                  >
                     <LibraryPlaceVisual country={country} variant="card" />
                   </div>
                   <div className="mt-3 flex items-center gap-2.5">
@@ -255,7 +267,9 @@ export function LibraryBrowser({ scope = "world" }: LibraryBrowserProps) {
           })}
         </ul>
       ) : (
-        <div className="rounded-2xl border-2 border-dashed border-slate-300 p-10 text-center text-sm font-semibold text-slate-500 dark:border-slate-700 dark:text-slate-400">
+        <div
+          className={`${GLASS_PANEL_CLASS} rounded-2xl border-dashed p-10 text-center text-sm font-semibold text-slate-500 dark:text-slate-400`}
+        >
           {isLibraryTerritoriesFilter(filter)
             ? "No territories match this filter."
             : `No places match this ${isUsa ? "region" : "continent"}.`}

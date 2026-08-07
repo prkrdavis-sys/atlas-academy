@@ -21,6 +21,7 @@ import {
   normalizeLibraryFilter,
   normalizeLibrarySort,
 } from "@/lib/library";
+import { GLASS_INSET_CLASS, GLASS_PANEL_CLASS } from "@/lib/glass";
 import { LIBRARY_PLACE_TITLE_ID } from "@/lib/library-scroll";
 import { isStateCode } from "@/lib/scope";
 import type { GameScope } from "@/lib/types";
@@ -58,7 +59,7 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
   const filter = normalizeLibraryFilter(scope, query.region ?? null);
   const sort = normalizeLibrarySort(query.sort ?? null);
   const neighborLinkClass =
-    "inline-flex min-h-11 items-center gap-2 rounded-full border-2 border-slate-200 bg-white/80 px-3 py-2 text-sm font-bold text-slate-700 transition-colors hover:border-teal-400 hover:text-teal-700 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-300 dark:hover:border-teal-500 dark:hover:text-teal-300";
+    `${GLASS_INSET_CLASS} inline-flex min-h-11 items-center gap-2 rounded-full px-3 py-2 text-sm font-bold text-slate-700 transition-colors hover:border-teal-400 hover:text-teal-700 dark:text-slate-300 dark:hover:border-teal-500 dark:hover:text-teal-300`;
 
   const neighbors = country.borders
     .map((borderCode) => getCountryByCode(borderCode))
@@ -72,7 +73,7 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
       <Suspense
         fallback={
           <div className="-mx-4 h-[3.75rem] animate-pulse px-4 py-2 sm:mx-0 sm:px-0">
-            <div className="h-11 rounded-full bg-slate-200/70 dark:bg-slate-800/70" />
+            <div className={`${GLASS_INSET_CLASS} h-11 rounded-full`} />
           </div>
         }
       >
@@ -87,7 +88,7 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
 
       <header
         id="library-place-header"
-        className="overflow-hidden rounded-[1.75rem] border-2 border-teal-100 bg-white/85 shadow-sm backdrop-blur dark:border-teal-900/70 dark:bg-slate-900/85"
+        className={`${GLASS_PANEL_CLASS} overflow-hidden rounded-[1.75rem] shadow-sm`}
       >
         <div className="grid gap-6 p-5 sm:grid-cols-[minmax(0,1fr)_minmax(16rem,0.8fr)] sm:items-center sm:p-8">
           <div className="min-w-0">
@@ -133,18 +134,18 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
               ) : null}
             </div>
             <div className="mt-5 space-y-3">
-              <p className="rounded-2xl bg-teal-50 p-4 text-sm font-semibold leading-relaxed text-teal-900 dark:bg-teal-950/60 dark:text-teal-200">
+              <p className={`${GLASS_INSET_CLASS} rounded-2xl p-4 text-sm font-semibold leading-relaxed text-teal-900 dark:text-teal-200`}>
                 {country.fact}
               </p>
               {country.fact2.trim().length > 0 ? (
-                <p className="rounded-2xl bg-teal-50 p-4 text-sm font-semibold leading-relaxed text-teal-900 dark:bg-teal-950/60 dark:text-teal-200">
+                <p className={`${GLASS_INSET_CLASS} rounded-2xl p-4 text-sm font-semibold leading-relaxed text-teal-900 dark:text-teal-200`}>
                   {country.fact2}
                 </p>
               ) : null}
             </div>
           </div>
 
-          <div className="flex min-h-56 items-center justify-center rounded-2xl bg-slate-50 p-6 dark:bg-slate-800/70 sm:min-h-72">
+          <div className={`${GLASS_INSET_CLASS} flex min-h-56 items-center justify-center rounded-2xl p-6 sm:min-h-72`}>
             <LibraryPlaceVisual
               country={country}
               variant="hero"
@@ -159,7 +160,10 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
 
       <LibraryPlaceMapSection country={country} />
 
-      <section aria-labelledby="neighbors-heading">
+      <section
+        aria-labelledby="neighbors-heading"
+        className={`${GLASS_PANEL_CLASS} rounded-[1.75rem] p-4 sm:p-5`}
+      >
         <h2 id="neighbors-heading" className="mb-3 font-display text-xl font-extrabold text-slate-800 dark:text-slate-100">
           Neighbors
         </h2>
@@ -185,22 +189,25 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
             ))}
           </div>
         ) : (
-          <p className="rounded-2xl border-2 border-dashed border-slate-300 p-5 text-sm font-semibold text-slate-500 dark:border-slate-700 dark:text-slate-400">
+          <p className={`${GLASS_INSET_CLASS} rounded-2xl border-dashed p-5 text-sm font-semibold text-slate-500 dark:text-slate-400`}>
             {formatNoNeighborsMessage(country, scope)}
           </p>
         )}
       </section>
 
       {country.hasCapitalImage ? (
-        <section aria-labelledby="capital-city-heading">
+        <section
+          aria-labelledby="capital-city-heading"
+          className={`${GLASS_PANEL_CLASS} rounded-[1.75rem] p-4 sm:p-5`}
+        >
           <h2 id="capital-city-heading" className="mb-3 font-display text-xl font-extrabold text-slate-800 dark:text-slate-100">
             Capital city
           </h2>
-          <div className="overflow-hidden rounded-[1.75rem] border-2 border-slate-200 bg-white/85 shadow-sm dark:border-slate-700 dark:bg-slate-900/85">
+          <div className={`${GLASS_INSET_CLASS} overflow-hidden rounded-[1.75rem] shadow-sm`}>
             <div className="aspect-[16/7] w-full sm:aspect-[21/9]">
               <LibraryPlaceVisual country={country} variant="hero" visual="capital" />
             </div>
-            <div className="border-t border-slate-200 px-5 py-4 dark:border-slate-700 sm:px-6">
+            <div className="border-t border-slate-900/10 px-5 py-4 dark:border-white/10 sm:px-6">
               <p className="font-display text-2xl font-extrabold text-slate-900 dark:text-slate-100 sm:text-3xl">
                 {country.capital}
               </p>

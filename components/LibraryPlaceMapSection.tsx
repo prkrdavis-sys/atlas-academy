@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { PlaceContextMap } from "@/components/PlaceContextMap";
 import { buildPlaceMapHref, countryHasContextMap } from "@/lib/context-maps";
+import { GLASS_CONTROL_CLASS, GLASS_INSET_CLASS, GLASS_PANEL_CLASS } from "@/lib/glass";
 import { isStateCode } from "@/lib/scope";
 import type { Country } from "@/lib/types";
 
@@ -18,7 +19,10 @@ export function LibraryPlaceMapSection({ country }: LibraryPlaceMapSectionProps)
   const isState = isStateCode(country.code);
 
   return (
-    <section aria-labelledby="location-heading">
+    <section
+      aria-labelledby="location-heading"
+      className={`${GLASS_PANEL_CLASS} rounded-[1.75rem] p-4 sm:p-5`}
+    >
       <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
         <div>
           <h2
@@ -36,12 +40,14 @@ export function LibraryPlaceMapSection({ country }: LibraryPlaceMapSectionProps)
         </div>
         <Link
           href={buildPlaceMapHref(country.code)}
-          className="inline-flex shrink-0 min-h-11 items-center rounded-full border-2 border-teal-200 bg-teal-50 px-4 py-2 text-sm font-bold text-teal-800 transition-colors hover:border-teal-400 hover:bg-teal-100 dark:border-teal-800 dark:bg-teal-950/50 dark:text-teal-200 dark:hover:border-teal-500 dark:hover:bg-teal-950"
+          className={`${GLASS_CONTROL_CLASS} inline-flex shrink-0 min-h-11 items-center rounded-full px-4 py-2 text-sm font-bold text-teal-800 transition-colors hover:border-teal-400 hover:text-teal-700 dark:text-teal-200 dark:hover:border-teal-500 dark:hover:text-teal-100`}
         >
           Open on Map
         </Link>
       </div>
-      <PlaceContextMap country={country} variant="hero" interactive />
+      <div className={`${GLASS_INSET_CLASS} overflow-hidden rounded-2xl p-1`}>
+        <PlaceContextMap country={country} variant="hero" interactive />
+      </div>
     </section>
   );
 }

@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { LibraryBrowser } from "@/components/LibraryBrowser";
+import { GLASS_INSET_CLASS, GLASS_PANEL_CLASS } from "@/lib/glass";
 import { buildLibraryListHref, getStoredLibraryFilter, getStoredLibrarySort } from "@/lib/library";
 import { getStoredLibraryScope, normalizeScope, setStoredLibraryScope } from "@/lib/scope";
 import type { GameScope } from "@/lib/types";
@@ -10,13 +11,13 @@ import type { GameScope } from "@/lib/types";
 function LibraryPageFallback() {
   return (
     <div className="space-y-5 sm:space-y-7">
-      <div className="h-44 animate-pulse rounded-[1.75rem] bg-slate-200/70 dark:bg-slate-800/70" />
-      <div className="h-10 w-64 animate-pulse rounded-full bg-slate-200/70 dark:bg-slate-800/70" />
+      <div className={`${GLASS_PANEL_CLASS} h-44 animate-pulse rounded-[1.75rem]`} />
+      <div className={`${GLASS_INSET_CLASS} h-10 w-64 animate-pulse rounded-full`} />
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
         {Array.from({ length: 8 }).map((_, index) => (
           <div
             key={index}
-            className="h-48 animate-pulse rounded-2xl bg-slate-200/70 dark:bg-slate-800/70 sm:h-56"
+            className={`${GLASS_PANEL_CLASS} h-48 animate-pulse rounded-2xl sm:h-56`}
           />
         ))}
       </div>
@@ -45,7 +46,6 @@ export function LibraryPageContent() {
       return;
     }
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setScope("world");
     setStoredLibraryScope("world");
   }, [searchParams, router]);

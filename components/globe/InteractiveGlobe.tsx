@@ -792,7 +792,7 @@ export type GlobeHandle = {
   resetView: () => void;
 };
 
-export type GlobeExperienceMode = "home" | "map";
+export type GlobeExperienceMode = "home" | "map" | "library";
 
 type InteractiveGlobeProps = {
   profile: Profile | null;
@@ -801,6 +801,7 @@ type InteractiveGlobeProps = {
   /**
    * "home": backdrop for the play hero (overlays drive it via the handle).
    * "map": full interactive progress globe with picking + zoom.
+   * "library": rotating globe backdrop without map selection controls.
    */
   mode: GlobeExperienceMode;
   /** Hidden + frameloop parked while a 2D map view covers the page. */
@@ -816,9 +817,9 @@ type InteractiveGlobeProps = {
 /**
  * The shared full-screen 3D globe behind both the home hero and the map view:
  * outer-space scenery with orbit + zoom camera controls, tap-to-select
- * countries and states (map mode), and gentle auto-spin after eight seconds
- * of idle time without a selection. It stays mounted (and perfectly still)
- * while the page UI slides between home and map so the planet never reloads
+ * countries and states (map mode), and gentle auto-spin when idle (immediately
+ * in Library) without a selection. It stays mounted (and perfectly still)
+ * while the page UI slides between home, map, and Library so the planet never reloads
  * or jumps.
  */
 export default function InteractiveGlobe({
@@ -864,6 +865,8 @@ export default function InteractiveGlobe({
   const settleRunning = settleMode !== null;
   // OrbitControls auto-rotation starts from the existing camera perspective;
   // idle auto-spin must not run a separate orientation-settling animation.
+  // pageVisible only gates the live autoRotate / frameloop — it must not clear
+  // `autoSpin`, or returning from a background tab restarts the idle wait.
   const autoSpinActive =
     autoSpin &&
     selectedCode === null &&
@@ -878,7 +881,7 @@ export default function InteractiveGlobe({
   });
   const canvasGl = getGlobeCanvasGlSettings(perfTier);
   const starCount = getGlobeStarCount(perfTier);
-  /** Responsive rest framing shared by home and map (set by GlobeFraming). */
+  /** Responsive rest framing shared by home, map, and Library (set by GlobeFraming). */
   const restDistanceRef = useRef(CINEMATIC_REST_DISTANCE);
   const [maxCameraDistance, setMaxCameraDistance] = useState(MAX_CAMERA_DISTANCE);
 
@@ -957,9 +960,10 @@ export default function InteractiveGlobe({
   }, [initialPlaceCode, bumpActivity, clearIdleAutoSpinTimer]);
 
   useEffect(() => {
+    // Intentionally ignore pageVisible here: hiding the browser tab parks the
+    // frameloop, but spin intent stays latched so it resumes immediately on return.
     const idleAutoSpinBlocked =
       !active ||
-      !pageVisible ||
       reducedMotion ||
       Boolean(initialPlaceCode) ||
       selectedCode !== null ||
@@ -972,13 +976,25 @@ export default function InteractiveGlobe({
       return;
     }
 
+    // Library always spins for ambiance — latch that into autoSpin so leaving
+    // the Library pane (or returning from a background tab) doesn't drop back
+    // into the idle countdown.
+    if (mode === "library") {
+      clearIdleAutoSpinTimer();
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setAutoSpin(true);
+      bumpActivity();
+      return;
+    }
+
     armIdleAutoSpin();
   }, [
     active,
     armIdleAutoSpin,
+    bumpActivity,
     clearIdleAutoSpinTimer,
     initialPlaceCode,
-    pageVisible,
+    mode,
     reducedMotion,
     selectedCode,
     settleMode,
@@ -1020,7 +1036,9 @@ export default function InteractiveGlobe({
         if (!(camera instanceof THREE.PerspectiveCamera)) return;
 
         noteUserInteraction();
-        const rect = controls.domElement.getBoundingClientRect();
+        const domElement = controls.domElement;
+        if (!domElement) return;
+        const rect = domElement.getBoundingClientRect();
         const grab = homeGrabRef.current;
         const hit = pointerGlobeUnit(
           clientX,
@@ -1045,7 +1063,9 @@ export default function InteractiveGlobe({
         if (!(camera instanceof THREE.PerspectiveCamera)) return;
 
         bumpActivity();
-        const rect = controls.domElement.getBoundingClientRect();
+        const domElement = controls.domElement;
+        if (!domElement) return;
+        const rect = domElement.getBoundingClientRect();
         if (
           !grab.screenDragOnly &&
           pointerGlobeUnit(

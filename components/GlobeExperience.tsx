@@ -2,7 +2,18 @@
 
 import dynamic from "next/dynamic";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type MouseEvent as ReactMouseEvent,
+  type MouseEventHandler,
+  type PointerEvent as ReactPointerEvent,
+  type PointerEventHandler,
+  type ReactNode,
+} from "react";
 import { HomeExploreSection } from "@/components/HomeExploreSection";
 import { HomePlayHero } from "@/components/HomePlayHero";
 import { MapStatsButton } from "@/components/MapStatsButton";
@@ -16,7 +27,7 @@ import { useProfiles } from "@/components/ProfileProvider";
 import type { GlobeHandle } from "@/components/globe/InteractiveGlobe";
 import { resolvePlaceCodeFromParam } from "@/lib/context-maps";
 import { getDailyChallengeRun, hasCompletedDailyToday } from "@/lib/game-engine";
-import { isMapRoute } from "@/lib/navigation";
+import { isExploreRoute, isMapRoute } from "@/lib/navigation";
 import { isStateCode } from "@/lib/scope";
 import {
   getGlobalStreakOrZero,
@@ -27,12 +38,21 @@ import type { GameScope } from "@/lib/types";
 import { useGameScope } from "@/lib/use-game-scope";
 import { useGlobeUsMode } from "@/lib/use-globe-us-mode";
 import { useIsDark } from "@/lib/use-is-dark";
+import { useLibraryBackground } from "@/lib/use-library-background";
+import { useLibraryNavHref } from "@/lib/use-library-nav-href";
 import { useMapProgressDifficulty } from "@/lib/use-map-progress-difficulty";
 import { useShowMapProgress } from "@/lib/use-show-map-progress";
 import { cn } from "@/lib/utils";
 import { supportsWebGL } from "@/lib/webgl";
 
 type MapView = "globe" | "usa";
+type PaneMode = "map" | "home" | "library";
+type SwipeAxis = "horizontal" | "vertical" | null;
+
+const PANE_ORDER = ["map", "home", "library"] as const satisfies readonly PaneMode[];
+const SWIPE_AXIS_LOCK_PX = 10;
+const SWIPE_COMMIT_DISTANCE_PX = 56;
+const SWIPE_COMMIT_FRACTION = 0.18;
 
 const MAP_VIEW_STORAGE_KEY = "atlas-academy-map-view";
 
@@ -47,6 +67,28 @@ const MAP_VIEW_INFO: Record<MapView, { icon: string; label: string }> = {
 /** Frosted chip chrome shared by the map pane's floating controls. */
 const FLOATING_PANEL_CLASS =
   "pointer-events-auto rounded-xl border border-slate-200/60 bg-white/85 shadow-sm backdrop-blur dark:border-slate-700/60 dark:bg-slate-900/75";
+
+type SwipeGesture = {
+  pointerId: number;
+  startX: number;
+  startY: number;
+  axis: SwipeAxis;
+};
+
+function isSwipeExcludedTarget(target: EventTarget | null): boolean {
+  if (!(target instanceof Element)) return false;
+  if (target.closest("[data-tab-swipe-ignore]")) return true;
+
+  let current: Element | null = target;
+  while (current) {
+    const style = window.getComputedStyle(current);
+    const isHorizontalScroller = style.overflowX === "auto" || style.overflowX === "scroll";
+    if (isHorizontalScroller && current.scrollWidth > current.clientWidth + 1) return true;
+    current = current.parentElement;
+  }
+
+  return false;
+}
 
 // The globe stays mounted in AppShell across Library / play routes, so this
 // chunk loads once and the WebGL canvas parks (instead of remounting) while away.
@@ -128,21 +170,27 @@ function MapViewToggle({
 }
 
 /**
- * The single page behind both `/` and `/map`: one persistent full-screen
- * globe, with the home hero and the map view as two panes of a horizontal
+ * The single page behind `/`, `/map`, and `/library`: one persistent full-screen
+ * globe, with the home hero, map view, and Library as panes of a horizontal
  * slider. The canvas is mounted from AppShell so it also survives Library and
  * play routes (hidden + frameloop parked). Navigating between home and map
  * slides the UI as if it were one page while the planet underneath never
  * remounts or moves.
  */
-export function GlobeExperience() {
+export function GlobeExperience({ children }: { children?: ReactNode }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
   const { activeProfile, hydrated, refresh } = useProfiles();
   const profile = hydrated ? activeProfile : null;
-  const isGlobeRoute = pathname === "/" || isMapRoute(pathname);
-  const mode: "home" | "map" = isMapRoute(pathname) ? "map" : "home";
+  const isLibraryRoute = isExploreRoute(pathname);
+  const isGlobeExperienceRoute =
+    pathname === "/" || isMapRoute(pathname) || isLibraryRoute;
+  const mode: PaneMode = isMapRoute(pathname)
+    ? "map"
+    : isLibraryRoute
+      ? "library"
+      : "home";
 
   const initialPlaceCode = searchParams.get("place");
   const resolvedInitialPlace = useMemo(
@@ -161,10 +209,186 @@ export function GlobeExperience() {
   const { mapDifficulty, setMapDifficulty } = useMapProgressDifficulty();
   const { enabled: showMapProgress } = useShowMapProgress();
   const { isDark, ready: themeReady } = useIsDark();
+  const { opaque: libraryOpaque } = useLibraryBackground();
+  const libraryHref = useLibraryNavHref();
   const globeHandleRef = useRef<GlobeHandle | null>(null);
-  const wasGlobeRouteRef = useRef(isGlobeRoute);
+  const sliderRef = useRef<HTMLDivElement>(null);
+  const swipeGestureRef = useRef<SwipeGesture | null>(null);
+  const swipeNavigationTimerRef = useRef<number | null>(null);
+  const swipeNavigationLockedRef = useRef(false);
+  const suppressSwipeClickRef = useRef(false);
+  const [swipeOffset, setSwipeOffset] = useState(0);
+  const [swipeDragging, setSwipeDragging] = useState(false);
+  const wasGlobeRouteRef = useRef(isGlobeExperienceRoute);
   const heroRef = useRef<HTMLElement>(null);
   const { scope } = useGameScope({ layoutAnchorRef: heroRef });
+  const paneIndex = PANE_ORDER.indexOf(mode);
+
+  const getPaneHref = useCallback(
+    (targetMode: PaneMode) => {
+      switch (targetMode) {
+        case "map":
+          return "/map";
+        case "home":
+          return "/";
+        case "library":
+          return libraryHref;
+        default: {
+          const exhaustiveMode: never = targetMode;
+          return exhaustiveMode;
+        }
+      }
+    },
+    [libraryHref],
+  );
+
+  const releaseSwipePointer = useCallback(
+    (event: ReactPointerEvent<HTMLElement>) => {
+      try {
+        event.currentTarget.releasePointerCapture(event.pointerId);
+      } catch {
+        // The pointer may already have been released or cancelled.
+      }
+    },
+    [],
+  );
+
+  const handleSwipePointerDown = useCallback<PointerEventHandler<HTMLElement>>(
+    (event) => {
+      if (!isGlobeExperienceRoute || swipeNavigationLockedRef.current) return;
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+      if (isSwipeExcludedTarget(event.target)) return;
+
+      swipeGestureRef.current = {
+        pointerId: event.pointerId,
+        startX: event.clientX,
+        startY: event.clientY,
+        axis: null,
+      };
+      suppressSwipeClickRef.current = false;
+
+      try {
+        event.currentTarget.setPointerCapture(event.pointerId);
+      } catch {
+        // Pointer capture is an enhancement; the gesture still works without it.
+      }
+    },
+    [isGlobeExperienceRoute],
+  );
+
+  const handleSwipePointerMove = useCallback<PointerEventHandler<HTMLElement>>(
+    (event) => {
+      const gesture = swipeGestureRef.current;
+      if (!gesture || gesture.pointerId !== event.pointerId) return;
+
+      const deltaX = event.clientX - gesture.startX;
+      const deltaY = event.clientY - gesture.startY;
+
+      if (gesture.axis === null) {
+        if (Math.max(Math.abs(deltaX), Math.abs(deltaY)) < SWIPE_AXIS_LOCK_PX) return;
+        gesture.axis = Math.abs(deltaX) > Math.abs(deltaY) ? "horizontal" : "vertical";
+        if (gesture.axis === "vertical") return;
+        setSwipeDragging(true);
+      }
+
+      if (gesture.axis !== "horizontal") return;
+
+      event.preventDefault();
+      suppressSwipeClickRef.current = true;
+
+      const paneWidth = sliderRef.current?.clientWidth || window.innerWidth;
+      const movingToPrevious = deltaX > 0;
+      const targetIndex = paneIndex + (movingToPrevious ? -1 : 1);
+      const canMove = targetIndex >= 0 && targetIndex < PANE_ORDER.length;
+      const clampedDelta = Math.max(-paneWidth, Math.min(paneWidth, deltaX));
+      setSwipeOffset(canMove ? clampedDelta : clampedDelta * 0.2);
+    },
+    [paneIndex],
+  );
+
+  const finishSwipe = useCallback(
+    (event: ReactPointerEvent<HTMLElement>, cancelled: boolean) => {
+      const gesture = swipeGestureRef.current;
+      if (!gesture || gesture.pointerId !== event.pointerId) return;
+
+      swipeGestureRef.current = null;
+      releaseSwipePointer(event);
+
+      const deltaX = event.clientX - gesture.startX;
+      if (cancelled || gesture.axis !== "horizontal") {
+        setSwipeDragging(false);
+        setSwipeOffset(0);
+        return;
+      }
+
+      suppressSwipeClickRef.current = true;
+      setSwipeDragging(false);
+
+      const paneWidth = sliderRef.current?.clientWidth || window.innerWidth;
+      const movingToPrevious = deltaX > 0;
+      const targetIndex = paneIndex + (movingToPrevious ? -1 : 1);
+      const canMove = targetIndex >= 0 && targetIndex < PANE_ORDER.length;
+      const commitDistance = Math.max(
+        SWIPE_COMMIT_DISTANCE_PX,
+        paneWidth * SWIPE_COMMIT_FRACTION,
+      );
+
+      if (!canMove || Math.abs(deltaX) < commitDistance) {
+        setSwipeOffset(0);
+        return;
+      }
+
+      const targetMode = PANE_ORDER[targetIndex];
+      const targetHref = getPaneHref(targetMode);
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      swipeNavigationLockedRef.current = true;
+
+      if (reduceMotion) {
+        setSwipeOffset(0);
+        router.push(targetHref);
+        return;
+      }
+
+      setSwipeOffset(movingToPrevious ? paneWidth : -paneWidth);
+      swipeNavigationTimerRef.current = window.setTimeout(() => {
+        swipeNavigationTimerRef.current = null;
+        router.push(targetHref);
+      }, SLIDE_DURATION_MS);
+    },
+    [getPaneHref, paneIndex, releaseSwipePointer, router],
+  );
+
+  const handleSwipePointerUp = useCallback<PointerEventHandler<HTMLElement>>(
+    (event) => finishSwipe(event, false),
+    [finishSwipe],
+  );
+
+  const handleSwipePointerCancel = useCallback<PointerEventHandler<HTMLElement>>(
+    (event) => finishSwipe(event, true),
+    [finishSwipe],
+  );
+
+  const handleSwipeClickCapture = useCallback<MouseEventHandler<HTMLElement>>(
+    (event: ReactMouseEvent<HTMLElement>) => {
+      if (!suppressSwipeClickRef.current) return;
+      suppressSwipeClickRef.current = false;
+      event.preventDefault();
+      event.stopPropagation();
+    },
+    [],
+  );
+
+  useEffect(() => {
+    if (swipeNavigationTimerRef.current !== null) {
+      window.clearTimeout(swipeNavigationTimerRef.current);
+      swipeNavigationTimerRef.current = null;
+    }
+    swipeGestureRef.current = null;
+    swipeNavigationLockedRef.current = false;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSwipeDragging(false);
+    setSwipeOffset(0);
+  }, [isGlobeExperienceRoute, mode]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -187,30 +411,36 @@ export function GlobeExperience() {
     }
   }, [paramView]);
 
-  // Returning home puts the stats sheet away and clears any selection.
+  // Leaving Map puts the stats sheet away and clears any selection.
   useEffect(() => {
-    if (mode === "home") {
+    if (mode !== "map") {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setStatsOpen(false);
       setSelectedGlobePlace(null);
     }
+
+    if (mode !== "library") return;
+
+    const frame = requestAnimationFrame(() => {
+      globeHandleRef.current?.resetView();
+    });
+    return () => cancelAnimationFrame(frame);
   }, [mode]);
 
   // Returning from Library / play: settle the camera on the default framing so
   // Play and Map open on the fully loaded planet at its resting spot.
   useEffect(() => {
     const wasGlobeRoute = wasGlobeRouteRef.current;
-    wasGlobeRouteRef.current = isGlobeRoute;
-    if (wasGlobeRoute || !isGlobeRoute) return;
+    wasGlobeRouteRef.current = isGlobeExperienceRoute;
+    if (wasGlobeRoute || !isGlobeExperienceRoute) return;
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setStatsOpen(false);
     setSelectedGlobePlace(null);
     const frame = requestAnimationFrame(() => {
       globeHandleRef.current?.resetView();
     });
     return () => cancelAnimationFrame(frame);
-  }, [isGlobeRoute]);
+  }, [isGlobeExperienceRoute]);
 
   const requestedView = paramView ?? storedView;
   // Devices without WebGL fall back to the 2D USA map, with a small notice.
@@ -238,13 +468,14 @@ export function GlobeExperience() {
 
   const handleGlobeSelectPlace = useCallback(
     (code: string | null) => {
+      if (mode !== "map") return;
       setSelectedGlobePlace(code);
       if (code === null) {
         setInitialPlaceDismissed(true);
         clearPlaceQueryParam();
       }
     },
-    [clearPlaceQueryParam],
+    [clearPlaceQueryParam, mode],
   );
 
   const setView = useCallback(
@@ -272,10 +503,10 @@ export function GlobeExperience() {
   );
 
   // The globe canvas stays mounted at all times; it only hides (and parks its
-  // frameloop) while away from Play/Map or while a 2D map view covers the page.
+  // frameloop) while away from Play/Map/Library or while a 2D map view covers the page.
   // Hiding for 2D is delayed so the planet stays visible under the pane while
   // it slides in.
-  const is2dView = isGlobeRoute && mode === "map" && view === "usa";
+  const is2dView = isGlobeExperienceRoute && mode === "map" && view === "usa";
   const [globeLayerActive, setGlobeLayerActive] = useState(true);
   useEffect(() => {
     if (!is2dView) {
@@ -287,7 +518,7 @@ export function GlobeExperience() {
     return () => clearTimeout(timer);
   }, [is2dView]);
 
-  const globeActive = isGlobeRoute && globeLayerActive;
+  const globeActive = isGlobeExperienceRoute && globeLayerActive;
 
   // Panels + stats follow the selection: world summary by default, USA
   // regions while a state is selected.
@@ -318,22 +549,27 @@ export function GlobeExperience() {
         usMode={usMode}
         mode={mode}
         active={globeActive}
-        selectedCode={isGlobeRoute && mode === "map" ? activeGlobeSelection : null}
-        initialPlaceCode={isGlobeRoute && mode === "map" ? resolvedInitialPlace : null}
+        selectedCode={isGlobeExperienceRoute && mode === "map" ? activeGlobeSelection : null}
+        initialPlaceCode={isGlobeExperienceRoute && mode === "map" ? resolvedInitialPlace : null}
         onSelectPlace={handleGlobeSelectPlace}
         handleRef={globeHandleRef}
         className="fixed inset-0 z-0"
       />
 
-      {isGlobeRoute ? (
+      {isGlobeExperienceRoute ? (
         <>
-          {/* Two panes of one page: [map | home]. The globe behind never moves. */}
+          {/* Three panes of one page: [map | play | library]. The globe behind never moves. */}
           <div className="pointer-events-none relative z-10 min-h-0 w-full flex-1 overflow-hidden">
             <div
+              ref={sliderRef}
               className={cn(
-                "flex h-full w-full transition-transform duration-[420ms] ease-[cubic-bezier(0.32,0.72,0,1)] motion-reduce:transition-none",
-                mode === "home" ? "-translate-x-full" : "translate-x-0",
+                "flex h-full w-full motion-reduce:transition-none",
+                !swipeDragging &&
+                  "transition-transform duration-[420ms] ease-[cubic-bezier(0.32,0.72,0,1)]",
               )}
+              style={{
+                transform: `translateX(calc(-${paneIndex * 100}% + ${swipeOffset}px))`,
+              }}
             >
               {/* ---- Map pane ---- */}
               <section
@@ -375,7 +611,15 @@ export function GlobeExperience() {
 
                 {/* Map surface nav + progress-track filter. One wrapping row so the
                     chips don't collide on narrow phones; corners stay clear on wider screens. */}
-                <div className="pointer-events-auto absolute inset-x-3 top-3 z-10 flex flex-wrap items-start justify-between gap-2">
+                <div
+                  onPointerDown={handleSwipePointerDown}
+                  onPointerMove={handleSwipePointerMove}
+                  onPointerUp={handleSwipePointerUp}
+                  onPointerCancel={handleSwipePointerCancel}
+                  onClickCapture={handleSwipeClickCapture}
+                  style={{ touchAction: "pan-y" }}
+                  className="pointer-events-auto absolute inset-x-3 top-3 z-10 flex flex-wrap items-start justify-between gap-2"
+                >
                   <MapViewToggle view={view ?? "globe"} views={availableViews} onSelect={setView} />
                   <div className="ml-auto flex flex-col items-end gap-2">
                     {showMapProgress ? (
@@ -406,7 +650,15 @@ export function GlobeExperience() {
                     </p>
 
                     {themeReady ? (
-                      <div className="pointer-events-none absolute inset-x-0 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-10 flex items-end justify-center gap-2 px-4 sm:bottom-4">
+                      <div
+                        onPointerDown={handleSwipePointerDown}
+                        onPointerMove={handleSwipePointerMove}
+                        onPointerUp={handleSwipePointerUp}
+                        onPointerCancel={handleSwipePointerCancel}
+                        onClickCapture={handleSwipeClickCapture}
+                        style={{ touchAction: "pan-y" }}
+                        className="pointer-events-none absolute inset-x-0 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-10 flex items-end justify-center gap-2 px-4 sm:bottom-4"
+                      >
                         {showMapProgress ? (
                           <div
                             className={cn(
@@ -431,6 +683,12 @@ export function GlobeExperience() {
               <section
                 aria-label="Play"
                 inert={mode !== "home" || undefined}
+                onPointerDown={handleSwipePointerDown}
+                onPointerMove={handleSwipePointerMove}
+                onPointerUp={handleSwipePointerUp}
+                onPointerCancel={handleSwipePointerCancel}
+                onClickCapture={handleSwipeClickCapture}
+                style={{ touchAction: "pan-y" }}
                 className="pointer-events-auto relative h-full w-full shrink-0 overflow-y-auto overscroll-contain px-4 pb-[calc(6.5rem+env(safe-area-inset-bottom))] pt-5 sm:pb-8 sm:pt-8"
               >
                 <HomePlayHero
@@ -455,6 +713,24 @@ export function GlobeExperience() {
                   active={mode === "home"}
                   onRefresh={refresh}
                 />
+              </section>
+
+              {/* ---- Library pane ---- */}
+              <section
+                aria-label="Library"
+                inert={mode !== "library" || undefined}
+                className={cn(
+                  "pointer-events-auto relative h-full w-full shrink-0 overflow-y-auto overscroll-contain px-4 pb-[calc(6.5rem+env(safe-area-inset-bottom))] pt-5 sm:pb-8 sm:pt-8",
+                  libraryOpaque ? "bg-[var(--background)]" : "bg-slate-950/[0.04]",
+                )}
+                onPointerDown={handleSwipePointerDown}
+                onPointerMove={handleSwipePointerMove}
+                onPointerUp={handleSwipePointerUp}
+                onPointerCancel={handleSwipePointerCancel}
+                onClickCapture={handleSwipeClickCapture}
+                style={{ touchAction: "pan-y" }}
+              >
+                {children}
               </section>
             </div>
           </div>

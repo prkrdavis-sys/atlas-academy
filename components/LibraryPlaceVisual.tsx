@@ -1,6 +1,7 @@
 import { ExpandableFlagImage } from "@/components/ExpandableFlagImage";
 import { FlagImage } from "@/components/FlagDisplay";
 import { getCapitalPath, getShapePath } from "@/lib/countries";
+import { GLASS_INSET_CLASS } from "@/lib/glass";
 import { formatDisplayCode } from "@/lib/scope";
 import type { Country } from "@/lib/types";
 
@@ -77,7 +78,7 @@ export function LibraryPlaceVisual({
       <div
         className={
           variant === "hero"
-            ? "flex h-full w-full items-center justify-center rounded-2xl bg-gradient-to-br from-sky-50 via-white to-teal-50 p-6 dark:from-slate-800 dark:via-slate-900 dark:to-teal-950/50"
+            ? `${GLASS_INSET_CLASS} flex h-full w-full items-center justify-center rounded-2xl p-6`
             : "flex h-full w-full items-center justify-center"
         }
       >

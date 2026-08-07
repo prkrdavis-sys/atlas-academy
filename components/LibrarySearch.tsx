@@ -9,6 +9,7 @@ import {
   type LibraryFilter,
   type LibrarySort,
 } from "@/lib/library";
+import { GLASS_CONTROL_CLASS, GLASS_INSET_CLASS, GLASS_PANEL_CLASS } from "@/lib/glass";
 import { cn } from "@/lib/utils";
 import type { GameScope } from "@/lib/types";
 
@@ -186,7 +187,7 @@ export function LibrarySearch({
           aria-activedescendant={
             activeIndex >= 0 ? `${listboxId}-option-${activeIndex}` : undefined
           }
-          className="min-h-11 w-full rounded-full border-2 border-slate-200 bg-white/80 py-2.5 pl-11 pr-4 text-sm font-semibold text-slate-800 shadow-sm placeholder:font-medium placeholder:text-slate-400 focus:border-teal-400 focus:outline-none focus:ring-2 focus:ring-teal-200 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-teal-500 dark:focus:ring-teal-900/60"
+          className={`${GLASS_CONTROL_CLASS} min-h-11 w-full rounded-full py-2.5 pl-11 pr-4 text-sm font-semibold text-slate-800 shadow-sm placeholder:font-medium placeholder:text-slate-400 focus:border-teal-400 focus:outline-none focus:ring-2 focus:ring-teal-200 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-teal-500 dark:focus:ring-teal-900/60`}
         />
       </div>
 
@@ -196,7 +197,7 @@ export function LibrarySearch({
           role="listbox"
           aria-label={isState ? "Matching states" : "Matching countries"}
           className={cn(
-            "absolute z-20 mt-2 max-h-72 w-full overflow-y-auto rounded-2xl border-2 border-slate-200 bg-white/95 p-1.5 shadow-lg backdrop-blur dark:border-slate-700 dark:bg-slate-900/95",
+            `${GLASS_PANEL_CLASS} absolute z-20 mt-2 max-h-72 w-full overflow-y-auto rounded-2xl p-1.5 shadow-lg`,
             mobileDropdownFullWidth &&
               "max-sm:-left-4 max-sm:-right-4 max-sm:top-[calc(100%+0.5rem)] max-sm:mt-0 max-sm:w-auto",
           )}
@@ -225,8 +226,8 @@ export function LibrarySearch({
                     className={cn(
                       "flex min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2 text-left transition-colors",
                       active
-                        ? "bg-teal-50 text-teal-900 dark:bg-teal-950/60 dark:text-teal-100"
-                        : "text-slate-800 hover:bg-slate-50 dark:text-slate-100 dark:hover:bg-slate-800/80",
+                        ? "bg-teal-500/15 text-teal-900 dark:bg-teal-400/15 dark:text-teal-100"
+                        : "text-slate-800 hover:bg-white/20 dark:text-slate-100 dark:hover:bg-white/10",
                     )}
                   >
                     {place.hasFlag ? (
@@ -240,7 +241,7 @@ export function LibrarySearch({
                     ) : (
                       <span
                         aria-hidden
-                        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-sm border border-slate-200 bg-slate-100 text-xs font-bold text-slate-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-400"
+                        className={`${GLASS_INSET_CLASS} flex h-8 w-8 shrink-0 items-center justify-center rounded-sm text-xs font-bold text-slate-500 dark:text-slate-400`}
                       >
                         {place.code}
                       </span>

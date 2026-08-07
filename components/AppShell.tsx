@@ -7,7 +7,7 @@ import { useAuth } from "@/components/AuthProvider";
 import { GlobeExperience } from "@/components/GlobeExperience";
 import { useProfiles } from "@/components/ProfileProvider";
 import { WelcomeDialog } from "@/components/WelcomeDialog";
-import { isMapRoute } from "@/lib/navigation";
+import { isExploreRoute, isMapRoute } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -18,8 +18,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const isAuthRoute = pathname === "/auth";
   const isDevPreviewRoute = pathname.startsWith("/dev/");
   const isActiveGameRoute = pathname.startsWith("/play/") && !pathname.startsWith("/play/setup");
-  // Home and map share one persistent globe page that slides between panes.
-  const isGlobeExperienceRoute = pathname === "/" || isMapRoute(pathname);
+  // Home, map, and Library share one persistent globe page that slides between panes.
+  const isGlobeExperienceRoute =
+    pathname === "/" || isMapRoute(pathname) || isExploreRoute(pathname);
   const canAccessApp = Boolean(user) || isGuest;
 
   useEffect(() => {
@@ -83,12 +84,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               : "px-4 pb-[calc(6.5rem+env(safe-area-inset-bottom))] pt-5 sm:py-8",
         )}
       >
-        {/* Keep the WebGL globe mounted across Library / play routes so Play and
-            Map return with a fully painted planet instead of remounting. */}
+        {/* Keep the WebGL globe and its panes mounted across navigation. */}
         <Suspense fallback={null}>
-          <GlobeExperience />
+          <GlobeExperience>{isExploreRoute(pathname) ? children : null}</GlobeExperience>
         </Suspense>
-        {children}
+        {!isGlobeExperienceRoute ? children : null}
       </main>
     </div>
   );

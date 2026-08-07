@@ -2,6 +2,7 @@
 
 import { useCurrency } from "@/components/CurrencyProvider";
 import { LocalTimeChip } from "@/components/LocalTimeChip";
+import { GLASS_INSET_CLASS, GLASS_PANEL_CLASS } from "@/lib/glass";
 import { formatAirportChip } from "@/lib/airport";
 import {
   formatAltitudeRange,
@@ -155,7 +156,10 @@ export function LibraryDetailGrid({ country, isState }: LibraryDetailGridProps) 
       ];
 
   return (
-    <section aria-labelledby="country-details-heading">
+    <section
+      aria-labelledby="country-details-heading"
+      className={`${GLASS_PANEL_CLASS} rounded-[1.75rem] p-4 sm:p-5`}
+    >
       <h2
         id="country-details-heading"
         className="mb-3 font-display text-xl font-extrabold text-slate-800 dark:text-slate-100"
@@ -167,7 +171,7 @@ export function LibraryDetailGrid({ country, isState }: LibraryDetailGridProps) 
           const chip = (
             <div
               key={detail.label}
-              className="rounded-2xl border-2 border-slate-200 bg-white/80 p-4 dark:border-slate-700 dark:bg-slate-900/80"
+              className={`${GLASS_INSET_CLASS} rounded-2xl p-4`}
             >
               <dt className="flex items-start gap-1 text-xs font-bold text-slate-500 dark:text-slate-400">
                 <span aria-hidden="true" className="shrink-0 text-sm leading-none">

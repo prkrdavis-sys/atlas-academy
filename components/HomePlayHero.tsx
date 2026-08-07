@@ -333,6 +333,7 @@ function GlobeDragZone({ href, globeHandleRef }: GlobeDragZoneProps) {
       ref={zoneRef}
       href={href}
       aria-label="Open your progress map"
+      data-tab-swipe-ignore
       draggable={false}
       // Inline touchAction beats the global `a { touch-action: manipulation }`
       // rule so vertical drags stay on the globe, not the page.

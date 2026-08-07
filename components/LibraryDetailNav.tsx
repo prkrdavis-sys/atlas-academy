@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { LibrarySearch } from "@/components/LibrarySearch";
 import { useProfiles } from "@/components/ProfileProvider";
+import { GLASS_CONTROL_CLASS, GLASS_PANEL_CLASS } from "@/lib/glass";
 import {
   buildLibraryDetailHref,
   buildLibraryListHref,
@@ -31,7 +32,7 @@ type LibraryDetailNavProps = {
 };
 
 const navButtonClass =
-  "inline-flex min-h-11 items-center gap-1.5 rounded-full border-2 border-slate-200 bg-white/80 px-4 py-2 text-sm font-bold text-slate-700 transition-colors hover:border-teal-400 hover:text-teal-700 active:scale-[0.98] dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-300 dark:hover:border-teal-500 dark:hover:text-teal-300";
+  `${GLASS_CONTROL_CLASS} inline-flex min-h-11 items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold text-slate-700 transition-colors hover:border-teal-400 hover:text-teal-700 active:scale-[0.98] dark:text-slate-300 dark:hover:border-teal-500 dark:hover:text-teal-300`;
 
 const disabledNavClass = `${navButtonClass} pointer-events-none opacity-40`;
 
@@ -122,7 +123,7 @@ export function LibraryDetailNav({
         className={cn(
           "relative z-30 -mx-4 sticky top-[var(--app-header-offset)] px-4 py-2 transition-[background-color,border-color,box-shadow] duration-200 sm:mx-0 sm:px-0",
           chromeActive &&
-            "border-b border-teal-900/10 bg-white/85 backdrop-blur-xl dark:border-slate-700/50 dark:bg-slate-900/85",
+            `${GLASS_PANEL_CLASS} rounded-none border-x-0 border-t-0`,
         )}
       >
         <div className="relative flex items-center gap-2 sm:gap-3">

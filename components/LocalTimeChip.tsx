@@ -1,6 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import { GLASS_INSET_CLASS } from "@/lib/glass";
 import { formatLocalClockTime, formatTimeZoneName } from "@/lib/timezone";
 
 const CLOCK_TICK_MS = 30_000;
@@ -32,7 +33,7 @@ export function LocalTimeChip({ timeZone }: LocalTimeChipProps) {
   const clock = now ? formatLocalClockTime(timeZone, now) : "—";
 
   return (
-    <div className="rounded-2xl border-2 border-slate-200 bg-white/80 p-4 dark:border-slate-700 dark:bg-slate-900/80">
+    <div className={`${GLASS_INSET_CLASS} rounded-2xl p-4`}>
       <dt className="flex items-start gap-1 text-xs font-bold text-slate-500 dark:text-slate-400">
         <span aria-hidden="true" className="shrink-0 text-sm leading-none">
           🕒

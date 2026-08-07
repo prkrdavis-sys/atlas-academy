@@ -7,6 +7,7 @@ import { createPortal } from "react-dom";
 import { GlobeDayNightToggle } from "@/components/GlobeDayNightToggle";
 import { GlobeUsModeToggle } from "@/components/GlobeUsModeToggle";
 import { HapticsToggle } from "@/components/HapticsToggle";
+import { LibraryBackgroundToggle } from "@/components/LibraryBackgroundToggle";
 import { ProfileAvatar } from "@/components/ProfileAvatar";
 import { useProfiles } from "@/components/ProfileProvider";
 import { ShowMapProgressToggle } from "@/components/ShowMapProgressToggle";
@@ -22,7 +23,7 @@ const MENU_PANEL_WIDTH = "w-[min(24rem,calc(100vw-2rem))]";
 /**
  * The "main menu": the header profile dropdown that holds app-wide toggles
  * (appearance, sound, vibration, map progress, globe day/night, USA globe mode)
- * alongside profile switching.
+ * alongside profile switching and Library presentation preferences.
  */
 type MenuPanelContentProps = {
   pathname: string;
@@ -150,6 +151,7 @@ function MenuPanelContent({
             <ShowMapProgressToggle />
             <GlobeDayNightToggle />
           </div>
+          <LibraryBackgroundToggle />
           <GlobeUsModeToggle />
         </div>
         <CurrencySelector />
