@@ -10,9 +10,8 @@ type AnswerMultipleChoiceProps = {
   hiddenOptions?: string[];
   revealed?: boolean;
   /**
-   * Head-to-head: a locked-in but not yet revealed choice. It reads as green
-   * whether or not it is right, and can still be changed until the opponent
-   * commits.
+   * Head-to-head pending stage: selection is locked in but not yet graded.
+   * Amber (not green/red) so it does not look like a correct/incorrect reveal.
    */
   pending?: boolean;
   selectedAnswer?: string | null;
@@ -31,6 +30,12 @@ const NEUTRAL_OPTION_CLASS = cn(
   "hover:border-sky-300 hover:bg-sky-50 hover:text-sky-800 dark:hover:border-sky-500 dark:hover:bg-sky-950/50 dark:hover:text-sky-300",
   "active:translate-y-[3px] active:shadow-none",
   "disabled:opacity-50 disabled:active:translate-y-0 disabled:active:shadow-[0_3px_0_var(--color-slate-200)]",
+);
+
+const PENDING_SELECT_CLASS = cn(
+  BASE_OPTION_CLASS,
+  "border-amber-400 bg-amber-100 text-amber-950 shadow-[0_3px_0_var(--color-amber-300)]",
+  "dark:border-amber-500 dark:bg-amber-950/70 dark:text-amber-100 dark:shadow-[0_3px_0_var(--color-amber-800)]",
 );
 
 const CORRECT_REVEAL_CLASS = cn(
@@ -104,7 +109,7 @@ export function AnswerMultipleChoice({
             optionClass = REVEALED_NEUTRAL_CLASS;
           }
         } else if (pending && isSelected) {
-          optionClass = CORRECT_REVEAL_CLASS;
+          optionClass = PENDING_SELECT_CLASS;
         }
 
         return (

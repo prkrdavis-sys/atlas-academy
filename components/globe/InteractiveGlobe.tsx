@@ -815,6 +815,100 @@ type InteractiveGlobeProps = {
 };
 
 /**
+ * Idle auto-spin: arm a timer after interaction (home/map), or spin immediately
+ * in Library. Kept as its own hook so its dependency list stays a fixed size and
+ * Hot Reload remounts cleanly when the policy changes.
+ */
+function useGlobeIdleAutoSpin({
+  active,
+  reducedMotion,
+  initialPlaceCode,
+  selectedCode,
+  settleMode,
+  bumpActivity,
+  setAutoSpin,
+}: {
+  active: boolean;
+  reducedMotion: boolean;
+  initialPlaceCode: string | null;
+  selectedCode: string | null;
+  settleMode: ViewSettleMode | null;
+  bumpActivity: () => void;
+  setAutoSpin: (value: boolean) => void;
+}) {
+  const selectedCodeRef = useRef(selectedCode);
+  const idleAutoSpinTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    selectedCodeRef.current = selectedCode;
+  }, [selectedCode]);
+
+  const clearIdleAutoSpinTimer = useCallback(() => {
+    if (idleAutoSpinTimerRef.current) {
+      clearTimeout(idleAutoSpinTimerRef.current);
+      idleAutoSpinTimerRef.current = null;
+    }
+  }, []);
+
+  const armIdleAutoSpin = useCallback(() => {
+    clearIdleAutoSpinTimer();
+    if (selectedCodeRef.current !== null) return;
+
+    idleAutoSpinTimerRef.current = setTimeout(() => {
+      idleAutoSpinTimerRef.current = null;
+      if (selectedCodeRef.current !== null) return;
+      setAutoSpin(true);
+      bumpActivity();
+    }, GLOBE_IDLE_AUTO_SPIN_MS);
+  }, [bumpActivity, clearIdleAutoSpinTimer, setAutoSpin]);
+
+  useEffect(() => () => clearIdleAutoSpinTimer(), [clearIdleAutoSpinTimer]);
+
+  useEffect(() => {
+    // Park timers while the canvas is inactive, but do not clear `autoSpin` —
+    // returning from a play route (or a hidden tab) should resume the same spin
+    // instead of restarting the idle wait. Camera resets on nav were removed
+    // from GlobeExperience for the same reason.
+    if (!active) {
+      clearIdleAutoSpinTimer();
+      return;
+    }
+
+    const idleAutoSpinBlocked =
+      reducedMotion ||
+      Boolean(initialPlaceCode) ||
+      selectedCode !== null ||
+      settleMode !== null;
+
+    if (idleAutoSpinBlocked) {
+      clearIdleAutoSpinTimer();
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setAutoSpin(false);
+      return;
+    }
+
+    // Default is continuous auto-spin on Map / Play / Library. Tab changes
+    // re-assert that intent; only direct globe interaction pauses it (via
+    // noteUserInteraction → armIdleAutoSpin).
+    clearIdleAutoSpinTimer();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setAutoSpin(true);
+    bumpActivity();
+  }, [
+    active,
+    bumpActivity,
+    clearIdleAutoSpinTimer,
+    initialPlaceCode,
+    reducedMotion,
+    selectedCode,
+    setAutoSpin,
+    settleMode,
+  ]);
+
+  return { armIdleAutoSpin, clearIdleAutoSpinTimer, idleAutoSpinTimerRef };
+}
+
+/**
  * The shared full-screen 3D globe behind both the home hero and the map view:
  * outer-space scenery with orbit + zoom camera controls, tap-to-select
  * countries and states (map mode), and gentle auto-spin when idle (immediately
@@ -844,9 +938,7 @@ export default function InteractiveGlobe({
   const containerRef = useRef<HTMLDivElement>(null);
   const controlsRef = useRef<OrbitControlsImpl | null>(null);
   const spinGroupRef = useRef<THREE.Group | null>(null);
-  const idleAutoSpinTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [autoSpin, setAutoSpin] = useState(false);
-  const selectedCodeRef = useRef(selectedCode);
   const [introCancelled, setIntroCancelled] = useState(false);
   const [focusIntroComplete, setFocusIntroComplete] = useState(false);
   const [cinematicIntroComplete, setCinematicIntroComplete] = useState(false);
@@ -885,25 +977,24 @@ export default function InteractiveGlobe({
   const restDistanceRef = useRef(CINEMATIC_REST_DISTANCE);
   const [maxCameraDistance, setMaxCameraDistance] = useState(MAX_CAMERA_DISTANCE);
 
-  useEffect(() => {
-    selectedCodeRef.current = selectedCode;
-  }, [selectedCode]);
-
-  const clearIdleAutoSpinTimer = useCallback(() => {
-    if (idleAutoSpinTimerRef.current) {
-      clearTimeout(idleAutoSpinTimerRef.current);
-      idleAutoSpinTimerRef.current = null;
-    }
-  }, []);
+  const { armIdleAutoSpin, clearIdleAutoSpinTimer, idleAutoSpinTimerRef } = useGlobeIdleAutoSpin({
+    active,
+    reducedMotion,
+    initialPlaceCode,
+    selectedCode,
+    settleMode,
+    bumpActivity,
+    setAutoSpin,
+  });
 
   const beginSettle = useCallback(
-    (mode: ViewSettleMode) => {
+    (nextMode: ViewSettleMode) => {
       clearIdleAutoSpinTimer();
       setIntroCancelled(true);
       setAutoSpin(false);
       bumpActivity();
       onSelectPlace(null);
-      setSettleMode(mode);
+      setSettleMode(nextMode);
       setSettleKey((key) => key + 1);
     },
     [bumpActivity, clearIdleAutoSpinTimer, onSelectPlace],
@@ -912,18 +1003,6 @@ export default function InteractiveGlobe({
   const resetView = useCallback(() => {
     beginSettle("home");
   }, [beginSettle]);
-
-  const armIdleAutoSpin = useCallback(() => {
-    clearIdleAutoSpinTimer();
-    if (selectedCodeRef.current !== null) return;
-
-    idleAutoSpinTimerRef.current = setTimeout(() => {
-      idleAutoSpinTimerRef.current = null;
-      if (selectedCodeRef.current !== null) return;
-      setAutoSpin(true);
-      bumpActivity();
-    }, GLOBE_IDLE_AUTO_SPIN_MS);
-  }, [bumpActivity, clearIdleAutoSpinTimer]);
 
   const noteUserInteraction = useCallback(() => {
     setSettleMode(null);
@@ -942,8 +1021,6 @@ export default function InteractiveGlobe({
     if (controls) controls.enabled = true;
   }, []);
 
-  useEffect(() => () => clearIdleAutoSpinTimer(), [clearIdleAutoSpinTimer]);
-
   useEffect(() => {
     if (!initialPlaceCode) return;
     if (spinGroupRef.current) {
@@ -958,47 +1035,6 @@ export default function InteractiveGlobe({
     bumpActivity();
     clearIdleAutoSpinTimer();
   }, [initialPlaceCode, bumpActivity, clearIdleAutoSpinTimer]);
-
-  useEffect(() => {
-    // Intentionally ignore pageVisible here: hiding the browser tab parks the
-    // frameloop, but spin intent stays latched so it resumes immediately on return.
-    const idleAutoSpinBlocked =
-      !active ||
-      reducedMotion ||
-      Boolean(initialPlaceCode) ||
-      selectedCode !== null ||
-      settleMode !== null;
-
-    if (idleAutoSpinBlocked) {
-      clearIdleAutoSpinTimer();
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setAutoSpin(false);
-      return;
-    }
-
-    // Library always spins for ambiance — latch that into autoSpin so leaving
-    // the Library pane (or returning from a background tab) doesn't drop back
-    // into the idle countdown.
-    if (mode === "library") {
-      clearIdleAutoSpinTimer();
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setAutoSpin(true);
-      bumpActivity();
-      return;
-    }
-
-    armIdleAutoSpin();
-  }, [
-    active,
-    armIdleAutoSpin,
-    bumpActivity,
-    clearIdleAutoSpinTimer,
-    initialPlaceCode,
-    mode,
-    reducedMotion,
-    selectedCode,
-    settleMode,
-  ]);
 
   const zoomBy = useCallback(
     (factor: number) => {

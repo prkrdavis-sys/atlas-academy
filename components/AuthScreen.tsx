@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/Button";
 
 type AuthMode = "sign-in" | "sign-up";
 
-export function AuthScreen() {
+export function AuthScreen({ returnTo = "/profiles" }: { returnTo?: string }) {
   const router = useRouter();
   const { signIn, signUp, continueAsGuest } = useAuth();
   const [mode, setMode] = useState<AuthMode>("sign-in");
@@ -69,7 +69,7 @@ export function AuthScreen() {
       return;
     }
 
-    router.push("/profiles");
+    router.push(returnTo);
   }
 
   return (

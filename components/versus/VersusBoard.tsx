@@ -211,10 +211,17 @@ export function VersusBoard({
               onSelect={(answer) =>
                 versus.selectAnswer(answer, answer === question.correctAnswer)
               }
-              // Locked once the opponent commits, or once you have timed out.
-              disabled={Boolean(opponentAnswer) || yourAnswer?.timed_out}
+              // Pending: first player may still change; racing player must still
+              // be able to click. Lock only after reveal or a recorded timeout.
+              disabled={
+                revealing ||
+                Boolean(yourAnswer?.timed_out) ||
+                (Boolean(yourAnswer) && Boolean(opponentAnswer))
+              }
               revealed={revealing}
-              pending={!revealing && Boolean(yourAnswer)}
+              pending={
+                !revealing && yourAnswer !== null && !yourAnswer.timed_out
+              }
               selectedAnswer={yourAnswer?.answer ?? null}
               correctAnswer={question.correctAnswer}
               correctCode={question.correctCode}
@@ -240,9 +247,18 @@ function toBannerPhase(
     case "answering":
       return { kind: "answering" };
     case "waiting-for-opponent":
-      return { kind: "waiting-for-opponent", opponentName };
+      return {
+        kind: "pending",
+        mode: "waiting",
+        opponentName,
+        secondsLeft: secondsLeft(phase.deadlineMs),
+      };
     case "racing":
-      return { kind: "racing", secondsLeft: secondsLeft(phase.deadlineMs) };
+      return {
+        kind: "pending",
+        mode: "racing",
+        secondsLeft: secondsLeft(phase.deadlineMs),
+      };
     case "revealing":
       return { kind: "revealing", secondsLeft: secondsLeft(phase.revealUntilMs) };
     default: {

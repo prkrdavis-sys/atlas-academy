@@ -1,0 +1,11 @@
+hurricane-florence-density.png — transparent storm-density texture derived from a NOAA GOES-East satellite image of Hurricane Florence.
+
+Source image: https://commons.wikimedia.org/wiki/File:Florence_Strengthens_to_a_Category_4_Hurricane_(29678024287).png
+Direct source: https://commons.wikimedia.org/wiki/Special:FilePath/Florence%202018-09-10%201400Z.png
+Source credit: NOAA / CIRA
+License: Public domain
+
+The source was cropped around the storm, resized to 512x512, and converted to a
+grayscale RGBA density mask. Dark ocean pixels become transparent; bright cloud
+tops become denser. The processed texture is used as a shape mask only, with
+color and atmospheric lighting supplied by the globe shader.

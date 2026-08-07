@@ -1,5 +1,8 @@
 import { createClient } from "@/lib/supabase/client";
 import type {
+  FriendInvite,
+  FriendInvitePreview,
+  FriendInviteRedemption,
   FriendshipRow,
   HeadToHeadRecord,
   MatchRow,
@@ -109,6 +112,43 @@ export async function sendFriendRequestByCode(code: string): Promise<void> {
     code: code.replace(/[\s-]/g, "").toUpperCase(),
   });
   if (error) throw error;
+}
+
+async function readInviteResponse<T>(response: Response): Promise<T> {
+  const body = (await response.json().catch(() => null)) as
+    | (T & { error?: string })
+    | null;
+
+  if (!response.ok) {
+    throw new Error(body && "error" in body ? body.error : "Friend invite request failed.");
+  }
+
+  if (!body) throw new Error("Friend invite request returned no data.");
+  return body;
+}
+
+export async function createFriendInvite(): Promise<FriendInvite> {
+  const response = await fetch("/api/friends/invites", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+  });
+
+  return readInviteResponse<FriendInvite>(response);
+}
+
+export async function previewFriendInvite(token: string): Promise<FriendInvitePreview> {
+  const response = await fetch(`/api/friends/invites?token=${encodeURIComponent(token)}`);
+  return readInviteResponse<FriendInvitePreview>(response);
+}
+
+export async function redeemFriendInvite(token: string): Promise<FriendInviteRedemption> {
+  const response = await fetch("/api/friends/invites/redeem", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token }),
+  });
+  const result = await readInviteResponse<{ status: FriendInviteRedemption }>(response);
+  return result.status;
 }
 
 export async function respondToFriendRequest(

@@ -24,6 +24,7 @@ import {
   isGlobeCloseupFocusOnly,
   type GlobePerfTier,
 } from "@/lib/globe-performance";
+import { awaitPaintYield, createPaintYieldGate, yieldToAnimationFrame } from "@/lib/globe-yield";
 import { loadOceanDepthImage } from "@/lib/globe-ocean-depth";
 import { loadLandColorImage } from "@/lib/globe-land-color";
 import type { GlobeUsMode } from "@/lib/globe-texture";
@@ -330,20 +331,41 @@ export function GlobeCloseupLayer({
   };
 
   const commitPatch = (window: CloseupWindow) => {
-    const next = buildPatch(window);
-    if (!next) return;
+    const gen = ++paintGenRef.current;
+    const shouldContinue = () => gen === paintGenRef.current;
+    const gate = createPaintYieldGate(shouldContinue);
 
-    if (fadingPatchRef.current) {
-      disposePatch(fadingPatchRef.current);
-      fadingPatchRef.current = null;
-    }
-    if (livePatchRef.current) {
-      fadingPatchRef.current = livePatchRef.current;
-    }
+    void (async () => {
+      // Never paint on the same turn as the debounce fire — let auto-rotate
+      // advance at least one frame before the high-res border patch builds.
+      await yieldToAnimationFrame();
+      if (!shouldContinue()) return;
+      await awaitPaintYield(gate);
+      if (!shouldContinue()) return;
 
-    livePatchRef.current = next;
-    groupRef.current?.add(next.mesh);
-    invalidate();
+      // Yield once more right before the sync canvas work so a spin step
+      // lands between "schedule" and "upload", then build the patch.
+      await yieldToAnimationFrame();
+      if (!shouldContinue()) return;
+
+      const next = buildPatch(window);
+      if (!next || !shouldContinue()) {
+        if (next) disposePatch(next);
+        return;
+      }
+
+      if (fadingPatchRef.current) {
+        disposePatch(fadingPatchRef.current);
+        fadingPatchRef.current = null;
+      }
+      if (livePatchRef.current) {
+        fadingPatchRef.current = livePatchRef.current;
+      }
+
+      livePatchRef.current = next;
+      groupRef.current?.add(next.mesh);
+      invalidate();
+    })();
   };
 
   const scheduleRebuild = (window: CloseupWindow, key: string) => {
@@ -362,10 +384,8 @@ export function GlobeCloseupLayer({
     pendingWindowRef.current = window;
     pendingPaintKeyRef.current = key;
     clearDebounce();
-    const gen = ++paintGenRef.current;
     debounceTimerRef.current = setTimeout(() => {
       debounceTimerRef.current = null;
-      if (gen !== paintGenRef.current) return;
       const nextWindow = pendingWindowRef.current;
       if (!nextWindow) return;
       pendingPaintKeyRef.current = null;

@@ -121,7 +121,7 @@ export function LibraryDetailNav({
       <div
         id={LIBRARY_DETAIL_NAV_ID}
         className={cn(
-          "relative z-30 -mx-4 sticky top-[var(--app-header-offset)] px-4 py-2 transition-[background-color,border-color,box-shadow] duration-200 sm:mx-0 sm:px-0",
+          "relative z-30 -mx-4 sticky top-0 px-4 py-2 transition-[background-color,border-color,box-shadow] duration-200 sm:mx-0 sm:px-0",
           chromeActive &&
             `${GLASS_PANEL_CLASS} rounded-none border-x-0 border-t-0`,
         )}

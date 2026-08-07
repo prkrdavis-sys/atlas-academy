@@ -313,8 +313,10 @@ export function useVersusMatch(matchId: string, userId: string | null) {
   const selectAnswer = useCallback(
     (answer: string, isCorrect: boolean) => {
       if (!userId || !match || match.status !== "active") return;
-      // Locked once the opponent has committed; the server enforces this too.
-      if (opponentAnswer) return;
+      // Both sides in → reveal; no more changes. The slower player may still
+      // submit during the pending window even though the opponent already has.
+      if (yourAnswer && opponentAnswer) return;
+      if (yourAnswer?.timed_out) return;
 
       const index = questionIndex;
       void submitMatchAnswer(matchId, index, answer, isCorrect)
@@ -332,7 +334,7 @@ export function useVersusMatch(matchId: string, userId: string | null) {
         })
         .catch(() => setError("Your answer did not reach the other player."));
     },
-    [userId, match, matchId, questionIndex, opponentAnswer, mergeAnswers],
+    [userId, match, matchId, questionIndex, yourAnswer, opponentAnswer, mergeAnswers],
   );
 
   // Forfeit once the opponent has been gone longer than the grace period.
@@ -357,10 +359,21 @@ export function useVersusMatch(matchId: string, userId: string | null) {
     void forfeitMatch(matchId, opponentId).then(setMatch).catch(() => undefined);
   }, [opponentSeenAtMs, nowMs, match, matchId, opponentId]);
 
+  // Only count a question once both answers are in (reveal). A lone correct
+  // selection during the pending window must not move the scoreboard yet.
   const { yourScore, opponentScore } = useMemo(() => {
+    const answersPerQuestion = new Map<number, number>();
+    for (const answer of answers) {
+      answersPerQuestion.set(
+        answer.question_index,
+        (answersPerQuestion.get(answer.question_index) ?? 0) + 1,
+      );
+    }
+
     let yours = 0;
     let theirs = 0;
     for (const answer of answers) {
+      if ((answersPerQuestion.get(answer.question_index) ?? 0) < 2) continue;
       if (!answer.is_correct) continue;
       if (answer.player_id === userId) yours += 1;
       else theirs += 1;

@@ -35,7 +35,9 @@ See [DATA_NOTES.md](./DATA_NOTES.md) for data sources and geopolitical notes.
 
 1. Push this repo to GitHub
 2. Import the project in your [Vercel dashboard](https://vercel.com)
-3. Deploy — no environment variables needed
+3. Configure the existing Supabase environment variables plus a strong, private
+   `FRIEND_INVITE_SECRET` value for signed friend links
+4. Deploy
 
 ## Project structure
 

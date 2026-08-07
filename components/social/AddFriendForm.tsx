@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { FriendInviteDialog } from "@/components/social/FriendInviteDialog";
 import { useSocial } from "@/components/social/SocialProvider";
 import { Button } from "@/components/ui/Button";
 import {
@@ -15,6 +16,7 @@ export function AddFriendForm() {
   const [value, setValue] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [copied, setCopied] = useState(false);
+  const [inviteOpen, setInviteOpen] = useState(false);
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -89,7 +91,7 @@ export function AddFriendForm() {
       ) : null}
 
       {self ? (
-        <div className="flex items-center justify-between gap-3 rounded-2xl border border-dashed border-slate-900/15 px-3 py-2.5 dark:border-white/15">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-dashed border-slate-900/15 px-3 py-2.5 dark:border-white/15">
           <div className="min-w-0">
             <p className="text-[0.65rem] font-black uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">
               Your friend code
@@ -98,11 +100,22 @@ export function AddFriendForm() {
               {formatFriendCode(self.friend_code)}
             </p>
           </div>
-          <Button variant="secondary" size="sm" onClick={handleCopyCode}>
-            {copied ? "Copied" : "Copy"}
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button variant="secondary" size="sm" onClick={handleCopyCode}>
+              {copied ? "Copied" : "Copy"}
+            </Button>
+            <Button
+              size="sm"
+              className="border-2 border-emerald-300 bg-emerald-500 text-white shadow-[0_3px_0_var(--color-emerald-700)] hover:bg-emerald-400"
+              onClick={() => setInviteOpen(true)}
+            >
+              <span aria-hidden>＋</span>
+              Add Friend
+            </Button>
+          </div>
         </div>
       ) : null}
+      <FriendInviteDialog open={inviteOpen} onClose={() => setInviteOpen(false)} />
     </div>
   );
 }

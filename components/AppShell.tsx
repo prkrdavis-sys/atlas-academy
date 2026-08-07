@@ -17,6 +17,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const { syncError } = useProfiles();
   const isAuthRoute = pathname === "/auth";
   const isDevPreviewRoute = pathname.startsWith("/dev/");
+  const isInviteRoute = pathname.startsWith("/invite/");
   const isActiveGameRoute = pathname.startsWith("/play/") && !pathname.startsWith("/play/setup");
   // Home, map, and Library share one persistent globe page that slides between panes.
   const isGlobeExperienceRoute =
@@ -25,14 +26,23 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!authHydrated) return;
-    if (!canAccessApp && !isAuthRoute && !isDevPreviewRoute) {
+    if (!canAccessApp && !isAuthRoute && !isDevPreviewRoute && !isInviteRoute) {
       router.replace("/auth");
     } else if (user && isAuthRoute) {
       router.replace("/");
     } else if (isGuest && isAuthRoute) {
       router.replace("/profiles");
     }
-  }, [authHydrated, canAccessApp, isAuthRoute, isDevPreviewRoute, isGuest, router, user]);
+  }, [
+    authHydrated,
+    canAccessApp,
+    isAuthRoute,
+    isDevPreviewRoute,
+    isInviteRoute,
+    isGuest,
+    router,
+    user,
+  ]);
 
   if (!authHydrated) {
     return (
@@ -42,7 +52,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (isAuthRoute || isDevPreviewRoute) {
+  if (isAuthRoute || isDevPreviewRoute || isInviteRoute) {
     return <main id="main-content">{children}</main>;
   }
 

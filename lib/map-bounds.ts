@@ -469,11 +469,12 @@ export function parseSvgViewBox(viewBox: string): SvgViewBox {
  * this crop (extra surroundings for beginners); the focused close-up is restored
  * by zooming in so the starting frame matches the static library map.
  *
+ * Always keeps the featured place centered. If the expanded crop would not fit
+ * inside `overviewViewBox`, the frame shrinks — it never shifts, which would
+ * recenter on distant land (e.g. France zoom-out jumping to Central Asia).
+ *
  * Never returns a crop tighter than `focusedViewBox`. Large places whose library
- * close-up already exceeds the continent overview keep that close-up as the
- * minimum frame and expand around it for zoom-out room — otherwise panzoom
- * cannot restore the library framing and the country appears clipped inside a
- * nearby continent view.
+ * close-up already exceeds the overview keep that close-up as the pan base.
  */
 export function computeInteractiveSurroundingsViewBox(
   focusedViewBox: SvgViewBox,
@@ -516,6 +517,12 @@ export function computeInteractiveSurroundingsViewBox(
     return focusedViewBox;
   }
 
+  const maxCenteredWidth = 2 * Math.min(focusCenterX - ox, ox + ow - focusCenterX);
+  const maxCenteredHeight = 2 * Math.min(focusCenterY - oy, oy + oh - focusCenterY);
+  if (maxCenteredWidth <= 0 || maxCenteredHeight <= 0) {
+    return focusedViewBox;
+  }
+
   let width = Math.max(fw * expandRatio, ow * minOverviewFraction, fw);
   let height = Math.max(fh * expandRatio, oh * minOverviewFraction, fh);
 
@@ -525,26 +532,20 @@ export function computeInteractiveSurroundingsViewBox(
     height = width / aspectRatio;
   }
 
-  width = Math.min(width, ow);
-  height = Math.min(height, oh);
+  width = Math.min(width, maxCenteredWidth, ow);
+  height = Math.min(height, maxCenteredHeight, oh);
   if (width / height < aspectRatio) {
     height = width / aspectRatio;
   } else {
     width = height * aspectRatio;
   }
-  width = Math.min(width, ow);
-  height = Math.min(height, oh);
+  width = Math.min(width, maxCenteredWidth, ow);
+  height = Math.min(height, maxCenteredHeight, oh);
 
   // Final guard: never tighter than the static library crop.
   if (width < fw - 1e-6 || height < fh - 1e-6) {
     return focusedViewBox;
   }
 
-  let x = focusCenterX - width / 2;
-  let y = focusCenterY - height / 2;
-
-  x = Math.min(Math.max(x, ox), ox + ow - width);
-  y = Math.min(Math.max(y, oy), oy + oh - height);
-
-  return [x, y, width, height];
+  return [focusCenterX - width / 2, focusCenterY - height / 2, width, height];
 }

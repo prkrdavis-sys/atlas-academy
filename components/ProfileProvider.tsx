@@ -74,6 +74,38 @@ function cloneProfiles(profiles: Profile[]) {
   return profiles.map((profile) => structuredClone(profile));
 }
 
+/** Keep local daily results that cloud sync has not caught up with yet. */
+function mergeLocalDailyChallengeProgress(cloud: Profile, local: Profile | undefined): Profile {
+  if (!local) return cloud;
+
+  const mergedResults = {
+    ...(cloud.dailyChallengeResults ?? {}),
+  };
+  for (const [dateKey, result] of Object.entries(local.dailyChallengeResults ?? {})) {
+    if (!mergedResults[dateKey]) {
+      mergedResults[dateKey] = result;
+    }
+  }
+
+  return {
+    ...cloud,
+    dailyChallengeResults: mergedResults,
+    dailyChallengeCompletions: [
+      ...new Set([
+        ...(cloud.dailyChallengeCompletions ?? []),
+        ...(local.dailyChallengeCompletions ?? []),
+        ...Object.keys(mergedResults),
+      ]),
+    ],
+    dailyChallengePlayedDates: [
+      ...new Set([
+        ...(cloud.dailyChallengePlayedDates ?? []),
+        ...(local.dailyChallengePlayedDates ?? []),
+      ]),
+    ],
+  };
+}
+
 export function ProfileProvider({ children }: { children: React.ReactNode }) {
   const { user, hydrated: authHydrated } = useAuth();
   const [state, setState] = useState(EMPTY_STATE);
@@ -154,6 +186,16 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
         if (rows.length === 0 && anonymousState?.profiles.length) {
           profiles = anonymousState.profiles;
           await saveCloudProfiles(userId, profiles);
+        } else {
+          const localById = new Map(
+            [...(anonymousState?.profiles ?? []), ...cachedState.profiles].map((profile) => [
+              profile.id,
+              profile,
+            ]),
+          );
+          profiles = profiles.map((profile) =>
+            mergeLocalDailyChallengeProgress(profile, localById.get(profile.id)),
+          );
         }
 
         if (cancelled) return;
@@ -167,6 +209,10 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
         remoteReadyRef.current = true;
         setState(nextState);
         setHydrated(true);
+
+        if (profiles.length) {
+          void saveCloudProfiles(userId, profiles).catch(() => undefined);
+        }
 
         if (activeProfileId) {
           setState(recordDailyLogin(activeProfileId).state);

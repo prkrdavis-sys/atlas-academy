@@ -176,13 +176,16 @@ function DailyChallengeLeaderboardContent({ profile }: { profile: Profile }) {
     async function loadBoard() {
       let syncError: string | null = null;
 
-      if (playerResult) {
+      // Re-submit every local first-attempt we still have so older days that
+      // completed before a failed cloud write still appear on the global board.
+      const localResults = Object.values(profile.dailyChallengeResults ?? {});
+      for (const localResult of localResults) {
         try {
-          // Local completion unlocks the page; cloud submit can still be missing if
-          // an earlier attempt failed. Re-submit before reading so the board is live.
-          await ensureDailyChallengeResultSubmitted(profile, playerResult);
+          await ensureDailyChallengeResultSubmitted(profile, localResult);
         } catch {
-          syncError = "We couldn't sync your score to the global leaderboard yet.";
+          if (localResult.dateKey === selectedDateKey) {
+            syncError = "We couldn't sync your score to the global leaderboard yet.";
+          }
         }
       }
 

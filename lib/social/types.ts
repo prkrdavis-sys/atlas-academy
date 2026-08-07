@@ -92,6 +92,26 @@ export type FriendRequest = {
   createdAt: string;
 };
 
+export type FriendInvite = {
+  token: string;
+  url: string;
+  inviterName: string;
+  expiresAt: string;
+};
+
+export type FriendInvitePreview = {
+  inviterName: string;
+  expiresAt: string;
+};
+
+export type FriendInviteRedemption =
+  | "sent"
+  | "accepted"
+  | "already_friends"
+  | "self"
+  | "expired"
+  | "invalid";
+
 export type MatchInvite = {
   match: MatchRow;
   player: PlayerRow;

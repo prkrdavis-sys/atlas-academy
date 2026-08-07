@@ -184,6 +184,7 @@ export function GlobeExperience({ children }: { children?: ReactNode }) {
   const { activeProfile, hydrated, refresh } = useProfiles();
   const profile = hydrated ? activeProfile : null;
   const isLibraryRoute = isExploreRoute(pathname);
+  const isLibraryDetailRoute = isLibraryRoute && pathname !== "/library";
   const isGlobeExperienceRoute =
     pathname === "/" || isMapRoute(pathname) || isLibraryRoute;
   const mode: PaneMode = isMapRoute(pathname)
@@ -412,23 +413,18 @@ export function GlobeExperience({ children }: { children?: ReactNode }) {
   }, [paramView]);
 
   // Leaving Map puts the stats sheet away and clears any selection.
+  // Do not reset the globe camera here — Map / Play / Library share one planet
+  // and tab changes must leave its orientation and auto-spin alone.
   useEffect(() => {
     if (mode !== "map") {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setStatsOpen(false);
       setSelectedGlobePlace(null);
     }
-
-    if (mode !== "library") return;
-
-    const frame = requestAnimationFrame(() => {
-      globeHandleRef.current?.resetView();
-    });
-    return () => cancelAnimationFrame(frame);
   }, [mode]);
 
-  // Returning from Library / play: settle the camera on the default framing so
-  // Play and Map open on the fully loaded planet at its resting spot.
+  // Returning from a play route: clear map UI state only. The globe keeps
+  // whatever framing / spin it had so navigation never fights the planet.
   useEffect(() => {
     const wasGlobeRoute = wasGlobeRouteRef.current;
     wasGlobeRouteRef.current = isGlobeExperienceRoute;
@@ -436,10 +432,6 @@ export function GlobeExperience({ children }: { children?: ReactNode }) {
 
     setStatsOpen(false);
     setSelectedGlobePlace(null);
-    const frame = requestAnimationFrame(() => {
-      globeHandleRef.current?.resetView();
-    });
-    return () => cancelAnimationFrame(frame);
   }, [isGlobeExperienceRoute]);
 
   const requestedView = paramView ?? storedView;
@@ -720,7 +712,8 @@ export function GlobeExperience({ children }: { children?: ReactNode }) {
                 aria-label="Library"
                 inert={mode !== "library" || undefined}
                 className={cn(
-                  "pointer-events-auto relative h-full w-full shrink-0 overflow-y-auto overscroll-contain px-4 pb-[calc(6.5rem+env(safe-area-inset-bottom))] pt-5 sm:pb-8 sm:pt-8",
+                  "pointer-events-auto relative h-full w-full shrink-0 overflow-y-auto overscroll-contain px-4 pb-[calc(6.5rem+env(safe-area-inset-bottom))] sm:pb-8",
+                  isLibraryDetailRoute ? "pt-0" : "pt-5 sm:pt-8",
                   libraryOpaque ? "bg-[var(--background)]" : "bg-slate-950/[0.04]",
                 )}
                 onPointerDown={handleSwipePointerDown}

@@ -269,6 +269,26 @@ export default function ProfilesPage() {
                 </div>
               ))}
             </div>
+            <div className="mt-5 border-t border-slate-200 pt-4 dark:border-slate-700">
+              <div className="flex items-end justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                    {isGuest ? "Account" : "Account username"}
+                  </p>
+                  <p className="mt-1 truncate text-sm font-medium text-slate-800 dark:text-slate-200">
+                    {isGuest ? "Guest (this device only)" : (user?.email ?? "Unavailable")}
+                  </p>
+                </div>
+                <Button type="button" variant="secondary" onClick={handleLogout} disabled={loggingOut}>
+                  {loggingOut ? "Logging out…" : isGuest ? "Exit guest" : "Log out"}
+                </Button>
+              </div>
+              {accountError && (
+                <p role="alert" className="mt-2 text-xs text-rose-600 dark:text-rose-400">
+                  {accountError}
+                </p>
+              )}
+            </div>
           </div>
 
           <form
@@ -418,26 +438,6 @@ export default function ProfilesPage() {
                 <Button type="submit" disabled={!editName.trim()}>
                   Save
                 </Button>
-              </div>
-              <div className="mt-5 shrink-0 border-t border-slate-200 pt-4 dark:border-slate-700">
-                <div className="flex items-end justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                      {isGuest ? "Account" : "Account username"}
-                    </p>
-                    <p className="mt-1 truncate text-sm font-medium text-slate-800 dark:text-slate-200">
-                      {isGuest ? "Guest (this device only)" : (user?.email ?? "Unavailable")}
-                    </p>
-                  </div>
-                  <Button type="button" variant="secondary" onClick={handleLogout} disabled={loggingOut}>
-                    {loggingOut ? "Logging out…" : isGuest ? "Exit guest" : "Log out"}
-                  </Button>
-                </div>
-                {accountError && (
-                  <p role="alert" className="mt-2 text-xs text-rose-600 dark:text-rose-400">
-                    {accountError}
-                  </p>
-                )}
               </div>
             </form>
           </div>,

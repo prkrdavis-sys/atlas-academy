@@ -140,6 +140,20 @@ export async function submitDailyChallengeResult(
   return row ? normalizeLeaderboardEntry(row as DailyChallengeResultRow) : null;
 }
 
+function profileWithDailyResult(profile: Profile, result: DailyChallengeLocalResult): Profile {
+  const existing = profile.dailyChallengeResults?.[result.dateKey];
+  return {
+    ...profile,
+    dailyChallengeResults: {
+      ...profile.dailyChallengeResults,
+      [result.dateKey]: existing ?? result,
+    },
+    dailyChallengeCompletions: [
+      ...new Set([...(profile.dailyChallengeCompletions ?? []), result.dateKey]),
+    ],
+  };
+}
+
 /**
  * Make sure the active cloud profile exists, then submit the local first-attempt
  * result. Used after gameplay and again when opening the leaderboard so players
@@ -158,13 +172,20 @@ export async function ensureDailyChallengeResultSubmitted(
     throw new Error("Sign in to submit your daily challenge result.");
   }
 
-  await saveCloudProfile(userId, profile);
+  const syncedProfile = profileWithDailyResult(profile, result);
+  try {
+    await saveCloudProfile(userId, syncedProfile);
+  } catch {
+    // Profile rows are usually already synced by ProfileProvider. Continue so a
+    // transient profile upsert failure does not block the global leaderboard.
+  }
+
   return submitDailyChallengeResult(
-    profile.id,
+    syncedProfile.id,
     result,
     getDailySeedForDateKey(result.dateKey),
     DAILY_CHALLENGE_CONTENT_VERSION,
-    questions,
+    questions ?? result.questions,
   );
 }
 

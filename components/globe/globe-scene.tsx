@@ -16,12 +16,15 @@ import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
 import {
   createGlobeTexturePaint,
+  createGlobeTexturePaintAsync,
   getGlobePalette,
   MASTERY_FX_STATIC_PHASE,
   resolveGlobeTextureSize,
+  type GlobeTexturePaintHandle,
   type GlobeUsMode,
 } from "@/lib/globe-texture";
-import { loadOceanDepthImage } from "@/lib/globe-ocean-depth";
+import { ensureOceanDepthCanvas, loadOceanDepthImage } from "@/lib/globe-ocean-depth";
+import { loadHurricaneTexture } from "@/lib/globe-hurricane-texture";
 import { loadLandColorImage } from "@/lib/globe-land-color";
 import {
   loadMasteryGoldPbrImages,
@@ -38,6 +41,10 @@ import {
   isGlobeFxConstrained,
   type GlobePerfTier,
 } from "@/lib/globe-performance";
+import {
+  createPaintYieldGate,
+  yieldToAnimationFrame,
+} from "@/lib/globe-yield";
 import { subsolarDirection } from "@/lib/sun-position";
 import { supportsWebGL } from "@/lib/webgl";
 import type { MapProgressDifficulty, Profile } from "@/lib/types";
@@ -220,12 +227,76 @@ export type GlobeSurfaceMaps = {
   normalMap: THREE.CanvasTexture | null;
 };
 
+function configureGlobeCanvasTexture(
+  texture: THREE.CanvasTexture,
+  anisotropy: number,
+) {
+  // CanvasTexture mipmaps flicker/band when the canvas is repainted (selection,
+  // mastery FX). Linear filtering keeps borders and fills stable.
+  texture.generateMipmaps = false;
+  texture.minFilter = THREE.LinearFilter;
+  texture.magFilter = THREE.LinearFilter;
+  texture.anisotropy = anisotropy;
+}
+
+function mapsFromPaint(
+  paint: GlobeTexturePaintHandle,
+  gl: THREE.WebGLRenderer,
+  fxConstrained: boolean,
+): GlobeSurfaceMaps {
+  const anisotropy = Math.min(
+    fxConstrained ? 2 : 8,
+    gl.capabilities.getMaxAnisotropy(),
+  );
+
+  const map = new THREE.CanvasTexture(paint.canvas);
+  map.colorSpace = THREE.SRGBColorSpace;
+  configureGlobeCanvasTexture(map, anisotropy);
+
+  const metalnessMap = paint.metalnessCanvas
+    ? new THREE.CanvasTexture(paint.metalnessCanvas)
+    : null;
+  if (metalnessMap) {
+    metalnessMap.colorSpace = THREE.NoColorSpace;
+    configureGlobeCanvasTexture(metalnessMap, anisotropy);
+  }
+
+  const roughnessMap = paint.roughnessCanvas
+    ? new THREE.CanvasTexture(paint.roughnessCanvas)
+    : null;
+  if (roughnessMap) {
+    roughnessMap.colorSpace = THREE.NoColorSpace;
+    configureGlobeCanvasTexture(roughnessMap, anisotropy);
+  }
+
+  const normalMap = paint.normalCanvas
+    ? new THREE.CanvasTexture(paint.normalCanvas)
+    : null;
+  if (normalMap) {
+    normalMap.colorSpace = THREE.NoColorSpace;
+    configureGlobeCanvasTexture(normalMap, anisotropy);
+  }
+
+  return { map, metalnessMap, roughnessMap, normalMap };
+}
+
+function disposeGlobeMaps(maps: GlobeSurfaceMaps) {
+  maps.map.dispose();
+  maps.metalnessMap?.dispose();
+  maps.roughnessMap?.dispose();
+  maps.normalMap?.dispose();
+}
+
 /**
  * Builds the progress-painted planet texture at the highest resolution the
  * device's GPU comfortably supports, rebuilding when inputs change. Hard
  * mastery-4 places get a gentle holographic drift; Normal gold uses a brushed
  * metal albedo plus metalness/roughness maps so sunlight catches those places.
  * Selection highlight updates without rebuilding the base layer.
+ *
+ * Heavy rebuilds (land/ocean imagery arriving, theme changes) paint across
+ * animation frames and keep the previous texture on-screen so auto-rotation
+ * never freezes while borders upscale.
  */
 export function useGlobeTexture(
   profile: Profile | null,
@@ -301,81 +372,97 @@ export function useGlobeTexture(
     };
   }, [difficulty]);
 
-  const paint = useMemo(
-    () =>
-      createGlobeTexturePaint(profile, {
-        difficulty,
-        usMode,
-        isDark,
-        size,
-        selectedCode: null,
-        phase: MASTERY_FX_STATIC_PHASE,
-        allowCanvasGlow: !fxConstrained,
-        allowMastery4Animation: !fxConstrained,
-        oceanDepthImage,
-        landColorImage,
-        goldColorImage: goldMaps.color,
-        goldRoughnessImage: goldMaps.roughness,
-        goldNormalImage: goldMaps.normal,
-      }),
-    [profile, difficulty, usMode, isDark, size, fxConstrained, goldMaps, oceanDepthImage, landColorImage],
+  const paintOptions = useMemo(
+    () => ({
+      difficulty,
+      usMode,
+      isDark,
+      size,
+      selectedCode: null as string | null,
+      phase: MASTERY_FX_STATIC_PHASE,
+      allowCanvasGlow: !fxConstrained,
+      allowMastery4Animation: !fxConstrained,
+      oceanDepthImage,
+      landColorImage,
+      goldColorImage: goldMaps.color,
+      goldRoughnessImage: goldMaps.roughness,
+      goldNormalImage: goldMaps.normal,
+    }),
+    [difficulty, usMode, isDark, size, fxConstrained, goldMaps, oceanDepthImage, landColorImage],
   );
 
-  const maps = useMemo(() => {
-    const anisotropy = Math.min(
-      fxConstrained ? 2 : 8,
-      gl.capabilities.getMaxAnisotropy(),
-    );
+  // First paint is a low-res preview so mount never freezes the spin; the
+  // effect below upscales to full resolution across animation frames.
+  const initialBundle = useMemo(() => {
+    const previewSize = Math.min(1024, size);
+    const paint = createGlobeTexturePaint(profile, {
+      ...paintOptions,
+      size: previewSize,
+      oceanDepthImage: null,
+      landColorImage: null,
+      goldColorImage: null,
+      goldRoughnessImage: null,
+      goldNormalImage: null,
+    });
+    return { paint, maps: mapsFromPaint(paint, gl, fxConstrained) };
+    // Intentionally once per mount identity — upgrades go through the effect.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-    const configureCanvasTexture = (texture: THREE.CanvasTexture) => {
-      // CanvasTexture mipmaps flicker/band when the canvas is repainted (selection,
-      // mastery FX). Linear filtering keeps borders and fills stable.
-      texture.generateMipmaps = false;
-      texture.minFilter = THREE.LinearFilter;
-      texture.magFilter = THREE.LinearFilter;
-      texture.anisotropy = anisotropy;
+  const [bundle, setBundle] = useState(initialBundle);
+  const bundleRef = useRef(bundle);
+  bundleRef.current = bundle;
+  const buildGenRef = useRef(0);
+
+  useEffect(() => {
+    const gen = ++buildGenRef.current;
+    let cancelled = false;
+    const shouldContinue = () => !cancelled && gen === buildGenRef.current;
+    const gate = createPaintYieldGate(shouldContinue);
+
+    void (async () => {
+      // Let the current spin frame finish before any heavy canvas work.
+      await yieldToAnimationFrame();
+      if (!shouldContinue()) return;
+
+      if (paintOptions.oceanDepthImage) {
+        const depth = await ensureOceanDepthCanvas(
+          paintOptions.oceanDepthImage,
+          paintOptions.isDark,
+          gate,
+        );
+        if (!shouldContinue() || !depth) return;
+        await yieldToAnimationFrame();
+        if (!shouldContinue()) return;
+      }
+
+      const paint = await createGlobeTexturePaintAsync(profile, paintOptions, gate);
+      if (!paint || !shouldContinue()) return;
+
+      const nextMaps = mapsFromPaint(paint, gl, fxConstrained);
+      const prevMaps = bundleRef.current.maps;
+      setBundle({ paint, maps: nextMaps });
+      invalidate();
+      // Dispose the previous GPU textures after a frame so the material swap
+      // isn't racing a dispose mid-draw.
+      if (prevMaps !== nextMaps) {
+        requestAnimationFrame(() => disposeGlobeMaps(prevMaps));
+      }
+    })();
+
+    return () => {
+      cancelled = true;
     };
-
-    const map = new THREE.CanvasTexture(paint.canvas);
-    map.colorSpace = THREE.SRGBColorSpace;
-    configureCanvasTexture(map);
-
-    const metalnessMap = paint.metalnessCanvas
-      ? new THREE.CanvasTexture(paint.metalnessCanvas)
-      : null;
-    if (metalnessMap) {
-      metalnessMap.colorSpace = THREE.NoColorSpace;
-      configureCanvasTexture(metalnessMap);
-    }
-
-    const roughnessMap = paint.roughnessCanvas
-      ? new THREE.CanvasTexture(paint.roughnessCanvas)
-      : null;
-    if (roughnessMap) {
-      roughnessMap.colorSpace = THREE.NoColorSpace;
-      configureCanvasTexture(roughnessMap);
-    }
-
-    const normalMap = paint.normalCanvas
-      ? new THREE.CanvasTexture(paint.normalCanvas)
-      : null;
-    if (normalMap) {
-      normalMap.colorSpace = THREE.NoColorSpace;
-      configureCanvasTexture(normalMap);
-    }
-
-    return { map, metalnessMap, roughnessMap, normalMap };
-  }, [paint, gl, fxConstrained]);
+  }, [profile, paintOptions, gl, fxConstrained, invalidate]);
 
   useEffect(
     () => () => {
-      maps.map.dispose();
-      maps.metalnessMap?.dispose();
-      maps.roughnessMap?.dispose();
-      maps.normalMap?.dispose();
+      disposeGlobeMaps(bundleRef.current.maps);
     },
-    [maps],
+    [],
   );
+
+  const { paint, maps } = bundle;
 
   // Selection is an overlay layer — update without rebuilding the base canvas.
   useEffect(() => {
@@ -503,10 +590,20 @@ const ATMOSPHERE_FRAGMENT_SHADER = /* glsl */ `
     float exo = 0.18 * layer(h, 0.64, 0.24);
     float density = tropo + strato + meso + exo + 0.3 * exp(-h * 2.8);
 
-    vec3 color = uTroposphere;
-    color = mix(color, uStratosphere, smoothstep(0.05, 0.22, h));
-    color = mix(color, uMesosphere, smoothstep(0.2, 0.48, h));
-    color = mix(color, uExosphere, smoothstep(0.45, 0.9, h));
+    // Pick colour from whichever band is dominant at this altitude instead of
+    // lerping hues — sequential RGB mixes between pale rim and indigo upper
+    // layers were reading as grey in the middle shell.
+    float tropoBand = layer(h, 0.015, 0.10);
+    float stratoBand = layer(h, 0.165, 0.06);
+    float mesoBand = layer(h, 0.36, 0.14);
+    float exoBand = layer(h, 0.64, 0.24);
+    float colorWeight = tropoBand + stratoBand + mesoBand + exoBand + 1e-4;
+    vec3 color = (
+      uTroposphere * tropoBand +
+      uStratosphere * stratoBand +
+      uMesosphere * mesoBand +
+      uExosphere * exoBand
+    ) / colorWeight;
 
     // Lit limb glows; the night limb keeps only a thin trace of airglow. The
     // sample point is where the ray grazes closest, which is the air we see.
@@ -529,22 +626,22 @@ type AtmospherePalette = {
   hazeOpacity: number;
 };
 
-/** Teal aura in dark space; a warm haze against the light-mode sunset sky. */
+/** Saturated sky-blue rim stepping into indigo — no near-white stops that grey out when blended. */
 const DARK_ATMOSPHERE_PALETTE: AtmospherePalette = {
-  troposphere: "#2dd4bf",
-  stratosphere: "#5eead4",
-  mesosphere: "#38bdf8",
+  troposphere: "#38bdf8",
+  stratosphere: "#60a5fa",
+  mesosphere: "#818cf8",
   exosphere: "#4f46e5",
   opacity: 0.42,
-  hazeColor: "#2dd4bf",
+  hazeColor: "#38bdf8",
   hazeOpacity: 0.07,
 };
 
 const LIGHT_ATMOSPHERE_PALETTE: AtmospherePalette = {
   troposphere: "#ffb27d",
   stratosphere: "#ffd8a8",
-  mesosphere: "#8ec5ff",
-  exosphere: "#6366f1",
+  mesosphere: "#fde68a",
+  exosphere: "#818cf8",
   opacity: 0.4,
   hazeColor: "#ffc79a",
   hazeOpacity: 0.1,
@@ -922,6 +1019,9 @@ export function GlobeAssetPreloader() {
     useTexture.preload(SUN_TEXTURE_URL);
     useTexture.preload(SUN_GLOW_TEXTURE_URL);
     useTexture.preload(NIGHT_LIGHTS_TEXTURE_URL);
+    void loadHurricaneTexture().catch(() => {
+      // Rare-event asset; ordinary clouds remain if this fails.
+    });
   }, []);
   return null;
 }

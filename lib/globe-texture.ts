@@ -28,8 +28,12 @@ import {
 } from "@/lib/mastery-gold-texture";
 import { getOceanDepthCanvas } from "@/lib/globe-ocean-depth";
 import { getLandColorCanvas } from "@/lib/globe-land-color";
+import { awaitPaintYield, type PaintYieldGate } from "@/lib/globe-yield";
 import { getPlaceMasteryLevel } from "@/lib/map-progress";
 import type { MapProgressDifficulty, PlaceMasteryLevel, Profile } from "@/lib/types";
+
+/** Shape strokes per animation-frame slice during cooperative texture builds. */
+const TEXTURE_SHAPE_BATCH = 8;
 
 export type GlobeCountryShape = { code: string; rings: number[][] };
 
@@ -510,25 +514,83 @@ export type GlobeTexturePaintHandle = {
  * once, plus a mastery-4 overlay that can be redrawn cheaply each animation
  * frame. Selected highlight is part of the animated layer so it stays on top
  * without rebuilding the base.
+ *
+ * Prefer {@link createGlobeTexturePaintAsync} while the globe may be spinning —
+ * this sync path can stall auto-rotation for a noticeable beat at 4K.
  */
 export function createGlobeTexturePaint(
   profile: Profile | null,
-  {
-    difficulty = "medium",
-    usMode = "states",
-    isDark = true,
-    size = GLOBE_BASE_TEXTURE_SIZE,
-    selectedCode = null,
-    phase = masteryFxPhaseFromTime(0),
-    allowCanvasGlow = !isGlobeFxConstrained(),
-    allowMastery4Animation = !isGlobeFxConstrained(),
-    oceanDepthImage = null,
-    landColorImage = null,
-    goldColorImage = null,
-    goldRoughnessImage = null,
-    goldNormalImage = null,
-  }: GlobeTextureOptions = {},
+  options: GlobeTextureOptions = {},
 ): GlobeTexturePaintHandle {
+  // Sync one-shot path for exports/tests. Runtime globe uses the async builder.
+  return buildGlobeTexturePaintSync(profile, options);
+}
+
+/**
+ * Same result as {@link createGlobeTexturePaint}, but yields between shape
+ * batches so orbit auto-rotation keeps running while borders upscale.
+ * Returns null if `gate.shouldContinue` becomes false mid-paint.
+ */
+export async function createGlobeTexturePaintAsync(
+  profile: Profile | null,
+  options: GlobeTextureOptions = {},
+  gate: PaintYieldGate,
+): Promise<GlobeTexturePaintHandle | null> {
+  return buildGlobeTexturePaintAsync(profile, options, gate);
+}
+
+function resolveTextureOptions({
+  difficulty = "medium",
+  usMode = "states",
+  isDark = true,
+  size = GLOBE_BASE_TEXTURE_SIZE,
+  selectedCode = null,
+  phase = masteryFxPhaseFromTime(0),
+  allowCanvasGlow = !isGlobeFxConstrained(),
+  allowMastery4Animation = !isGlobeFxConstrained(),
+  oceanDepthImage = null,
+  landColorImage = null,
+  goldColorImage = null,
+  goldRoughnessImage = null,
+  goldNormalImage = null,
+}: GlobeTextureOptions = {}) {
+  return {
+    difficulty,
+    usMode,
+    isDark,
+    size,
+    selectedCode,
+    phase,
+    allowCanvasGlow,
+    allowMastery4Animation,
+    oceanDepthImage,
+    landColorImage,
+    goldColorImage,
+    goldRoughnessImage,
+    goldNormalImage,
+  };
+}
+
+function buildGlobeTexturePaintSync(
+  profile: Profile | null,
+  options: GlobeTextureOptions = {},
+): GlobeTexturePaintHandle {
+  const {
+    difficulty,
+    usMode,
+    isDark,
+    size,
+    selectedCode,
+    phase,
+    allowCanvasGlow,
+    allowMastery4Animation,
+    oceanDepthImage,
+    landColorImage,
+    goldColorImage,
+    goldRoughnessImage,
+    goldNormalImage,
+  } = resolveTextureOptions(options);
+
   const width = size;
   const height = size / 2;
   const palette = getGlobePalette(isDark);
@@ -539,7 +601,6 @@ export function createGlobeTexturePaint(
   const hasMastery4 = mastery4Shapes.length > 0;
   let activeSelectedCode = selectedCode;
 
-  // Cache Path2Ds so shimmer frames don't re-walk every ring.
   const pathByCode = new Map<string, Path2D>();
   const pathFor = (code: string, rings: number[][]) => {
     let path = pathByCode.get(code);
@@ -555,26 +616,19 @@ export function createGlobeTexturePaint(
   base.height = height;
   const baseCtx = base.getContext("2d")!;
 
-  // ~192px tiles at 2048 width — big enough that dents and scratches read.
   const goldTilePx = Math.max(40, Math.round(MASTERY_GOLD_TILE_BASE_PX * pixelScale));
   const goldPattern =
     difficulty === "medium" && goldColorImage
       ? createMasteryGoldPattern(baseCtx, goldColorImage, goldTilePx)
       : null;
 
-  // Flat fill stays as the fallback until the bathymetry image is available.
   baseCtx.fillStyle = palette.ocean;
   baseCtx.fillRect(0, 0, width, height);
   if (oceanDepthImage) {
-    // Real depth shading: shallow shelves lighter, abyssal water darker.
     baseCtx.drawImage(getOceanDepthCanvas(oceanDepthImage, isDark), 0, 0, width, height);
   }
-  // Painted-water mottle beneath the land shapes.
   applyGlobeSurfaceGrain(baseCtx, width, height, pixelScale, "ocean");
 
-  // Combined land silhouette (extras + countries; NE features never overlap,
-  // so even-odd only carves genuine holes) — clips the Blue Marble imagery
-  // and the land grain pass to land.
   const extrasPath = buildPath(GLOBE_TEXTURE_DATA.extras, width, height);
   const landPath = new Path2D();
   landPath.addPath(extrasPath);
@@ -582,9 +636,6 @@ export function createGlobeTexturePaint(
     if (!shape.isState) landPath.addPath(pathFor(shape.code, shape.rings));
   }
 
-  // Opaque sage underlay for every country before Blue Marble. If land
-  // imagery fails to paint (mobile canvas eviction, empty clip, etc.)
-  // countries still read as land instead of vanishing into ocean blue.
   const landUnderlay = getProgressFillColor(0, isDark, difficulty);
   baseCtx.fillStyle = landUnderlay;
   baseCtx.fill(extrasPath, "evenodd");
@@ -597,7 +648,6 @@ export function createGlobeTexturePaint(
     landColorImage != null ? getLandColorCanvas(landColorImage, isDark, width) : null;
   const hasLandImagery = landCanvas != null;
   if (landCanvas) {
-    // Real natural-color terrain under every land shape, world-anchored.
     baseCtx.save();
     baseCtx.clip(landPath, "evenodd");
     baseCtx.drawImage(landCanvas, 0, 0, width, height);
@@ -622,8 +672,6 @@ export function createGlobeTexturePaint(
   for (const shape of shapes) {
     const path = pathFor(shape.code, shape.rings);
     if (shape.level === 4) {
-      // Imagery is the underlay when present; otherwise leave a neutral flat
-      // fill so borders still read when the overlay animates.
       if (!hasLandImagery) {
         baseCtx.fillStyle = getProgressFillColor(0, isDark, difficulty);
         baseCtx.fill(path, "evenodd");
@@ -635,8 +683,6 @@ export function createGlobeTexturePaint(
     strokeShape(baseCtx, path, shape.isState, palette, pixelScale);
   }
 
-  // Stone/paper tooth over the finished base so land feels touchable (the
-  // whisper it adds over the ocean mottle keeps the whole surface cohesive).
   const clipGrainToLand = !GLOBE_OCEAN_MOTTLE_ENABLED;
   if (clipGrainToLand) {
     baseCtx.save();
@@ -650,7 +696,6 @@ export function createGlobeTexturePaint(
   canvas.height = height;
   const ctx = canvas.getContext("2d")!;
 
-  // Specular + normal response maps — only meaningful for Normal gold mastery.
   const useMetalMaps = difficulty === "medium" && hasMastery4;
   let metalnessCanvas: HTMLCanvasElement | null = null;
   let roughnessCanvas: HTMLCanvasElement | null = null;
@@ -688,8 +733,216 @@ export function createGlobeTexturePaint(
     if (activeSelectedCode) {
       const selected = shapes.find((shape) => shape.code === activeSelectedCode);
       if (selected) {
-        // Fill only — keep the base border stroke so selection doesn't thicken
-        // or recolor outlines (which reads as pixelation at high zoom).
+        const path = pathFor(selected.code, selected.rings);
+        fillSelectedMapPath(ctx, path, mapPalette.highlight.fill, {
+          glowBlur: MAP_SELECTION_GLOW_BLUR * pixelScale,
+          allowGlow: allowCanvasGlow,
+        });
+      }
+    }
+  };
+
+  paintFrame(phase);
+
+  return {
+    canvas,
+    metalnessCanvas,
+    roughnessCanvas,
+    normalCanvas,
+    hasMastery4,
+    animateMastery4:
+      hasMastery4 && allowMastery4Animation && mastery4ShouldAnimate(difficulty),
+    paintFrame,
+    setSelectedCode: (code) => {
+      activeSelectedCode = code;
+    },
+  };
+}
+
+async function buildGlobeTexturePaintAsync(
+  profile: Profile | null,
+  options: GlobeTextureOptions = {},
+  gate: PaintYieldGate,
+): Promise<GlobeTexturePaintHandle | null> {
+  const {
+    difficulty,
+    usMode,
+    isDark,
+    size,
+    selectedCode,
+    phase,
+    allowCanvasGlow,
+    allowMastery4Animation,
+    oceanDepthImage,
+    landColorImage,
+    goldColorImage,
+    goldRoughnessImage,
+    goldNormalImage,
+  } = resolveTextureOptions(options);
+
+  const width = size;
+  const height = size / 2;
+  const palette = getGlobePalette(isDark);
+  const mapPalette = getMapPalette(isDark);
+  const pixelScale = width / GLOBE_BASE_TEXTURE_SIZE;
+  const shapes = collectShapes(profile, difficulty, usMode);
+  const mastery4Shapes = shapes.filter((shape) => shape.level === 4);
+  const hasMastery4 = mastery4Shapes.length > 0;
+  let activeSelectedCode = selectedCode;
+
+  const pathByCode = new Map<string, Path2D>();
+  const pathFor = (code: string, rings: number[][]) => {
+    let path = pathByCode.get(code);
+    if (!path) {
+      path = buildPath(rings, width, height);
+      pathByCode.set(code, path);
+    }
+    return path;
+  };
+
+  const base = document.createElement("canvas");
+  base.width = width;
+  base.height = height;
+  const baseCtx = base.getContext("2d")!;
+
+  const goldTilePx = Math.max(40, Math.round(MASTERY_GOLD_TILE_BASE_PX * pixelScale));
+  const goldPattern =
+    difficulty === "medium" && goldColorImage
+      ? createMasteryGoldPattern(baseCtx, goldColorImage, goldTilePx)
+      : null;
+
+  baseCtx.fillStyle = palette.ocean;
+  baseCtx.fillRect(0, 0, width, height);
+  if (oceanDepthImage) {
+    baseCtx.drawImage(getOceanDepthCanvas(oceanDepthImage, isDark), 0, 0, width, height);
+  }
+  applyGlobeSurfaceGrain(baseCtx, width, height, pixelScale, "ocean");
+  await awaitPaintYield(gate);
+  if (!gate.shouldContinue()) return null;
+
+  const extrasPath = buildPath(GLOBE_TEXTURE_DATA.extras, width, height);
+  const landPath = new Path2D();
+  landPath.addPath(extrasPath);
+  for (const shape of shapes) {
+    if (!shape.isState) landPath.addPath(pathFor(shape.code, shape.rings));
+  }
+
+  const landUnderlay = getProgressFillColor(0, isDark, difficulty);
+  baseCtx.fillStyle = landUnderlay;
+  baseCtx.fill(extrasPath, "evenodd");
+  for (let i = 0; i < shapes.length; i += 1) {
+    const shape = shapes[i];
+    if (shape.isState) continue;
+    baseCtx.fill(pathFor(shape.code, shape.rings), "evenodd");
+    if (i % TEXTURE_SHAPE_BATCH === TEXTURE_SHAPE_BATCH - 1) {
+      await awaitPaintYield(gate);
+      if (!gate.shouldContinue()) return null;
+    }
+  }
+
+  const landCanvas =
+    landColorImage != null ? getLandColorCanvas(landColorImage, isDark, width) : null;
+  const hasLandImagery = landCanvas != null;
+  if (landCanvas) {
+    baseCtx.save();
+    baseCtx.clip(landPath, "evenodd");
+    baseCtx.drawImage(landCanvas, 0, 0, width, height);
+    baseCtx.restore();
+  }
+  await awaitPaintYield(gate);
+  if (!gate.shouldContinue()) return null;
+
+  const drawOpts = {
+    isDark,
+    difficulty,
+    pixelScale,
+    width,
+    height,
+    phase: 0.35,
+    allowCanvasGlow,
+    goldPattern,
+    hasLandImagery,
+  };
+
+  drawShapeFill(baseCtx, extrasPath, 0, drawOpts);
+  strokeShape(baseCtx, extrasPath, false, palette, pixelScale);
+
+  for (let i = 0; i < shapes.length; i += 1) {
+    const shape = shapes[i];
+    const path = pathFor(shape.code, shape.rings);
+    if (shape.level === 4) {
+      if (!hasLandImagery) {
+        baseCtx.fillStyle = getProgressFillColor(0, isDark, difficulty);
+        baseCtx.fill(path, "evenodd");
+      }
+      strokeShape(baseCtx, path, shape.isState, palette, pixelScale);
+    } else {
+      drawShapeFill(baseCtx, path, shape.level, drawOpts);
+      strokeShape(baseCtx, path, shape.isState, palette, pixelScale);
+    }
+    if (i % TEXTURE_SHAPE_BATCH === TEXTURE_SHAPE_BATCH - 1) {
+      await awaitPaintYield(gate);
+      if (!gate.shouldContinue()) return null;
+    }
+  }
+
+  const clipGrainToLand = !GLOBE_OCEAN_MOTTLE_ENABLED;
+  if (clipGrainToLand) {
+    baseCtx.save();
+    baseCtx.clip(landPath, "evenodd");
+  }
+  applyGlobeSurfaceGrain(baseCtx, width, height, pixelScale, "land");
+  if (clipGrainToLand) baseCtx.restore();
+  await awaitPaintYield(gate);
+  if (!gate.shouldContinue()) return null;
+
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d")!;
+
+  const useMetalMaps = difficulty === "medium" && hasMastery4;
+  let metalnessCanvas: HTMLCanvasElement | null = null;
+  let roughnessCanvas: HTMLCanvasElement | null = null;
+  let normalCanvas: HTMLCanvasElement | null = null;
+
+  if (useMetalMaps) {
+    const pbrMaps = createGoldPbrMapSet(width, height);
+    metalnessCanvas = pbrMaps.metalnessCanvas;
+    roughnessCanvas = pbrMaps.roughnessCanvas;
+    normalCanvas = pbrMaps.normalCanvas;
+
+    for (let i = 0; i < mastery4Shapes.length; i += 1) {
+      const shape = mastery4Shapes[i];
+      const path = pathFor(shape.code, shape.rings);
+      paintGoldPbrForPath(
+        pbrMaps,
+        path,
+        goldTilePx,
+        goldRoughnessImage,
+        goldNormalImage,
+      );
+      if (i % TEXTURE_SHAPE_BATCH === TEXTURE_SHAPE_BATCH - 1) {
+        await awaitPaintYield(gate);
+        if (!gate.shouldContinue()) return null;
+      }
+    }
+  }
+
+  const paintFrame = (nextPhase: number) => {
+    ctx.clearRect(0, 0, width, height);
+    ctx.drawImage(base, 0, 0);
+
+    const frameOpts = { ...drawOpts, phase: nextPhase };
+    for (const shape of mastery4Shapes) {
+      const path = pathFor(shape.code, shape.rings);
+      drawShapeFill(ctx, path, 4, frameOpts);
+      strokeShape(ctx, path, shape.isState, palette, pixelScale);
+    }
+
+    if (activeSelectedCode) {
+      const selected = shapes.find((shape) => shape.code === activeSelectedCode);
+      if (selected) {
         const path = pathFor(selected.code, selected.rings);
         fillSelectedMapPath(ctx, path, mapPalette.highlight.fill, {
           glowBlur: MAP_SELECTION_GLOW_BLUR * pixelScale,

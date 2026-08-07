@@ -1,9 +1,10 @@
 "use client";
 
 import { useFrame } from "@react-three/fiber";
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { getCloudNoiseTexture } from "@/lib/globe-cloud-noise";
+import { loadHurricaneTexture } from "@/lib/globe-hurricane-texture";
 import {
   GLOBE_CLOUD_COUNT_BY_TIER,
   GLOBE_CLOUD_NOISE_SIZE_BY_TIER,
@@ -15,39 +16,46 @@ import { subsolarDirection } from "@/lib/sun-position";
 function ignoreRaycast() {}
 
 /**
- * Cloud bases float above the ground-hugging haze shell (1.012), leaving a
- * visible pocket of atmosphere between the planet and the first cloud layer.
- * The anvil and cirrus centers stay below the atmosphere shell's 1.16 outer
- * edge while still reading as separate high-altitude layers.
+ * Real cloud altitudes vanish at globe scale — the entire troposphere is about
+ * 0.2% of Earth's radius. Vertical heights are therefore authored in kilometres
+ * and multiplied by one exaggeration factor, which keeps the WMO layer ordering
+ * physically correct while making the stratification legible. Horizontal sizes
+ * use the true scale: weather systems really are thousands of kilometres wide.
  */
-const CLOUD_BASE_RADIUS_MIN = 1.026;
-const CLOUD_BASE_RADIUS_MAX = 1.042;
-const CLOUD_TOWER_START_HEIGHT = 0.014;
-const CLOUD_TOWER_HEIGHT = 0.04;
-const CLOUD_ANVIL_HEIGHT = 0.07;
-const CLOUD_CIRRUS_HEIGHT = 0.105;
+const EARTH_RADIUS_KM = 6371;
+const KM = 1 / EARTH_RADIUS_KM;
+const ALTITUDE_EXAGGERATION = 26;
+const ALTITUDE_KM = KM * ALTITUDE_EXAGGERATION;
 
-const BASE_PUFFS_MIN = 3;
-const BASE_PUFFS_MAX = 5;
-const TOWER_LEVELS_MIN = 2;
-const TOWER_LEVELS_MAX = 3;
-const ANVIL_PUFFS_MIN = 3;
-const ANVIL_PUFFS_MAX = 5;
-const CIRRUS_PUFFS_MIN = 1;
-const CIRRUS_PUFFS_MAX = 3;
+/** Cloud bases sit just clear of the ground-hugging haze shell at 1.012. */
+const CLOUD_DECK_RADIUS = 1.015;
+
+/**
+ * WMO levels: low cloud 0–2 km, middle 2–7 km, high 5–18 km. Cumulonimbus is
+ * based in the low level and towers up to an anvil at the tropopause, while
+ * cirrus sits several kilometres above every convective top so the thick and
+ * the wispy layers never occupy the same altitude.
+ */
+const LOW_BASE_MIN_KM = 0.6;
+const LOW_BASE_MAX_KM = 1.8;
+const TOWER_BASE_KM = 2.6;
+const TOWER_TOP_KM = 9;
+const ANVIL_KM = 10.5;
+const CIRRUS_MIN_KM = 14;
+const CIRRUS_MAX_KM = 17.5;
 
 /** Clouds stay translucent and patchy — never a solid white cap. */
-const BASE_ALPHA_MIN = 0.24;
-const BASE_ALPHA_MAX = 0.42;
-const TOWER_ALPHA_MIN = 0.3;
-const TOWER_ALPHA_MAX = 0.52;
-const ANVIL_ALPHA_MIN = 0.2;
-const ANVIL_ALPHA_MAX = 0.38;
+const BASE_ALPHA_MIN = 0.3;
+const BASE_ALPHA_MAX = 0.52;
+const TOWER_ALPHA_MIN = 0.38;
+const TOWER_ALPHA_MAX = 0.62;
+const ANVIL_ALPHA_MIN = 0.24;
+const ANVIL_ALPHA_MAX = 0.42;
 const CIRRUS_ALPHA_MIN = 0.1;
 const CIRRUS_ALPHA_MAX = 0.2;
 
-/** Slow global circulation in addition to each storm cell's local wind. */
-const CLOUD_ROTATION_SPEED = 0.0035;
+/** Global circulation: one revolution relative to the planet every ~6.5 min. */
+const CLOUD_ROTATION_SPEED = 0.016;
 
 /** Frozen shader time under reduced motion, picked so puffs look formed. */
 const STATIC_TIME = 12;
@@ -55,6 +63,19 @@ const STATIC_TIME = 12;
 /** Draw above the city lights shell so clouds read as the topmost surface layer. */
 const CLOUD_RENDER_ORDER = 7;
 
+/** One storm event per mounted globe at most, with a long quiet lead-in. */
+const HURRICANE_EVENT_MIN_DELAY_MS = 45_000;
+const HURRICANE_EVENT_MAX_DELAY_MS = 90_000;
+const HURRICANE_EVENT_CHANCE = 0.16;
+const HURRICANE_EVENT_VISIBLE_MS = 24_000;
+const HURRICANE_LATITUDE = THREE.MathUtils.degToRad(16);
+const HURRICANE_LONGITUDE = THREE.MathUtils.degToRad(142);
+const HURRICANE_RADIUS = CLOUD_DECK_RADIUS;
+
+/**
+ * Cloud puff meshes are already bent onto their spherical shell in cluster-local
+ * space (see createShellPatchGeometry), so the vertex stage is a straight pass.
+ */
 const CLOUD_VERTEX_SHADER = /* glsl */ `
   varying vec2 vUv;
   void main() {
@@ -95,11 +116,11 @@ const CLOUD_FRAGMENT_SHADER = /* glsl */ `
     vec2 offset = vec2(uSeed, uSeed * 1.73);
     float low = texture2D(
       uNoise,
-      vUv * 0.85 + offset + vec2(uTime * 0.010, uTime * -0.006)
+      vUv * 1.3 + offset + vec2(uTime * 0.010, uTime * -0.006)
     ).r;
     float high = texture2D(
       uNoise,
-      (swirl * centered) * 2.1 + offset * 3.1 + vec2(uTime * -0.018, uTime * 0.013)
+      (swirl * centered) * 3.0 + offset * 3.1 + vec2(uTime * -0.018, uTime * 0.013)
     ).r;
 
     float field = low * high * 2.2 + 0.1 * sin(uTime * 0.27 + uSeed * 21.0);
@@ -132,6 +153,108 @@ const CLOUD_FRAGMENT_SHADER = /* glsl */ `
   }
 `;
 
+const HURRICANE_VERTEX_SHADER = /* glsl */ `
+  uniform sampler2D uStormMap;
+  uniform float uDepth;
+  uniform float uTime;
+  uniform float uSeed;
+  uniform float uClusterRadius;
+  varying vec2 vUv;
+  varying float vDepth;
+
+  void main() {
+    vUv = uv;
+    float density = texture2D(uStormMap, uv).r;
+    float edge = smoothstep(0.03, 0.24, density);
+    // Geometry is already on the spherical shell; lift dense eye-wall regions
+    // along the local radial (cluster +Z) and keep them on a larger shell.
+    vec3 local = position;
+    local.z += density * uDepth;
+    local.x += sin(uTime * 0.16 + uv.y * 8.0 + uSeed * 12.0) * 0.003 * edge;
+    local.y += cos(uTime * 0.13 + uv.x * 7.0 + uSeed * 9.0) * 0.002 * edge;
+
+    vec3 fromCenter = vec3(local.x, local.y, local.z + uClusterRadius);
+    float shellR = uClusterRadius + local.z;
+    fromCenter *= shellR / max(length(fromCenter), 1e-6);
+    vec3 bent = fromCenter - vec3(0.0, 0.0, uClusterRadius);
+
+    vDepth = density;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(bent, 1.0);
+  }
+`;
+
+const HURRICANE_FRAGMENT_SHADER = /* glsl */ `
+  uniform sampler2D uStormMap;
+  uniform sampler2D uNoise;
+  uniform vec3 uLitColor;
+  uniform vec3 uShadowColor;
+  uniform float uTime;
+  uniform float uSeed;
+  uniform float uOpacity;
+  uniform float uLight;
+  varying vec2 vUv;
+  varying float vDepth;
+
+  void main() {
+    float density = texture2D(uStormMap, vUv).r;
+    if (density <= 0.012) discard;
+
+    vec2 drift = vec2(uTime * 0.004, uTime * -0.002) + uSeed;
+    float breakup = texture2D(uNoise, vUv * 2.6 + drift).r;
+    float detail = smoothstep(0.12, 0.78, breakup);
+    float edgeFade = smoothstep(0.018, 0.12, density);
+    float alpha = density * mix(0.58, 0.94, detail) * edgeFade;
+    if (alpha <= 0.006) discard;
+
+    float light = clamp(uLight, 0.0, 1.0);
+    vec3 color = mix(uShadowColor, uLitColor, light);
+    color = mix(color, uLitColor, smoothstep(0.48, 0.92, vDepth) * 0.2 * light);
+    gl_FragColor = vec4(color, alpha * uOpacity);
+  }
+`;
+
+type HurricaneLayerSpec = {
+  scale: [number, number];
+  offset: [number, number, number];
+  rotation: number;
+  depth: number;
+  opacity: number;
+  seed: number;
+};
+
+/**
+ * The satellite-derived mask is layered across the same altitude bands as the
+ * ordinary clouds. This gives the eye wall a raised core and lets the outer
+ * feeder bands sit in a thinner, high cirrus canopy instead of appearing as
+ * one flat circular decal.
+ */
+const HURRICANE_LAYERS: HurricaneLayerSpec[] = [
+  {
+    scale: [0.46, 0.46],
+    offset: [0, 0, altitude(1.5)],
+    rotation: 0.08,
+    depth: 0.028,
+    opacity: 0.48,
+    seed: 0.17,
+  },
+  {
+    scale: [0.58, 0.54],
+    offset: [-0.018, 0.008, altitude(TOWER_TOP_KM)],
+    rotation: -0.11,
+    depth: 0.018,
+    opacity: 0.2,
+    seed: 0.43,
+  },
+  {
+    scale: [0.76, 0.68],
+    offset: [0.024, 0.014, altitude(CIRRUS_MIN_KM)],
+    rotation: 0.21,
+    depth: 0.012,
+    opacity: 0.095,
+    seed: 0.71,
+  },
+];
+
 type CloudPalette = {
   litColor: string;
   shadowColor: string;
@@ -155,7 +278,7 @@ type PuffSpec = {
   offset: [number, number, number];
   /** Surface-patch width and height in local tangent units. */
   scale: [number, number];
-  /** Optional rotation inside the local tangent plane, used by cyclone arms. */
+  /** Optional rotation inside the local tangent plane. */
   rotation?: number;
   seed: number;
   alpha: number;
@@ -198,118 +321,290 @@ function randomInt(random: () => number, min: number, max: number): number {
   return min + Math.floor(random() * (max - min + 1));
 }
 
+/** Horizontal extent in globe units, from a true-scale kilometre range. */
+function span(random: () => number, minKm: number, maxKm: number): number {
+  return lerp(minKm, maxKm, random()) * KM;
+}
+
+/** Height above the cloud deck in globe units, from a kilometre altitude. */
+function altitude(km: number): number {
+  return km * ALTITUDE_KM;
+}
+
+type SystemKind = "convective" | "frontal" | "marine";
+
+type WeatherRegion = {
+  /** Degrees. Longitude is geographic and matches the planet texture. */
+  latitude: number;
+  longitude: number;
+  /** Half-extent of the scatter box around the region center, in degrees. */
+  latitudeSpread: number;
+  longitudeSpread: number;
+  kind: SystemKind;
+  /** Relative share of the cluster budget. */
+  weight: number;
+};
+
 /**
- * Latitudes weighted toward the mid-latitude storm belts and the equatorial
- * convergence zone, so a handful of clouds still reads as weather rather than
- * as points scattered at random.
+ * Earth's cloud cover is anything but uniform. Deep convection piles up along
+ * the intertropical convergence zone, long frontal bands ride the mid-latitude
+ * storm tracks, and persistent stratocumulus sheets sit over the cold
+ * eastern-boundary currents. The subtropical high belts near 20–30° are left
+ * empty on purpose — that is where the world's deserts and clear skies are.
  */
-function weightedLatitude(random: () => number): number {
-  const bands = [4, 40, -38, 12, -8, 55, -52];
-  const band = bands[Math.floor(random() * bands.length)];
-  return THREE.MathUtils.degToRad(band + (random() - 0.5) * 22);
+const WEATHER_REGIONS: WeatherRegion[] = [
+  { latitude: 6, longitude: -62, latitudeSpread: 7, longitudeSpread: 15, kind: "convective", weight: 3 },
+  { latitude: 1, longitude: 20, latitudeSpread: 7, longitudeSpread: 13, kind: "convective", weight: 3 },
+  { latitude: 1, longitude: 118, latitudeSpread: 8, longitudeSpread: 20, kind: "convective", weight: 3 },
+  { latitude: 8, longitude: -158, latitudeSpread: 4, longitudeSpread: 28, kind: "convective", weight: 2 },
+  { latitude: 7, longitude: -26, latitudeSpread: 4, longitudeSpread: 13, kind: "convective", weight: 2 },
+  { latitude: 18, longitude: 85, latitudeSpread: 6, longitudeSpread: 12, kind: "convective", weight: 2 },
+  { latitude: 51, longitude: -34, latitudeSpread: 8, longitudeSpread: 22, kind: "frontal", weight: 3 },
+  { latitude: 46, longitude: 176, latitudeSpread: 9, longitudeSpread: 26, kind: "frontal", weight: 3 },
+  { latitude: -54, longitude: 45, latitudeSpread: 7, longitudeSpread: 45, kind: "frontal", weight: 4 },
+  { latitude: -51, longitude: -118, latitudeSpread: 7, longitudeSpread: 38, kind: "frontal", weight: 3 },
+  { latitude: -20, longitude: -85, latitudeSpread: 6, longitudeSpread: 9, kind: "marine", weight: 2 },
+  { latitude: -22, longitude: 4, latitudeSpread: 6, longitudeSpread: 8, kind: "marine", weight: 2 },
+  { latitude: 26, longitude: -131, latitudeSpread: 6, longitudeSpread: 9, kind: "marine", weight: 2 },
+];
+
+/**
+ * Weighted sampling without replacement, so heavier regions tend to be filled
+ * first but every region is used once before any of them repeats.
+ */
+function pickRegions(count: number, random: () => number): WeatherRegion[] {
+  const ordered = WEATHER_REGIONS.map((region) => ({
+    region,
+    key: random() ** (1 / region.weight),
+  }))
+    .sort((a, b) => b.key - a.key)
+    .map((entry) => entry.region);
+  return Array.from({ length: count }, (_unused, index) => ordered[index % ordered.length]);
+}
+
+/**
+ * Cumulonimbus: a ragged low base, a narrowing tower punching through the
+ * middle level, and a broad flat anvil spreading out at the tropopause.
+ */
+function buildConvectiveCell(random: () => number): PuffSpec[] {
+  const puffs: PuffSpec[] = [];
+  const cellScale = lerp(0.85, 1.2, random());
+
+  // The scatter is deliberately wider than the puffs themselves, so the cell
+  // resolves into a ragged multi-lobed mass rather than one stacked blob.
+  const baseSpread = span(random, 1100, 1900) * cellScale;
+  for (let p = 0; p < randomInt(random, 5, 7); p += 1) {
+    const width = span(random, 700, 1250) * cellScale;
+    puffs.push({
+      offset: [
+        (random() - 0.5) * baseSpread,
+        (random() - 0.5) * baseSpread * 0.5,
+        altitude(lerp(LOW_BASE_MIN_KM, LOW_BASE_MAX_KM, random())),
+      ],
+      scale: [width, width * lerp(0.5, 0.72, random())],
+      seed: random(),
+      alpha: lerp(BASE_ALPHA_MIN, BASE_ALPHA_MAX, random()),
+      layer: "base",
+    });
+  }
+
+  const towerLevels = randomInt(random, 2, 3);
+  for (let level = 0; level < towerLevels; level += 1) {
+    const progress = towerLevels === 1 ? 0 : level / (towerLevels - 1);
+    // The updraft narrows with height until the anvil flares back out.
+    const width = span(random, 800, 1250) * cellScale * (1 - progress * 0.18);
+    puffs.push({
+      offset: [
+        (random() - 0.5) * width * 0.5,
+        (random() - 0.5) * width * 0.3,
+        altitude(lerp(TOWER_BASE_KM, TOWER_TOP_KM, progress)),
+      ],
+      scale: [width * lerp(1.05, 1.3, random()), width * lerp(0.5, 0.74, random())],
+      seed: random(),
+      alpha: lerp(TOWER_ALPHA_MIN, TOWER_ALPHA_MAX, random()),
+      layer: "tower",
+    });
+
+    // A flanking turret keeps the column irregular instead of a tidy stack.
+    if (level === 0 && random() > 0.34) {
+      puffs.push({
+        offset: [
+          (random() > 0.5 ? 1 : -1) * width * lerp(0.45, 0.75, random()),
+          (random() - 0.5) * width * 0.36,
+          altitude(TOWER_BASE_KM * 0.8),
+        ],
+        scale: [width * 0.9, width * lerp(0.44, 0.64, random())],
+        seed: random(),
+        alpha: lerp(TOWER_ALPHA_MIN * 0.8, TOWER_ALPHA_MAX * 0.9, random()),
+        layer: "tower",
+      });
+    }
+  }
+
+  // The anvil overhangs the base on every side, as the outflow really does.
+  const anvilSpread = span(random, 1500, 2400) * cellScale;
+  for (let p = 0; p < randomInt(random, 4, 6); p += 1) {
+    const width = span(random, 1000, 1750) * cellScale;
+    puffs.push({
+      offset: [
+        (random() - 0.5) * anvilSpread,
+        (random() - 0.5) * anvilSpread * 0.3,
+        altitude(ANVIL_KM + lerp(-1.2, 1.2, random())),
+      ],
+      scale: [width * lerp(1.3, 1.8, random()), width * lerp(0.3, 0.48, random())],
+      seed: random(),
+      alpha: lerp(ANVIL_ALPHA_MIN, ANVIL_ALPHA_MAX, random()),
+      layer: "anvil",
+    });
+  }
+
+  return puffs;
+}
+
+/**
+ * Mid-latitude frontal band: a very long, shallow, tilted sheet of layered
+ * cloud with only shallow embedded convection — the comma-shaped swirls that
+ * dominate satellite views of the storm tracks.
+ */
+function buildFrontalBand(random: () => number): PuffSpec[] {
+  const puffs: PuffSpec[] = [];
+  const tilt = lerp(-0.7, -0.25, random()) * (random() > 0.5 ? 1 : -1);
+  const bandLength = span(random, 3400, 5200);
+
+  const segments = randomInt(random, 6, 8);
+  for (let s = 0; s < segments; s += 1) {
+    const along = (s / (segments - 1) - 0.5) * bandLength;
+    const width = span(random, 1100, 1800);
+    puffs.push({
+      offset: [
+        along * Math.cos(tilt) + (random() - 0.5) * width * 0.2,
+        along * Math.sin(tilt) + (random() - 0.5) * width * 0.2,
+        altitude(lerp(LOW_BASE_MIN_KM, LOW_BASE_MAX_KM, random())),
+      ],
+      scale: [width, width * lerp(0.34, 0.5, random())],
+      rotation: tilt + lerp(-0.2, 0.2, random()),
+      seed: random(),
+      alpha: lerp(BASE_ALPHA_MIN, BASE_ALPHA_MAX, random()),
+      layer: "base",
+    });
+  }
+
+  // A couple of embedded cells lift out of the warm conveyor.
+  for (let p = 0; p < randomInt(random, 1, 2); p += 1) {
+    const width = span(random, 700, 1100);
+    const along = lerp(-0.3, 0.3, random()) * bandLength;
+    puffs.push({
+      offset: [
+        along * Math.cos(tilt),
+        along * Math.sin(tilt),
+        altitude(lerp(TOWER_BASE_KM, TOWER_TOP_KM * 0.7, random())),
+      ],
+      scale: [width, width * lerp(0.42, 0.6, random())],
+      rotation: tilt,
+      seed: random(),
+      alpha: lerp(TOWER_ALPHA_MIN * 0.7, TOWER_ALPHA_MAX * 0.8, random()),
+      layer: "tower",
+    });
+  }
+
+  return puffs;
+}
+
+/**
+ * Marine stratocumulus: a wide, flat, low sheet with no vertical development,
+ * the kind that blankets the cold currents off Peru, Namibia and California.
+ */
+function buildStratocumulusSheet(random: () => number): PuffSpec[] {
+  const puffs: PuffSpec[] = [];
+  const sheetSpread = span(random, 1800, 2800);
+
+  for (let p = 0; p < randomInt(random, 5, 7); p += 1) {
+    const width = span(random, 1200, 2000);
+    puffs.push({
+      offset: [
+        (random() - 0.5) * sheetSpread,
+        (random() - 0.5) * sheetSpread * 0.6,
+        altitude(lerp(LOW_BASE_MIN_KM, LOW_BASE_MIN_KM + 0.6, random())),
+      ],
+      scale: [width, width * lerp(0.42, 0.62, random())],
+      rotation: lerp(-0.5, 0.5, random()),
+      seed: random(),
+      alpha: lerp(BASE_ALPHA_MIN * 0.8, BASE_ALPHA_MAX * 0.85, random()),
+      layer: "base",
+    });
+  }
+
+  return puffs;
+}
+
+function buildSystemPuffs(kind: SystemKind, random: () => number): PuffSpec[] {
+  switch (kind) {
+    case "convective":
+      return buildConvectiveCell(random);
+    case "frontal":
+      return buildFrontalBand(random);
+    case "marine":
+      return buildStratocumulusSheet(random);
+    default: {
+      const exhaustive: never = kind;
+      return exhaustive;
+    }
+  }
 }
 
 function buildClusters(count: number): ClusterSpec[] {
   const random = createRandom(0x51c10d);
+  return pickRegions(count, random).map((region) => ({
+    latitude: THREE.MathUtils.degToRad(
+      region.latitude + (random() - 0.5) * 2 * region.latitudeSpread,
+    ),
+    longitude: THREE.MathUtils.degToRad(
+      region.longitude + (random() - 0.5) * 2 * region.longitudeSpread,
+    ),
+    radius: CLOUD_DECK_RADIUS,
+    puffs: buildSystemPuffs(region.kind, random),
+  }));
+}
+
+/**
+ * Cirrus follows the jet streams rather than capping individual storms, so it
+ * is built as its own system in the subtropical and polar jet bands. Sitting
+ * 4 km above the tallest anvil, it reads unmistakably as a separate deck.
+ */
+const CIRRUS_JET_LATITUDES = [30, 43, 56, -31, -45, -57];
+
+function buildCirrusClusters(count: number): ClusterSpec[] {
+  const random = createRandom(0xc17705);
   const clusters: ClusterSpec[] = [];
 
   for (let i = 0; i < count; i += 1) {
     const puffs: PuffSpec[] = [];
+    // Streaks within one patch share a heading, the way wind shear combs real
+    // cirrus into parallel fallstreaks.
+    const heading = lerp(-0.45, 0.45, random());
+    const patchSpread = span(random, 1800, 3000);
 
-    // Scale the whole storm cell so the cloud silhouettes stay varied while
-    // each one keeps the same base → tower → anvil → cirrus construction.
-    const clusterScale = lerp(0.82, 1.16, random());
-    const baseSpread = lerp(0.08, 0.14, random()) * clusterScale;
-    const basePuffCount = randomInt(random, BASE_PUFFS_MIN, BASE_PUFFS_MAX);
-    for (let p = 0; p < basePuffCount; p += 1) {
-      const width = lerp(0.09, 0.14, random()) * clusterScale;
+    for (let p = 0; p < randomInt(random, 3, 5); p += 1) {
+      const length = span(random, 2600, 4400);
       puffs.push({
         offset: [
-          (random() - 0.5) * baseSpread,
-          (random() - 0.5) * baseSpread * 0.42,
-          lerp(-0.002, 0.008, random()),
+          (random() - 0.5) * patchSpread,
+          (random() - 0.5) * patchSpread * 0.45,
+          altitude(lerp(CIRRUS_MIN_KM, CIRRUS_MAX_KM, random())),
         ],
-        scale: [width, width * lerp(0.46, 0.64, random())],
-        seed: random(),
-        alpha: lerp(BASE_ALPHA_MIN, BASE_ALPHA_MAX, random()),
-        layer: "base",
-      });
-    }
-
-    const towerLevels = randomInt(random, TOWER_LEVELS_MIN, TOWER_LEVELS_MAX);
-    for (let level = 0; level < towerLevels; level += 1) {
-      const progress = towerLevels === 1 ? 0 : level / (towerLevels - 1);
-      const width = lerp(0.095, 0.14, random()) * clusterScale * (1 - progress * 0.1);
-      puffs.push({
-        offset: [
-          (random() - 0.5) * width * 0.55,
-          (random() - 0.5) * width * 0.32,
-          CLOUD_TOWER_START_HEIGHT + progress * CLOUD_TOWER_HEIGHT,
-        ],
-        scale: [width * lerp(1.02, 1.24, random()), width * lerp(0.48, 0.72, random())],
-        seed: random(),
-        alpha: lerp(TOWER_ALPHA_MIN, TOWER_ALPHA_MAX, random()),
-        layer: "tower",
-      });
-
-      // A low side turret makes the column irregular without turning every
-      // storm cell into a symmetric stack.
-      if (level === 0 && random() > 0.34) {
-        puffs.push({
-          offset: [
-            (random() > 0.5 ? 1 : -1) * width * lerp(0.42, 0.72, random()),
-            (random() - 0.5) * width * 0.36,
-            CLOUD_TOWER_START_HEIGHT * 0.7,
-          ],
-          scale: [width * 0.9, width * lerp(0.42, 0.62, random())],
-          seed: random(),
-          alpha: lerp(TOWER_ALPHA_MIN * 0.8, TOWER_ALPHA_MAX * 0.9, random()),
-          layer: "tower",
-        });
-      }
-    }
-
-    const anvilSpread = lerp(0.18, 0.3, random()) * clusterScale;
-    const anvilPuffCount = randomInt(random, ANVIL_PUFFS_MIN, ANVIL_PUFFS_MAX);
-    for (let p = 0; p < anvilPuffCount; p += 1) {
-      const width = lerp(0.11, 0.18, random()) * clusterScale;
-      puffs.push({
-        offset: [
-          (random() - 0.5) * anvilSpread,
-          (random() - 0.5) * anvilSpread * 0.28,
-          CLOUD_ANVIL_HEIGHT + lerp(-0.008, 0.01, random()),
-        ],
-        scale: [width * lerp(1.45, 2.05, random()), width * lerp(0.28, 0.46, random())],
-        seed: random(),
-        alpha: lerp(ANVIL_ALPHA_MIN, ANVIL_ALPHA_MAX, random()),
-        layer: "anvil",
-      });
-    }
-
-    // High, thin cirrus wisps sit above the storm cell only. They are broader
-    // and much less dense than the anvil so they read as a separate altitude
-    // band instead of another vertical part of the cumulonimbus.
-    const cirrusSpread = lerp(0.22, 0.36, random()) * clusterScale;
-    const cirrusPuffCount = randomInt(random, CIRRUS_PUFFS_MIN, CIRRUS_PUFFS_MAX);
-    for (let p = 0; p < cirrusPuffCount; p += 1) {
-      const width = lerp(0.1, 0.17, random()) * clusterScale;
-      puffs.push({
-        offset: [
-          (random() - 0.5) * cirrusSpread,
-          (random() - 0.5) * cirrusSpread * 0.24,
-          CLOUD_CIRRUS_HEIGHT + lerp(-0.008, 0.008, random()),
-        ],
-        scale: [width * lerp(1.4, 2.5, random()), width * lerp(0.14, 0.25, random())],
+        scale: [length, length * lerp(0.1, 0.18, random())],
+        rotation: heading + lerp(-0.12, 0.12, random()),
         seed: random(),
         alpha: lerp(CIRRUS_ALPHA_MIN, CIRRUS_ALPHA_MAX, random()),
         layer: "cirrus",
       });
     }
 
+    const band = CIRRUS_JET_LATITUDES[i % CIRRUS_JET_LATITUDES.length];
     clusters.push({
-      latitude: weightedLatitude(random),
+      latitude: THREE.MathUtils.degToRad(band + (random() - 0.5) * 14),
       longitude: random() * Math.PI * 2,
-      radius: lerp(CLOUD_BASE_RADIUS_MIN, CLOUD_BASE_RADIUS_MAX, random()),
+      radius: CLOUD_DECK_RADIUS,
       puffs,
     });
   }
@@ -317,103 +612,61 @@ function buildClusters(count: number): ClusterSpec[] {
   return clusters;
 }
 
+/** Wider puffs need denser tessellation or the spherical bend still looks faceted. */
+function cloudGridSegments(scale: [number, number]): number {
+  const size = Math.max(scale[0], scale[1]);
+  if (size > 0.45) return 48;
+  if (size > 0.25) return 36;
+  if (size > 0.12) return 24;
+  return 16;
+}
+
 /**
- * One deterministic rare-event storm in the western Pacific typhoon belt.
- * The open eye, curved eye wall, spiral arms, anvil, and cirrus veil all share
- * the same cluster transform, so the event rotates with every other cloud.
+ * Build a plane already wrapped onto the spherical shell at this puff's
+ * altitude. Doing the bend on the CPU means wide sheets follow the planet at
+ * the limb instead of sticking out as flat chords into space.
  */
-function buildRareCyclone(): ClusterSpec {
-  const random = createRandom(0xc710de);
-  const puffs: PuffSpec[] = [];
+function createShellPatchGeometry(
+  clusterRadius: number,
+  offset: [number, number, number],
+  scale: [number, number],
+  rotation: number,
+  segments: number,
+): THREE.BufferGeometry {
+  const geometry = new THREE.PlaneGeometry(1, 1, segments, segments);
+  const position = geometry.attributes.position as THREE.BufferAttribute;
+  const cosR = Math.cos(rotation);
+  const sinR = Math.sin(rotation);
 
-  const eyeWallCount = 8;
-  for (let i = 0; i < eyeWallCount; i += 1) {
-    const angle = (i / eyeWallCount) * Math.PI * 2;
-    const radius = 0.052 + (random() - 0.5) * 0.012;
-    puffs.push({
-      offset: [
-        Math.cos(angle) * radius,
-        Math.sin(angle) * radius,
-        CLOUD_TOWER_START_HEIGHT + lerp(-0.002, 0.008, random()),
-      ],
-      scale: [0.06, 0.048],
-      rotation: angle + Math.PI / 2,
-      seed: random(),
-      alpha: lerp(0.34, 0.48, random()),
-      layer: "tower",
-    });
+  for (let i = 0; i < position.count; i += 1) {
+    const px = position.getX(i) * scale[0];
+    const py = position.getY(i) * scale[1];
+    const x = cosR * px - sinR * py + offset[0];
+    const y = sinR * px + cosR * py + offset[1];
+    const z = offset[2];
+
+    // Cluster origin is on a sphere of radius clusterRadius, so the globe
+    // center sits at (0, 0, -clusterRadius) in this frame.
+    let fx = x;
+    let fy = y;
+    let fz = z + clusterRadius;
+    const shellR = clusterRadius + z;
+    const len = Math.hypot(fx, fy, fz) || 1;
+    const s = shellR / len;
+    fx *= s;
+    fy *= s;
+    fz *= s;
+    position.setXYZ(i, fx, fy, fz - clusterRadius);
   }
 
-  const armCount = 3;
-  const puffsPerArm = 8;
-  for (let arm = 0; arm < armCount; arm += 1) {
-    for (let step = 0; step < puffsPerArm; step += 1) {
-      const progress = step / (puffsPerArm - 1);
-      const angle =
-        (arm / armCount) * Math.PI * 2 + progress * Math.PI * 1.55 + 0.18;
-      const radius = lerp(0.075, 0.29, progress) + (random() - 0.5) * 0.018;
-      const width = lerp(0.065, 0.105, 1 - progress);
-      puffs.push({
-        offset: [
-          Math.cos(angle) * radius,
-          Math.sin(angle) * radius * 0.72,
-          CLOUD_TOWER_START_HEIGHT * 0.7 + progress * 0.012,
-        ],
-        scale: [width * 1.55, width * lerp(0.28, 0.44, random())],
-        rotation: angle + Math.PI / 2,
-        seed: random(),
-        alpha: lerp(0.18, 0.34, 1 - progress),
-        layer: progress < 0.35 ? "tower" : "base",
-      });
-    }
-  }
-
-  const anvilCount = 7;
-  for (let i = 0; i < anvilCount; i += 1) {
-    const angle = (i / anvilCount) * Math.PI * 2 + 0.25;
-    const radius = 0.08 + (random() - 0.5) * 0.06;
-    puffs.push({
-      offset: [
-        Math.cos(angle) * radius,
-        Math.sin(angle) * radius * 0.68,
-        CLOUD_ANVIL_HEIGHT + lerp(-0.006, 0.008, random()),
-      ],
-      scale: [0.13, 0.035],
-      rotation: angle + Math.PI / 2,
-      seed: random(),
-      alpha: lerp(0.16, 0.27, random()),
-      layer: "anvil",
-    });
-  }
-
-  const cirrusCount = 4;
-  for (let i = 0; i < cirrusCount; i += 1) {
-    const angle = (i / cirrusCount) * Math.PI * 2;
-    puffs.push({
-      offset: [
-        Math.cos(angle) * (0.16 + random() * 0.1),
-        Math.sin(angle) * (0.16 + random() * 0.1) * 0.56,
-        CLOUD_CIRRUS_HEIGHT + lerp(-0.006, 0.006, random()),
-      ],
-      scale: [0.18, 0.018],
-      rotation: angle + Math.PI / 2,
-      seed: random(),
-      alpha: lerp(0.08, 0.14, random()),
-      layer: "cirrus",
-    });
-  }
-
-  return {
-    latitude: THREE.MathUtils.degToRad(16),
-    // 142°E: open ocean in the western Pacific typhoon belt.
-    longitude: THREE.MathUtils.degToRad(142),
-    radius: 1.032,
-    puffs,
-  };
+  position.needsUpdate = true;
+  geometry.computeVertexNormals();
+  return geometry;
 }
 
 type CloudPuffProps = {
   spec: PuffSpec;
+  clusterRadius: number;
   noise: THREE.Texture;
   palette: CloudPalette;
   /** Shared per-cluster light factor, updated by the parent each frame. */
@@ -421,8 +674,29 @@ type CloudPuffProps = {
   timeRef: { current: number };
 };
 
-function CloudPuff({ spec, noise, palette, lightRef, timeRef }: CloudPuffProps) {
+function CloudPuff({
+  spec,
+  clusterRadius,
+  noise,
+  palette,
+  lightRef,
+  timeRef,
+}: CloudPuffProps) {
   const materialRef = useRef<THREE.ShaderMaterial>(null);
+  const segments = cloudGridSegments(spec.scale);
+  const geometry = useMemo(
+    () =>
+      createShellPatchGeometry(
+        clusterRadius,
+        spec.offset,
+        spec.scale,
+        spec.rotation ?? 0,
+        segments,
+      ),
+    [clusterRadius, segments, spec.offset, spec.rotation, spec.scale],
+  );
+
+  useEffect(() => () => geometry.dispose(), [geometry]);
 
   const uniforms = useMemo(
     () => ({
@@ -447,13 +721,10 @@ function CloudPuff({ spec, noise, palette, lightRef, timeRef }: CloudPuffProps) 
 
   return (
     <mesh
-      position={spec.offset}
-      rotation={[0, 0, spec.rotation ?? 0]}
-      scale={[spec.scale[0], spec.scale[1], 1]}
+      geometry={geometry}
       raycast={ignoreRaycast}
       renderOrder={CLOUD_RENDER_ORDER}
     >
-      <planeGeometry args={[1, 1]} />
       <shaderMaterial
         ref={materialRef}
         vertexShader={CLOUD_VERTEX_SHADER}
@@ -467,7 +738,152 @@ function CloudPuff({ spec, noise, palette, lightRef, timeRef }: CloudPuffProps) 
   );
 }
 
+type HurricaneStormLayerProps = {
+  spec: HurricaneLayerSpec;
+  texture: THREE.Texture;
+  noise: THREE.Texture;
+  palette: CloudPalette;
+  lightRef: { current: number };
+  strengthRef: { current: number };
+  timeRef: { current: number };
+};
+
+function HurricaneStormLayer({
+  spec,
+  texture,
+  noise,
+  palette,
+  lightRef,
+  strengthRef,
+  timeRef,
+}: HurricaneStormLayerProps) {
+  const materialRef = useRef<THREE.ShaderMaterial>(null);
+  const geometry = useMemo(
+    () =>
+      createShellPatchGeometry(
+        HURRICANE_RADIUS,
+        spec.offset,
+        spec.scale,
+        spec.rotation,
+        40,
+      ),
+    [spec.offset, spec.rotation, spec.scale],
+  );
+
+  useEffect(() => () => geometry.dispose(), [geometry]);
+
+  const uniforms = useMemo(
+    () => ({
+      uStormMap: { value: texture },
+      uNoise: { value: noise },
+      uLitColor: { value: new THREE.Color(palette.litColor) },
+      uShadowColor: { value: new THREE.Color(palette.shadowColor) },
+      uTime: { value: STATIC_TIME },
+      uSeed: { value: spec.seed },
+      uOpacity: { value: 0 },
+      uLight: { value: 1 },
+      uDepth: { value: spec.depth },
+      uClusterRadius: { value: HURRICANE_RADIUS },
+    }),
+    [noise, palette, spec.depth, spec.seed, texture],
+  );
+
+  useFrame(() => {
+    const material = materialRef.current;
+    if (!material) return;
+    material.uniforms.uTime.value = timeRef.current;
+    material.uniforms.uLight.value = lightRef.current;
+    material.uniforms.uOpacity.value = spec.opacity * palette.alphaScale * strengthRef.current;
+  });
+
+  return (
+    <mesh
+      geometry={geometry}
+      raycast={ignoreRaycast}
+      renderOrder={CLOUD_RENDER_ORDER}
+    >
+      <shaderMaterial
+        ref={materialRef}
+        vertexShader={HURRICANE_VERTEX_SHADER}
+        fragmentShader={HURRICANE_FRAGMENT_SHADER}
+        uniforms={uniforms}
+        transparent
+        depthWrite={false}
+        side={THREE.DoubleSide}
+        toneMapped={false}
+      />
+    </mesh>
+  );
+}
+
+type HurricaneStormProps = {
+  texture: THREE.Texture;
+  noise: THREE.Texture;
+  palette: CloudPalette;
+  reducedMotion: boolean;
+  active: boolean;
+  timeRef: { current: number };
+  onActivity?: () => void;
+};
+
 const RADIAL_BASIS = new THREE.Vector3(0, 0, 1);
+
+function HurricaneStorm({
+  texture,
+  noise,
+  palette,
+  reducedMotion,
+  active,
+  timeRef,
+  onActivity,
+}: HurricaneStormProps) {
+  const groupRef = useRef<THREE.Group>(null);
+  const lightRef = useRef(1);
+  const strengthRef = useRef(0);
+  const radial = useMemo(() => new THREE.Vector3(), []);
+
+  useFrame((_state, delta) => {
+    const group = groupRef.current;
+    if (!group) return;
+
+    const cosLat = Math.cos(HURRICANE_LATITUDE);
+    radial.set(
+      Math.cos(HURRICANE_LONGITUDE) * cosLat,
+      Math.sin(HURRICANE_LATITUDE),
+      -Math.sin(HURRICANE_LONGITUDE) * cosLat,
+    );
+    group.position.copy(radial).multiplyScalar(HURRICANE_RADIUS);
+    group.quaternion.setFromUnitVectors(RADIAL_BASIS, radial);
+    const sun = subsolarDirection();
+    lightRef.current = THREE.MathUtils.smoothstep(radial.dot(sun), -0.25, 0.3);
+
+    const target = active && !reducedMotion ? 1 : 0;
+    strengthRef.current = THREE.MathUtils.damp(
+      strengthRef.current,
+      target,
+      3.2,
+      Math.min(delta, 0.1),
+    );
+    if (strengthRef.current > 0.001) onActivity?.();
+  });
+
+  return (
+    <group ref={groupRef}>
+      {HURRICANE_LAYERS.map((spec) => (
+        <HurricaneStormLayer
+          key={spec.seed}
+          spec={spec}
+          texture={texture}
+          noise={noise}
+          palette={palette}
+          lightRef={lightRef}
+          strengthRef={strengthRef}
+          timeRef={timeRef}
+        />
+      ))}
+    </group>
+  );
+}
 
 type CloudClusterProps = {
   spec: ClusterSpec;
@@ -511,6 +927,7 @@ function CloudCluster({
         <CloudPuff
           key={index}
           spec={puff}
+          clusterRadius={spec.radius}
           noise={noise}
           palette={palette}
           lightRef={lightRef}
@@ -530,9 +947,11 @@ type GlobeCloudsProps = {
 };
 
 /**
- * Translucent cumulonimbus storm cells with a separated base, rising tower,
- * flattened anvil, high cirrus wisps, and one rare Pacific cyclone. Mount inside
- * the globe's spin group so every cloud shares one global circulation.
+ * Translucent weather systems placed in Earth's real cloud belts: convective
+ * cumulonimbus in the tropics, frontal bands on the storm tracks, marine
+ * stratocumulus over the cold currents, jet-stream cirrus far above them all,
+ * and one rare Pacific cyclone. Mount inside the globe's spin group so every
+ * cloud shares one global circulation.
  */
 export function GlobeClouds({
   isDark,
@@ -544,17 +963,65 @@ export function GlobeClouds({
     () => getCloudNoiseTexture(GLOBE_CLOUD_NOISE_SIZE_BY_TIER[perfTier]),
     [perfTier],
   );
-  const clusters = useMemo(
-    () => [
-      ...buildClusters(GLOBE_CLOUD_COUNT_BY_TIER[perfTier]),
-      buildRareCyclone(),
-    ],
-    [perfTier],
-  );
+  const clusters = useMemo(() => {
+    const budget = GLOBE_CLOUD_COUNT_BY_TIER[perfTier];
+    return [
+      ...buildClusters(budget),
+      ...buildCirrusClusters(Math.max(2, Math.round(budget * 0.6))),
+    ];
+  }, [perfTier]);
   const palette = isDark ? DARK_CLOUD_PALETTE : LIGHT_CLOUD_PALETTE;
   const sunRef = useRef(new THREE.Vector3(1, 0, 0));
   const timeRef = useRef(STATIC_TIME);
   const cloudsGroupRef = useRef<THREE.Group>(null);
+  const [hurricaneTexture, setHurricaneTexture] = useState<THREE.Texture | null>(null);
+  const [hurricaneActive, setHurricaneActive] = useState(false);
+  const hurricaneEventAttemptedRef = useRef(false);
+  const hurricaneEligible = perfTier !== "phone" && !reducedMotion;
+
+  useEffect(() => {
+    if (!hurricaneEligible) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setHurricaneTexture(null);
+      setHurricaneActive(false);
+      return;
+    }
+
+    let cancelled = false;
+    loadHurricaneTexture()
+      .then((texture) => {
+        if (!cancelled) setHurricaneTexture(texture);
+      })
+      .catch(() => {
+        // Ordinary cloud clusters remain the fallback if the event asset fails.
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [hurricaneEligible]);
+
+  useEffect(() => {
+    if (!hurricaneEligible || hurricaneEventAttemptedRef.current) return;
+    hurricaneEventAttemptedRef.current = true;
+
+    let eventTimer: ReturnType<typeof setTimeout> | null = null;
+    let hideTimer: ReturnType<typeof setTimeout> | null = null;
+    const delay =
+      HURRICANE_EVENT_MIN_DELAY_MS +
+      Math.random() * (HURRICANE_EVENT_MAX_DELAY_MS - HURRICANE_EVENT_MIN_DELAY_MS);
+
+    eventTimer = setTimeout(() => {
+      if (Math.random() >= HURRICANE_EVENT_CHANCE) return;
+      setHurricaneActive(true);
+      hideTimer = setTimeout(() => setHurricaneActive(false), HURRICANE_EVENT_VISIBLE_MS);
+    }, delay);
+
+    return () => {
+      if (eventTimer) clearTimeout(eventTimer);
+      if (hideTimer) clearTimeout(hideTimer);
+    };
+  }, [hurricaneEligible]);
 
   // Runs before the child clusters/puffs read the shared refs: R3F invokes
   // useFrame callbacks in mount order, and this parent mounts first.
@@ -582,6 +1049,17 @@ export function GlobeClouds({
           timeRef={timeRef}
         />
       ))}
+      {hurricaneTexture ? (
+        <HurricaneStorm
+          texture={hurricaneTexture}
+          noise={noise}
+          palette={palette}
+          reducedMotion={reducedMotion}
+          active={hurricaneActive}
+          timeRef={timeRef}
+          onActivity={onActivity}
+        />
+      ) : null}
     </group>
   );
 }

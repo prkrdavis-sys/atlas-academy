@@ -106,10 +106,21 @@ function smoothPolarRows(pixels: Uint8ClampedArray, width: number, height: numbe
   }
 }
 
+/** Rows of LUT recolor per animation-frame slice (2048-wide ≈ 8k px). */
+const OCEAN_TINT_ROWS_PER_SLICE = 48;
+
+type OceanTintGate = {
+  shouldContinue: () => boolean;
+  yieldIfNeeded: () => void | Promise<void>;
+};
+
 /**
  * Returns the bathymetry map recolored into the palette blues for the given
  * theme, at the image's native resolution. The per-pixel pass runs once per
  * theme and is cached; callers just `drawImage` (and scale) the result.
+ *
+ * Prefer {@link ensureOceanDepthCanvas} when the globe may be spinning — the
+ * sync path can stall auto-rotation for a noticeable beat on first tint.
  */
 export function getOceanDepthCanvas(
   image: HTMLImageElement,
@@ -140,6 +151,62 @@ export function getOceanDepthCanvas(
   }
   ctx.putImageData(imageData, 0, 0);
 
+  tintedCanvasByTheme.set(key, canvas);
+  return canvas;
+}
+
+/**
+ * Same result as {@link getOceanDepthCanvas}, but yields between row batches so
+ * the globe can keep rotating while the first tint is computed.
+ * Returns null if `gate.shouldContinue` becomes false mid-pass.
+ */
+export async function ensureOceanDepthCanvas(
+  image: HTMLImageElement,
+  isDark: boolean,
+  gate?: OceanTintGate,
+): Promise<HTMLCanvasElement | null> {
+  const key = isDark ? "dark" : "light";
+  const cached = tintedCanvasByTheme.get(key);
+  if (cached) return cached;
+
+  if (!gate) return getOceanDepthCanvas(image, isDark);
+
+  const width = image.naturalWidth;
+  const height = image.naturalHeight;
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d", { willReadFrequently: true })!;
+  ctx.drawImage(image, 0, 0, width, height);
+
+  const lut = buildDepthLut(isDark ? DARK_OCEAN_RAMP : LIGHT_OCEAN_RAMP);
+  const imageData = ctx.getImageData(0, 0, width, height);
+  const pixels = imageData.data;
+  smoothPolarRows(pixels, width, height);
+
+  const rowBytes = width * 4;
+  for (let row = 0; row < height; row += 1) {
+    const rowStart = row * rowBytes;
+    const rowEnd = rowStart + rowBytes;
+    for (let i = rowStart; i < rowEnd; i += 4) {
+      const gray = pixels[i];
+      pixels[i] = lut[gray * 3];
+      pixels[i + 1] = lut[gray * 3 + 1];
+      pixels[i + 2] = lut[gray * 3 + 2];
+      pixels[i + 3] = 255;
+    }
+    if ((row + 1) % OCEAN_TINT_ROWS_PER_SLICE === 0) {
+      const wait = gate.yieldIfNeeded();
+      if (wait) await wait;
+      if (!gate.shouldContinue()) return null;
+    }
+  }
+
+  // Another build may have finished while we yielded.
+  const raced = tintedCanvasByTheme.get(key);
+  if (raced) return raced;
+
+  ctx.putImageData(imageData, 0, 0);
   tintedCanvasByTheme.set(key, canvas);
   return canvas;
 }

@@ -1,11 +1,14 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { REVEAL_SECONDS } from "@/lib/social/versus-timing";
 
 export type VersusPhase =
   | { kind: "answering" }
-  | { kind: "waiting-for-opponent"; opponentName: string }
-  | { kind: "racing"; secondsLeft: number }
+  /** You locked in; waiting on the opponent during the pending window. */
+  | { kind: "pending"; mode: "waiting"; opponentName: string; secondsLeft: number }
+  /** Opponent locked in first; you still have time to answer. */
+  | { kind: "pending"; mode: "racing"; secondsLeft: number }
   | { kind: "revealing"; secondsLeft: number };
 
 /**
@@ -13,74 +16,78 @@ export type VersusPhase =
  * their opponent's, or the gap before the next question.
  */
 export function VersusStatusBanner({ phase }: { phase: VersusPhase }) {
-  if (phase.kind === "answering") return null;
-
-  if (phase.kind === "waiting-for-opponent") {
-    return (
-      <div
-        role="status"
-        className="flex shrink-0 items-center justify-center gap-2 rounded-2xl border-2 border-sky-300 bg-sky-50 px-3 py-2 dark:border-sky-700 dark:bg-sky-950/50"
-      >
-        <span className="flex gap-1" aria-hidden>
-          <Dot delay="0ms" />
-          <Dot delay="150ms" />
-          <Dot delay="300ms" />
-        </span>
-        <p className="font-display text-sm font-extrabold text-sky-800 dark:text-sky-200">
-          {phase.opponentName} is still choosing…
-        </p>
-      </div>
-    );
-  }
-
-  if (phase.kind === "racing") {
-    return (
-      <div
-        role="status"
-        aria-live="assertive"
-        className="flex shrink-0 items-center justify-center gap-3 rounded-2xl border-2 border-rose-300 bg-rose-50 px-3 py-2 dark:border-rose-700 dark:bg-rose-950/50"
-      >
-        <span
-          key={phase.secondsLeft}
-          aria-hidden
-          className="animate-card-pop-in font-display text-2xl font-extrabold tabular-nums leading-none text-rose-600 dark:text-rose-300"
+  switch (phase.kind) {
+    case "answering":
+      return null;
+    case "pending":
+      return phase.mode === "waiting" ? (
+        <div
+          role="status"
+          className="flex shrink-0 items-center justify-center gap-3 rounded-2xl border-2 border-amber-300 bg-amber-50 px-3 py-2 dark:border-amber-700 dark:bg-amber-950/50"
         >
-          {phase.secondsLeft}
-        </span>
-        <p className="font-display text-sm font-extrabold text-rose-800 dark:text-rose-200">
-          Answer now or lose the point
-        </p>
-      </div>
-    );
+          <span
+            key={phase.secondsLeft}
+            aria-hidden
+            className="animate-card-pop-in font-display text-2xl font-extrabold tabular-nums leading-none text-amber-600 dark:text-amber-300"
+          >
+            {phase.secondsLeft}
+          </span>
+          <div className="min-w-0 text-left">
+            <p className="font-display text-sm font-extrabold text-amber-900 dark:text-amber-100">
+              Pending
+            </p>
+            <p className="truncate text-[11px] font-semibold text-amber-700/90 dark:text-amber-200/90">
+              Waiting for {phase.opponentName}…
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div
+          role="status"
+          aria-live="assertive"
+          className="flex shrink-0 items-center justify-center gap-3 rounded-2xl border-2 border-amber-300 bg-amber-50 px-3 py-2 dark:border-amber-700 dark:bg-amber-950/50"
+        >
+          <span
+            key={phase.secondsLeft}
+            aria-hidden
+            className="animate-card-pop-in font-display text-2xl font-extrabold tabular-nums leading-none text-amber-600 dark:text-amber-300"
+          >
+            {phase.secondsLeft}
+          </span>
+          <div className="min-w-0 text-left">
+            <p className="font-display text-sm font-extrabold text-amber-900 dark:text-amber-100">
+              Pending
+            </p>
+            <p className="text-[11px] font-semibold text-amber-700/90 dark:text-amber-200/90">
+              Answer now or lose the point
+            </p>
+          </div>
+        </div>
+      );
+    case "revealing":
+      return (
+        <div
+          role="status"
+          className="flex shrink-0 items-center justify-center gap-2.5 rounded-2xl border-2 border-slate-200 bg-white/90 px-3 py-2 dark:border-slate-700 dark:bg-slate-900/90"
+        >
+          <CountdownRing secondsLeft={phase.secondsLeft} />
+          <p className="font-display text-sm font-extrabold text-slate-700 dark:text-slate-200">
+            Next question in {phase.secondsLeft}s
+          </p>
+        </div>
+      );
+    default: {
+      const _exhaustive: never = phase;
+      return _exhaustive;
+    }
   }
-
-  return (
-    <div
-      role="status"
-      className="flex shrink-0 items-center justify-center gap-2.5 rounded-2xl border-2 border-slate-200 bg-white/90 px-3 py-2 dark:border-slate-700 dark:bg-slate-900/90"
-    >
-      <CountdownRing secondsLeft={phase.secondsLeft} />
-      <p className="font-display text-sm font-extrabold text-slate-700 dark:text-slate-200">
-        Next question in {phase.secondsLeft}s
-      </p>
-    </div>
-  );
-}
-
-function Dot({ delay }: { delay: string }) {
-  return (
-    <span
-      className="size-1.5 animate-bounce rounded-full bg-sky-500 dark:bg-sky-400"
-      style={{ animationDelay: delay }}
-    />
-  );
 }
 
 const RING_RADIUS = 10;
 const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
 
 function CountdownRing({ secondsLeft }: { secondsLeft: number }) {
-  const progress = Math.max(0, Math.min(1, secondsLeft / 5));
+  const progress = Math.max(0, Math.min(1, secondsLeft / REVEAL_SECONDS));
 
   return (
     <svg viewBox="0 0 24 24" className="size-6 -rotate-90" aria-hidden>

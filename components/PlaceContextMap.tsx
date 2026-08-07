@@ -536,16 +536,21 @@ export function PlaceContextMap({
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<HTMLDivElement>(null);
   const panzoomRef = useRef<ReturnType<typeof Panzoom> | null>(null);
+  const isState = isStateCode(country.code);
+  // Interactive library maps allow zooming out past the close-up. Continent
+  // templates omit non-member countries (e.g. India on the Europe SVG), so a
+  // wide zoom-out shows missing land. Use the world template whenever the user
+  // can pan/zoom — static Learn cards keep the lighter continent crops.
+  const templateKey =
+    interactive && !isState ? "world" : getContextMapTemplateKey(country);
   const [map, setMap] = useState<ParsedContextMap | null>(() =>
-    templateCache.get(getContextMapTemplateKey(country)) ?? null,
+    templateCache.get(templateKey) ?? null,
   );
   const [boundsManifest, setBoundsManifest] = useState<MapBoundsManifest | null>(
     () => boundsCache.data,
   );
   const [loadFailed, setLoadFailed] = useState(false);
   const [panzoomReady, setPanzoomReady] = useState(false);
-  const isState = isStateCode(country.code);
-  const templateKey = getContextMapTemplateKey(country);
   const cropOptions = CROP_OPTIONS[variant];
 
   const highlightIds = useMemo(() => new Set(getContextMapPathIds(country)), [country]);
@@ -645,15 +650,28 @@ export function PlaceContextMap({
     );
 
     panzoomRef.current?.destroy();
-    // Start at the library close-up scale immediately so the country is framed
-    // correctly (surroundings are centered on the focus, so startScale alone matches
-    // the static library crop).
+    // Surroundings may be wider than the subject (world overview). startScale
+    // alone zooms toward the element center — which is wrong when the subject
+    // sits off-center — so immediately re-focus on the library close-up before
+    // revealing the map.
     panzoomRef.current = Panzoom(element, {
       ...MAP_PANZOOM_OPTIONS,
       maxScale,
       startScale: interactiveViewBoxes.initialScale,
     });
-    // Reveal after Panzoom's startScale transform rAF commits (registered above).
+    if (
+      containerRef.current &&
+      interactiveViewBoxes.initialScale > MAP_PANZOOM_OPTIONS.minScale + 0.01
+    ) {
+      focusPanzoomOnViewBoxRegion(
+        containerRef.current,
+        panzoomRef.current,
+        interactiveViewBoxes.surroundings,
+        interactiveViewBoxes.focused,
+        { animate: false, maxScale },
+      );
+    }
+    // Reveal after the focus transform has a frame to commit.
     const revealFrame = requestAnimationFrame(() => {
       setPanzoomReady(true);
     });

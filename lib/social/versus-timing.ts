@@ -8,7 +8,9 @@
 export const ANSWER_LOCK_MS = 3000;
 
 /** How long the learn card stays up before the next question. */
-export const REVEAL_MS = 5000;
+export const REVEAL_MS = 3000;
+
+export const REVEAL_SECONDS = REVEAL_MS / 1000;
 
 /** How long an opponent may be missing before the match is forfeited. */
 export const DISCONNECT_GRACE_MS = 15000;
