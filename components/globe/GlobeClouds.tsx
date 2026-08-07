@@ -4,6 +4,11 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { getCloudNoiseTexture } from "@/lib/globe-cloud-noise";
+import {
+  pickTropicalCycloneSpawn,
+  sampleCycloneTrack,
+  type TropicalCycloneSpawn,
+} from "@/lib/globe-cyclone-tracks";
 import { loadHurricaneTexture } from "@/lib/globe-hurricane-texture";
 import {
   GLOBE_CLOUD_COUNT_BY_TIER,
@@ -67,73 +72,15 @@ const CLOUD_RENDER_ORDER = 7;
 const HURRICANE_EVENT_MIN_DELAY_MS = 5_000;
 const HURRICANE_EVENT_MAX_DELAY_MS = 5_000;
 const HURRICANE_EVENT_CHANCE = 1;
-const HURRICANE_EVENT_VISIBLE_MS = 24_000;
-/** Slight independent spin: NH counterclockwise, SH clockwise (local outward axis). */
-const HURRICANE_SPIN_SPEED = 0.14;
 /** Opacity ease when the storm appears / disappears. */
 const HURRICANE_FADE_IN_DAMP = 2.1;
 const HURRICANE_FADE_OUT_DAMP = 3.2;
+
+/** Slight independent spin: NH counterclockwise, SH clockwise (local outward axis). */
+const HURRICANE_SPIN_SPEED = 0.14;
 const HURRICANE_RADIUS = CLOUD_DECK_RADIUS;
 
-type TropicalCycloneRegion = {
-  /** Degrees. Longitude matches the planet texture (east positive). */
-  latitude: number;
-  longitude: number;
-  latitudeSpread: number;
-  longitudeSpread: number;
-  weight: number;
-};
-
-/**
- * Spawn only inside real tropical-cyclone basins — Atlantic hurricanes, eastern
- * Pacific storms, western Pacific typhoons, Indian Ocean cyclones, and the
- * southern-hemisphere belts. Weights bias toward the busiest basins without
- * excluding quieter ones.
- */
-const TROPICAL_CYCLONE_REGIONS: TropicalCycloneRegion[] = [
-  { latitude: 18, longitude: -72, latitudeSpread: 8, longitudeSpread: 18, weight: 1.1 },
-  { latitude: 14, longitude: -55, latitudeSpread: 6, longitudeSpread: 12, weight: 1 },
-  { latitude: 24, longitude: -88, latitudeSpread: 5, longitudeSpread: 10, weight: 0.9 },
-  { latitude: 14, longitude: -125, latitudeSpread: 6, longitudeSpread: 15, weight: 1 },
-  { latitude: 10, longitude: -145, latitudeSpread: 5, longitudeSpread: 12, weight: 0.85 },
-  { latitude: 16, longitude: 128, latitudeSpread: 8, longitudeSpread: 22, weight: 1.2 },
-  { latitude: 12, longitude: 142, latitudeSpread: 6, longitudeSpread: 18, weight: 1.1 },
-  { latitude: 22, longitude: 118, latitudeSpread: 5, longitudeSpread: 14, weight: 0.95 },
-  { latitude: 14, longitude: 86, latitudeSpread: 5, longitudeSpread: 10, weight: 0.9 },
-  { latitude: 12, longitude: 64, latitudeSpread: 5, longitudeSpread: 12, weight: 0.75 },
-  { latitude: -16, longitude: 148, latitudeSpread: 6, longitudeSpread: 14, weight: 0.95 },
-  { latitude: -18, longitude: 118, latitudeSpread: 6, longitudeSpread: 16, weight: 0.9 },
-  { latitude: -22, longitude: 55, latitudeSpread: 5, longitudeSpread: 14, weight: 0.8 },
-  { latitude: -18, longitude: -35, latitudeSpread: 5, longitudeSpread: 20, weight: 0.7 },
-];
-
-type TropicalCycloneSpawn = {
-  latitudeRad: number;
-  longitudeRad: number;
-  /** +1 northern hemisphere (counterclockwise), -1 southern (clockwise). */
-  spinSign: number;
-};
-
-function pickTropicalCycloneSpawn(random: () => number): TropicalCycloneSpawn {
-  const totalWeight = TROPICAL_CYCLONE_REGIONS.reduce((sum, region) => sum + region.weight, 0);
-  let roll = random() * totalWeight;
-  let region = TROPICAL_CYCLONE_REGIONS[0];
-  for (const candidate of TROPICAL_CYCLONE_REGIONS) {
-    roll -= candidate.weight;
-    if (roll <= 0) {
-      region = candidate;
-      break;
-    }
-  }
-
-  const latDeg = region.latitude + (random() - 0.5) * 2 * region.latitudeSpread;
-  const lonDeg = region.longitude + (random() - 0.5) * 2 * region.longitudeSpread;
-  const latitudeRad = THREE.MathUtils.degToRad(THREE.MathUtils.clamp(latDeg, -35, 35));
-  const longitudeRad = THREE.MathUtils.degToRad(lonDeg);
-  const spinSign = latitudeRad >= 0 ? 1 : -1;
-
-  return { latitudeRad, longitudeRad, spinSign };
-}
+type CycloneLifecyclePhase = "fade_in" | "travel" | "fade_out" | "done";
 
 /**
  * Cloud puff meshes are already bent onto their spherical shell in cluster-local
@@ -222,19 +169,25 @@ const HURRICANE_VERTEX_SHADER = /* glsl */ `
   uniform float uTime;
   uniform float uSeed;
   uniform float uClusterRadius;
+  uniform float uMirrorStorm;
   varying vec2 vUv;
   varying float vDepth;
 
+  vec2 stormUv(vec2 rawUv) {
+    return vec2(mix(rawUv.x, 1.0 - rawUv.x, uMirrorStorm), rawUv.y);
+  }
+
   void main() {
-    vUv = uv;
-    float density = texture2D(uStormMap, uv).r;
+    vec2 mapUv = stormUv(uv);
+    vUv = mapUv;
+    float density = texture2D(uStormMap, mapUv).r;
     float edge = smoothstep(0.03, 0.24, density);
     // Geometry is already on the spherical shell; lift dense eye-wall regions
     // along the local radial (cluster +Z) and keep them on a larger shell.
     vec3 local = position;
     local.z += density * uDepth;
-    local.x += sin(uTime * 0.16 + uv.y * 8.0 + uSeed * 12.0) * 0.003 * edge;
-    local.y += cos(uTime * 0.13 + uv.x * 7.0 + uSeed * 9.0) * 0.002 * edge;
+    local.x += sin(uTime * 0.16 + mapUv.y * 8.0 + uSeed * 12.0) * 0.003 * edge;
+    local.y += cos(uTime * 0.13 + mapUv.x * 7.0 + uSeed * 9.0) * 0.002 * edge;
 
     vec3 fromCenter = vec3(local.x, local.y, local.z + uClusterRadius);
     float shellR = uClusterRadius + local.z;
@@ -809,6 +762,7 @@ type HurricaneStormLayerProps = {
   lightRef: { current: number };
   strengthRef: { current: number };
   timeRef: { current: number };
+  mirrorTexture: boolean;
 };
 
 function HurricaneStormLayer({
@@ -819,6 +773,7 @@ function HurricaneStormLayer({
   lightRef,
   strengthRef,
   timeRef,
+  mirrorTexture,
 }: HurricaneStormLayerProps) {
   const materialRef = useRef<THREE.ShaderMaterial>(null);
   const geometry = useMemo(
@@ -847,8 +802,9 @@ function HurricaneStormLayer({
       uLight: { value: 1 },
       uDepth: { value: spec.depth },
       uClusterRadius: { value: HURRICANE_RADIUS },
+      uMirrorStorm: { value: mirrorTexture ? 1 : 0 },
     }),
-    [noise, palette, spec.depth, spec.seed, texture],
+    [mirrorTexture, noise, palette, spec.depth, spec.seed, texture],
   );
 
   useFrame(() => {
@@ -889,9 +845,30 @@ type HurricaneStormProps = {
   active: boolean;
   timeRef: { current: number };
   onActivity?: () => void;
+  onComplete?: () => void;
 };
 
 const RADIAL_BASIS = new THREE.Vector3(0, 0, 1);
+const WORLD_UP = new THREE.Vector3(0, 1, 0);
+
+/** Lock tangent +X to geographic east so spiral UVs don't flip mid-track. */
+function orientStormToSurface(
+  group: THREE.Group,
+  radial: THREE.Vector3,
+  eastScratch: THREE.Vector3,
+  northTangentScratch: THREE.Vector3,
+  basisMatrix: THREE.Matrix4,
+): void {
+  const east = eastScratch.crossVectors(WORLD_UP, radial);
+  if (east.lengthSq() < 1e-6) {
+    east.set(1, 0, 0);
+  } else {
+    east.normalize();
+  }
+  const northTangent = northTangentScratch.crossVectors(radial, east).normalize();
+  basisMatrix.makeBasis(east, northTangent, radial);
+  group.quaternion.setFromRotationMatrix(basisMatrix);
+}
 
 function HurricaneStorm({
   spawn,
@@ -902,56 +879,95 @@ function HurricaneStorm({
   active,
   timeRef,
   onActivity,
+  onComplete,
 }: HurricaneStormProps) {
   const groupRef = useRef<THREE.Group>(null);
   const spinGroupRef = useRef<THREE.Group>(null);
   const lightRef = useRef(1);
   const strengthRef = useRef(0);
   const spinAngleRef = useRef(0);
+  const trackProgressRef = useRef(0);
+  const phaseRef = useRef<CycloneLifecyclePhase>("fade_in");
+  const completedRef = useRef(false);
   const radial = useMemo(() => new THREE.Vector3(), []);
+  const eastScratch = useMemo(() => new THREE.Vector3(), []);
+  const northTangentScratch = useMemo(() => new THREE.Vector3(), []);
+  const basisMatrix = useMemo(() => new THREE.Matrix4(), []);
   const invalidate = useThree((state) => state.invalidate);
 
   useEffect(() => {
-    if (!active) {
-      spinAngleRef.current = 0;
-      if (spinGroupRef.current) spinGroupRef.current.rotation.z = 0;
-      return;
-    }
+    if (!active) return;
     strengthRef.current = 0;
+    trackProgressRef.current = 0;
+    spinAngleRef.current = 0;
+    phaseRef.current = "fade_in";
+    completedRef.current = false;
+    if (spinGroupRef.current) spinGroupRef.current.rotation.z = 0;
     onActivity?.();
     invalidate();
-  }, [active, invalidate, onActivity]);
+  }, [active, spawn, invalidate, onActivity]);
 
   useFrame((_state, delta) => {
     const group = groupRef.current;
-    if (!group) return;
+    if (!group || !active) return;
 
-    const cosLat = Math.cos(spawn.latitudeRad);
+    const elapsed = Math.min(delta, 0.1);
+    const phase = phaseRef.current;
+
+    if (!reducedMotion && phase !== "done") {
+      trackProgressRef.current += elapsed / spawn.track.travelDurationSec;
+    }
+
+    const { latitudeRad, longitudeRad } = sampleCycloneTrack(
+      spawn.track,
+      trackProgressRef.current,
+    );
+    const cosLat = Math.cos(latitudeRad);
     radial.set(
-      Math.cos(spawn.longitudeRad) * cosLat,
-      Math.sin(spawn.latitudeRad),
-      -Math.sin(spawn.longitudeRad) * cosLat,
+      Math.cos(longitudeRad) * cosLat,
+      Math.sin(latitudeRad),
+      -Math.sin(longitudeRad) * cosLat,
     );
     group.position.copy(radial).multiplyScalar(HURRICANE_RADIUS);
-    group.quaternion.setFromUnitVectors(RADIAL_BASIS, radial);
+    orientStormToSurface(
+      group,
+      radial,
+      eastScratch,
+      northTangentScratch,
+      basisMatrix,
+    );
     const sun = subsolarDirection();
     lightRef.current = THREE.MathUtils.smoothstep(radial.dot(sun), -0.25, 0.3);
 
-    const target = active ? 1 : 0;
-    const elapsed = Math.min(delta, 0.1);
+    if (phase === "fade_in" && strengthRef.current >= 0.98) {
+      phaseRef.current = "travel";
+    }
+
+    if (
+      phase === "travel" &&
+      trackProgressRef.current >= spawn.track.fadeStartProgress
+    ) {
+      phaseRef.current = "fade_out";
+    }
+
+    const currentPhase = phaseRef.current;
+    const strengthTarget =
+      currentPhase === "fade_in" || currentPhase === "travel" ? 1 : 0;
     const damp = reducedMotion
       ? 12
-      : active
+      : currentPhase === "fade_in"
         ? HURRICANE_FADE_IN_DAMP
-        : HURRICANE_FADE_OUT_DAMP;
+        : currentPhase === "fade_out"
+          ? HURRICANE_FADE_OUT_DAMP
+          : 12;
     strengthRef.current = THREE.MathUtils.damp(
       strengthRef.current,
-      target,
+      strengthTarget,
       damp,
       elapsed,
     );
 
-    if (active && !reducedMotion && strengthRef.current > 0.05) {
+    if (!reducedMotion && strengthRef.current > 0.001) {
       spinAngleRef.current += elapsed * HURRICANE_SPIN_SPEED * spawn.spinSign;
       if (spinGroupRef.current) {
         spinGroupRef.current.rotation.z = spinAngleRef.current;
@@ -959,6 +975,16 @@ function HurricaneStorm({
     }
 
     if (strengthRef.current > 0.001) onActivity?.();
+
+    if (
+      !completedRef.current &&
+      currentPhase === "fade_out" &&
+      strengthRef.current < 0.01
+    ) {
+      completedRef.current = true;
+      phaseRef.current = "done";
+      onComplete?.();
+    }
   });
 
   return (
@@ -974,6 +1000,7 @@ function HurricaneStorm({
             lightRef={lightRef}
             strengthRef={strengthRef}
             timeRef={timeRef}
+            mirrorTexture={spawn.mirrorTexture}
           />
         ))}
       </group>
@@ -1096,7 +1123,6 @@ export function GlobeClouds({
     hurricaneEventAttemptedRef.current = true;
 
     let eventTimer: ReturnType<typeof setTimeout> | null = null;
-    let hideTimer: ReturnType<typeof setTimeout> | null = null;
     const delay =
       HURRICANE_EVENT_MIN_DELAY_MS +
       Math.random() * (HURRICANE_EVENT_MAX_DELAY_MS - HURRICANE_EVENT_MIN_DELAY_MS);
@@ -1110,13 +1136,11 @@ export function GlobeClouds({
       setHurricaneActive(true);
       onActivity?.();
       invalidate();
-      hideTimer = setTimeout(() => setHurricaneActive(false), HURRICANE_EVENT_VISIBLE_MS);
     }, delay);
 
     return () => {
       hurricaneEventAttemptedRef.current = false;
       if (eventTimer) clearTimeout(eventTimer);
-      if (hideTimer) clearTimeout(hideTimer);
     };
   }, [invalidate, onActivity]);
 
@@ -1156,6 +1180,10 @@ export function GlobeClouds({
           active={hurricaneActive}
           timeRef={timeRef}
           onActivity={onActivity}
+          onComplete={() => {
+            setHurricaneActive(false);
+            setHurricaneSpawn(null);
+          }}
         />
       ) : null}
     </group>
