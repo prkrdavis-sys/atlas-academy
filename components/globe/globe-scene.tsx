@@ -1040,44 +1040,109 @@ export function GlobeAssetPreloader() {
 
 /** Presentation scale: larger than the physical angular size for discoverability,
  * while remaining substantially smaller than the distant Sun visual. */
-const MOON_RADIUS = 0.62;
+const MOON_RADIUS = 2.2;
+
+/**
+ * Local axis of the sphere UV seam center (u = 0.5, equator) for THREE's
+ * SphereGeometry. Aiming this axis at Earth tidally locks the near side toward
+ * the planet, so viewers always see the real lunar face.
+ */
+const MOON_NEAR_FACE_AXIS = new THREE.Vector3(1, 0, 0);
+const moonToEarth = new THREE.Vector3();
+const moonSunLocal = new THREE.Quaternion();
+
+const MOON_VERTEX_SHADER = /* glsl */ `
+  varying vec2 vMoonUv;
+  varying vec3 vMoonNormal;
+  void main() {
+    vMoonUv = uv;
+    vMoonNormal = normalize(normal);
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+`;
+
+/**
+ * Lit only by the real subsolar direction, deliberately ignoring the scene's
+ * ambient/hemisphere fill. Those fills exist to keep the Earth's landmasses
+ * readable, but on the Moon they erase the terminator and flatten it into a
+ * 2D disc — so the phase is computed here instead.
+ */
+const MOON_FRAGMENT_SHADER = /* glsl */ `
+  uniform sampler2D uMoonMap;
+  uniform vec3 uSunDirection;
+  uniform float uEarthshine;
+  varying vec2 vMoonUv;
+  varying vec3 vMoonNormal;
+  void main() {
+    vec3 albedo = texture2D(uMoonMap, vMoonUv).rgb;
+    float lambert = dot(normalize(vMoonNormal), normalize(uSunDirection));
+    // Narrow softening only: the Sun subtends ~0.5deg at the Moon, so the real
+    // terminator is nearly a hard edge.
+    float daylight = smoothstep(-0.05, 0.06, lambert);
+    float lit = daylight * (0.14 + 0.86 * clamp(lambert, 0.0, 1.0));
+    gl_FragColor = vec4(albedo * (lit * 2.1 + uEarthshine), 1.0);
+    #include <colorspace_fragment>
+  }
+`;
 
 /**
  * Textured Moon positioned from the current geocentric lunar ephemeris.
- * The group lives in the same Earth-fixed spin frame as the globe.
+ * The group lives in the same Earth-fixed spin frame as the globe, so it keeps
+ * a fixed position relative to the planet and is depth-occluded by it when the
+ * camera orbits to the far side.
  */
 function DistantMoonVisual({ perfTier }: { perfTier: GlobePerfTier }) {
+  const meshRef = useRef<THREE.Mesh>(null);
   const groupRef = useRef<THREE.Group>(null);
   const moonMap = useTexture(MOON_TEXTURE_URL, configureMoonTexture);
   const segments = getGlobeSphereSegments(perfTier);
 
+  const uniforms = useMemo(
+    () => ({
+      uMoonMap: { value: moonMap },
+      uSunDirection: { value: new THREE.Vector3(1, 0, 0) },
+      uEarthshine: { value: 0.035 },
+    }),
+    [moonMap],
+  );
+
   useFrame(() => {
     const group = groupRef.current;
-    if (!group) return;
+    const mesh = meshRef.current;
+    if (!group || !mesh) return;
+
     const direction = moonDirection();
     const distance = getMoonPosition().distance;
-    group.position.set(direction.x, direction.y, direction.z).multiplyScalar(distance);
+    group.position
+      .set(direction.x, direction.y, direction.z)
+      .multiplyScalar(distance);
+
+    // Tidal lock: point the near face back at Earth's center.
+    moonToEarth.copy(group.position).normalize().negate();
+    mesh.quaternion.setFromUnitVectors(MOON_NEAR_FACE_AXIS, moonToEarth);
+
+    // Sun is ~390x farther than the Moon, so Earth's subsolar direction is a
+    // sub-degree approximation of the Moon's. Rotate it into mesh-local space
+    // because the shader compares it against the object-space normal.
+    const sun = subsolarDirection();
+    uniforms.uSunDirection.value
+      .set(sun.x, sun.y, sun.z)
+      .applyQuaternion(moonSunLocal.copy(mesh.quaternion).invert());
   });
 
   return (
     <group ref={groupRef} frustumCulled={false}>
       <mesh
+        ref={meshRef}
         scale={MOON_RADIUS}
         raycast={ignoreRaycast}
         frustumCulled={false}
-        renderOrder={20}
       >
         <sphereGeometry args={[1, segments, segments]} />
-        <meshStandardMaterial
-          map={moonMap}
-          roughness={0.95}
-          metalness={0}
-          envMapIntensity={0.08}
-          // The true lunar vector can place it behind Earth from the default
-          // camera. Keep the accurate position while ensuring the landmark
-          // remains discoverable in dark space.
-          depthTest={false}
-          depthWrite={false}
+        <shaderMaterial
+          uniforms={uniforms}
+          vertexShader={MOON_VERTEX_SHADER}
+          fragmentShader={MOON_FRAGMENT_SHADER}
         />
       </mesh>
     </group>

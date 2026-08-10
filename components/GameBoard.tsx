@@ -950,11 +950,7 @@ export function GameBoard({
         <span className="font-black">{question.correctAnswer}</span>
       </>
     ) : undefined;
-  const learnCardLibraryScope = isStateCode(learnCardCountryCode)
-    ? "usa"
-    : isDailyChallenge
-      ? "world"
-      : scope;
+  const learnCardLibraryScope = isStateCode(learnCardCountryCode) ? "usa" : scope;
   const learnCardLibraryHref = buildLibraryDetailHref(
     learnCardCountryCode,
     learnCardLibraryScope,
@@ -1022,8 +1018,9 @@ export function GameBoard({
               <span aria-hidden>←</span>
               <span>Exit</span>
             </Button>
-            {/* Release the gameplay/WebGL tree before loading the library detail route. */}
-            {showLearnCard && (
+            {/* Release the gameplay/WebGL tree before loading the library detail route.
+                Hidden on daily challenge — the header already has extra time/score chips. */}
+            {showLearnCard && !isDailyChallenge && (
               <a
                 href={learnCardLibraryHref}
                 onClick={(e) => {
