@@ -65,8 +65,8 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  // Keep the layout viewport stable; the bottom tab bar pins to the layout
-  // viewport normally and only tracks visualViewport while the keyboard is open.
+  // Keep the layout viewport stable; MobileBottomDock sizes itself with
+  // visualViewport top+height so the tab bar stays pinned on iOS Safari.
   interactiveWidget: "overlays-content",
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#f2f8f4" },

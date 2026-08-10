@@ -185,31 +185,28 @@ function InlineLearnCard({
         </p>
       </div>
 
-      {/*
-        Mobile uses the original roomy sizing by default. Only when this card’s
-        own height is short (max-height 26rem) do flag/map/facts compact so
-        Population/Language never clip under the continue overlay.
-      */}
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden px-4 py-3 [@container_(max-height:26rem)]:px-3 [@container_(max-height:26rem)]:py-2 sm:hidden">
-        <div className="flex min-h-0 flex-1 flex-col justify-center overflow-hidden">
+      {/* Keep media in bounded rows so small game panels never crop the flag or
+          the country silhouette. The facts remain intrinsic below the media. */}
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden px-3 py-2.5 [@container_(max-height:26rem)]:px-3 [@container_(max-height:26rem)]:py-2 sm:hidden">
+        <div className="grid min-h-0 flex-1 grid-rows-[auto_minmax(6.5rem,1fr)] gap-2 overflow-hidden [@container_(max-height:26rem)]:grid-rows-[auto_minmax(5.5rem,1fr)]">
           {country.hasFlag && (
-            <div className="mb-2.5 flex min-h-0 shrink justify-center overflow-hidden [@container_(max-height:26rem)]:mb-1.5">
+            <div className="flex h-[clamp(4rem,16cqh,7rem)] min-h-0 justify-center overflow-visible">
               <FlagImage
                 code={country.code}
                 alt={country.name}
                 width={240}
                 frame="md"
-                className="mx-auto block h-auto max-h-full w-full max-w-[11rem] object-contain [@container_(max-height:26rem)]:max-h-[4.75rem] [@container_(max-height:26rem)]:max-w-[8rem]"
+                className="mx-auto block h-auto max-h-full w-full max-w-[12rem] object-contain [@container_(max-height:26rem)]:max-w-[10rem]"
               />
             </div>
           )}
 
-          <div className="mb-3 min-h-0 w-full shrink overflow-hidden [@container_(max-height:26rem)]:mb-2">
+          <div className="min-h-0 w-full overflow-hidden">
             <PlaceContextMap
               country={country}
               variant="learn"
               highlightNeighbors
-              className="min-h-0 max-h-full [@container_(max-height:26rem)]:max-h-[5.5rem]"
+              className="!aspect-auto !min-h-0 h-full max-h-full"
             />
           </div>
         </div>
@@ -222,7 +219,7 @@ function InlineLearnCard({
           />
         )}
 
-        <dl className="grid w-full shrink-0 grid-cols-2 content-start gap-x-6 gap-y-3 self-stretch pb-1 text-sm [@container_(max-height:26rem)]:gap-x-4 [@container_(max-height:26rem)]:gap-y-2">
+        <dl className="grid w-full shrink-0 grid-cols-2 content-start gap-x-4 gap-y-2 self-stretch pb-1 text-sm [@container_(max-height:26rem)]:gap-x-3 [@container_(max-height:26rem)]:gap-y-1.5">
           <div className="min-w-0">
             <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500 [@container_(max-height:26rem)]:text-[10px] dark:text-slate-400">
               Capital

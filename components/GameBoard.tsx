@@ -1006,7 +1006,7 @@ export function GameBoard({
       )}
 
       <div className="relative z-50 shrink-0 px-0.5 py-1.5 sm:px-1 sm:py-2">
-        <div className="flex items-center justify-between gap-1.5 sm:grid sm:grid-cols-[1fr_auto_1fr] sm:items-center sm:gap-2">
+        <div className="flex items-center justify-between gap-1 sm:grid sm:grid-cols-[1fr_auto_1fr] sm:items-center sm:gap-2">
           <div className="flex min-w-0 items-center gap-1.5">
             <Button
               variant="secondary"
@@ -1041,14 +1041,14 @@ export function GameBoard({
           <div className="hidden min-w-0 px-1 text-center leading-tight sm:block">
             {roundTitlePanel}
           </div>
-          <div className="flex min-w-0 items-stretch justify-end gap-1 sm:gap-1.5">
+          <div className="flex min-w-0 flex-1 items-stretch justify-end gap-1 max-[380px]:gap-0.5 sm:flex-none sm:gap-1.5">
             <StreakCounter streak={streak} compact />
-            <div className="shrink-0 rounded-xl border-2 border-emerald-200 bg-emerald-50/90 px-1.5 py-1 text-center dark:border-emerald-800 dark:bg-emerald-950/40 sm:rounded-2xl sm:px-3 sm:py-1.5">
+            <div className="shrink-0 rounded-xl border-2 border-emerald-200 bg-emerald-50/90 px-1.5 py-1 text-center max-[430px]:rounded-lg max-[430px]:px-1 max-[430px]:py-0.5 dark:border-emerald-800 dark:bg-emerald-950/40 sm:rounded-2xl sm:px-3 sm:py-1.5">
               <p className="game-stat-label text-[9px] font-semibold uppercase text-emerald-600 dark:text-emerald-400">Correct</p>
               <p className="font-display text-base font-extrabold leading-none text-emerald-700 dark:text-emerald-300 sm:text-lg">{correctAnswers}</p>
             </div>
             {isDailyChallenge && (
-              <div className="shrink-0 rounded-xl border-2 border-amber-200 bg-amber-50/90 px-1.5 py-1 text-center dark:border-amber-800 dark:bg-amber-950/40 sm:rounded-2xl sm:px-3 sm:py-1.5">
+              <div className="shrink-0 rounded-xl border-2 border-amber-200 bg-amber-50/90 px-1.5 py-1 text-center max-[430px]:rounded-lg max-[430px]:px-1 max-[430px]:py-0.5 dark:border-amber-800 dark:bg-amber-950/40 sm:rounded-2xl sm:px-3 sm:py-1.5">
                 <p className="game-stat-label text-[9px] font-semibold uppercase text-amber-600 dark:text-amber-400">
                   {countStats ? "Time" : "Score"}
                 </p>
@@ -1058,7 +1058,7 @@ export function GameBoard({
               </div>
             )}
             {isDailyChallenge && !countStats && (
-              <div className="shrink-0 rounded-xl border-2 border-violet-200 bg-violet-50/90 px-1.5 py-1 text-center dark:border-violet-800 dark:bg-violet-950/40 sm:rounded-2xl sm:px-3 sm:py-1.5">
+              <div className="shrink-0 rounded-xl border-2 border-violet-200 bg-violet-50/90 px-1.5 py-1 text-center max-[430px]:rounded-lg max-[430px]:px-1 max-[430px]:py-0.5 dark:border-violet-800 dark:bg-violet-950/40 sm:rounded-2xl sm:px-3 sm:py-1.5">
                 <p className="game-stat-label text-[9px] font-semibold uppercase text-violet-600 dark:text-violet-400">Review</p>
                 <p className="font-display text-base font-extrabold leading-none text-violet-700 dark:text-violet-300 sm:text-lg">
                   {formatDailyElapsedTime(reviewElapsedCentiseconds)}
@@ -1066,13 +1066,13 @@ export function GameBoard({
               </div>
             )}
             {timed && (
-              <div className={`shrink-0 rounded-xl border-2 px-1.5 py-1 text-center sm:rounded-2xl sm:px-3 sm:py-1.5 ${timeLeft <= 10 ? "border-rose-300 bg-rose-50 dark:border-rose-700 dark:bg-rose-950/50" : "border-slate-200 bg-white/90 dark:border-slate-700 dark:bg-slate-900/90"}`}>
+              <div className={`shrink-0 rounded-xl border-2 px-1.5 py-1 text-center max-[430px]:rounded-lg max-[430px]:px-1 max-[430px]:py-0.5 sm:rounded-2xl sm:px-3 sm:py-1.5 ${timeLeft <= 10 ? "border-rose-300 bg-rose-50 dark:border-rose-700 dark:bg-rose-950/50" : "border-slate-200 bg-white/90 dark:border-slate-700 dark:bg-slate-900/90"}`}>
                 <p className={`game-stat-label text-[9px] font-semibold uppercase ${timeLeft <= 10 ? "text-rose-500 dark:text-rose-400" : "text-slate-500 dark:text-slate-400"}`}>Time</p>
                 <p className={`font-display text-base font-extrabold leading-none sm:text-lg ${timeLeft <= 10 ? "text-rose-600" : ""}`}>{timeLeft}s</p>
               </div>
             )}
             {(timed || sessionQuestionLimit) && (
-              <div className="shrink-0 rounded-xl border-2 border-slate-200 bg-white/90 px-1.5 py-1 text-center dark:border-slate-700 dark:bg-slate-900/90 sm:rounded-2xl sm:px-3 sm:py-1.5">
+              <div className="shrink-0 rounded-xl border-2 border-slate-200 bg-white/90 px-1.5 py-1 text-center max-[430px]:rounded-lg max-[430px]:px-1 max-[430px]:py-0.5 dark:border-slate-700 dark:bg-slate-900/90 sm:rounded-2xl sm:px-3 sm:py-1.5">
                 <p className="game-stat-label text-[9px] font-semibold uppercase text-slate-500 dark:text-slate-400">Question</p>
                 <p className="font-display text-base font-extrabold leading-none sm:text-lg">
                   {timed ? questionCount + 1 : `${questionCount + 1}/${sessionQuestionLimit}`}
@@ -1183,7 +1183,7 @@ export function GameBoard({
                 {inlineLearnCard}
               </div>
               {question.displayType === "flags-grid" && question.optionCodes && (
-                <div className="flex min-h-0 w-full min-w-0 flex-1 items-center justify-center overflow-hidden pb-0.5">
+                <div className="flex h-[min(44cqh,22rem)] min-h-0 w-full min-w-0 shrink-0 items-center justify-center overflow-hidden pb-2">
                   <FlagGrid
                     codes={question.optionCodes.filter((c) => !hiddenOptions.includes(c))}
                     onSelect={(code) => handleAnswer(code, code)}

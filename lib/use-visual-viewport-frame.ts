@@ -3,54 +3,67 @@
 import { useEffect, useState } from "react";
 
 export type VisualViewportFrame = {
-  /** visualViewport.offsetTop — applied only while the soft keyboard is open. */
-  offsetTop: number;
-  /** visualViewport.height while the keyboard is open; otherwise layout height. */
-  height: number;
   /**
-   * When true, docks should fill the layout viewport (`top: 0; bottom: 0`)
-   * instead of tracking visualViewport — avoids rising with rubber-band overscroll.
+   * visualViewport.offsetTop while the soft keyboard is open; otherwise 0 so
+   * rubber-band overscroll cannot lift fixed docks.
    */
-  pinToLayout: boolean;
+  offsetTop: number;
+  /** Visible height for the fixed dock shell (`top` + `height`, never `bottom`). */
+  height: number;
 };
 
 /** Soft keyboards shrink the visual viewport far more than dynamic browser chrome. */
 const KEYBOARD_HEIGHT_GAP_PX = 120;
 
+function isEditableTarget(el: Element | null): boolean {
+  if (!(el instanceof HTMLElement)) return false;
+  const tag = el.tagName;
+  return (
+    tag === "INPUT" ||
+    tag === "TEXTAREA" ||
+    tag === "SELECT" ||
+    el.isContentEditable
+  );
+}
+
 function isSoftKeyboardOpen(vv: VisualViewport): boolean {
-  return window.innerHeight - vv.height > KEYBOARD_HEIGHT_GAP_PX;
+  // Require both a large height gap and a focused editable — browser chrome on
+  // small phones can exceed the gap threshold without a keyboard.
+  return (
+    window.innerHeight - vv.height > KEYBOARD_HEIGHT_GAP_PX &&
+    isEditableTarget(document.activeElement)
+  );
 }
 
 function readFrame(): VisualViewportFrame {
   const vv = window.visualViewport;
   if (!vv) {
-    return { offsetTop: 0, height: window.innerHeight, pinToLayout: true };
+    return { offsetTop: 0, height: window.innerHeight };
   }
 
   if (isSoftKeyboardOpen(vv)) {
     return {
       offsetTop: vv.offsetTop,
       height: vv.height,
-      pinToLayout: false,
     };
   }
 
-  // Ignore visualViewport offset/height jitter from rubber-band overscroll so
-  // fixed bottom docks stay glued to the physical bottom of the screen.
+  // Keep top at 0 (ignore overscroll offsetTop) but size with the visual
+  // viewport height — layout-viewport `bottom: 0` drifts mid-screen on modern
+  // iOS Safari after keyboard/chrome changes.
   return {
     offsetTop: 0,
-    height: window.innerHeight,
-    pinToLayout: true,
+    height: vv.height,
   };
 }
 
 /**
  * Tracks the visible viewport for docking fixed mobile UI.
  *
- * On iOS Safari, layout-viewport `position: fixed; bottom: 0` can drift after
- * the soft keyboard opens. While the keyboard is open, size fixed shells with
- * `top` + `height` from the visual viewport. While it is closed, pin to the
- * layout viewport so document rubber-banding cannot lift the dock.
+ * On iOS Safari, layout-viewport `position: fixed; bottom: 0` can float
+ * mid-screen after the soft keyboard or address bar changes. Always size fixed
+ * shells with `top` + `height` from this frame. While the keyboard is closed,
+ * force `offsetTop` to 0 so document rubber-banding cannot lift the dock.
  */
 export function useVisualViewportFrame(): VisualViewportFrame | null {
   const [frame, setFrame] = useState<VisualViewportFrame | null>(null);
@@ -69,11 +82,12 @@ export function useVisualViewportFrame(): VisualViewportFrame | null {
 
     const vv = window.visualViewport;
     vv?.addEventListener("resize", update);
-    // Only needed while the keyboard is open (input scrolled into view). Harmless
-    // when closed because readFrame ignores offsetTop unless the keyboard is open.
     vv?.addEventListener("scroll", update);
     window.addEventListener("resize", update);
     window.addEventListener("orientationchange", update);
+    // Keyboard open/close often changes focus without a viewport event first.
+    document.addEventListener("focusin", update);
+    document.addEventListener("focusout", update);
 
     return () => {
       cancelAnimationFrame(raf);
@@ -81,6 +95,8 @@ export function useVisualViewportFrame(): VisualViewportFrame | null {
       vv?.removeEventListener("scroll", update);
       window.removeEventListener("resize", update);
       window.removeEventListener("orientationchange", update);
+      document.removeEventListener("focusin", update);
+      document.removeEventListener("focusout", update);
     };
   }, []);
 

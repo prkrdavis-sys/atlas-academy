@@ -15,7 +15,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { user, isGuest, hydrated: authHydrated } = useAuth();
   const { syncError } = useProfiles();
-  const isAuthRoute = pathname === "/auth";
+  const isAuthRoute = pathname.startsWith("/auth");
+  const isAuthEntryRoute = pathname === "/auth";
   const isDevPreviewRoute = pathname.startsWith("/dev/");
   const isInviteRoute = pathname.startsWith("/invite/");
   const isActiveGameRoute = pathname.startsWith("/play/") && !pathname.startsWith("/play/setup");
@@ -28,14 +29,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     if (!authHydrated) return;
     if (!canAccessApp && !isAuthRoute && !isDevPreviewRoute && !isInviteRoute) {
       router.replace("/auth");
-    } else if (user && isAuthRoute) {
+    } else if (user && isAuthEntryRoute) {
       router.replace("/");
-    } else if (isGuest && isAuthRoute) {
+    } else if (isGuest && isAuthEntryRoute) {
       router.replace("/profiles");
     }
   }, [
     authHydrated,
     canAccessApp,
+    isAuthEntryRoute,
     isAuthRoute,
     isDevPreviewRoute,
     isInviteRoute,

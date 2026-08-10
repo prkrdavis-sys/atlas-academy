@@ -11,7 +11,9 @@ export function StreakCounter({ streak, compact = false }: { streak: number; com
     <div
       className={cn(
         "shrink-0 border-2 text-center transition-[border-color,box-shadow,background] duration-300",
-        compact ? "rounded-xl px-1.5 py-1 sm:rounded-2xl sm:px-3 sm:py-1.5" : "rounded-2xl px-4 py-3",
+        compact
+          ? "rounded-xl px-1.5 py-1 max-[430px]:rounded-lg max-[430px]:px-1 max-[430px]:py-0.5 sm:rounded-2xl sm:px-3 sm:py-1.5"
+          : "rounded-2xl px-4 py-3",
         tier.gamePanelClass,
       )}
     >

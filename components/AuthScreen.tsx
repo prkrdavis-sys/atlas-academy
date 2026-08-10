@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
@@ -7,7 +8,13 @@ import { Button } from "@/components/ui/Button";
 
 type AuthMode = "sign-in" | "sign-up";
 
-export function AuthScreen({ returnTo = "/profiles" }: { returnTo?: string }) {
+export function AuthScreen({
+  returnTo = "/profiles",
+  passwordResetSuccess = false,
+}: {
+  returnTo?: string;
+  passwordResetSuccess?: boolean;
+}) {
   const router = useRouter();
   const { signIn, signUp, continueAsGuest } = useAuth();
   const [mode, setMode] = useState<AuthMode>("sign-in");
@@ -15,7 +22,14 @@ export function AuthScreen({ returnTo = "/profiles" }: { returnTo?: string }) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState(
+    passwordResetSuccess
+      ? "Password updated. Sign in with your email and new password."
+      : "",
+  );
+  const [messageTone, setMessageTone] = useState<"success" | "warning">(
+    passwordResetSuccess ? "success" : "warning",
+  );
   const [busy, setBusy] = useState(false);
 
   const isSignUp = mode === "sign-up";
@@ -24,6 +38,7 @@ export function AuthScreen({ returnTo = "/profiles" }: { returnTo?: string }) {
     setMode(nextMode);
     setError("");
     setMessage("");
+    setMessageTone("warning");
     setPassword("");
     setConfirmPassword("");
   }
@@ -31,6 +46,7 @@ export function AuthScreen({ returnTo = "/profiles" }: { returnTo?: string }) {
   function handleContinueAsGuest() {
     setError("");
     setMessage("");
+    setMessageTone("warning");
     continueAsGuest();
     router.push("/profiles");
   }
@@ -39,6 +55,7 @@ export function AuthScreen({ returnTo = "/profiles" }: { returnTo?: string }) {
     event.preventDefault();
     setError("");
     setMessage("");
+    setMessageTone("warning");
 
     const normalizedEmail = email.trim();
     if (!normalizedEmail || !password) {
@@ -63,6 +80,7 @@ export function AuthScreen({ returnTo = "/profiles" }: { returnTo?: string }) {
     }
 
     if (result.needsConfirmation) {
+      setMessageTone("warning");
       setMessage(
         "Your account was created, but Supabase is waiting for email confirmation. Turn off Confirm email in the Supabase Email provider settings to use sign-in without verification.",
       );
@@ -141,9 +159,23 @@ export function AuthScreen({ returnTo = "/profiles" }: { returnTo?: string }) {
             </div>
 
             <div>
-              <label htmlFor="auth-password" className="mb-1 block text-sm font-medium">
-                Password
-              </label>
+              <div className="mb-1 flex items-center justify-between gap-3">
+                <label htmlFor="auth-password" className="block text-sm font-medium">
+                  Password
+                </label>
+                {!isSignUp && (
+                  <Link
+                    href={
+                      email.trim()
+                        ? `/auth/forgot-password?email=${encodeURIComponent(email.trim())}`
+                        : "/auth/forgot-password"
+                    }
+                    className="text-xs font-semibold text-teal-700 hover:underline dark:text-teal-300"
+                  >
+                    Forgot password?
+                  </Link>
+                )}
+              </div>
               <input
                 id="auth-password"
                 type="password"
@@ -180,7 +212,14 @@ export function AuthScreen({ returnTo = "/profiles" }: { returnTo?: string }) {
               </p>
             )}
             {message && (
-              <p role="status" className="rounded-xl bg-amber-50 px-3 py-2.5 text-sm text-amber-800 dark:bg-amber-950/40 dark:text-amber-300">
+              <p
+                role="status"
+                className={
+                  messageTone === "success"
+                    ? "rounded-xl bg-emerald-50 px-3 py-2.5 text-sm text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300"
+                    : "rounded-xl bg-amber-50 px-3 py-2.5 text-sm text-amber-800 dark:bg-amber-950/40 dark:text-amber-300"
+                }
+              >
                 {message}
               </p>
             )}
