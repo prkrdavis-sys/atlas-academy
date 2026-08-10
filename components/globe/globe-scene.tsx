@@ -1038,7 +1038,9 @@ export function GlobeAssetPreloader() {
   return null;
 }
 
-const MOON_RADIUS = 0.2727;
+/** Presentation scale: larger than the physical angular size for discoverability,
+ * while remaining substantially smaller than the distant Sun visual. */
+const MOON_RADIUS = 0.62;
 
 /**
  * Textured Moon positioned from the current geocentric lunar ephemeris.
