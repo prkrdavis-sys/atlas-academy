@@ -6,6 +6,7 @@ import {
   fillSelectedMapPath,
   getMapPalette,
   getProgressFillColor,
+  MAP_SELECTION_BORDER,
   MAP_SELECTION_GLOW_BLUR,
 } from "@/lib/map-colors";
 import { getMasterySolidColor } from "@/lib/map-mastery-fx";
@@ -599,10 +600,16 @@ export function paintGlobeCloseupRegion(
         glowBlur: MAP_SELECTION_GLOW_BLUR * Math.max(pixelScale, 0.5),
         allowGlow: !isGlobeFxConstrained(),
       });
-      // Re-stroke with the normal border so the fill doesn't erase the outline.
-      ctx.lineWidth = Math.max(0.8, (selected.isState ? 0.9 : 1.25) * (width / 1024));
-      ctx.strokeStyle = selected.isState ? palette.stateBorder : palette.border;
+      // Re-stroke with the gold selection border so the fill doesn't erase it.
+      ctx.save();
+      ctx.lineWidth = Math.max(1.2, (selected.isState ? 1.25 : 1.55) * (width / 1024));
+      ctx.strokeStyle = MAP_SELECTION_BORDER;
+      if (!isGlobeFxConstrained()) {
+        ctx.shadowColor = MAP_SELECTION_BORDER;
+        ctx.shadowBlur = 2.2 * Math.max(pixelScale, 0.5);
+      }
       ctx.stroke(path);
+      ctx.restore();
     }
   }
 

@@ -54,7 +54,7 @@ export function CurrencySelector() {
       </select>
       <p
         id="base-currency-status"
-        className="mt-1.5 text-xs leading-relaxed text-slate-500 dark:text-slate-400"
+        className="mt-1.5 text-[11px] leading-relaxed text-slate-500 dark:text-slate-400"
         aria-live="polite"
       >
         {ratesLoading && !ratesReady
@@ -71,7 +71,7 @@ export function CurrencySelector() {
           href="https://frankfurter.dev/"
           target="_blank"
           rel="noreferrer"
-          className="font-semibold text-teal-700 underline decoration-teal-300 underline-offset-2 hover:text-teal-900 dark:text-teal-300 dark:decoration-teal-700 dark:hover:text-teal-100"
+          className="underline decoration-current underline-offset-2"
         >
           Frankfurter
         </a>

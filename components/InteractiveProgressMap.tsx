@@ -338,6 +338,7 @@ export function InteractiveProgressMap({
               viewBox={overviewViewBox}
               highlightIds={EMPTY_MAP_PATH_ID_SET}
               neighborIds={EMPTY_MAP_PATH_ID_SET}
+              answerNeighborIds={EMPTY_MAP_PATH_ID_SET}
               ariaLabel={copy.ariaLabel}
               isDark={isDark}
               interactive

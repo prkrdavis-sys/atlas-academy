@@ -190,6 +190,8 @@ type PlaceContextMapProps = {
   country: Country;
   variant?: "compact" | "learn" | "hero";
   highlightNeighbors?: boolean;
+  /** Neighbor country whose answer should be visually distinguished. */
+  answerNeighborCode?: string;
   /** Crop and render only the featured country (no neighbors or other land). */
   countryOnly?: boolean;
   className?: string;
@@ -201,6 +203,7 @@ type ContextMapSvgProps = {
   map: ParsedContextMap;
   highlightIds: Set<string>;
   neighborIds: Set<string>;
+  answerNeighborIds: Set<string>;
   className?: string;
   ariaLabel: string;
   isDark?: boolean;
@@ -244,6 +247,7 @@ export function ContextMapSvg({
   map,
   highlightIds,
   neighborIds,
+  answerNeighborIds,
   className,
   ariaLabel,
   isDark = false,
@@ -267,8 +271,8 @@ export function ContextMapSvg({
   const activeViewBox = viewBox ?? map.viewBox;
   const [viewBoxX, viewBoxY, viewBoxWidth, viewBoxHeight] = parseMapViewBox(activeViewBox);
   const orderedPaths = useMemo(
-    () => sortMapPathsForRender(map.paths, highlightIds, neighborIds),
-    [map.paths, highlightIds, neighborIds],
+    () => sortMapPathsForRender(map.paths, highlightIds, neighborIds, answerNeighborIds),
+    [map.paths, highlightIds, neighborIds, answerNeighborIds],
   );
   const landWashOpacity = getMapLandTextureWashOpacity(isDark);
   const landBrightness = getMapLandTextureBrightness(isDark);
@@ -333,7 +337,7 @@ export function ContextMapSvg({
   const vectorEffect = scaleStrokesWithMap ? undefined : "non-scaling-stroke";
   const styledPaths = orderedPaths.map((path) => {
     const resolvedStyle = pathStyleResolver?.(path.id);
-    const role = getMapPathRole(path.id, highlightIds, neighborIds);
+    const role = getMapPathRole(path.id, highlightIds, neighborIds, answerNeighborIds);
     const style: MapPathStyle = resolvedStyle ?? palette[role];
     const strokeWidth = strokeWidthForViewBox(
       style.strokeWidth,
@@ -345,13 +349,15 @@ export function ContextMapSvg({
     const tintOpacity =
       !textureEnabled
         ? 0
-        : resolvedStyle
-          ? 0.46
-          : role === "highlight"
-            ? MAP_LAND_HIGHLIGHT_TINT_OPACITY
-            : role === "neighbor"
-              ? MAP_LAND_NEIGHBOR_TINT_OPACITY
-              : 0;
+        : role === "answer"
+          ? 0.62
+          : resolvedStyle
+            ? 0.46
+            : role === "highlight"
+              ? MAP_LAND_HIGHLIGHT_TINT_OPACITY
+              : role === "neighbor"
+                ? MAP_LAND_NEIGHBOR_TINT_OPACITY
+                : 0;
 
     return {
       path,
@@ -515,6 +521,7 @@ export function PlaceContextMap({
   country,
   variant = "hero",
   highlightNeighbors = false,
+  answerNeighborCode,
   countryOnly = false,
   className,
   interactive = false,
@@ -549,18 +556,29 @@ export function PlaceContextMap({
     return new Set(neighbors.filter((id) => !highlightIds.has(id)));
   }, [country, highlightIds, highlightNeighbors]);
 
+  const answerNeighborIds = useMemo(() => {
+    if (!answerNeighborCode) return new Set<string>();
+    const answerCountry = getCountryByCode(answerNeighborCode);
+    if (!answerCountry) return new Set<string>();
+    return new Set(getContextMapPathIds(answerCountry));
+  }, [answerNeighborCode]);
+
   // Learn-card neighbors use a muted cool tone so they don't compete with the
   // teal highlight (the default neighbor palette is the same teal family).
   const pathStyleResolver = useMemo(() => {
-    if (!highlightNeighbors) return undefined;
+    if (!highlightNeighbors && answerNeighborIds.size === 0) return undefined;
     const subtleNeighbor = getSubtleNeighborMapStyle(isDark);
+    const answerNeighbor = getMapPalette(isDark).answer;
     return (pathId: string): MapPathStyle | null => {
+      if (answerNeighborIds.has(pathId) && !highlightIds.has(pathId)) {
+        return answerNeighbor;
+      }
       if (neighborIds.has(pathId) && !highlightIds.has(pathId)) {
         return subtleNeighbor;
       }
       return null;
     };
-  }, [highlightNeighbors, highlightIds, neighborIds, isDark]);
+  }, [answerNeighborIds, highlightNeighbors, highlightIds, neighborIds, isDark]);
 
   const visiblePaths = useMemo(() => {
     if (!map) return [];
@@ -727,6 +745,10 @@ export function PlaceContextMap({
   }
 
   const ariaLabel = getContextMapAriaLabel(country, isState);
+  const mapAriaLabel =
+    answerNeighborIds.size > 0
+      ? `${ariaLabel}; the correct neighboring country is highlighted in amber`
+      : ariaLabel;
   const landTexture = contextMapSupportsLandTexture(templateKey);
 
   return (
@@ -761,8 +783,9 @@ export function PlaceContextMap({
             map={{ ...map, paths: visiblePaths }}
             highlightIds={highlightIds}
             neighborIds={neighborIds}
+            answerNeighborIds={answerNeighborIds}
             pathStyleResolver={pathStyleResolver}
-            ariaLabel={ariaLabel}
+            ariaLabel={mapAriaLabel}
             isDark={isDark}
             viewBox={activeViewBox}
             scaleStrokesWithMap={variant === "learn" || variant === "hero"}

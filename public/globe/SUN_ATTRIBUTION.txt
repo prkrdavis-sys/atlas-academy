@@ -4,6 +4,7 @@ sun-glow.png — soft radial falloff used for corona wash layers.
 Source imagery: NASA Solar Dynamics Observatory (SDO) / AIA 171 Å
 Latest feed example: https://sdo.gsfc.nasa.gov/assets/img/latest/latest_1024_0171.jpg
 License: Public domain (U.S. government work / NASA imagery)
+
 NASA media use: https://www.nasa.gov/nasa-brand-center/images-and-media/
 
 The disk is color-graded and composited with an original soft circular corona
@@ -17,6 +18,17 @@ night-lights.jpg — night-side city lights layer for the globe day/night mode.
 Source imagery: NASA Earth Observatory "Black Marble" 2016 composite
 (Suomi NPP VIIRS day/night band), downscaled to 2048x1024.
 Source: https://earthobservatory.nasa.gov/features/NightLights
+License: Public domain (U.S. government work / NASA imagery)
+
+---
+
+moon-color.jpg — equirectangular lunar surface texture used by the
+dark-mode Moon.
+Source imagery: NASA Scientific Visualization Studio CGI Moon Kit,
+derived from Lunar Reconnaissance Orbiter camera and laser altimeter data.
+Source: https://svs.gsfc.nasa.gov/4720
+Downloaded via Wikimedia Commons' public-domain derivative:
+https://commons.wikimedia.org/wiki/File:Moon_texture.jpg
 License: Public domain (U.S. government work / NASA imagery)
 
 ---

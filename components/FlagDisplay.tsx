@@ -28,7 +28,7 @@ type FlagImageProps = {
   layout?: FlagLayout;
   /** Optional display ratio override for layouts that need uniform flag rectangles. */
   displayAspectRatio?: number;
-  /** How the flag fills a display box; intrinsic displays default to fill. */
+  /** How the flag fills a display box; intrinsic displays default to contain. */
   objectFit?: "contain" | "fill" | "cover";
   /** Anchor point used when objectFit crops the flag. */
   objectPosition?: string;
@@ -77,7 +77,7 @@ function FlagImg({
   code,
   alt,
   className,
-  objectFit = "fill",
+  objectFit = "contain",
   objectPosition,
   constrainedAxis = "width",
   priority,
@@ -152,7 +152,7 @@ function wrapWithFrame(
   );
 }
 
-/** Renders a flag at its display aspect ratio; intrinsic displays preserve the full flag by default. */
+/** Renders a complete flag at its true aspect ratio; tile layouts may opt into cropping. */
 export function FlagImage({
   code,
   alt,
@@ -170,7 +170,7 @@ export function FlagImage({
   const clipPath = getFlagClipPath(code);
   const isHeightConstrained = constrainedAxis === "height";
   const hasFrame = frame !== "none";
-  const resolvedObjectFit = objectFit ?? (layout === "tile" ? "contain" : "fill");
+  const resolvedObjectFit = objectFit ?? "contain";
 
   const shapedFrameClass =
     shaped && hasFrame ? SHAPED_FRAME_STYLES[frame] : undefined;

@@ -8,7 +8,7 @@ import type { MapProgressDifficulty, PlaceMasteryLevel } from "@/lib/types";
 /** Panzoom skips pointer handling on elements with this class (and their descendants). */
 export const PANZOOM_EXCLUDE_CLASS = "panzoom-exclude";
 
-export type MapPathRole = "default" | "neighbor" | "highlight";
+export type MapPathRole = "default" | "neighbor" | "answer" | "highlight";
 
 export type MapPathStyle = {
   fill: string;
@@ -17,6 +17,9 @@ export type MapPathStyle = {
   /** Optional CSS class (e.g. mastery glow pulse). */
   className?: string;
 };
+
+/** Bright boundary color used to make the selected geography easy to trace. */
+export const MAP_SELECTION_BORDER = "#facc15";
 
 type MapPalette = Record<MapPathRole, MapPathStyle> & { ocean: string };
 
@@ -33,9 +36,14 @@ const LIGHT_MAP_PALETTE: MapPalette = {
     stroke: "#14b8a6",
     strokeWidth: 0.5,
   },
+  answer: {
+    fill: "#f59e0b",
+    stroke: "#b45309",
+    strokeWidth: 0.7,
+  },
   highlight: {
     fill: "#14b8a6",
-    stroke: "#0f766e",
+    stroke: MAP_SELECTION_BORDER,
     strokeWidth: 0.65,
   },
 };
@@ -53,9 +61,14 @@ const DARK_MAP_PALETTE: MapPalette = {
     stroke: "#14b8a6",
     strokeWidth: 0.5,
   },
+  answer: {
+    fill: "#fbbf24",
+    stroke: "#fef3c7",
+    strokeWidth: 0.7,
+  },
   highlight: {
     fill: "#2dd4bf",
-    stroke: "#99f6e4",
+    stroke: MAP_SELECTION_BORDER,
     strokeWidth: 0.65,
   },
 };
@@ -117,8 +130,10 @@ export function getMapPathRole(
   pathId: string,
   highlightIds: Set<string>,
   neighborIds: Set<string>,
+  answerNeighborIds: Set<string> = new Set(),
 ): MapPathRole {
   if (highlightIds.has(pathId)) return "highlight";
+  if (answerNeighborIds.has(pathId)) return "answer";
   if (neighborIds.has(pathId)) return "neighbor";
   return "default";
 }
@@ -135,16 +150,18 @@ export function sortMapPathsForRender<T extends { id: string }>(
   paths: T[],
   highlightIds: Set<string>,
   neighborIds: Set<string>,
+  answerNeighborIds: Set<string> = new Set(),
 ): T[] {
   const roleOrder: Record<MapPathRole, number> = {
     default: 0,
     neighbor: 1,
-    highlight: 2,
+    answer: 2,
+    highlight: 3,
   };
 
   return [...paths].sort((a, b) => {
-    const roleA = getMapPathRole(a.id, highlightIds, neighborIds);
-    const roleB = getMapPathRole(b.id, highlightIds, neighborIds);
+    const roleA = getMapPathRole(a.id, highlightIds, neighborIds, answerNeighborIds);
+    const roleB = getMapPathRole(b.id, highlightIds, neighborIds, answerNeighborIds);
     return roleOrder[roleA] - roleOrder[roleB];
   });
 }

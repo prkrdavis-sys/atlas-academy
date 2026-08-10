@@ -9,6 +9,7 @@ import {
   fillSelectedMapPath,
   getMapPalette,
   getProgressFillColor,
+  MAP_SELECTION_BORDER,
   MAP_SELECTION_GLOW_BLUR,
 } from "@/lib/map-colors";
 import {
@@ -468,7 +469,7 @@ export type GlobeTextureOptions = {
   isDark?: boolean;
   /** Texture width in pixels; height is width / 2. */
   size?: number;
-  /** Place code currently selected on the map globe (shows teal highlight). */
+  /** Place code currently selected on the map globe (shows a gold boundary). */
   selectedCode?: string | null;
   /** 0–1 animation phase for mastery-4 holographic / gold drift. */
   phase?: number;
@@ -738,6 +739,15 @@ function buildGlobeTexturePaintSync(
           glowBlur: MAP_SELECTION_GLOW_BLUR * pixelScale,
           allowGlow: allowCanvasGlow,
         });
+        ctx.save();
+        ctx.lineWidth = Math.max(1.1, (selected.isState ? 1.2 : 1.5) * pixelScale);
+        ctx.strokeStyle = MAP_SELECTION_BORDER;
+        if (allowCanvasGlow) {
+          ctx.shadowColor = MAP_SELECTION_BORDER;
+          ctx.shadowBlur = 1.8 * pixelScale;
+        }
+        ctx.stroke(path);
+        ctx.restore();
       }
     }
   };
@@ -948,6 +958,15 @@ async function buildGlobeTexturePaintAsync(
           glowBlur: MAP_SELECTION_GLOW_BLUR * pixelScale,
           allowGlow: allowCanvasGlow,
         });
+        ctx.save();
+        ctx.lineWidth = Math.max(1.1, (selected.isState ? 1.2 : 1.5) * pixelScale);
+        ctx.strokeStyle = MAP_SELECTION_BORDER;
+        if (allowCanvasGlow) {
+          ctx.shadowColor = MAP_SELECTION_BORDER;
+          ctx.shadowBlur = 1.8 * pixelScale;
+        }
+        ctx.stroke(path);
+        ctx.restore();
       }
     }
   };

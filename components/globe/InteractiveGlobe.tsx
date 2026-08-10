@@ -23,6 +23,7 @@ import {
   globeFillDistance,
   GlobeInitialInvalidate,
   GlobeMetalReflection,
+  DistantMoon,
   GlobePlanet,
   GlobeRecoveryReset,
   useGlobeCanvasKey,
@@ -735,6 +736,7 @@ function PickableGlobe({
         // does not fire after GlobeGrabOrbit selects on pointerup (click follows).
         meshProps={{ onClick: () => {} }}
       />
+      <DistantMoon isDark={isDark} perfTier={perfTier} />
       <GlobeClouds
         isDark={isDark}
         perfTier={perfTier}

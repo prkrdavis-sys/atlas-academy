@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 type LearnCardProps = {
   countryCode: string;
   wasCorrect: boolean;
+  answerNeighborCode?: string;
   compareCountryCode?: string;
   heading?: ReactNode;
   /** Embedded in the game panel between the header and answer choices. */
@@ -152,6 +153,7 @@ function InlineLearnCard({
   country,
   isState,
   wasCorrect,
+  answerNeighborCode,
   heading,
   compareCountryCode,
   countryCode,
@@ -159,6 +161,7 @@ function InlineLearnCard({
   country: NonNullable<ReturnType<typeof getCountryByCode>>;
   isState: boolean;
   wasCorrect: boolean;
+  answerNeighborCode?: string;
   heading?: ReactNode;
   compareCountryCode?: string;
   countryCode: string;
@@ -209,6 +212,7 @@ function InlineLearnCard({
             country={country}
             variant="learn"
             highlightNeighbors
+            answerNeighborCode={answerNeighborCode}
             className="!aspect-auto !min-h-0 h-full max-h-full w-full"
           />
         </div>
@@ -324,6 +328,7 @@ function InlineLearnCard({
           country={country}
           variant="learn"
           highlightNeighbors
+          answerNeighborCode={answerNeighborCode}
           className="w-full"
         />
       </div>
@@ -338,6 +343,7 @@ function InlineLearnCard({
 export function LearnCard({
   countryCode,
   wasCorrect,
+  answerNeighborCode,
   compareCountryCode,
   heading,
   variant = "default",
@@ -352,6 +358,7 @@ export function LearnCard({
         country={country}
         isState={isState}
         wasCorrect={wasCorrect}
+        answerNeighborCode={answerNeighborCode}
         heading={heading}
         compareCountryCode={compareCountryCode}
         countryCode={countryCode}
@@ -382,7 +389,12 @@ export function LearnCard({
           />
         )}
         <div className="mb-4">
-          <PlaceContextMap country={country} variant="learn" highlightNeighbors />
+          <PlaceContextMap
+            country={country}
+            variant="learn"
+            highlightNeighbors
+            answerNeighborCode={answerNeighborCode}
+          />
         </div>
         <div
           className={

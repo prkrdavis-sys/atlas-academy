@@ -30,6 +30,7 @@ import {
   loadMasteryGoldPbrImages,
 } from "@/lib/mastery-gold-texture";
 import { masteryFxPhaseFromTime } from "@/lib/map-mastery-fx";
+import { moonDirection, getMoonPosition } from "@/lib/moon-position";
 import {
   getGlobePerfTier,
   GLOBE_ATMOSPHERE_SEGMENTS_BY_TIER,
@@ -1012,6 +1013,16 @@ const SUN_GLOW_TEXTURE_URL = "/globe/sun-glow.png";
  * appears only where people actually live. See public/globe/SUN_ATTRIBUTION.txt.
  */
 const NIGHT_LIGHTS_TEXTURE_URL = "/globe/night-lights.jpg";
+const MOON_TEXTURE_URL = "/globe/moon-color.jpg";
+
+function configureMoonTexture(texture: THREE.Texture | THREE.Texture[]) {
+  for (const map of Array.isArray(texture) ? texture : [texture]) {
+    map.colorSpace = THREE.SRGBColorSpace;
+    map.anisotropy = 1;
+    map.wrapS = THREE.RepeatWrapping;
+    map.wrapT = THREE.ClampToEdgeWrapping;
+  }
+}
 
 /** Preloads sun textures on the client after the Canvas mounts. */
 export function GlobeAssetPreloader() {
@@ -1019,11 +1030,61 @@ export function GlobeAssetPreloader() {
     useTexture.preload(SUN_TEXTURE_URL);
     useTexture.preload(SUN_GLOW_TEXTURE_URL);
     useTexture.preload(NIGHT_LIGHTS_TEXTURE_URL);
+    useTexture.preload(MOON_TEXTURE_URL);
     void loadHurricaneTexture().catch(() => {
       // Rare-event asset; ordinary clouds remain if this fails.
     });
   }, []);
   return null;
+}
+
+const MOON_RADIUS = 0.2727;
+
+/**
+ * Textured Moon positioned from the current geocentric lunar ephemeris.
+ * The group lives in the same Earth-fixed spin frame as the globe.
+ */
+function DistantMoonVisual({ perfTier }: { perfTier: GlobePerfTier }) {
+  const groupRef = useRef<THREE.Group>(null);
+  const moonMap = useTexture(MOON_TEXTURE_URL, configureMoonTexture);
+  const segments = getGlobeSphereSegments(perfTier);
+
+  useFrame(() => {
+    const group = groupRef.current;
+    if (!group) return;
+    const direction = moonDirection();
+    const distance = getMoonPosition().distance;
+    group.position.set(direction.x, direction.y, direction.z).multiplyScalar(distance);
+  });
+
+  return (
+    <group ref={groupRef} frustumCulled={false}>
+      <mesh scale={MOON_RADIUS} raycast={ignoreRaycast} frustumCulled={false}>
+        <sphereGeometry args={[1, segments, segments]} />
+        <meshStandardMaterial
+          map={moonMap}
+          roughness={0.95}
+          metalness={0}
+          envMapIntensity={0.08}
+        />
+      </mesh>
+    </group>
+  );
+}
+
+export function DistantMoon({
+  isDark,
+  perfTier = "desktop",
+}: {
+  isDark: boolean;
+  perfTier?: GlobePerfTier;
+}) {
+  if (!isDark) return null;
+  return (
+    <Suspense fallback={null}>
+      <DistantMoonVisual perfTier={perfTier} />
+    </Suspense>
+  );
 }
 
 /** Ocean-colored placeholder shown while the painted globe texture loads. */

@@ -962,6 +962,8 @@ export function GameBoard({
   );
   const learnCardProps = {
     countryCode: learnCardCountryCode,
+    answerNeighborCode:
+      question.mode === "neighbor-quiz" ? question.correctCode : undefined,
     heading: learnCardHeading,
     wasCorrect: lastCorrect,
     compareCountryCode:

@@ -1,6 +1,10 @@
 import * as THREE from "three";
 import { normalizedToLocalDirection, ringCentroid } from "@/lib/globe-focus";
-import { getMapPalette, getProgressFillColor } from "@/lib/map-colors";
+import {
+  getMapPalette,
+  getProgressFillColor,
+  MAP_SELECTION_BORDER,
+} from "@/lib/map-colors";
 import { getPlaceMasteryLevel } from "@/lib/map-progress";
 import type { GlobeCountryShape } from "@/lib/globe-texture";
 import type { MapProgressDifficulty, Profile } from "@/lib/types";
@@ -122,7 +126,7 @@ export function resolveDetailFillColor(
 ): { fill: string; stroke: string } {
   const stroke = isDark ? "#5a7896" : "#1e293b";
   if (selectedCode === code) {
-    return { fill: getMapPalette(isDark).highlight.fill, stroke };
+    return { fill: getMapPalette(isDark).highlight.fill, stroke: MAP_SELECTION_BORDER };
   }
   const level = profile ? getPlaceMasteryLevel(code, profile, difficulty) : 0;
   return {
