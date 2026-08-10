@@ -6,6 +6,7 @@ import {
   getFlagAspectRatio,
   getFlagClipPath,
   getFlagDisplayProfile,
+  getFlagGridObjectPosition,
   isShapedFlag,
 } from "@/lib/flag-display";
 import { cn } from "@/lib/utils";
@@ -415,7 +416,7 @@ export function FlagGrid({
               displayAspectRatio={FLAG_GRID_ASPECT_RATIO}
               className="h-full w-full"
               objectFit={cropsRightEdge ? "cover" : "fill"}
-              objectPosition={cropsRightEdge ? "left center" : undefined}
+              objectPosition={cropsRightEdge ? getFlagGridObjectPosition(code) : undefined}
               inverted={inverted}
             />
           );

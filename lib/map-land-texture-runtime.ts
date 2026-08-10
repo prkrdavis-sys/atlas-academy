@@ -7,7 +7,6 @@
 
 import { geoAlbersUsa, geoNaturalEarth1, type GeoProjection } from "d3-geo";
 import { loadLandColorImage } from "@/lib/globe-land-color";
-import { getOceanDepthCanvas, loadOceanDepthImage } from "@/lib/globe-ocean-depth";
 import {
   getMapLandTextureBrightness,
   getMapLandTextureWashOpacity,
@@ -21,7 +20,7 @@ import {
 let metaPromise: Promise<MapLandTextureMeta> | null = null;
 let usaMetaPromise: Promise<UsaMapProjectionMeta> | null = null;
 const cropCache = new Map<string, string>();
-const surfaceCropCache = new Map<string, { landHref: string; oceanHref: string }>();
+const surfaceCropCache = new Map<string, { landHref: string }>();
 
 /**
  * Runtime projection sampling is intentionally reserved for non-touch
@@ -218,8 +217,9 @@ export async function renderMapLandTextureCrop({
 }
 
 /**
- * Produces geographically aligned NASA land color and GEBCO bathymetry for a
- * 2D map crop. Both layers use the exact projection that generated its SVG.
+ * Produces geographically aligned NASA land color for a 2D map crop using the
+ * exact projection that generated its SVG. Water stays the shared flat navy
+ * palette so map cards never expose a mismatched rectangular ocean texture.
  */
 export async function renderMapSurfaceTextureCrop({
   templateKey,
@@ -237,7 +237,7 @@ export async function renderMapSurfaceTextureCrop({
   viewBoxHeight: number;
   isDark: boolean;
   targetWidth?: number;
-}): Promise<{ landHref: string; oceanHref: string }> {
+}): Promise<{ landHref: string }> {
   const width = Math.max(64, Math.round(targetWidth));
   const height = Math.max(64, Math.round(width * viewBoxHeight / Math.max(viewBoxWidth, 1e-6)));
   const cacheKey = [
@@ -248,10 +248,9 @@ export async function renderMapSurfaceTextureCrop({
   const cached = surfaceCropCache.get(cacheKey);
   if (cached) return cached;
 
-  const [projection, landImage, depthImage] = await Promise.all([
+  const [projection, landImage] = await Promise.all([
     createMapProjection(templateKey),
     loadLandColorImage(),
-    loadOceanDepthImage(),
   ]);
   const invert = projection.invert?.bind(projection);
   if (!invert) throw new Error(`${templateKey} projection does not support invert()`);
@@ -276,17 +275,12 @@ export async function renderMapSurfaceTextureCrop({
   // The output is at most 1280px wide, so retaining full-resolution source
   // ImageData only multiplies peak memory without improving the crop.
   const landData = sourceData(landImage, landImage.naturalWidth, landImage.naturalHeight, 2048);
-  const depthCanvas = getOceanDepthCanvas(depthImage, isDark);
-  const oceanData = sourceData(depthCanvas, depthCanvas.width, depthCanvas.height, 1024);
   const landCanvas = document.createElement("canvas");
-  const oceanCanvas = document.createElement("canvas");
-  landCanvas.width = oceanCanvas.width = width;
-  landCanvas.height = oceanCanvas.height = height;
+  landCanvas.width = width;
+  landCanvas.height = height;
   const landContext = landCanvas.getContext("2d");
-  const oceanContext = oceanCanvas.getContext("2d");
-  if (!landContext || !oceanContext) throw new Error("Could not create map texture canvases");
+  if (!landContext) throw new Error("Could not create map texture canvas");
   const landOut = landContext.createImageData(width, height);
-  const oceanOut = oceanContext.createImageData(width, height);
 
   for (let py = 0; py < height; py += 1) {
     const y = viewBoxY + ((py + 0.5) / height) * viewBoxHeight;
@@ -295,22 +289,17 @@ export async function renderMapSurfaceTextureCrop({
       const geo = invert([x, y]);
       const index = (py * width + px) * 4;
       if (!geo) {
-        oceanOut.data.set(isDark ? [15, 23, 42, 255] : [224, 242, 254, 255], index);
         landOut.data.set([120, 132, 122, 255], index);
         continue;
       }
       const landPixel = sampleEquirectangular(landData, geo[0], geo[1]);
-      const oceanPixel = sampleEquirectangular(oceanData, geo[0], geo[1]);
       landOut.data.set([...landPixel, 255], index);
-      oceanOut.data.set([...oceanPixel, 255], index);
     }
   }
   landContext.putImageData(landOut, 0, 0);
-  oceanContext.putImageData(oceanOut, 0, 0);
   applyThemeTone(landCanvas, isDark);
   const result = {
     landHref: landCanvas.toDataURL("image/jpeg", 0.9),
-    oceanHref: oceanCanvas.toDataURL("image/jpeg", 0.9),
   };
   surfaceCropCache.set(cacheKey, result);
   return result;

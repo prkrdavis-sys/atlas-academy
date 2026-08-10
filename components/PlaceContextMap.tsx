@@ -131,7 +131,11 @@ export function preloadLearnCardMap(countryCode: string, isDark: boolean): Promi
     const country = getCountryByCode(countryCode);
     if (!country || !countryHasContextMap(country)) return;
 
-    const templateKey = getContextMapTemplateKey(country);
+    // Learn cards use the complete world geometry so wide crops never expose
+    // land that is absent from a continent-only template.
+    const templateKey = isStateCode(country.code)
+      ? getContextMapTemplateKey(country)
+      : "world";
     const [, bounds] = await Promise.all([
       loadContextMapTemplate(templateKey),
       loadMapBoundsManifest(),
@@ -271,7 +275,6 @@ export function ContextMapSvg({
   /** Sharp viewBox crop; null while generating — fall back to overview bake. */
   const [surfaceCrop, setSurfaceCrop] = useState<{
     landHref: string;
-    oceanHref: string;
   } | null>(null);
 
   const [surfaceTextureAllowed, setSurfaceTextureAllowed] = useState(false);
@@ -373,7 +376,6 @@ export function ContextMapSvg({
       {textureEnabled ? (
         <defs>
           {surfaceCrop ? (
-            <>
             <pattern
               id={landPatternId}
               patternUnits="userSpaceOnUse"
@@ -391,7 +393,6 @@ export function ContextMapSvg({
                 preserveAspectRatio="none"
               />
             </pattern>
-            </>
           ) : (
             <pattern
               id={landPatternId}
@@ -427,20 +428,6 @@ export function ContextMapSvg({
         height={viewBoxHeight}
         fill={palette.ocean}
       />
-      {textureEnabled && surfaceCrop ? (
-        // Keep the ocean crop as a direct image. Pattern content uses its own
-        // user-space origin, which can expose a rectangular gap when the crop
-        // viewBox starts away from (0, 0).
-        <image
-          href={surfaceCrop.oceanHref}
-          x={viewBoxX}
-          y={viewBoxY}
-          width={viewBoxWidth}
-          height={viewBoxHeight}
-          preserveAspectRatio="none"
-          aria-hidden
-        />
-      ) : null}
       {textureEnabled ? (
         <>
           {styledPaths.map(({ path, style, fill }) => (
@@ -537,12 +524,14 @@ export function PlaceContextMap({
   const mapRef = useRef<HTMLDivElement>(null);
   const panzoomRef = useRef<ReturnType<typeof Panzoom> | null>(null);
   const isState = isStateCode(country.code);
-  // Interactive library maps allow zooming out past the close-up. Continent
-  // templates omit non-member countries (e.g. India on the Europe SVG), so a
-  // wide zoom-out shows missing land. Use the world template whenever the user
-  // can pan/zoom — static Learn cards keep the lighter continent crops.
+  // Learn-card crops can include countries outside the featured continent
+  // because their wide aspect ratio exposes a broad regional context. Use the
+  // complete world template for those snapshots so every visible country has
+  // geometry; interactive maps use it for the same reason when zooming out.
   const templateKey =
-    interactive && !isState ? "world" : getContextMapTemplateKey(country);
+    !isState && (interactive || variant === "learn")
+      ? "world"
+      : getContextMapTemplateKey(country);
   const [map, setMap] = useState<ParsedContextMap | null>(() =>
     templateCache.get(templateKey) ?? null,
   );
@@ -744,7 +733,7 @@ export function PlaceContextMap({
     <div
       ref={containerRef}
       className={cn(
-        "overflow-hidden rounded-2xl border border-teal-100 bg-sky-50 dark:border-teal-900/50 dark:bg-slate-950",
+        "overflow-hidden rounded-2xl border border-teal-100 bg-sky-50 dark:border-teal-900/50 dark:bg-slate-900",
         variant === "compact"
           ? "h-20 sm:h-24"
           : variant === "learn"

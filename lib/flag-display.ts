@@ -19,9 +19,44 @@ const shapedClipByCode = new Map(
   Object.entries(flagDisplayData.shaped).map(([code, clipPath]) => [code.toUpperCase(), clipPath]),
 );
 
+// Wide flags with a centered emblem or symbol need a centered crop in quiz tiles.
+// Other wide flags stay left-anchored so hoist-side details remain visible.
+const centeredSubjectCodes = new Set([
+  "AS",
+  "AZ",
+  "BN",
+  "BZ",
+  "CA",
+  "CV",
+  "DE",
+  "FM",
+  "GT",
+  "GU",
+  "HN",
+  "HR",
+  "IM",
+  "JE",
+  "KG",
+  "KI",
+  "KM",
+  "LC",
+  "LI",
+  "MD",
+  "MK",
+  "NF",
+  "NI",
+  "PY",
+  "TJ",
+]);
+
 /** Display width / height from the flag SVG's rendered viewport metadata. */
 export function getFlagAspectRatio(code: string): number {
   return ratioByCode.get(code.toLowerCase()) ?? DEFAULT_ASPECT_RATIO;
+}
+
+/** Returns the crop anchor for wide flags in fixed-ratio quiz tiles. */
+export function getFlagGridObjectPosition(code: string): "left center" | "center center" {
+  return centeredSubjectCodes.has(code.toUpperCase()) ? "center center" : "left center";
 }
 
 /** Returns the explicit geometry exception, or the profile implied by its ratio. */
