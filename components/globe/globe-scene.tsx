@@ -11,7 +11,7 @@ import {
   type RefObject,
 } from "react";
 import { useFrame, useThree, type ThreeElements } from "@react-three/fiber";
-import { Billboard, Environment, useTexture } from "@react-three/drei";
+import { Billboard, useTexture } from "@react-three/drei";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
 import {
@@ -892,8 +892,11 @@ export function globeGoldSurfaceProps(hasMetalMaps: boolean) {
  * Matte land stays diffuse-dominant via the metalness map.
  */
 export function GlobeMetalReflection({ perfTier = "desktop" }: { perfTier?: GlobePerfTier }) {
-  if (perfTier === "phone") return null;
-  return <Environment preset="studio" environmentIntensity={0.28} />;
+  // Keep the globe's color response deterministic. Even a neutral HDRI adds
+  // view-dependent reflected color to the matte ocean, which can become a
+  // purple/brown cast in the shadowed hemisphere.
+  void perfTier;
+  return null;
 }
 
 /**
