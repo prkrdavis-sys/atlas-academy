@@ -187,10 +187,9 @@ function InlineLearnCard({
       </div>
 
       {/* Mobile: flag + facts never shrink; map is the flexible middle slot.
-          Flag is height-constrained so aspect-ratio stays correct — width-sized
-          flags inside a shorter overflow-hidden frame were getting cropped
-          (especially square flags like Switzerland). Short cards compact via
-          container queries. */}
+          Size the flag by width (capped by container height) so square flags
+          like Switzerland fit without cropping, and standard/wide flags like
+          Burkina Faso don't collapse to a hairline on iOS Safari. */}
       <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden px-3 py-2.5 [@container_(max-height:26rem)]:gap-1.5 [@container_(max-height:26rem)]:px-3 [@container_(max-height:26rem)]:py-2 sm:hidden">
         {country.hasFlag && (
           <div className="flex shrink-0 items-center justify-center pt-0.5">
@@ -199,8 +198,8 @@ function InlineLearnCard({
               alt={country.name}
               width={160}
               frame="md"
-              constrainedAxis="height"
-              className="h-[clamp(3rem,min(16cqh,24cqw),6rem)] w-auto max-w-full [@container_(max-height:26rem)]:h-[clamp(2.5rem,min(12cqh,20cqw),4.5rem)] [@container_(max-height:22rem)]:h-[clamp(2.25rem,min(11cqh,18cqw),3.75rem)]"
+              constrainedAxis="width"
+              className="w-[min(11rem,min(70cqw,34cqh))] max-w-full [@container_(max-height:26rem)]:w-[min(9rem,min(65cqw,30cqh))] [@container_(max-height:22rem)]:w-[min(7.5rem,min(60cqw,26cqh))]"
             />
           </div>
         )}

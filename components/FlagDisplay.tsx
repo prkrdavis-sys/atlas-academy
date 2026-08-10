@@ -78,6 +78,7 @@ function FlagImg({
   displayAspectRatio,
 }: FlagImgProps) {
   const isHeightConstrained = constrainedAxis === "height";
+  const aspectRatio = displayAspectRatio ?? getFlagAspectRatio(code);
 
   return (
     <span
@@ -86,11 +87,12 @@ function FlagImg({
         isHeightConstrained ? "inline-block" : "block",
         className,
       )}
-      style={{ aspectRatio: displayAspectRatio ?? getFlagAspectRatio(code) }}
+      style={{ aspectRatio }}
     >
       {/* Local SVG assets are rendered directly so the complete flag remains visible. */}
-      {/* Height-constrained boxes size via height + aspect-ratio. Absolute-fill the
-          image so percentage width/height cannot collapse the box (Safari/WebKit). */}
+      {/* Height-constrained: keep the img in-flow. Absolutely positioned children
+          make WebKit/Safari collapse width to 0 (hairline frame) even with
+          aspect-ratio on the wrapper. Width-constrained: fill the box. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={getFlagPath(code)}
@@ -99,10 +101,11 @@ function FlagImg({
         loading={priority ? "eager" : "lazy"}
         className={
           isHeightConstrained
-            ? "absolute inset-0 h-full w-full max-w-none"
+            ? "block h-full w-auto max-w-none"
             : "block h-full w-full max-w-full"
         }
         style={{
+          aspectRatio,
           objectFit,
           ...(clipPath ? { clipPath } : null),
         }}
