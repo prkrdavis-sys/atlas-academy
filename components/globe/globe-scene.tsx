@@ -1059,13 +1059,23 @@ function DistantMoonVisual({ perfTier }: { perfTier: GlobePerfTier }) {
 
   return (
     <group ref={groupRef} frustumCulled={false}>
-      <mesh scale={MOON_RADIUS} raycast={ignoreRaycast} frustumCulled={false}>
+      <mesh
+        scale={MOON_RADIUS}
+        raycast={ignoreRaycast}
+        frustumCulled={false}
+        renderOrder={20}
+      >
         <sphereGeometry args={[1, segments, segments]} />
         <meshStandardMaterial
           map={moonMap}
           roughness={0.95}
           metalness={0}
           envMapIntensity={0.08}
+          // The true lunar vector can place it behind Earth from the default
+          // camera. Keep the accurate position while ensuring the landmark
+          // remains discoverable in dark space.
+          depthTest={false}
+          depthWrite={false}
         />
       </mesh>
     </group>

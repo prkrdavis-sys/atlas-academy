@@ -1,4 +1,4 @@
-import type { GameMode, GameScope, Region } from "@/lib/types";
+import type { GameMode, GameScope, Profile, Region } from "@/lib/types";
 
 /** Public directory row: mirrors whichever profile the account has active. */
 export type PlayerRow = {
@@ -84,6 +84,12 @@ export type Friend = {
   player: PlayerRow;
   presence: PresenceEntry | null;
   record: HeadToHeadRecord | null;
+};
+
+/** The stats-safe subset of a friend's profile returned by the friend RPC. */
+export type FriendStats = {
+  profile: Profile;
+  player: Pick<PlayerRow, "display_name" | "avatar_id" | "avatar_color">;
 };
 
 export type FriendRequest = {

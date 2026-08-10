@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { AddFriendForm } from "@/components/social/AddFriendForm";
 import { ChallengeSetupDialog } from "@/components/social/ChallengeSetupDialog";
+import { FriendStatsDialog } from "@/components/social/FriendStatsDialog";
 import { FriendRow } from "@/components/social/FriendRow";
 import { InboxPanel } from "@/components/social/InboxPanel";
 import { SocialDialog } from "@/components/social/SocialDialog";
@@ -39,6 +40,7 @@ type FriendsDialogProps = {
 export function FriendsDialog({ open, onClose, scope }: FriendsDialogProps) {
   const { friends, ready, refresh, inboxCount } = useSocial();
   const [challenging, setChallenging] = useState<Friend | null>(null);
+  const [viewingStats, setViewingStats] = useState<Friend | null>(null);
   const [view, setView] = useState<FriendsView>("friends");
 
   const { online, offline } = useMemo(() => partitionFriends(friends), [friends]);
@@ -150,6 +152,7 @@ export function FriendsDialog({ open, onClose, scope }: FriendsDialogProps) {
                         <FriendRow
                           key={friend.friendshipId}
                           friend={friend}
+                          onViewStats={setViewingStats}
                           onChallenge={setChallenging}
                           onRemove={handleRemove}
                         />
@@ -168,6 +171,7 @@ export function FriendsDialog({ open, onClose, scope }: FriendsDialogProps) {
                         <FriendRow
                           key={friend.friendshipId}
                           friend={friend}
+                          onViewStats={setViewingStats}
                           onChallenge={setChallenging}
                           onRemove={handleRemove}
                         />
@@ -186,6 +190,7 @@ export function FriendsDialog({ open, onClose, scope }: FriendsDialogProps) {
         scope={scope}
         onClose={() => setChallenging(null)}
       />
+      <FriendStatsDialog friend={viewingStats} onClose={() => setViewingStats(null)} />
     </>
   );
 }

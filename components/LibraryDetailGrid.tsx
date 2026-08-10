@@ -131,7 +131,7 @@ export function LibraryDetailGrid({ country, isState }: LibraryDetailGridProps) 
     : [
         { icon: "🏛️", label: "Capital", value: country.capital || "No official capital" },
         ...(country.nativeName
-          ? [{ icon: "🌐", label: "Native name", value: country.nativeName }]
+          ? [{ icon: "🌎", label: "Native name", value: country.nativeName }]
           : []),
         { icon: "🗣️", label: "Language", value: country.languages || "Not listed" },
         ...currencyDetails,

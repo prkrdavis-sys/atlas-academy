@@ -63,7 +63,7 @@ const MAP_VIEW_STORAGE_KEY = "atlas-academy-map-view";
 const SLIDE_DURATION_MS = 480;
 
 const MAP_VIEW_INFO: Record<MapView, { icon: string; label: string }> = {
-  globe: { icon: "🌐", label: "Globe" },
+  globe: { icon: "🌎", label: "Globe" },
   usa: { icon: "🇺🇸", label: "USA" },
 };
 
@@ -713,14 +713,19 @@ export function GlobeExperience({ children }: { children?: ReactNode }) {
                           <div
                             className={cn(
                               FLOATING_PANEL_CLASS,
-                              "flex items-center px-2.5 py-1.5",
+                              "flex h-8 items-center px-2.5",
                             )}
                           >
                             <MapProgressFillLegend isDark={isDark} difficulty={mapDifficulty} />
                           </div>
                         ) : null}
-                        <div className={cn(FLOATING_PANEL_CLASS, "flex items-center")}>
-                          <MapStatsButton onClick={openStats} className="size-8 rounded-xl" />
+                        <div
+                          className={cn(
+                            FLOATING_PANEL_CLASS,
+                            "flex h-8 w-8 items-center justify-center overflow-hidden",
+                          )}
+                        >
+                          <MapStatsButton onClick={openStats} className="size-full" />
                         </div>
                       </div>
                     ) : null}

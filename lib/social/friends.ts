@@ -1,8 +1,11 @@
 import { createClient } from "@/lib/supabase/client";
+import { normalizeProfile } from "@/lib/storage";
+import type { Profile } from "@/lib/types";
 import type {
   FriendInvite,
   FriendInvitePreview,
   FriendInviteRedemption,
+  FriendStats,
   FriendshipRow,
   HeadToHeadRecord,
   MatchRow,
@@ -82,6 +85,24 @@ export async function loadHeadToHeadRecords(): Promise<HeadToHeadRecord[]> {
   const { data, error } = await supabase.rpc("get_head_to_head_records");
   if (error) throw error;
   return (data ?? []) as HeadToHeadRecord[];
+}
+
+export async function loadFriendStats(friendId: string): Promise<FriendStats> {
+  const { data, error } = await supabase.rpc("get_friend_stats", {
+    target_id: friendId,
+  });
+
+  if (error) throw error;
+  if (!data) throw new Error("Friend stats were not found.");
+
+  const result = data as FriendStats;
+  return {
+    ...result,
+    profile: normalizeProfile({
+      ...result.profile,
+      settings: { difficulty: "medium" } as Profile["settings"],
+    }),
+  };
 }
 
 export async function loadPendingMatchInvites(userId: string): Promise<MatchRow[]> {

@@ -677,7 +677,7 @@ export const GAME_MODES: {
     id: "globe-hunt",
     title: "Globe Hunt",
     description: "Find each country or state on the interactive map",
-    icon: "🌐",
+    icon: "🌎",
     phase: 2,
   },
   {

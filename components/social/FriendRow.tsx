@@ -14,11 +14,12 @@ function recordLabel(friend: Friend): string | null {
 
 type FriendRowProps = {
   friend: Friend;
+  onViewStats: (friend: Friend) => void;
   onChallenge: (friend: Friend) => void;
   onRemove: (friend: Friend) => void;
 };
 
-export function FriendRow({ friend, onChallenge, onRemove }: FriendRowProps) {
+export function FriendRow({ friend, onViewStats, onChallenge, onRemove }: FriendRowProps) {
   const [confirmingRemove, setConfirmingRemove] = useState(false);
   const activity = friend.presence?.activity ?? null;
   const online = activity !== null;
@@ -64,6 +65,9 @@ export function FriendRow({ friend, onChallenge, onRemove }: FriendRowProps) {
         </span>
       ) : (
         <span className="flex shrink-0 items-center gap-1.5">
+          <Button variant="secondary" size="sm" onClick={() => onViewStats(friend)}>
+            View stats
+          </Button>
           {online ? (
             <Button size="sm" onClick={() => onChallenge(friend)}>
               Challenge

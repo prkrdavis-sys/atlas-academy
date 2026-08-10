@@ -14,6 +14,7 @@ import {
   DIFFICULTY_LABELS,
   type Difficulty,
   type GameScope,
+  type Profile,
 } from "@/lib/types";
 import { getStoredScope, SCOPE_INFO, setStoredScope } from "@/lib/scope";
 import {
@@ -73,9 +74,19 @@ function AchievementSortSelector({
   );
 }
 
-export default function StatsPage() {
+type StatsPageProps = {
+  profileOverride?: Profile | null;
+  showAdvancedLink?: boolean;
+  restoreStoredScope?: boolean;
+};
+
+export default function StatsPage({
+  profileOverride,
+  showAdvancedLink = true,
+  restoreStoredScope = true,
+}: StatsPageProps = {}) {
   const { activeProfile, hydrated } = useProfiles();
-  const profile = hydrated ? activeProfile : null;
+  const profile = hydrated ? (profileOverride ?? activeProfile) : null;
   const [activeTab, setActiveTab] = useState<StatsTab>("overview");
   const [difficulty, setDifficulty] = useState<Difficulty>("medium");
   const [chartMetric, setChartMetric] = useState<StatsChartMetric>("accuracy");
@@ -83,9 +94,10 @@ export default function StatsPage() {
   const [scope, setScope] = useState<GameScope>("world");
 
   useEffect(() => {
+    if (!restoreStoredScope) return;
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setScope(getStoredScope());
-  }, []);
+  }, [restoreStoredScope]);
 
   const selectScope = useCallback((next: GameScope) => {
     setScope(next);
@@ -94,9 +106,10 @@ export default function StatsPage() {
 
   useEffect(() => {
     if (profile) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setDifficulty(profile.settings.difficulty ?? "medium");
     }
-  }, [profile?.id, profile?.settings.difficulty]);
+  }, [profile]);
 
   if (!hydrated) {
     return (
@@ -250,7 +263,7 @@ export default function StatsPage() {
 
           <StatsMapProgressSummary profile={profile} scope={scope} />
 
-          <AdvancedStatsLink />
+          {showAdvancedLink ? <AdvancedStatsLink /> : null}
         </div>
       ) : (
         <section

@@ -294,14 +294,14 @@ export function InteractiveProgressMap({
             {activePlace ? activePlace.name : copy.emptyPrompt}
           </p>
           {ready && !gameplay ? (
-            <div className="mt-1.5 flex items-center gap-2">
+            <div className="mt-1.5 flex h-7 items-center gap-2">
               {showMapProgress ? (
                 <MapProgressFillLegend isDark={isDark} difficulty={difficulty} />
               ) : null}
               {onOpenStats ? (
                 <MapStatsButton
                   onClick={onOpenStats}
-                  className="size-7 rounded-lg border border-slate-200/80 dark:border-slate-600/80"
+                  className="size-7 shrink-0 rounded-lg border border-slate-200/80 dark:border-slate-600/80"
                 />
               ) : null}
             </div>
