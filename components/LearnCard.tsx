@@ -174,41 +174,44 @@ function InlineLearnCard({
       <div
         className={cn(
           "shrink-0 border-b px-4 py-2.5 text-center sm:px-6 sm:py-3",
-          "[@container_(max-height:26rem)]:px-3 [@container_(max-height:26rem)]:py-2",
+          "[@container_(max-height:26rem)]:px-3 [@container_(max-height:26rem)]:py-1.5",
+          "[@container_(max-height:22rem)]:py-1",
           wasCorrect
             ? "border-emerald-100 bg-emerald-50/80 dark:border-emerald-900/60 dark:bg-emerald-950/30"
             : "border-rose-100 bg-rose-50/80 dark:border-rose-900/60 dark:bg-rose-950/30",
         )}
       >
-        <p className="font-display text-base font-extrabold leading-snug text-slate-900 dark:text-slate-100 sm:text-lg lg:text-xl">
+        <p className="font-display text-base font-extrabold leading-snug text-slate-900 dark:text-slate-100 [@container_(max-height:22rem)]:text-sm sm:text-lg lg:text-xl">
           {heading ?? country.name}
         </p>
       </div>
 
-      {/* Keep media in bounded rows so small game panels never crop the flag or
-          the country silhouette. The facts remain intrinsic below the media. */}
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden px-3 py-2.5 [@container_(max-height:26rem)]:px-3 [@container_(max-height:26rem)]:py-2 sm:hidden">
-        <div className="grid min-h-0 flex-1 grid-rows-[auto_minmax(6.5rem,1fr)] gap-2 overflow-hidden [@container_(max-height:26rem)]:grid-rows-[auto_minmax(5.5rem,1fr)]">
-          {country.hasFlag && (
-            <div className="flex h-[clamp(4rem,16cqh,7rem)] min-h-0 justify-center overflow-visible">
-              <FlagImage
-                code={country.code}
-                alt={country.name}
-                width={240}
-                frame="md"
-                className="mx-auto block h-auto max-h-full w-full max-w-[12rem] object-contain [@container_(max-height:26rem)]:max-w-[10rem]"
-              />
-            </div>
-          )}
-
-          <div className="min-h-0 w-full overflow-hidden">
-            <PlaceContextMap
-              country={country}
-              variant="learn"
-              highlightNeighbors
-              className="!aspect-auto !min-h-0 h-full max-h-full"
+      {/* Mobile: flag + facts never shrink; map is the flexible middle slot.
+          Flag is height-constrained so aspect-ratio stays correct — width-sized
+          flags inside a shorter overflow-hidden frame were getting cropped
+          (especially square flags like Switzerland). Short cards compact via
+          container queries. */}
+      <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden px-3 py-2.5 [@container_(max-height:26rem)]:gap-1.5 [@container_(max-height:26rem)]:px-3 [@container_(max-height:26rem)]:py-2 sm:hidden">
+        {country.hasFlag && (
+          <div className="flex shrink-0 items-center justify-center pt-0.5">
+            <FlagImage
+              code={country.code}
+              alt={country.name}
+              width={160}
+              frame="md"
+              constrainedAxis="height"
+              className="h-[clamp(3rem,min(16cqh,24cqw),6rem)] w-auto max-w-full [@container_(max-height:26rem)]:h-[clamp(2.5rem,min(12cqh,20cqw),4.5rem)] [@container_(max-height:22rem)]:h-[clamp(2.25rem,min(11cqh,18cqw),3.75rem)]"
             />
           </div>
+        )}
+
+        <div className="min-h-0 w-full flex-1 overflow-hidden [@container_(max-height:26rem)]:max-h-[min(36cqh,12rem)] [@container_(max-height:22rem)]:max-h-[min(28cqh,8.5rem)]">
+          <PlaceContextMap
+            country={country}
+            variant="learn"
+            highlightNeighbors
+            className="!aspect-auto !min-h-0 h-full max-h-full w-full"
+          />
         </div>
 
         {compareCountryCode && (
@@ -219,12 +222,12 @@ function InlineLearnCard({
           />
         )}
 
-        <dl className="grid w-full shrink-0 grid-cols-2 content-start gap-x-4 gap-y-2 self-stretch pb-1 text-sm [@container_(max-height:26rem)]:gap-x-3 [@container_(max-height:26rem)]:gap-y-1.5">
+        <dl className="grid w-full shrink-0 grid-cols-2 content-start gap-x-4 gap-y-2 self-stretch text-sm [@container_(max-height:26rem)]:gap-x-3 [@container_(max-height:26rem)]:gap-y-1 [@container_(max-height:22rem)]:gap-y-0.5">
           <div className="min-w-0">
             <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500 [@container_(max-height:26rem)]:text-[10px] dark:text-slate-400">
               Capital
             </dt>
-            <dd className="mt-1 text-base font-semibold text-slate-800 [@container_(max-height:26rem)]:mt-0.5 [@container_(max-height:26rem)]:text-sm [@container_(max-height:26rem)]:leading-snug dark:text-slate-200">
+            <dd className="mt-1 text-base font-semibold leading-snug text-slate-800 [@container_(max-height:26rem)]:mt-0.5 [@container_(max-height:26rem)]:text-sm dark:text-slate-200">
               {country.capital || "N/A"}
             </dd>
           </div>
@@ -232,7 +235,7 @@ function InlineLearnCard({
             <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500 [@container_(max-height:26rem)]:text-[10px] dark:text-slate-400">
               Region
             </dt>
-            <dd className="mt-1 text-base font-semibold text-slate-800 [@container_(max-height:26rem)]:mt-0.5 [@container_(max-height:26rem)]:text-sm [@container_(max-height:26rem)]:leading-snug dark:text-slate-200">
+            <dd className="mt-1 text-base font-semibold leading-snug text-slate-800 [@container_(max-height:26rem)]:mt-0.5 [@container_(max-height:26rem)]:text-sm dark:text-slate-200">
               <RegionValue country={country} isState={isState} />
             </dd>
           </div>
@@ -241,7 +244,7 @@ function InlineLearnCard({
               <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500 [@container_(max-height:26rem)]:text-[10px] dark:text-slate-400">
                 Population
               </dt>
-              <dd className="mt-1 text-base font-semibold text-slate-800 [@container_(max-height:26rem)]:mt-0.5 [@container_(max-height:26rem)]:text-sm [@container_(max-height:26rem)]:leading-snug dark:text-slate-200">
+              <dd className="mt-1 text-base font-semibold leading-snug text-slate-800 [@container_(max-height:26rem)]:mt-0.5 [@container_(max-height:26rem)]:text-sm dark:text-slate-200">
                 {formatPopulation(country.population)}
               </dd>
             </div>
@@ -251,7 +254,7 @@ function InlineLearnCard({
               country={country}
               isState={isState}
               dtClassName="text-xs font-semibold uppercase tracking-wide text-slate-500 [@container_(max-height:26rem)]:text-[10px] dark:text-slate-400"
-              ddClassName="mt-1 text-base font-semibold text-slate-800 [@container_(max-height:26rem)]:mt-0.5 [@container_(max-height:26rem)]:text-sm [@container_(max-height:26rem)]:leading-snug dark:text-slate-200"
+              ddClassName="mt-1 text-base font-semibold leading-snug text-slate-800 [@container_(max-height:26rem)]:mt-0.5 [@container_(max-height:26rem)]:text-sm dark:text-slate-200"
             />
           </div>
         </dl>
@@ -326,7 +329,7 @@ function InlineLearnCard({
         />
       </div>
 
-      <p className="shrink-0 border-t border-slate-100 px-4 py-2.5 text-center text-xs font-medium text-slate-400 dark:border-slate-800 dark:text-slate-500 sm:px-6 sm:py-2 [@container_(max-height:26rem)]:px-3 [@container_(max-height:26rem)]:py-2">
+      <p className="shrink-0 border-t border-slate-100 px-4 py-2.5 text-center text-xs font-medium text-slate-400 dark:border-slate-800 dark:text-slate-500 sm:px-6 sm:py-2 [@container_(max-height:26rem)]:px-3 [@container_(max-height:26rem)]:py-1.5 [@container_(max-height:22rem)]:py-1">
         Tap anywhere to continue
       </p>
     </div>
