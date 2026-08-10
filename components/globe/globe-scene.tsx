@@ -532,6 +532,11 @@ export function useGlobeTexture(
 const ATMOSPHERE_SHELL_RADIUS = 1.16;
 /** Ground-hugging haze shell so the horizon isn't hollow when zoomed in. */
 const ATMOSPHERE_HAZE_RADIUS = 1.012;
+/**
+ * Slightly outside the opaque planet so limb maths never paint inside the
+ * silhouette — depth precision alone is not enough for a shell at ~1.01.
+ */
+const ATMOSPHERE_PLANET_RADIUS = 1.002;
 
 const ATMOSPHERE_VERTEX_SHADER = /* glsl */ `
   uniform vec3 uSunDir;
@@ -549,13 +554,23 @@ const ATMOSPHERE_VERTEX_SHADER = /* glsl */ `
   }
 `;
 
+const ATMOSPHERE_HAZE_VERTEX_SHADER = /* glsl */ `
+  varying vec3 vViewPos;
+  varying vec3 vViewCenter;
+  void main() {
+    vec4 viewPos = modelViewMatrix * vec4(position, 1.0);
+    vViewPos = viewPos.xyz;
+    vViewCenter = (modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
+    gl_Position = projectionMatrix * viewPos;
+  }
+`;
+
 /**
  * Altitude comes from the view ray's impact parameter (its closest approach to
  * the planet centre), not from a rim dot product — so the bands stay at fixed
- * altitudes instead of sliding around as the camera moves. Only back faces are
- * drawn, so fragments whose ray would hit the planet are already depth-rejected
- * by the opaque surface and the visible range is exactly one planet radius out
- * to the shell edge.
+ * altitudes instead of sliding around as the camera moves. Impact < planet
+ * radius is discarded in-shader so a low-poly back-face shell cannot wash the
+ * ocean when depth precision fails near the surface.
  */
 const ATMOSPHERE_FRAGMENT_SHADER = /* glsl */ `
   uniform vec3 uTroposphere;
@@ -617,6 +632,32 @@ const ATMOSPHERE_FRAGMENT_SHADER = /* glsl */ `
   }
 `;
 
+/**
+ * Thin near-surface haze — same impact-parameter limb gate as the outer shell
+ * so Z-fighting near the planet can never flood the disk with haze colour.
+ */
+const ATMOSPHERE_HAZE_FRAGMENT_SHADER = /* glsl */ `
+  uniform vec3 uColor;
+  uniform float uOpacity;
+  uniform float uInnerRadius;
+  uniform float uOuterRadius;
+  varying vec3 vViewPos;
+  varying vec3 vViewCenter;
+
+  void main() {
+    vec3 dir = normalize(vViewPos);
+    float along = dot(vViewCenter, dir);
+    vec3 closest = dir * along - vViewCenter;
+    float impact = length(closest);
+    float h = (impact - uInnerRadius) / max(uOuterRadius - uInnerRadius, 1e-4);
+    if (h < 0.0 || h > 1.0) discard;
+
+    float density = exp(-h * h * 6.0);
+    density *= 1.0 - smoothstep(0.55, 1.0, h);
+    gl_FragColor = vec4(uColor, clamp(density, 0.0, 1.0) * uOpacity);
+  }
+`;
+
 type AtmospherePalette = {
   troposphere: string;
   stratosphere: string;
@@ -627,25 +668,30 @@ type AtmospherePalette = {
   hazeOpacity: number;
 };
 
-/** Saturated sky-blue rim stepping into indigo — no near-white stops that grey out when blended. */
+/** Sky-blue rim stepping into deeper blue — no magenta/indigo that reads as a red wash on the ocean. */
 const DARK_ATMOSPHERE_PALETTE: AtmospherePalette = {
   troposphere: "#38bdf8",
   stratosphere: "#60a5fa",
-  mesosphere: "#818cf8",
-  exosphere: "#4f46e5",
+  mesosphere: "#3b82f6",
+  exosphere: "#2563eb",
   opacity: 0.42,
   hazeColor: "#38bdf8",
   hazeOpacity: 0.07,
 };
 
+/**
+ * Cool sky rim in light mode too. Warm peach/orange haze used to flood the
+ * whole disk whenever the near-surface shell Z-fought, reading as a red tint
+ * over the ocean; the sunset backdrop already supplies warmth behind the globe.
+ */
 const LIGHT_ATMOSPHERE_PALETTE: AtmospherePalette = {
-  troposphere: "#ffb27d",
-  stratosphere: "#ffd8a8",
-  mesosphere: "#fde68a",
-  exosphere: "#818cf8",
-  opacity: 0.4,
-  hazeColor: "#ffc79a",
-  hazeOpacity: 0.1,
+  troposphere: "#7dd3fc",
+  stratosphere: "#38bdf8",
+  mesosphere: "#60a5fa",
+  exosphere: "#3b82f6",
+  opacity: 0.36,
+  hazeColor: "#7dd3fc",
+  hazeOpacity: 0.07,
 };
 
 /**
@@ -664,7 +710,7 @@ export function GlobeAtmosphere({
   controlsRef?: RefObject<OrbitControlsImpl | null>;
 }) {
   const shellRef = useRef<THREE.ShaderMaterial>(null);
-  const hazeRef = useRef<THREE.MeshBasicMaterial>(null);
+  const hazeRef = useRef<THREE.ShaderMaterial>(null);
   const camera = useThree((s) => s.camera);
   const size = useThree((s) => s.size);
   const segments = getGlobeAtmosphereSegments(perfTier);
@@ -680,8 +726,18 @@ export function GlobeAtmosphere({
       uOpacity: { value: 0 },
       // View-space units, where the planet's radius is 1 and the shell's outer
       // edge is its scale factor.
-      uInnerRadius: { value: 1 },
+      uInnerRadius: { value: ATMOSPHERE_PLANET_RADIUS },
       uOuterRadius: { value: ATMOSPHERE_SHELL_RADIUS },
+    }),
+    [],
+  );
+
+  const hazeUniforms = useMemo(
+    () => ({
+      uColor: { value: new THREE.Color() },
+      uOpacity: { value: 0 },
+      uInnerRadius: { value: ATMOSPHERE_PLANET_RADIUS },
+      uOuterRadius: { value: ATMOSPHERE_HAZE_RADIUS },
     }),
     [],
   );
@@ -691,7 +747,8 @@ export function GlobeAtmosphere({
     (uniforms.uStratosphere.value as THREE.Color).set(palette.stratosphere);
     (uniforms.uMesosphere.value as THREE.Color).set(palette.mesosphere);
     (uniforms.uExosphere.value as THREE.Color).set(palette.exosphere);
-  }, [uniforms, palette]);
+    (hazeUniforms.uColor.value as THREE.Color).set(palette.hazeColor);
+  }, [uniforms, hazeUniforms, palette]);
 
   useFrame(() => {
     const shell = shellRef.current;
@@ -719,7 +776,7 @@ export function GlobeAtmosphere({
     }
 
     shell.uniforms.uOpacity.value = palette.opacity * strength;
-    if (haze) haze.opacity = palette.hazeOpacity * strength;
+    if (haze) haze.uniforms.uOpacity.value = palette.hazeOpacity * strength;
   });
 
   return (
@@ -734,19 +791,22 @@ export function GlobeAtmosphere({
           transparent
           side={THREE.BackSide}
           blending={THREE.AdditiveBlending}
+          depthTest
           depthWrite={false}
           toneMapped={false}
         />
       </mesh>
       <mesh scale={ATMOSPHERE_HAZE_RADIUS} raycast={ignoreRaycast}>
         <sphereGeometry args={[1, segments, segments]} />
-        <meshBasicMaterial
+        <shaderMaterial
           ref={hazeRef}
-          color={palette.hazeColor}
+          vertexShader={ATMOSPHERE_HAZE_VERTEX_SHADER}
+          fragmentShader={ATMOSPHERE_HAZE_FRAGMENT_SHADER}
+          uniforms={hazeUniforms}
           transparent
-          opacity={palette.hazeOpacity}
           side={THREE.BackSide}
           blending={THREE.AdditiveBlending}
+          depthTest
           depthWrite={false}
           toneMapped={false}
         />
