@@ -1207,6 +1207,9 @@ export default function InteractiveGlobe({
               alpha: true,
               premultipliedAlpha: false,
               powerPreference: canvasGl.powerPreference,
+              // ACES filmic crushes dark blues into brown/magenta — Neutral keeps
+              // ocean and land hues honest next to the untone-mapped atmosphere rim.
+              toneMapping: THREE.NeutralToneMapping,
             }}
             style={{ touchAction: "none" }}
             onPointerMissed={() => {
@@ -1214,6 +1217,7 @@ export default function InteractiveGlobe({
               onSelectPlace(null);
             }}
             onCreated={(state) => {
+              state.gl.toneMapping = THREE.NeutralToneMapping;
               state.invalidate();
             }}
           >

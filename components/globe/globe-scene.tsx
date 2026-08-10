@@ -887,12 +887,13 @@ export function globeGoldSurfaceProps(hasMetalMaps: boolean) {
 }
 
 /**
- * Subtle image-based lighting so mastered gold picks up environment reflections
- * while matte land stays diffuse-dominant (metalness map masks the response).
+ * Neutral studio IBL so mastered gold picks up soft reflections without the
+ * warm orange cast of the default "city" HDR (which tinted the whole globe).
+ * Matte land stays diffuse-dominant via the metalness map.
  */
 export function GlobeMetalReflection({ perfTier = "desktop" }: { perfTier?: GlobePerfTier }) {
   if (perfTier === "phone") return null;
-  return <Environment preset="city" environmentIntensity={0.35} />;
+  return <Environment preset="studio" environmentIntensity={0.28} />;
 }
 
 /**
@@ -968,7 +969,7 @@ export function GlobeFillLights({
     <>
       <ambientLight intensity={globeAmbientIntensity(isDark, dayNight)} />
       <hemisphereLight
-        color="#fffdf7"
+        color="#f3f6ff"
         groundColor="#b9c6d8"
         intensity={globeHemisphereIntensity(dayNight)}
       />
@@ -1010,7 +1011,7 @@ export function EarthSunLight({ dayNight }: { dayNight: boolean }) {
     <directionalLight
       ref={lightRef}
       intensity={intensity}
-      color="#fff4e0"
+      color="#f7f9ff"
     />
   );
 }
@@ -1101,6 +1102,11 @@ export function GlobeAssetPreloader() {
 /** Presentation scale: larger than the physical angular size for discoverability,
  * while remaining substantially smaller than the distant Sun visual. */
 const MOON_RADIUS = 2.2;
+/**
+ * After the atmosphere shells (default transparent pass) so the limb glow cannot
+ * dye the lunar disk; before the distant sun (50).
+ */
+const MOON_RENDER_ORDER = 40;
 
 /**
  * Local axis of the sphere UV seam center (u = 0.5, equator) for THREE's
@@ -1197,12 +1203,17 @@ function DistantMoonVisual({ perfTier }: { perfTier: GlobePerfTier }) {
         scale={MOON_RADIUS}
         raycast={ignoreRaycast}
         frustumCulled={false}
+        renderOrder={MOON_RENDER_ORDER}
       >
         <sphereGeometry args={[1, segments, segments]} />
         <shaderMaterial
           uniforms={uniforms}
           vertexShader={MOON_VERTEX_SHADER}
           fragmentShader={MOON_FRAGMENT_SHADER}
+          // Transparent pass + late renderOrder: redraw over atmosphere so the
+          // grey albedo isn't washed cyan where the Moon crosses the limb.
+          transparent
+          depthWrite
         />
       </mesh>
     </group>
