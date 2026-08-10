@@ -259,7 +259,6 @@ export function ContextMapSvg({
   const onBackgroundClickRef = useRef(onBackgroundClick);
   const reactId = useId().replace(/:/g, "");
   const landPatternId = `map-land-${reactId}`;
-  const oceanPatternId = `map-ocean-${reactId}`;
   const palette = getMapPalette(isDark);
   const activeViewBox = viewBox ?? map.viewBox;
   const [viewBoxX, viewBoxY, viewBoxWidth, viewBoxHeight] = parseMapViewBox(activeViewBox);
@@ -385,21 +384,8 @@ export function ContextMapSvg({
             >
               <image
                 href={surfaceCrop.landHref}
-                width={viewBoxWidth}
-                height={viewBoxHeight}
-                preserveAspectRatio="none"
-              />
-            </pattern>
-            <pattern
-              id={oceanPatternId}
-              patternUnits="userSpaceOnUse"
-              x={viewBoxX}
-              y={viewBoxY}
-              width={viewBoxWidth}
-              height={viewBoxHeight}
-            >
-              <image
-                href={surfaceCrop.oceanHref}
+                x={viewBoxX}
+                y={viewBoxY}
                 width={viewBoxWidth}
                 height={viewBoxHeight}
                 preserveAspectRatio="none"
@@ -439,8 +425,22 @@ export function ContextMapSvg({
         y={viewBoxY}
         width={viewBoxWidth}
         height={viewBoxHeight}
-        fill={surfaceCrop && textureEnabled ? `url(#${oceanPatternId})` : palette.ocean}
+        fill={palette.ocean}
       />
+      {textureEnabled && surfaceCrop ? (
+        // Keep the ocean crop as a direct image. Pattern content uses its own
+        // user-space origin, which can expose a rectangular gap when the crop
+        // viewBox starts away from (0, 0).
+        <image
+          href={surfaceCrop.oceanHref}
+          x={viewBoxX}
+          y={viewBoxY}
+          width={viewBoxWidth}
+          height={viewBoxHeight}
+          preserveAspectRatio="none"
+          aria-hidden
+        />
+      ) : null}
       {textureEnabled ? (
         <>
           {styledPaths.map(({ path, style, fill }) => (

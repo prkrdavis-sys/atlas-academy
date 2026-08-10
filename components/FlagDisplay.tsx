@@ -27,6 +27,10 @@ type FlagImageProps = {
   layout?: FlagLayout;
   /** Optional display ratio override for layouts that need uniform flag rectangles. */
   displayAspectRatio?: number;
+  /** How the flag fills a display box; intrinsic displays default to fill. */
+  objectFit?: "contain" | "fill" | "cover";
+  /** Anchor point used when objectFit crops the flag. */
+  objectPosition?: string;
   priority?: boolean;
   /** CSS color invert for inverted-flag quiz modes. */
   inverted?: boolean;
@@ -53,7 +57,8 @@ type FlagImgProps = {
   code: string;
   alt: string;
   className?: string;
-  objectFit?: "contain" | "fill";
+  objectFit?: "contain" | "fill" | "cover";
+  objectPosition?: string;
   constrainedAxis?: "width" | "height";
   priority?: boolean;
   clipPath?: string;
@@ -72,6 +77,7 @@ function FlagImg({
   alt,
   className,
   objectFit = "fill",
+  objectPosition,
   constrainedAxis = "width",
   priority,
   clipPath,
@@ -107,6 +113,7 @@ function FlagImg({
         style={{
           aspectRatio,
           objectFit,
+          ...(objectPosition ? { objectPosition } : null),
           ...(clipPath ? { clipPath } : null),
         }}
         {...(priority ? { fetchPriority: "high" as const } : {})}
@@ -144,7 +151,7 @@ function wrapWithFrame(
   );
 }
 
-/** Renders a complete flag at its display aspect ratio without cropping or letterboxing. */
+/** Renders a flag at its display aspect ratio; intrinsic displays preserve the full flag by default. */
 export function FlagImage({
   code,
   alt,
@@ -153,6 +160,8 @@ export function FlagImage({
   constrainedAxis = "width",
   layout = "intrinsic",
   displayAspectRatio,
+  objectFit,
+  objectPosition,
   priority,
   inverted = false,
 }: FlagImageProps) {
@@ -160,6 +169,7 @@ export function FlagImage({
   const clipPath = getFlagClipPath(code);
   const isHeightConstrained = constrainedAxis === "height";
   const hasFrame = frame !== "none";
+  const resolvedObjectFit = objectFit ?? (layout === "tile" ? "contain" : "fill");
 
   const shapedFrameClass =
     shaped && hasFrame ? SHAPED_FRAME_STYLES[frame] : undefined;
@@ -184,7 +194,8 @@ export function FlagImage({
           constrainedAxis={constrainedAxis}
           clipPath={imgClipPath}
           displayAspectRatio={displayAspectRatio}
-          objectFit="contain"
+          objectFit={resolvedObjectFit}
+          objectPosition={objectPosition}
           className={cn("h-full w-full object-contain", flagFilterClass)}
         />
       </span>
@@ -196,7 +207,8 @@ export function FlagImage({
         constrainedAxis={constrainedAxis}
         clipPath={imgClipPath}
         displayAspectRatio={displayAspectRatio}
-        objectFit="fill"
+        objectFit={resolvedObjectFit}
+        objectPosition={objectPosition}
         className={imageClassName}
       />
     );
@@ -378,6 +390,7 @@ export function FlagGrid({
           const isCorrect = revealed && correctCode === code;
           const isIncorrect = revealed && selectedCode === code && correctCode !== code;
           const shaped = isShapedFlag(code);
+          const cropsRightEdge = getFlagAspectRatio(code) > FLAG_GRID_ASPECT_RATIO;
           const tileClassName = cn(
             "relative flex aspect-[3/2] h-auto w-full shrink-0 items-center justify-center leading-none",
             getTileBorderClass(shaped, tileRadius, isCorrect, isIncorrect, revealed),
@@ -401,6 +414,8 @@ export function FlagGrid({
               width={flagWidth}
               displayAspectRatio={FLAG_GRID_ASPECT_RATIO}
               className="h-full w-full"
+              objectFit={cropsRightEdge ? "cover" : "fill"}
+              objectPosition={cropsRightEdge ? "left center" : undefined}
               inverted={inverted}
             />
           );

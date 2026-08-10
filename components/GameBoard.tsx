@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   AnswerFeedbackLayer,
@@ -1021,8 +1020,9 @@ export function GameBoard({
               <span aria-hidden>←</span>
               <span>Exit</span>
             </Button>
+            {/* Release the gameplay/WebGL tree before loading the library detail route. */}
             {showLearnCard && (
-              <Link
+              <a
                 href={learnCardLibraryHref}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -1035,7 +1035,7 @@ export function GameBoard({
               >
                 <span aria-hidden>{LIBRARY_ICON}</span>
                 <span className="hidden sm:inline">Library</span>
-              </Link>
+              </a>
             )}
           </div>
           <div className="hidden min-w-0 px-1 text-center leading-tight sm:block">
