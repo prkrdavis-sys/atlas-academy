@@ -80,7 +80,7 @@ type GlobePalette = {
 
 /** Rich saturated storybook blue with crisp dark borders (concept-art match). */
 const DARK_GLOBE_PALETTE: GlobePalette = {
-  ocean: "#1d4d85",
+  ocean: "#2a6aad",
   border: "rgba(13, 27, 51, 0.62)",
   stateBorder: "rgba(13, 27, 51, 0.48)",
 };

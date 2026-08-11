@@ -40,10 +40,10 @@ type RampStop = { t: number; color: [number, number, number] };
  * (#1d4d85 dark / #2e6096 light) so the overall globe brightness is unchanged.
  */
 const DARK_OCEAN_RAMP: RampStop[] = [
-  { t: 0.0, color: [0x3a, 0x70, 0xa9] }, // shelf / coastal shallows
-  { t: 0.35, color: [0x27, 0x59, 0x93] },
-  { t: 0.62, color: [0x1d, 0x4d, 0x85] }, // ≈ old flat ocean
-  { t: 1.0, color: [0x12, 0x35, 0x63] }, // abyssal / trench
+  { t: 0.0, color: [0x4a, 0x84, 0xc0] }, // shelf / coastal shallows
+  { t: 0.35, color: [0x35, 0x6c, 0xa8] },
+  { t: 0.62, color: [0x2a, 0x6a, 0xad] }, // ≈ flat ocean
+  { t: 1.0, color: [0x18, 0x45, 0x7a] }, // abyssal / trench
 ];
 
 const LIGHT_OCEAN_RAMP: RampStop[] = [
@@ -126,7 +126,7 @@ export function getOceanDepthCanvas(
   image: HTMLImageElement,
   isDark: boolean,
 ): HTMLCanvasElement {
-  const key = isDark ? "dark" : "light";
+  const key = isDark ? "dark:v2" : "light:v2";
   const cached = tintedCanvasByTheme.get(key);
   if (cached) return cached;
 
@@ -165,7 +165,7 @@ export async function ensureOceanDepthCanvas(
   isDark: boolean,
   gate?: OceanTintGate,
 ): Promise<HTMLCanvasElement | null> {
-  const key = isDark ? "dark" : "light";
+  const key = isDark ? "dark:v2" : "light:v2";
   const cached = tintedCanvasByTheme.get(key);
   if (cached) return cached;
 

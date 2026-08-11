@@ -289,32 +289,31 @@ export function GlobeCloseupLayer({
     // Lit material matching the planet surface for this tier, so the patch
     // shades exactly like the globe beneath it — zooming across the activation
     // distance must not shift tone.
-    const material =
-      perfTier === "phone" && !hasMetalMaps
-        ? new THREE.MeshLambertMaterial({
-            map: texture,
-            transparent: true,
-            opacity: 0,
-            depthWrite: false,
-            side: THREE.DoubleSide,
-          })
-        : new THREE.MeshStandardMaterial({
-            map: texture,
-            metalnessMap: metalnessMap ?? undefined,
-            roughnessMap: roughnessMap ?? undefined,
-            normalMap: normalMap ?? undefined,
-            normalScale: goldProps.normalScale,
-            emissiveMap: hasMetalMaps ? metalnessMap! : undefined,
-            emissive: goldProps.emissive,
-            emissiveIntensity: goldProps.emissiveIntensity,
-            envMapIntensity: goldProps.envMapIntensity,
-            roughness: goldProps.roughness,
-            metalness: goldProps.metalness,
-            transparent: true,
-            opacity: 0,
-            depthWrite: false,
-            side: THREE.DoubleSide,
-          });
+    const material = !hasMetalMaps
+      ? new THREE.MeshLambertMaterial({
+          map: texture,
+          transparent: true,
+          opacity: 0,
+          depthWrite: false,
+          side: THREE.DoubleSide,
+        })
+      : new THREE.MeshStandardMaterial({
+          map: texture,
+          metalnessMap: metalnessMap ?? undefined,
+          roughnessMap: roughnessMap ?? undefined,
+          normalMap: normalMap ?? undefined,
+          normalScale: goldProps.normalScale,
+          emissiveMap: metalnessMap!,
+          emissive: goldProps.emissive,
+          emissiveIntensity: goldProps.emissiveIntensity,
+          envMapIntensity: goldProps.envMapIntensity,
+          roughness: goldProps.roughness,
+          metalness: goldProps.metalness,
+          transparent: true,
+          opacity: 0,
+          depthWrite: false,
+          side: THREE.DoubleSide,
+        });
     const mesh = new THREE.Mesh(geometry, material);
     mesh.renderOrder = 5;
     mesh.raycast = () => {};

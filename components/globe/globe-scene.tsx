@@ -11,7 +11,7 @@ import {
   type RefObject,
 } from "react";
 import { useFrame, useThree, type ThreeElements } from "@react-three/fiber";
-import { Billboard, useTexture } from "@react-three/drei";
+import { Billboard, Environment, useTexture } from "@react-three/drei";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
 import {
@@ -668,15 +668,15 @@ type AtmospherePalette = {
   hazeOpacity: number;
 };
 
-/** Sky-blue rim stepping into deeper blue — no magenta/indigo that reads as a red wash on the ocean. */
+/** Soft sky-blue limb — kept quiet so it never overpowers the painted surface. */
 const DARK_ATMOSPHERE_PALETTE: AtmospherePalette = {
-  troposphere: "#38bdf8",
-  stratosphere: "#60a5fa",
-  mesosphere: "#3b82f6",
-  exosphere: "#2563eb",
-  opacity: 0.42,
-  hazeColor: "#38bdf8",
-  hazeOpacity: 0.07,
+  troposphere: "#7dd3fc",
+  stratosphere: "#38bdf8",
+  mesosphere: "#60a5fa",
+  exosphere: "#3b82f6",
+  opacity: 0.22,
+  hazeColor: "#7dd3fc",
+  hazeOpacity: 0.04,
 };
 
 /**
@@ -685,13 +685,13 @@ const DARK_ATMOSPHERE_PALETTE: AtmospherePalette = {
  * over the ocean; the sunset backdrop already supplies warmth behind the globe.
  */
 const LIGHT_ATMOSPHERE_PALETTE: AtmospherePalette = {
-  troposphere: "#7dd3fc",
-  stratosphere: "#38bdf8",
-  mesosphere: "#60a5fa",
-  exosphere: "#3b82f6",
-  opacity: 0.36,
-  hazeColor: "#7dd3fc",
-  hazeOpacity: 0.07,
+  troposphere: "#bae6fd",
+  stratosphere: "#7dd3fc",
+  mesosphere: "#38bdf8",
+  exosphere: "#60a5fa",
+  opacity: 0.2,
+  hazeColor: "#bae6fd",
+  hazeOpacity: 0.04,
 };
 
 /**
@@ -824,20 +824,22 @@ export function GlobeAtmosphere({
  * a sharp terminator; a thin earthshine wash keeps land faintly readable.
  */
 function globeAmbientIntensity(isDark: boolean, dayNight: boolean): number {
-  if (dayNight) return isDark ? 0.28 : 0.24;
-  return isDark ? 1.12 : 1.02;
+  // Keep the night side readable and the day side vivid — crushed midtones
+  // were reading as muddy brown instead of ocean blue / land green.
+  if (dayNight) return isDark ? 0.48 : 0.42;
+  return isDark ? 1.45 : 1.28;
 }
 
 function globeHemisphereIntensity(dayNight: boolean): number {
-  return dayNight ? 0.12 : 0.52;
+  return dayNight ? 0.22 : 0.58;
 }
 
 function globeSunIntensity(dayNight: boolean): number {
-  return dayNight ? 1.55 : 0.5;
+  return dayNight ? 1.35 : 0.4;
 }
 
 function globeEarthshineIntensity(): number {
-  return 0.22;
+  return 0.38;
 }
 
 /**
@@ -872,7 +874,8 @@ export const GLOBE_GOLD_EMISSIVE_INTENSITY = 0.07;
 export const GLOBE_GOLD_ENV_MAP_INTENSITY = 1.35;
 export const GLOBE_MATTE_METALNESS = 0.04;
 export const GLOBE_MATTE_ROUGHNESS = 0.72;
-export const GLOBE_MATTE_ENV_MAP_INTENSITY = 0.15;
+/** Matte land/ocean must not pick up HDR tint — gold still uses the studio IBL. */
+export const GLOBE_MATTE_ENV_MAP_INTENSITY = 0;
 
 /** Shared StandardMaterial props for gold PBR on the globe and close-up patch. */
 export function globeGoldSurfaceProps(hasMetalMaps: boolean) {
@@ -887,16 +890,12 @@ export function globeGoldSurfaceProps(hasMetalMaps: boolean) {
 }
 
 /**
- * Neutral studio IBL so mastered gold picks up soft reflections without the
- * warm orange cast of the default "city" HDR (which tinted the whole globe).
- * Matte land stays diffuse-dominant via the metalness map.
+ * Studio IBL for mastered-gold reflections only. Matte land/ocean keep
+ * `envMapIntensity` at 0 so the HDRI cannot tint the painted albedo.
  */
 export function GlobeMetalReflection({ perfTier = "desktop" }: { perfTier?: GlobePerfTier }) {
-  // Keep the globe's color response deterministic. Even a neutral HDRI adds
-  // view-dependent reflected color to the matte ocean, which can become a
-  // purple/brown cast in the shadowed hemisphere.
-  void perfTier;
-  return null;
+  if (perfTier === "phone") return null;
+  return <Environment preset="studio" environmentIntensity={0.3} />;
 }
 
 /**
@@ -928,15 +927,17 @@ export function GlobeSurfaceMaterial({
   const hasMetalMaps = Boolean(metalnessMap && roughnessMap);
   const goldProps = globeGoldSurfaceProps(hasMetalMaps);
 
-  // Lambert avoids specular hotspots on constrained GPUs. Keep Standard when
-  // gold metal maps need a sheen / brushed normals.
-  if (perfTier === "phone" && !hasMetalMaps) {
+  // Matte globe: Lambert so painted ocean/land colors read true. Standard + IBL
+  // was letting warm reflections and crushed midtones turn the planet brown.
+  if (!hasMetalMaps) {
     return <meshLambertMaterial map={map} />;
   }
 
+  void perfTier;
+
   // Gold mastery: tiny emissive fill so shaded foil stays readable; specular +
   // normal maps carry the brushed-metal shine.
-  const emissiveMap = hasMetalMaps ? metalnessMap! : undefined;
+  const emissiveMap = metalnessMap!;
 
   return (
     <meshStandardMaterial
@@ -972,8 +973,8 @@ export function GlobeFillLights({
     <>
       <ambientLight intensity={globeAmbientIntensity(isDark, dayNight)} />
       <hemisphereLight
-        color="#f3f6ff"
-        groundColor="#b9c6d8"
+        color="#ffffff"
+        groundColor="#c8d4e2"
         intensity={globeHemisphereIntensity(dayNight)}
       />
     </>
@@ -1014,7 +1015,7 @@ export function EarthSunLight({ dayNight }: { dayNight: boolean }) {
     <directionalLight
       ref={lightRef}
       intensity={intensity}
-      color="#f7f9ff"
+      color="#ffffff"
     />
   );
 }
