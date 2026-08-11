@@ -858,43 +858,44 @@ export function GameBoard({
                 </GameActionButton>
               )
             )}
-            <div className="grid grid-cols-2 gap-2 sm:gap-3">
+            <div className="grid grid-cols-2 gap-2 max-[360px]:grid-cols-1 sm:gap-3">
               <Button
                 variant="secondary"
                 size="lg"
-                className="w-full gap-2.5 px-6 text-lg max-sm:gap-1.5 max-sm:px-2.5 max-sm:whitespace-nowrap"
+                className="w-full min-w-0 gap-1.5 px-3 text-base max-sm:gap-1 max-sm:px-2.5 max-sm:text-sm sm:gap-2.5 sm:px-5 sm:text-lg"
                 onClick={() => router.push(isDailyChallenge ? dailyLeaderboardHref : mapHref)}
               >
-                <span className="text-2xl leading-none max-sm:text-xl" aria-hidden>
+                <span className="shrink-0 text-xl leading-none max-sm:text-lg sm:text-2xl" aria-hidden>
                   {isDailyChallenge ? "🏆" : "🗺️"}
                 </span>
-                {isDailyChallenge ? "View leaderboard" : "View map"}
+                <span className="truncate">{isDailyChallenge ? "Leaderboard" : "Map"}</span>
               </Button>
               {exitedEarly && onPlayAgain ? (
                 <Button
                   size="lg"
-                  className="w-full gap-2.5 px-6 text-lg max-sm:gap-1.5 max-sm:px-2.5 max-sm:whitespace-nowrap"
+                  className="w-full min-w-0 gap-1.5 px-3 text-base max-sm:gap-1 max-sm:px-2.5 max-sm:text-sm sm:gap-2.5 sm:px-5 sm:text-lg"
                   onClick={onPlayAgain}
                 >
-                  <span className="text-2xl leading-none max-sm:text-xl" aria-hidden>
+                  <span className="shrink-0 text-xl leading-none max-sm:text-lg sm:text-2xl" aria-hidden>
                     {SCOPE_INFO[scope].icon}
                   </span>
-                  Play again
+                  <span className="truncate">Play again</span>
                 </Button>
               ) : (
                 <Button
                   size="lg"
-                  className="w-full gap-2.5 px-6 text-lg max-sm:gap-1.5 max-sm:px-2.5 max-sm:whitespace-nowrap"
+                  className="w-full min-w-0 gap-1.5 px-3 text-base max-sm:gap-1 max-sm:px-2.5 max-sm:text-sm sm:gap-2.5 sm:px-5 sm:text-lg"
                   onClick={() => router.push("/")}
                 >
                   <img
                     src="/icons/home.svg"
                     alt=""
                     aria-hidden
-                    className="size-7 shrink-0 max-sm:size-6"
+                    className="size-6 shrink-0 max-sm:size-5 sm:size-7"
                     draggable={false}
                   />
-                  Take me home
+                  <span className="truncate sm:hidden">Home</span>
+                  <span className="hidden truncate sm:inline">Take me home</span>
                 </Button>
               )}
             </div>

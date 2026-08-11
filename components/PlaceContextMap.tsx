@@ -382,6 +382,9 @@ export function ContextMapSvg({
       {textureEnabled ? (
         <defs>
           {surfaceCrop ? (
+            // Pattern content origin is the tile's top-left, not SVG (0,0).
+            // Image must sit at (0,0) inside the tile — placing it at the
+            // viewBox origin leaves the tile empty and land fills go hollow.
             <pattern
               id={landPatternId}
               patternUnits="userSpaceOnUse"
@@ -392,8 +395,8 @@ export function ContextMapSvg({
             >
               <image
                 href={surfaceCrop.landHref}
-                x={viewBoxX}
-                y={viewBoxY}
+                x={0}
+                y={0}
                 width={viewBoxWidth}
                 height={viewBoxHeight}
                 preserveAspectRatio="none"
@@ -436,6 +439,17 @@ export function ContextMapSvg({
       />
       {textureEnabled ? (
         <>
+          {/* Solid underlay so land never reads as hollow if the pattern misses. */}
+          {styledPaths.map(({ path, style }) => (
+            <path
+              key={`underlay-${path.id}`}
+              d={path.d}
+              fill={style.fill}
+              stroke="none"
+              style={{ pointerEvents: "none" }}
+              aria-hidden
+            />
+          ))}
           {styledPaths.map(({ path, style, fill }) => (
             <path
               key={`fill-${path.id}`}

@@ -75,7 +75,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         >
           <p className="font-bold">Cloud saving is temporarily unavailable.</p>
           <p className="mt-0.5">
-            Your progress is still cached on this device and will retry on the next change or reload. {syncError}
+            Your progress is still cached on this device and will keep retrying automatically. {syncError}
           </p>
         </div>
       )}

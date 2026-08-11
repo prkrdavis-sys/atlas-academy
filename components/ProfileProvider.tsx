@@ -14,6 +14,7 @@ import {
   deleteCloudProfile,
   loadCloudProfiles,
   saveCloudProfiles,
+  toCloudError,
   type CloudProfileRow,
 } from "@/lib/cloud-profiles";
 import { getMillisecondsUntilDailyReset } from "@/lib/game-engine";
@@ -47,6 +48,8 @@ type ProfileContextValue = {
 const ProfileContext = createContext<ProfileContextValue | null>(null);
 
 const EMPTY_STATE = { profiles: [] as Profile[], activeProfileId: null as string | null };
+const SYNC_RETRY_BASE_MS = 2000;
+const SYNC_RETRY_MAX_MS = 60_000;
 
 function normalizeCloudProfile(row: CloudProfileRow): Profile | null {
   try {
@@ -67,7 +70,7 @@ function normalizeCloudProfile(row: CloudProfileRow): Profile | null {
 }
 
 function getSyncErrorMessage(error: unknown) {
-  return error instanceof Error ? error.message : "Cloud sync failed. Your local cache is still available.";
+  return toCloudError(error).message;
 }
 
 function cloneProfiles(profiles: Profile[]) {
@@ -107,7 +110,7 @@ function mergeLocalDailyChallengeProgress(cloud: Profile, local: Profile | undef
 }
 
 export function ProfileProvider({ children }: { children: React.ReactNode }) {
-  const { user, hydrated: authHydrated } = useAuth();
+  const { user, session, hydrated: authHydrated } = useAuth();
   const [state, setState] = useState(EMPTY_STATE);
   const [hydrated, setHydrated] = useState(false);
   const [syncError, setSyncError] = useState<string | null>(null);
@@ -219,6 +222,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
         }
       } catch (error: unknown) {
         if (cancelled) return;
+        // Keep local cache usable and let the resume scheduler own the first push.
         setSyncError(getSyncErrorMessage(error));
         remoteReadyRef.current = true;
         setState(cachedState);
@@ -233,6 +237,48 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
       remoteReadyRef.current = false;
     };
   }, [authHydrated, user?.id]);
+
+  // Single resume policy: exponential backoff while syncError is sticky, plus
+  // immediate retry on tab focus/visibility or access-token refresh.
+  useEffect(() => {
+    if (!authHydrated || !user?.id || !syncError || !session?.access_token) return;
+
+    let cancelled = false;
+    let attempt = 0;
+    let timer: number | undefined;
+
+    function retry() {
+      if (cancelled || !userIdRef.current || !remoteReadyRef.current) return;
+      enqueueSync(loadState().profiles);
+    }
+
+    function schedule(delayMs: number) {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        if (cancelled) return;
+        retry();
+        attempt += 1;
+        schedule(Math.min(SYNC_RETRY_BASE_MS * 2 ** attempt, SYNC_RETRY_MAX_MS));
+      }, delayMs);
+    }
+
+    function handleResume() {
+      if (document.visibilityState !== "visible") return;
+      attempt = 0;
+      schedule(0);
+    }
+
+    schedule(0);
+    window.addEventListener("focus", handleResume);
+    document.addEventListener("visibilitychange", handleResume);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+      window.removeEventListener("focus", handleResume);
+      document.removeEventListener("visibilitychange", handleResume);
+    };
+  }, [authHydrated, enqueueSync, session?.access_token, syncError, user?.id]);
 
   useEffect(() => {
     function handleStorage(event: StorageEvent) {
