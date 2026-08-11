@@ -153,6 +153,8 @@ export function VersusBoard({
 
   const bannerPhase = toBannerPhase(phase, versus.secondsLeft, opponent.display_name);
   const textOnly = isTextOnlyPrompt(question);
+  // Country-to-flag answers are the flag tiles themselves, not text buttons.
+  const isFlagsGrid = question.displayType === "flags-grid";
 
   return (
     <div className="mx-auto flex h-full w-full max-w-3xl flex-col gap-2 p-3 sm:gap-3 sm:p-4">
@@ -194,12 +196,17 @@ export function VersusBoard({
             <div className="flex min-h-0 flex-1 items-center justify-center px-4" aria-hidden />
           ) : (
             <div className="flex min-h-0 flex-1 flex-col items-center justify-center overflow-hidden">
-              <QuestionMedia question={question} />
+              <QuestionMedia
+                question={question}
+                onSelectFlag={(code) =>
+                  versus.selectAnswer(code, code === question.correctAnswer)
+                }
+              />
             </div>
           )}
         </div>
 
-        {question.options ? (
+        {question.options && !isFlagsGrid ? (
           <div className="mt-2 shrink-0 sm:mt-3">
             <AnswerMultipleChoice
               options={question.options}

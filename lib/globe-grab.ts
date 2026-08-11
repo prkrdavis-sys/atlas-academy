@@ -14,6 +14,16 @@ const _hit = new THREE.Vector3();
 /** Max radians for the post-snap screen-space polish step (avoids close-up blowups). */
 const MAX_POLISH_STEP = 0.08;
 
+/**
+ * Grab points closer than this to a pole (equatorial radius = hypot(x,z)) have
+ * unstable longitude — yaw polish would chase an uncorrectable screen error.
+ */
+const POLE_EQUATORIAL_EPS = 0.04;
+/** Soft upper bound for pole yaw authority (smoothstep end). */
+const POLE_EQUATORIAL_SOFT = 0.2;
+/** Fade yaw when a trackball step presses this far into a polar stop (radians). */
+const POLAR_CLAMP_YAW_FADE = 0.15;
+
 /** Client coordinates → NDC for the canvas element. */
 export function clientToNdc(
   clientX: number,
@@ -67,6 +77,15 @@ export function pointerGlobeUnit(
   return "miss";
 }
 
+function unwrapDeltaAngle(delta: number): number {
+  return delta - 2 * Math.PI * Math.round(delta / (2 * Math.PI));
+}
+
+/**
+ * Free trackball, then rebuild as Y-up spherical. Near poles the shortest-arc
+ * quaternion can dump a near-π twist into yaw once phi is clamped — keep yaw on
+ * the order of the contact arc and fade it when pressing into a polar stop.
+ */
 function applyTrackballOrbit(
   camera: THREE.PerspectiveCamera,
   target: THREE.Vector3,
@@ -75,16 +94,53 @@ function applyTrackballOrbit(
   minPolar: number,
   maxPolar: number,
 ): void {
-  _quat.setFromUnitVectors(toUnit, fromUnit);
-  _offset.copy(camera.position).sub(target).applyQuaternion(_quat);
-
+  _offset.copy(camera.position).sub(target);
   _spherical.setFromVector3(_offset);
-  _spherical.phi = THREE.MathUtils.clamp(_spherical.phi, minPolar, maxPolar);
+  const theta0 = _spherical.theta;
+  const phi0 = _spherical.phi;
+
+  _quat.setFromUnitVectors(toUnit, fromUnit);
+  _offset.applyQuaternion(_quat);
+  _spherical.setFromVector3(_offset);
+
+  let dTheta = unwrapDeltaAngle(_spherical.theta - theta0);
+  let dPhi = _spherical.phi - phi0;
+
+  const arc = Math.acos(
+    THREE.MathUtils.clamp(fromUnit.dot(toUnit), -1, 1),
+  );
+  // Pole crossings turn a small finger arc into a huge yaw after the Y-up snap.
+  const maxYaw = Math.max(arc * 1.25, 1e-4);
+  if (Math.abs(dTheta) > maxYaw) {
+    dTheta = Math.sign(dTheta) * maxYaw;
+  }
+  // Same bound on pitch — otherwise killing yaw near a pole just dumps the
+  // twist into phi and tumbles the camera over the globe.
+  if (Math.abs(dPhi) > maxYaw) {
+    dPhi = Math.sign(dPhi) * maxYaw;
+  }
+
+  const phiUnclamped = phi0 + dPhi;
+  if (phiUnclamped < minPolar || phiUnclamped > maxPolar) {
+    const overshoot =
+      phiUnclamped < minPolar
+        ? minPolar - phiUnclamped
+        : phiUnclamped - maxPolar;
+    dTheta *= Math.max(0, 1 - overshoot / POLAR_CLAMP_YAW_FADE);
+  }
+
+  _spherical.theta = theta0 + dTheta;
+  _spherical.phi = THREE.MathUtils.clamp(phi0 + dPhi, minPolar, maxPolar);
   _spherical.makeSafe();
   _offset.setFromSpherical(_spherical);
   camera.position.copy(target).add(_offset);
   camera.up.set(0, 1, 0);
   camera.lookAt(target);
+}
+
+/** True when a surface point is close enough to a pole that longitude is unstable. */
+function isNearPole(unit: THREE.Vector3): boolean {
+  return Math.hypot(unit.x, unit.z) < POLE_EQUATORIAL_SOFT;
 }
 
 function applySphericalOrbitStep(
@@ -183,16 +239,63 @@ export function orbitCameraToKeepGrab(
     return;
   }
 
+  // Near either geographic pole, free trackball + Y-up rebuild is singular:
+  // shortest-path twist becomes uncontrolled yaw/pitch. Screen-space orbit
+  // matches OrbitControls and stays stable across the polar axis.
+  if (isNearPole(grabUnit) || isNearPole(lastPointerUnit) || isNearPole(_pointerUnit)) {
+    orbitCameraByScreenDelta(
+      camera,
+      target,
+      deltaX,
+      deltaY,
+      rect,
+      minPolar,
+      maxPolar,
+    );
+    camera.updateMatrixWorld();
+    if (
+      pointerGlobeUnit(
+        clientX,
+        clientY,
+        rect,
+        camera,
+        target,
+        radius,
+        lastPointerUnit,
+      ) !== "hit"
+    ) {
+      lastPointerUnit.copy(_pointerUnit);
+    }
+    return;
+  }
+
+  // Incremental last→current trackball (not absolute grab→pointer): long arcs
+  // that cross a pole no longer pick a discontinuous shortest-path twist.
   applyTrackballOrbit(
     camera,
     target,
-    grabUnit,
+    lastPointerUnit,
     _pointerUnit,
     minPolar,
     maxPolar,
   );
   camera.updateMatrixWorld();
-  lastPointerUnit.copy(_pointerUnit);
+
+  // Re-hit in the post-move camera so the next incremental step compares
+  // surface points from a consistent pose.
+  if (
+    pointerGlobeUnit(
+      clientX,
+      clientY,
+      rect,
+      camera,
+      target,
+      radius,
+      lastPointerUnit,
+    ) !== "hit"
+  ) {
+    lastPointerUnit.copy(_pointerUnit);
+  }
 
   clientToNdc(clientX, clientY, rect, _ndc);
   _grabWorld.copy(grabUnit).multiplyScalar(radius).add(target);
@@ -207,6 +310,16 @@ export function orbitCameraToKeepGrab(
   const fovX = 2 * Math.atan(Math.tan(fovY / 2) * Math.max(camera.aspect, 1e-6));
   let dTheta = -errX * (fovX / 2);
   let dPhi = errY * (fovY / 2);
+
+  // A polar grab barely moves on screen when yaw changes, so theta polish would
+  // keep applying a correction that never shrinks the error → runaway spin.
+  const grabEquatorial = Math.hypot(grabUnit.x, grabUnit.z);
+  dTheta *= THREE.MathUtils.smoothstep(
+    grabEquatorial,
+    POLE_EQUATORIAL_EPS,
+    POLE_EQUATORIAL_SOFT,
+  );
+
   const step = Math.hypot(dTheta, dPhi);
   if (step > MAX_POLISH_STEP) {
     const scale = MAX_POLISH_STEP / step;

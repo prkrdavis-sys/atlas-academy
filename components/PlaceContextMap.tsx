@@ -2,7 +2,9 @@
 
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import Panzoom from "@panzoom/panzoom";
+import { CapitalMapPin, capitalPinSizeForViewBox } from "@/components/CapitalMapPin";
 import { MapMasteryFxDefs } from "@/components/MapMasteryFxDefs";
+import { getCapitalLatLng } from "@/lib/capital-coordinates";
 import {
   countryHasContextMap,
   getContextMapAriaLabel,
@@ -21,18 +23,17 @@ import {
   parseSvgViewBox,
   type MapBoundsManifest,
 } from "@/lib/map-bounds";
+import { projectLonLatToMap } from "@/lib/map-projection";
 import {
   getMapPalette,
   getMapPathRole,
   getSubtleNeighborMapStyle,
-  LAND_TEXTURE_BORDER_STROKE,
   parseMapViewBox,
   sortMapPathsForRender,
   type MapPathStyle,
 } from "@/lib/map-colors";
 import { attachMapPlaceTapHandlers } from "@/lib/map-interaction";
 import {
-  contextMapSupportsLandTexture,
   getMapLandTextureBrightness,
   getMapLandTextureWashOpacity,
   MAP_LAND_HIGHLIGHT_TINT_OPACITY,
@@ -117,53 +118,25 @@ export async function loadContextMapTemplate(templateKey: string): Promise<Parse
 const learnCardPreloadInFlight = new Map<string, Promise<void>>();
 
 /**
- * Warm the learn-card context map (SVG template, bounds, and terrain crop)
- * so PlaceContextMap can render without a loading pulse.
+ * Warm the learn-card context map (SVG template and bounds) so PlaceContextMap
+ * can render without a loading pulse.
  */
-export function preloadLearnCardMap(countryCode: string, isDark: boolean): Promise<void> {
-  const key = `${countryCode.toUpperCase()}:${isDark ? "d" : "l"}`;
+export function preloadLearnCardMap(countryCode: string, _isDark: boolean): Promise<void> {
+  void _isDark;
+  const key = countryCode.toUpperCase();
   const existing = learnCardPreloadInFlight.get(key);
   if (existing) return existing;
 
   const promise = (async () => {
-    if (!shouldUseRuntimeMapTexture()) return;
-
     const country = getCountryByCode(countryCode);
     if (!country || !countryHasContextMap(country)) return;
 
-    // Learn cards use the complete world geometry so wide crops never expose
-    // land that is absent from a continent-only template.
-    const templateKey = isStateCode(country.code)
-      ? getContextMapTemplateKey(country)
-      : "world";
+    const templateKey = getContextMapTemplateKey(country);
     const [, bounds] = await Promise.all([
       loadContextMapTemplate(templateKey),
       loadMapBoundsManifest(),
-      // Overview bake is the first-paint fallback before the sharp crop lands.
-      preloadImageElement(MAP_LAND_TEXTURE_PATH),
     ]);
     boundsCache.data = bounds;
-
-    if (!contextMapSupportsLandTexture(templateKey)) return;
-
-    const template = bounds[templateKey];
-    if (!template) return;
-
-    const focusedViewBox = computeFocusedViewBox(template, getContextMapPathIds(country), {
-      ...CROP_OPTIONS.learn,
-      neighborPathIds: getNeighborContextMapPathIds(country),
-    });
-    if (!focusedViewBox) return;
-
-    const [viewBoxX, viewBoxY, viewBoxWidth, viewBoxHeight] = parseMapViewBox(focusedViewBox);
-    await renderMapSurfaceTextureCrop({
-      templateKey,
-      viewBoxX,
-      viewBoxY,
-      viewBoxWidth,
-      viewBoxHeight,
-      isDark,
-    });
   })()
     .catch(() => {
       // Preload is best-effort; PlaceContextMap still loads on demand.
@@ -174,16 +147,6 @@ export function preloadLearnCardMap(countryCode: string, isDark: boolean): Promi
 
   learnCardPreloadInFlight.set(key, promise);
   return promise;
-}
-
-function preloadImageElement(src: string): Promise<void> {
-  if (typeof Image === "undefined") return Promise.resolve();
-  return new Promise((resolve) => {
-    const image = new Image();
-    image.onload = () => resolve();
-    image.onerror = () => resolve();
-    image.src = src;
-  });
 }
 
 type PlaceContextMapProps = {
@@ -215,11 +178,14 @@ type ContextMapSvgProps = {
   /** Include animated gold/legendary gradient defs for progress-map fills. */
   includeMasteryFxDefs?: boolean;
   /**
-   * Fill land with Natural Earth–projected Blue Marble topography (Learn /
-   * Library). Off for progress maps that need opaque mastery paints.
+   * Optional Blue Marble land fill. Off by default — terrain coasts and thick
+   * black strokes ghost against country path borders. Flat palette fills keep
+   * one clear vector outline in every view.
    */
   landTexture?: boolean;
   mapTemplateKey?: string;
+  /** Projected capital marker for Learn/Library context maps. */
+  capitalMarker?: { x: number; y: number; label: string } | null;
   onPathClick?: (pathId: string) => void;
   onPathHover?: (pathId: string | null) => void;
   onBackgroundClick?: () => void;
@@ -230,16 +196,15 @@ function strokeWidthForViewBox(
   viewBoxWidth: number,
   viewBoxHeight: number,
   scaleWithMap: boolean,
-  landTexture: boolean,
 ): number {
+  if (baseWidth <= 0) return 0;
   if (!scaleWithMap) {
-    // non-scaling-stroke is roughly CSS px — thicken on terrain so borders read.
-    return landTexture ? Math.max(baseWidth * 2.4, 1.1) : baseWidth;
+    // non-scaling-stroke is roughly CSS px.
+    return baseWidth;
   }
   const diagonal = Math.hypot(viewBoxWidth, viewBoxHeight);
-  // Flat fills can use hairlines; Blue Marble needs a heavier black outline.
-  const scale = landTexture ? 0.0017 : 0.00045;
-  const floor = landTexture ? 0.0011 : 0.00028;
+  const scale = 0.00045;
+  const floor = 0.00028;
   return Math.max(diagonal * scale * (baseWidth / 0.35), diagonal * floor);
 }
 
@@ -258,6 +223,7 @@ export function ContextMapSvg({
   includeMasteryFxDefs = false,
   landTexture = false,
   mapTemplateKey = "world",
+  capitalMarker = null,
   onPathClick,
   onPathHover,
   onBackgroundClick,
@@ -351,7 +317,6 @@ export function ContextMapSvg({
       viewBoxWidth,
       viewBoxHeight,
       scaleStrokesWithMap,
-      textureEnabled,
     );
     const tintOpacity =
       !textureEnabled
@@ -370,7 +335,7 @@ export function ContextMapSvg({
       path,
       style,
       strokeWidth,
-      stroke: textureEnabled ? LAND_TEXTURE_BORDER_STROKE : style.stroke,
+      stroke: strokeWidth > 0 ? style.stroke : "none",
       fill: textureEnabled ? `url(#${landPatternId})` : style.fill,
       tintOpacity,
     };
@@ -447,6 +412,7 @@ export function ContextMapSvg({
         height={viewBoxHeight}
         fill={palette.ocean}
       />
+      {/* Fills first, then one stroke pass — a single clear border per place. */}
       {textureEnabled ? (
         <>
           {/* Solid underlay so land never reads as hollow if the pattern misses. */}
@@ -489,54 +455,50 @@ export function ContextMapSvg({
               />
             ) : null,
           )}
-          {styledPaths.map(({ path, stroke, strokeWidth }) => (
-            <path
-              key={`stroke-${path.id}`}
-              d={path.d}
-              fill="none"
-              stroke={stroke}
-              strokeWidth={strokeWidth}
-              vectorEffect={vectorEffect}
-              strokeLinejoin="round"
-              strokeLinecap="round"
-              style={{ pointerEvents: "none" }}
-              aria-hidden
-            />
-          ))}
         </>
       ) : (
-        styledPaths.map(({ path, style, fill, stroke, strokeWidth, tintOpacity }) => (
-          <g key={path.id}>
-            <path
-              id={path.id}
-              d={path.d}
-              data-map-place={interactive ? path.id : undefined}
-              fill={fill}
-              stroke={stroke}
-              strokeWidth={strokeWidth}
-              vectorEffect={vectorEffect}
-              strokeLinejoin="round"
-              strokeLinecap="round"
-              className={cn(
-                interactive && "cursor-pointer transition-[fill,stroke] duration-150",
-                style.className,
-              )}
-              onMouseEnter={interactive && onPathHover ? () => onPathHover(path.id) : undefined}
-              onMouseLeave={interactive && onPathHover ? () => onPathHover(null) : undefined}
-            />
-            {tintOpacity > 0 ? (
-              <path
-                d={path.d}
-                fill={style.fill}
-                fillOpacity={tintOpacity}
-                stroke="none"
-                style={{ pointerEvents: "none" }}
-                aria-hidden
-              />
-            ) : null}
-          </g>
+        styledPaths.map(({ path, style, fill }) => (
+          <path
+            key={`fill-${path.id}`}
+            id={path.id}
+            d={path.d}
+            data-map-place={interactive ? path.id : undefined}
+            fill={fill}
+            stroke="none"
+            className={cn(
+              interactive && "cursor-pointer transition-[fill,stroke] duration-150",
+              style.className,
+            )}
+            onMouseEnter={interactive && onPathHover ? () => onPathHover(path.id) : undefined}
+            onMouseLeave={interactive && onPathHover ? () => onPathHover(null) : undefined}
+          />
         ))
       )}
+      {styledPaths.map(({ path, stroke, strokeWidth }) =>
+        strokeWidth > 0 && stroke !== "none" ? (
+          <path
+            key={`stroke-${path.id}`}
+            d={path.d}
+            fill="none"
+            stroke={stroke}
+            strokeWidth={strokeWidth}
+            vectorEffect={vectorEffect}
+            strokeLinejoin="round"
+            strokeLinecap="round"
+            style={{ pointerEvents: "none" }}
+            aria-hidden
+          />
+        ) : null,
+      )}
+      {capitalMarker ? (
+        <CapitalMapPin
+          x={capitalMarker.x}
+          y={capitalMarker.y}
+          size={capitalPinSizeForViewBox(viewBoxWidth, viewBoxHeight)}
+          label={capitalMarker.label}
+          isDark={isDark}
+        />
+      ) : null}
     </svg>
   );
 }
@@ -587,20 +549,28 @@ export function PlaceContextMap({
     return new Set(getContextMapPathIds(answerCountry));
   }, [answerNeighborCode]);
 
-  // Learn-card neighbors use a muted cool tone so they don't compete with the
-  // teal highlight (the default neighbor palette is the same teal family).
+  // Featured place (and answer callouts) get the only vector stroke. Surrounding
+  // land is fill-only so mismatched shared-border geometry cannot ghost a second
+  // outline against the subject.
   const pathStyleResolver = useMemo(() => {
-    if (!highlightNeighbors && answerNeighborIds.size === 0) return undefined;
+    const mapPalette = getMapPalette(isDark);
     const subtleNeighbor = getSubtleNeighborMapStyle(isDark);
-    const answerNeighbor = getMapPalette(isDark).answer;
+    const surroundLand: MapPathStyle = {
+      fill: mapPalette.default.fill,
+      stroke: "none",
+      strokeWidth: 0,
+    };
     return (pathId: string): MapPathStyle | null => {
-      if (answerNeighborIds.has(pathId) && !highlightIds.has(pathId)) {
-        return answerNeighbor;
+      if (highlightIds.has(pathId)) {
+        return mapPalette.highlight;
       }
-      if (neighborIds.has(pathId) && !highlightIds.has(pathId)) {
-        return subtleNeighbor;
+      if (answerNeighborIds.has(pathId)) {
+        return mapPalette.answer;
       }
-      return null;
+      if (neighborIds.has(pathId)) {
+        return highlightNeighbors ? subtleNeighbor : surroundLand;
+      }
+      return surroundLand;
     };
   }, [answerNeighborIds, highlightNeighbors, highlightIds, neighborIds, isDark]);
 
@@ -649,6 +619,19 @@ export function PlaceContextMap({
   const activeViewBox = interactive
     ? interactiveViewBoxes?.surroundingsViewBox
     : focusedViewBox;
+
+  const capitalMarker = useMemo(() => {
+    const latLng = getCapitalLatLng(country.code);
+    if (!latLng || !country.capital) return null;
+    const [lat, lng] = latLng;
+    const point = projectLonLatToMap(lng, lat, templateKey);
+    if (!point) return null;
+    return {
+      x: point[0],
+      y: point[1],
+      label: `Capital: ${country.capital}`,
+    };
+  }, [country.code, country.capital, templateKey]);
 
   useEffect(() => {
     let cancelled = false;
@@ -769,11 +752,14 @@ export function PlaceContextMap({
   }
 
   const ariaLabel = getContextMapAriaLabel(country, isState);
-  const mapAriaLabel =
+  const mapAriaLabel = [
     answerNeighborIds.size > 0
       ? `${ariaLabel}; the correct neighboring country is highlighted in amber`
-      : ariaLabel;
-  const landTexture = contextMapSupportsLandTexture(templateKey);
+      : ariaLabel,
+    capitalMarker ? `Capital city marked: ${country.capital}` : null,
+  ]
+    .filter(Boolean)
+    .join(". ");
 
   return (
     <div
@@ -813,8 +799,8 @@ export function PlaceContextMap({
             isDark={isDark}
             viewBox={activeViewBox}
             scaleStrokesWithMap={variant === "learn" || variant === "hero"}
-            landTexture={landTexture}
             mapTemplateKey={templateKey}
+            capitalMarker={capitalMarker}
           />
         </div>
       ) : loadFailed ? (

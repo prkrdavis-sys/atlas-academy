@@ -33,8 +33,10 @@ const LIGHT_MAP_PALETTE: MapPalette = {
   },
   neighbor: {
     fill: "#99f6e4",
-    stroke: "#14b8a6",
-    strokeWidth: 0.5,
+    // Same border ink as default land — neighbors are told apart by fill only.
+    // Separate neighbor strokes ghost against mismatched shared-border geometry.
+    stroke: "#94a3b8",
+    strokeWidth: 0.35,
   },
   answer: {
     fill: "#f59e0b",
@@ -58,8 +60,8 @@ const DARK_MAP_PALETTE: MapPalette = {
   },
   neighbor: {
     fill: "#115e59",
-    stroke: "#14b8a6",
-    strokeWidth: 0.5,
+    stroke: "#64748b",
+    strokeWidth: 0.35,
   },
   answer: {
     fill: "#fbbf24",
@@ -75,15 +77,16 @@ const DARK_MAP_PALETTE: MapPalette = {
 
 const LIGHT_SUBTLE_NEIGHBOR: MapPathStyle = {
   // Dusty clay — warm land tone, clear of teal highlight and sky ocean.
+  // No stroke: fill contrast defines the edge so shared borders stay single.
   fill: "#e0b49a",
-  stroke: "#b07e62",
-  strokeWidth: 0.35,
+  stroke: "none",
+  strokeWidth: 0,
 };
 
 const DARK_SUBTLE_NEIGHBOR: MapPathStyle = {
   fill: "#7a4f3c",
-  stroke: "#c49278",
-  strokeWidth: 0.35,
+  stroke: "none",
+  strokeWidth: 0,
 };
 
 export function getMapPalette(isDark: boolean): MapPalette {
@@ -122,9 +125,6 @@ export function fillSelectedMapPath(
 export function getSubtleNeighborMapStyle(isDark: boolean): MapPathStyle {
   return isDark ? DARK_SUBTLE_NEIGHBOR : LIGHT_SUBTLE_NEIGHBOR;
 }
-
-/** Solid black country outlines for Blue Marble / land-texture fills. */
-export const LAND_TEXTURE_BORDER_STROKE = "#000000";
 
 export function getMapPathRole(
   pathId: string,

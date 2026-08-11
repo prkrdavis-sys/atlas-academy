@@ -343,7 +343,6 @@ export function InteractiveProgressMap({
               isDark={isDark}
               interactive
               includeMasteryFxDefs
-              landTexture
               mapTemplateKey={copy.templateKey}
               pathStyleResolver={pathStyleResolver}
               onPathClick={handlePathClick}

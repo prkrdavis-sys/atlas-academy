@@ -36,13 +36,13 @@ function Burst({ burst, onDone }: { burst: FeedbackBurst; onDone: (id: number) =
       />
       {showSnuff && tier ? (
         <div
-          className="absolute right-2 top-[calc(env(safe-area-inset-top,0px)+3.85rem)] z-10 w-max max-w-[min(100vw-2rem,16rem)] sm:right-3 sm:top-[calc(env(safe-area-inset-top,0px)+4.35rem)]"
+          className="absolute inset-0 z-10 flex items-center justify-center px-4"
           role="status"
           aria-live="polite"
         >
           <div
             className={cn(
-              "animate-streak-snuff relative flex flex-col items-center gap-0.5 rounded-2xl border-2 px-4 py-2.5 text-center shadow-[0_12px_36px_rgb(15_23_42_/_0.22)] backdrop-blur-md sm:px-5 sm:py-3",
+              "animate-streak-snuff relative flex w-max max-w-[min(100vw-2rem,16rem)] flex-col items-center gap-0.5 rounded-2xl border-2 px-4 py-2.5 text-center shadow-[0_12px_36px_rgb(15_23_42_/_0.22)] backdrop-blur-md sm:px-5 sm:py-3",
               "border-rose-400/90 bg-gradient-to-b from-rose-50/95 to-red-50/95 dark:border-rose-500/80 dark:from-rose-950/90 dark:to-red-950/90",
             )}
           >

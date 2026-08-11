@@ -6,7 +6,6 @@ import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
 import {
   buildRingFillGeometry,
-  buildRingLineGeometry,
   disposeObject3D,
   GLOBE_DETAIL_ACTIVATE_DISTANCE,
   indexDetailCountries,
@@ -205,20 +204,8 @@ export function GlobeDetailOverlays({
           fillMesh.raycast = () => {};
           countryGroup.add(fillMesh);
         }
-
-        const lineGeometry = buildRingLineGeometry(ring);
-        if (lineGeometry) {
-          const lineMaterial = new THREE.LineBasicMaterial({
-            color: colors.stroke,
-            depthTest: false,
-            depthWrite: false,
-            toneMapped: false,
-          });
-          const line = new THREE.LineLoop(lineGeometry, lineMaterial);
-          line.renderOrder = 11;
-          line.raycast = () => {};
-          countryGroup.add(line);
-        }
+        // No vector stroke here — the globe texture already owns the single
+        // country border. A second line from higher-detail rings ghosts against it.
       }
 
       group.add(countryGroup);
