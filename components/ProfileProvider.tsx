@@ -31,6 +31,7 @@ import {
   setStorageAccount,
   upsertProfile,
 } from "@/lib/storage";
+import { mergeLocalBestGameScores } from "@/lib/stats-helpers";
 import type { Profile, ProfileAvatarId, ProfileAvatarSelection } from "@/lib/types";
 
 type ProfileContextValue = {
@@ -90,7 +91,7 @@ function mergeLocalDailyChallengeProgress(cloud: Profile, local: Profile | undef
     }
   }
 
-  return {
+  const withDaily = {
     ...cloud,
     dailyChallengeResults: mergedResults,
     dailyChallengeCompletions: [
@@ -107,6 +108,8 @@ function mergeLocalDailyChallengeProgress(cloud: Profile, local: Profile | undef
       ]),
     ],
   };
+
+  return mergeLocalBestGameScores(withDaily, local);
 }
 
 export function ProfileProvider({ children }: { children: React.ReactNode }) {

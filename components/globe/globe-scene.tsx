@@ -226,6 +226,7 @@ export type GlobeSurfaceMaps = {
   metalnessMap: THREE.CanvasTexture | null;
   roughnessMap: THREE.CanvasTexture | null;
   normalMap: THREE.CanvasTexture | null;
+  ready?: boolean;
 };
 
 function configureGlobeCanvasTexture(
@@ -411,6 +412,7 @@ export function useGlobeTexture(
   }, []);
 
   const [bundle, setBundle] = useState(initialBundle);
+  const [textureReady, setTextureReady] = useState(false);
   const bundleRef = useRef(bundle);
   bundleRef.current = bundle;
   const buildGenRef = useRef(0);
@@ -418,6 +420,7 @@ export function useGlobeTexture(
   useEffect(() => {
     const gen = ++buildGenRef.current;
     let cancelled = false;
+    setTextureReady(false);
     const shouldContinue = () => !cancelled && gen === buildGenRef.current;
     const gate = createPaintYieldGate(shouldContinue);
 
@@ -443,6 +446,7 @@ export function useGlobeTexture(
       const nextMaps = mapsFromPaint(paint, gl, fxConstrained);
       const prevMaps = bundleRef.current.maps;
       setBundle({ paint, maps: nextMaps });
+      setTextureReady(true);
       invalidate();
       // Dispose the previous GPU textures after a frame so the material swap
       // isn't racing a dispose mid-draw.
@@ -525,7 +529,7 @@ export function useGlobeTexture(
     };
   }, [paint, maps, invalidate, perfTier]);
 
-  return maps;
+  return { ...maps, ready: textureReady };
 }
 
 /** Outer edge of the stratified atmosphere shell, in planet radii. */
@@ -668,15 +672,15 @@ type AtmospherePalette = {
   hazeOpacity: number;
 };
 
-/** Soft sky-blue limb — kept quiet so it never overpowers the painted surface. */
+/** Bright sky-blue limb — visible aura without washing the painted surface. */
 const DARK_ATMOSPHERE_PALETTE: AtmospherePalette = {
   troposphere: "#7dd3fc",
   stratosphere: "#38bdf8",
   mesosphere: "#60a5fa",
   exosphere: "#3b82f6",
-  opacity: 0.22,
+  opacity: 0.4,
   hazeColor: "#7dd3fc",
-  hazeOpacity: 0.04,
+  hazeOpacity: 0.07,
 };
 
 /**
@@ -689,9 +693,9 @@ const LIGHT_ATMOSPHERE_PALETTE: AtmospherePalette = {
   stratosphere: "#7dd3fc",
   mesosphere: "#38bdf8",
   exosphere: "#60a5fa",
-  opacity: 0.2,
+  opacity: 0.36,
   hazeColor: "#bae6fd",
-  hazeOpacity: 0.04,
+  hazeOpacity: 0.07,
 };
 
 /**
@@ -1588,7 +1592,7 @@ export function GlobePlanet({
 }: GlobePlanetProps) {
   const internalMeshRef = useRef<THREE.Mesh>(null);
   const planetMeshRef = meshRef ?? internalMeshRef;
-  const { map, metalnessMap, roughnessMap, normalMap } = useGlobeTexture(profile, {
+  const { map, metalnessMap, roughnessMap, normalMap, ready } = useGlobeTexture(profile, {
     difficulty,
     usMode,
     isDark,
@@ -1596,6 +1600,10 @@ export function GlobePlanet({
     perfTier,
   });
   const segments = getGlobeSphereSegments(perfTier);
+
+  if (!ready) {
+    return <GlobeLoadingSphere isDark={isDark} perfTier={perfTier} />;
+  }
 
   return (
     <>

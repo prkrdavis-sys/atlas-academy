@@ -33,7 +33,7 @@ export function FriendsShortcutButton({
         )}
       >
         <span aria-hidden className="text-xl">
-          🤝
+          👥
         </span>
         <span className="font-display text-sm font-extrabold text-slate-900 dark:text-white">
           Friends

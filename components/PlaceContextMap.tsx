@@ -280,6 +280,7 @@ export function ContextMapSvg({
   const [surfaceCrop, setSurfaceCrop] = useState<{
     landHref: string;
   } | null>(null);
+  const [surfaceCropFailed, setSurfaceCropFailed] = useState(false);
 
   const [surfaceTextureAllowed, setSurfaceTextureAllowed] = useState(false);
 
@@ -311,9 +312,15 @@ export function ContextMapSvg({
   }, [interactive, onPathClick, onBackgroundClick]);
 
   useEffect(() => {
-    if (!textureEnabled) return;
+    if (!textureEnabled) {
+      setSurfaceCrop(null);
+      setSurfaceCropFailed(false);
+      return;
+    }
 
     let cancelled = false;
+    setSurfaceCrop(null);
+    setSurfaceCropFailed(false);
     renderMapSurfaceTextureCrop({
       templateKey: mapTemplateKey,
       viewBoxX,
@@ -326,7 +333,7 @@ export function ContextMapSvg({
         if (!cancelled) setSurfaceCrop(crop);
       })
       .catch(() => {
-        // Keep the overview bake if the sharp crop fails.
+        if (!cancelled) setSurfaceCropFailed(true);
       });
 
     return () => {
@@ -369,6 +376,10 @@ export function ContextMapSvg({
     };
   });
 
+  if (textureEnabled && !surfaceCrop && !surfaceCropFailed) {
+    return null;
+  }
+
   return (
     <svg
       ref={svgRef}
@@ -382,9 +393,8 @@ export function ContextMapSvg({
       {textureEnabled ? (
         <defs>
           {surfaceCrop ? (
-            // Pattern content origin is the tile's top-left, not SVG (0,0).
-            // Image must sit at (0,0) inside the tile — placing it at the
-            // viewBox origin leaves the tile empty and land fills go hollow.
+            // Pattern content uses SVG user-space coordinates, so keep the
+            // cropped image aligned to the same origin as the active viewBox.
             <pattern
               id={landPatternId}
               patternUnits="userSpaceOnUse"
@@ -395,8 +405,8 @@ export function ContextMapSvg({
             >
               <image
                 href={surfaceCrop.landHref}
-                x={0}
-                y={0}
+                x={viewBoxX}
+                y={viewBoxY}
                 width={viewBoxWidth}
                 height={viewBoxHeight}
                 preserveAspectRatio="none"

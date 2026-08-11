@@ -28,7 +28,7 @@ export function ModeBestFraction({
   if (!score) return null;
 
   const placeNoun = scope === "usa" ? "states" : "countries";
-  const label = `Best ${DIFFICULTY_LABELS[activeDifficulty]} score: ${score.correct} out of ${score.total} ${placeNoun}`;
+  const label = `Best single-game ${DIFFICULTY_LABELS[activeDifficulty]} score: ${score.correct} out of ${score.total} ${placeNoun}`;
 
   return (
     <span

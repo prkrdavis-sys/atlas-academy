@@ -168,8 +168,7 @@ export const TROPICAL_CYCLONE_TRACKS: TropicalCycloneTrack[] = [
 export type TropicalCycloneSpawn = {
   track: TropicalCycloneTrack;
   /**
-   * Local mesh Z spin (viewed from outside the globe): NH counterclockwise,
-   * SH clockwise.
+   * Local mesh Z spin (viewed from outside the globe). Negative = clockwise.
    */
   spinSign: number;
   /** Horizontal mirror so spiral arms trail the spin direction. */
@@ -188,15 +187,11 @@ export function pickTropicalCycloneSpawn(random: () => number): TropicalCycloneS
     }
   }
 
-  const spawnLat = track.points[0].lat;
-  const northernHemisphere = spawnLat >= 0;
   /**
-   * Florence density spirals clockwise in UV space. NH storms mirror the art
-   * and spin counterclockwise; SH uses the raw art with clockwise spin.
+   * Florence density spirals clockwise in UV space. All storms use the raw art
+   * and spin clockwise (negative local Z).
    */
-  const spinSign = northernHemisphere ? 1 : -1;
-  const mirrorTexture = northernHemisphere;
-  return { track, spinSign, mirrorTexture };
+  return { track, spinSign: -1, mirrorTexture: false };
 }
 
 export function sampleCycloneTrack(

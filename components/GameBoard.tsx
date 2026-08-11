@@ -239,6 +239,48 @@ export function GameBoard({
   const dailyCompletionRecordedRef = useRef(false);
   const summaryAchievementsCheckedRef = useRef(false);
   const bestGameScoreRecordedRef = useRef(false);
+  const correctAnswersRef = useRef(correctAnswers);
+  const bestScoreContextRef = useRef({
+    profileId: activeProfile.id,
+    mode,
+    difficulty,
+    scope,
+    countStats,
+  });
+  correctAnswersRef.current = correctAnswers;
+  bestScoreContextRef.current = {
+    profileId: activeProfile.id,
+    mode,
+    difficulty,
+    scope,
+    countStats,
+  };
+
+  /** Highest correct answers in this session — persists even if the player leaves mid-round. */
+  function persistBestGameScore(
+    sessionCorrect: number,
+    options: { notify?: boolean } = {},
+  ) {
+    const ctx = bestScoreContextRef.current;
+    if (!ctx.countStats || ctx.mode === "weak-spots") return;
+    if (!Number.isFinite(sessionCorrect) || sessionCorrect <= 0) return;
+    recordBestGameScore(
+      ctx.profileId,
+      ctx.mode,
+      ctx.difficulty,
+      sessionCorrect,
+      ctx.scope,
+      options,
+    );
+  }
+
+  // Flush the running best when leaving mid-round (browser back, library link, etc.).
+  // Unmount-only: always read the latest score/context from refs.
+  useEffect(() => {
+    return () => {
+      persistBestGameScore(correctAnswersRef.current);
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps -- unmount flush via refs
 
   function maybeRecordDailyCompletion(
     completedQuestions: number,
@@ -350,6 +392,7 @@ export function GameBoard({
       return;
     }
     speedSessionCheckedRef.current = true;
+    persistBestGameScore(correctAnswers);
     awardAchievements({
       sessionCorrect: correctAnswers,
       sessionTotal: questionCount,
@@ -502,7 +545,7 @@ export function GameBoard({
 
     if (!bestGameScoreRecordedRef.current) {
       bestGameScoreRecordedRef.current = true;
-      recordBestGameScore(activeProfile.id, mode, difficulty, correctAnswers, scope);
+      persistBestGameScore(correctAnswers);
       refresh();
     }
 
@@ -607,6 +650,9 @@ export function GameBoard({
         );
       }
 
+      // Keep the personal-best numerator current during the round (silent until leave/summary).
+      persistBestGameScore(sessionCorrect, { notify: false });
+
       refresh();
       awardAchievements({
         sessionCorrect,
@@ -700,6 +746,7 @@ export function GameBoard({
       router.push("/");
       return;
     }
+    persistBestGameScore(correctAnswers);
     setShowLearnCard(false);
     setExitedEarly(true);
     if (isDailyChallenge && countStats) {
@@ -1170,20 +1217,14 @@ export function GameBoard({
               className={`flex min-h-0 w-full flex-col items-stretch ${
                 question.displayType === "flags-grid"
                   ? "min-h-0 flex-1 gap-2 overflow-hidden sm:gap-3"
-                  : "min-h-0 flex-1 overflow-hidden py-1 sm:shrink-0 sm:py-2"
+                  : "min-h-0 flex-1 overflow-hidden py-1 sm:py-2"
               }`}
             >
-              <div
-                className={
-                  question.displayType === "flags-grid"
-                    ? "mx-auto flex min-h-0 w-full max-w-2xl flex-1 flex-col"
-                    : "mx-auto flex min-h-0 w-full max-w-2xl flex-1 flex-col sm:shrink-0"
-                }
-              >
+              <div className="mx-auto flex min-h-0 w-full max-w-2xl flex-1 flex-col">
                 {inlineLearnCard}
               </div>
               {question.displayType === "flags-grid" && question.optionCodes && (
-                <div className="flex h-[min(44cqh,22rem)] min-h-0 w-full min-w-0 shrink-0 items-center justify-center overflow-hidden pb-2">
+                <div className="flex h-[min(44cqh,22rem)] min-h-0 w-full min-w-0 shrink-0 items-center justify-center overflow-hidden pb-2 sm:h-[min(28cqh,13rem)]">
                   <FlagGrid
                     codes={question.optionCodes.filter((c) => !hiddenOptions.includes(c))}
                     onSelect={(code) => handleAnswer(code, code)}

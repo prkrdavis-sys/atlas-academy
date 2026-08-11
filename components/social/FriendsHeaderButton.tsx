@@ -37,7 +37,7 @@ export function FriendsHeaderButton({ compact = false }: { compact?: boolean }) 
           compact ? "size-9 text-lg" : "size-10 text-xl",
         )}
       >
-        <span aria-hidden>🤝</span>
+        <span aria-hidden>👥</span>
         {enabled && inboxCount > 0 ? (
           <span
             aria-hidden

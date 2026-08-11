@@ -1,9 +1,5 @@
 import { FlagImage } from "@/components/FlagDisplay";
-import {
-  formatPopulation,
-  getCountryByCode,
-  getShapePath,
-} from "@/lib/countries";
+import { getCountryByCode, getShapePath } from "@/lib/countries";
 
 export function NeighborCountryDisplay({ code }: { code: string }) {
   const country = getCountryByCode(code);
@@ -11,7 +7,7 @@ export function NeighborCountryDisplay({ code }: { code: string }) {
 
   return (
     <section
-      aria-label={`Clues about ${country.name}`}
+      aria-label={`Shape and flag of ${country.name}`}
       className="mx-auto grid h-full min-h-0 w-full max-w-2xl grid-cols-[minmax(0,1.2fr)_minmax(8rem,0.8fr)] items-center gap-4 px-2 py-2 sm:gap-8 sm:px-6"
     >
       <div className="flex min-h-0 items-center justify-center">
@@ -26,7 +22,7 @@ export function NeighborCountryDisplay({ code }: { code: string }) {
         )}
       </div>
 
-      <div className="flex min-w-0 flex-col gap-4 sm:gap-5">
+      <div className="flex min-w-0 items-center justify-center">
         <FlagImage
           code={country.code}
           alt={`Flag of ${country.name}`}
@@ -35,25 +31,6 @@ export function NeighborCountryDisplay({ code }: { code: string }) {
           className="w-full"
           priority
         />
-
-        <dl className="grid gap-3">
-          <div>
-            <dt className="text-[10px] font-black uppercase tracking-[0.16em] text-teal-700/70">
-              Capital
-            </dt>
-            <dd className="mt-0.5 font-display text-lg font-extrabold leading-tight text-slate-800 dark:text-slate-200 sm:text-2xl">
-              {country.capital || "No official capital"}
-            </dd>
-          </div>
-          <div>
-            <dt className="text-[10px] font-black uppercase tracking-[0.16em] text-teal-700/70">
-              Population
-            </dt>
-            <dd className="mt-0.5 font-display text-lg font-extrabold leading-tight tabular-nums text-slate-800 sm:text-2xl">
-              {formatPopulation(country.population)}
-            </dd>
-          </div>
-        </dl>
       </div>
     </section>
   );

@@ -263,26 +263,26 @@ function InlineLearnCard({
         </dl>
       </div>
 
-      <div className="hidden shrink-0 flex-col gap-3 p-4 sm:flex lg:px-6 lg:py-4">
+      <div className="hidden min-h-0 flex-1 flex-col gap-3 overflow-hidden p-4 sm:flex lg:px-6 lg:py-4">
         <div
           className={cn(
-            "grid items-start gap-5 lg:gap-6",
-            country.hasFlag ? "grid-cols-[5.5rem_minmax(0,1fr)] lg:grid-cols-[6.25rem_minmax(0,1fr)]" : "grid-cols-1",
+            "flex shrink-0 items-center gap-5 lg:gap-6",
+            country.hasFlag ? "justify-between" : "",
           )}
         >
           {country.hasFlag && (
-            <div className="flex items-start justify-center pt-0.5">
+            <div className="flex min-w-0 flex-1 items-center justify-center py-0.5">
               <FlagImage
                 code={country.code}
                 alt={country.name}
-                width={112}
+                width={200}
                 frame="md"
-                className="w-[5.5rem] lg:w-24"
+                className="w-[min(12.5rem,100%)] max-w-full"
               />
             </div>
           )}
 
-          <div className="min-w-0 pl-0.5 lg:pl-1">
+          <div className={cn("shrink-0", country.hasFlag ? "max-w-[min(100%,22rem)]" : "w-full")}>
             {compareCountryCode && (
               <PopulationComparison
                 countryCode={countryCode}
@@ -292,7 +292,7 @@ function InlineLearnCard({
             )}
             <dl
               className={cn(
-                "grid grid-cols-2 gap-x-4 gap-y-2 text-[0.9rem] leading-snug",
+                "grid grid-cols-2 gap-x-5 gap-y-2 text-[0.9rem] leading-snug",
                 compareCountryCode ? "mt-0" : "",
               )}
             >
@@ -324,13 +324,15 @@ function InlineLearnCard({
           </div>
         </div>
 
-        <PlaceContextMap
-          country={country}
-          variant="learn"
-          highlightNeighbors
-          answerNeighborCode={answerNeighborCode}
-          className="w-full"
-        />
+        <div className="min-h-0 w-full flex-1 overflow-hidden">
+          <PlaceContextMap
+            country={country}
+            variant="learn"
+            highlightNeighbors
+            answerNeighborCode={answerNeighborCode}
+            className="!aspect-auto !min-h-0 h-full max-h-full w-full"
+          />
+        </div>
       </div>
 
       <p className="shrink-0 border-t border-slate-100 px-4 py-2.5 text-center text-xs font-medium text-slate-400 dark:border-slate-800 dark:text-slate-500 sm:px-6 sm:py-2 [@container_(max-height:26rem)]:px-3 [@container_(max-height:26rem)]:py-1.5 [@container_(max-height:22rem)]:py-1">

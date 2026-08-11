@@ -19,7 +19,7 @@ export function SocialSignInPrompt({
     <SocialDialog
       open={open}
       onClose={onClose}
-      icon="🤝"
+      icon="👥"
       eyebrow="Friends"
       title="Create an account to play with friends"
     >

@@ -622,6 +622,7 @@ export function recordBestGameScore(
   difficulty: Difficulty,
   correctAnswers: number,
   scope: GameScope = "world",
+  options: { notify?: boolean } = {},
 ) {
   const state = loadState();
   const profile = state.profiles.find((p) => p.id === profileId);
@@ -632,7 +633,7 @@ export function recordBestGameScore(
   if (nextBest === stats.bestGameCorrect) return state;
 
   stats.bestGameCorrect = nextBest;
-  saveState(state);
+  saveState(state, { notify: options.notify });
   return state;
 }
 

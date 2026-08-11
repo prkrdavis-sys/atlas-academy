@@ -84,6 +84,38 @@ export function isLegacyUnscopedStats(value: unknown): value is ModeStatsByScope
   return Boolean(firstMode && firstMode in value);
 }
 
+/**
+ * Keep the higher single-game best when cloud hydrate would otherwise clobber
+ * a fresher local personal best that has not finished syncing.
+ */
+export function mergeLocalBestGameScores(cloud: Profile, local: Profile | undefined): Profile {
+  if (!local?.stats) return cloud;
+
+  for (const scope of GAME_SCOPES) {
+    const cloudScope = cloud.stats?.[scope];
+    const localScope = local.stats[scope];
+    if (!cloudScope || !localScope) continue;
+
+    for (const mode of GAME_MODES) {
+      const cloudMode = cloudScope[mode.id];
+      const localMode = localScope[mode.id];
+      if (!cloudMode || !localMode) continue;
+
+      for (const difficulty of DIFFICULTIES) {
+        const cloudStats = cloudMode[difficulty];
+        const localStats = localMode[difficulty];
+        if (!cloudStats || !localStats) continue;
+        cloudStats.bestGameCorrect = Math.max(
+          cloudStats.bestGameCorrect ?? 0,
+          localStats.bestGameCorrect ?? 0,
+        );
+      }
+    }
+  }
+
+  return cloud;
+}
+
 export function getGlobalStreak(
   profile: Profile,
   difficulty: Difficulty,

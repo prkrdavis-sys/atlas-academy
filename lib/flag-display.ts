@@ -24,18 +24,22 @@ const shapedClipByCode = new Map(
 const centeredSubjectCodes = new Set([
   "AS",
   "AZ",
+  "BI",
   "BN",
   "BZ",
   "CA",
   "CV",
   "DE",
+  "DM",
   "FM",
+  "GB",
   "GT",
   "GU",
   "HN",
   "HR",
   "IM",
   "JE",
+  "JM",
   "KG",
   "KI",
   "KM",
@@ -46,12 +50,29 @@ const centeredSubjectCodes = new Set([
   "NF",
   "NI",
   "PY",
+  "SC",
   "TJ",
 ]);
+
+// Mildly wide flags whose outer frame (borders, stars along the edge) is essential
+// to recognition. Stretching into the 3:2 tile preserves the full design better
+// than cropping a thin strip off one or both sides.
+const preserveFrameCodes = new Set(["GD"]);
 
 /** Display width / height from the flag SVG's rendered viewport metadata. */
 export function getFlagAspectRatio(code: string): number {
   return ratioByCode.get(code.toLowerCase()) ?? DEFAULT_ASPECT_RATIO;
+}
+
+/** How a flag should fill a fixed-ratio quiz tile. */
+export function getFlagGridObjectFit(
+  code: string,
+  gridAspectRatio: number,
+): "fill" | "cover" {
+  const ratio = getFlagAspectRatio(code);
+  if (ratio <= gridAspectRatio) return "fill";
+  if (preserveFrameCodes.has(code.toUpperCase())) return "fill";
+  return "cover";
 }
 
 /** Returns the crop anchor for wide flags in fixed-ratio quiz tiles. */

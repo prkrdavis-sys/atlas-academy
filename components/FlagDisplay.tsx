@@ -6,6 +6,7 @@ import {
   getFlagAspectRatio,
   getFlagClipPath,
   getFlagDisplayProfile,
+  getFlagGridObjectFit,
   getFlagGridObjectPosition,
   isShapedFlag,
 } from "@/lib/flag-display";
@@ -391,7 +392,9 @@ export function FlagGrid({
           const isCorrect = revealed && correctCode === code;
           const isIncorrect = revealed && selectedCode === code && correctCode !== code;
           const shaped = isShapedFlag(code);
-          const cropsRightEdge = getFlagAspectRatio(code) > FLAG_GRID_ASPECT_RATIO;
+          const objectFit = getFlagGridObjectFit(code, FLAG_GRID_ASPECT_RATIO);
+          const cropsRightEdge =
+            objectFit === "cover" && getFlagAspectRatio(code) > FLAG_GRID_ASPECT_RATIO;
           const tileClassName = cn(
             "relative flex aspect-[3/2] h-auto w-full shrink-0 items-center justify-center leading-none",
             getTileBorderClass(shaped, tileRadius, isCorrect, isIncorrect, revealed),
@@ -415,7 +418,7 @@ export function FlagGrid({
               width={flagWidth}
               displayAspectRatio={FLAG_GRID_ASPECT_RATIO}
               className="h-full w-full"
-              objectFit={cropsRightEdge ? "cover" : "fill"}
+              objectFit={objectFit}
               objectPosition={cropsRightEdge ? getFlagGridObjectPosition(code) : undefined}
               inverted={inverted}
             />
