@@ -187,7 +187,7 @@ export function LibrarySearch({
           aria-activedescendant={
             activeIndex >= 0 ? `${listboxId}-option-${activeIndex}` : undefined
           }
-          className={`${GLASS_CONTROL_CLASS} min-h-11 w-full rounded-full py-2.5 pl-11 pr-4 text-sm font-semibold text-slate-800 shadow-sm placeholder:font-medium placeholder:text-slate-400 focus:border-teal-400 focus:outline-none focus:ring-2 focus:ring-teal-200 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-teal-500 dark:focus:ring-teal-900/60`}
+          className={`${GLASS_CONTROL_CLASS} min-h-11 w-full rounded-full py-2.5 pl-11 pr-4 text-base font-semibold text-slate-800 shadow-sm placeholder:font-medium placeholder:text-slate-400 focus:border-teal-400 focus:outline-none focus:ring-2 focus:ring-teal-200 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-teal-500 dark:focus:ring-teal-900/60 sm:text-sm`}
         />
       </div>
 

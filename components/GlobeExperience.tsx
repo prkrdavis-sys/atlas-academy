@@ -282,7 +282,8 @@ export function GlobeExperience({ children }: { children?: ReactNode }) {
   const handleSwipePointerDown = useCallback<PointerEventHandler<HTMLElement>>(
     (event) => {
       if (!isGlobeExperienceRoute || swipeNavigationLockedRef.current) return;
-      if (event.pointerType === "mouse" && event.button !== 0) return;
+      // Mouse drag on desktop must not swipe panes; touch/pen only.
+      if (event.pointerType === "mouse") return;
       if (isSwipeExcludedTarget(event.target)) return;
 
       swipeGestureRef.current = {

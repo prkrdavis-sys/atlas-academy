@@ -66,7 +66,7 @@ export function AddFriendForm() {
           autoComplete="off"
           autoCapitalize="none"
           spellCheck={false}
-          className="min-h-11 flex-1 rounded-2xl border-2 border-slate-200 bg-white px-4 text-sm font-semibold text-slate-800 outline-none transition-colors placeholder:font-medium placeholder:text-slate-400 focus:border-teal-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-teal-400"
+          className="min-h-11 flex-1 rounded-2xl border-2 border-slate-200 bg-white px-4 text-base font-semibold text-slate-800 outline-none transition-colors placeholder:font-medium placeholder:text-slate-400 focus:border-teal-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-teal-400 sm:text-sm"
         />
         <Button type="submit" disabled={!value.trim() || status === "sending"}>
           {status === "sending" ? "Sending…" : "Send request"}

@@ -197,7 +197,7 @@ export default function ProfilesPage() {
                 id="create-profile-name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-emerald-500 dark:focus:ring-emerald-900"
+                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-base focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-emerald-500 dark:focus:ring-emerald-900 sm:text-sm"
                 placeholder="Your name"
                 autoFocus
               />
@@ -327,7 +327,7 @@ export default function ProfilesPage() {
                   id="create-profile-name-existing"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-emerald-500 dark:focus:ring-emerald-900"
+                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-base focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-emerald-500 dark:focus:ring-emerald-900 sm:text-sm"
                   placeholder="Your name"
                 />
               </div>
@@ -420,7 +420,7 @@ export default function ProfilesPage() {
                       id="modify-profile-name"
                       value={editName}
                       onChange={(e) => setEditName(e.target.value)}
-                      className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+                      className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-base dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 sm:text-sm"
                       placeholder="Your name"
                       autoFocus
                     />

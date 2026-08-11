@@ -16,10 +16,11 @@ type MobileBottomDockProps = {
  *
  * Always uses a fixed shell sized with `top` + `height` from the visual
  * viewport (never layout-viewport `bottom: 0`), which avoids the iOS Safari
- * bug where the tab bar floats mid-screen after keyboard or chrome changes.
- * While the keyboard is closed the frame keeps `offsetTop` at 0 so rubber-band
- * overscroll cannot lift the bar; while it is open, the frame tracks the
- * visual viewport so the bar stays above the keyboard.
+ * bug where the tab bar floats mid-screen after keyboard, chrome, or page-zoom
+ * changes. While the keyboard is closed and scale is 1 the frame keeps
+ * `offsetTop` at 0 so rubber-band overscroll cannot lift the bar; while
+ * zoomed or the keyboard is open, the frame tracks the visual viewport so the
+ * bar stays in the visible frame.
  */
 export function MobileBottomDock({
   children,

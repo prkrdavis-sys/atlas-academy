@@ -184,7 +184,7 @@ export function FriendInviteDialog({ open, onClose }: FriendInviteDialogProps) {
               readOnly
               value={inviteState.invite.url}
               onFocus={(event) => event.currentTarget.select()}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600 outline-none focus:border-emerald-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300"
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-base text-slate-600 outline-none focus:border-emerald-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300 sm:text-sm"
             />
           </label>
         </div>

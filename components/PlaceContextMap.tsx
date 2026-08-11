@@ -496,7 +496,6 @@ export function ContextMapSvg({
           y={capitalMarker.y}
           size={capitalPinSizeForViewBox(viewBoxWidth, viewBoxHeight)}
           label={capitalMarker.label}
-          isDark={isDark}
         />
       ) : null}
     </svg>

@@ -64,6 +64,10 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  // Stop iOS Safari focus auto-zoom (inputs under 16px still need text-base).
+  // Page pinch-zoom would also break MobileBottomDock fixed positioning.
+  maximumScale: 1,
+  userScalable: false,
   viewportFit: "cover",
   // Keep the layout viewport stable; MobileBottomDock sizes itself with
   // visualViewport top+height so the tab bar stays pinned on iOS Safari.

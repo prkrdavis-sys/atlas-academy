@@ -208,8 +208,10 @@ export function HomePlayHero({
               completedToday={dailyCompletedToday}
             />
 
-            {/* Lower 40%: overflow visible so Play glow/scale aren't clipped. */}
-            <div className="mx-auto flex h-[40%] min-h-0 w-full max-w-xl shrink-0 flex-col justify-end gap-2 overflow-visible px-2 pt-8 sm:gap-2.5 sm:px-3 sm:pt-10">
+            {/* Lower 40%: overflow visible so Play glow/scale aren't clipped.
+                Slight -mb pulls the stack into pane bottom padding so more globe
+                shows above and the controls rest nearer the screen edge. */}
+            <div className="mx-auto -mb-5 flex h-[40%] min-h-0 w-full max-w-xl shrink-0 flex-col justify-end gap-2 overflow-visible px-2 pt-8 sm:-mb-4 sm:gap-2.5 sm:px-3 sm:pt-10">
               <button
                 type="button"
                 onClick={startPlay}
@@ -271,7 +273,7 @@ export function HomePlayHero({
 
             <GlobeDragZone href={GLOBE_MAP_HREF} globeHandleRef={globeHandleRef} />
 
-            <div className="mx-auto flex h-[40%] w-full max-w-xl shrink-0 flex-col justify-end overflow-visible px-2 pt-8 sm:px-3 sm:pt-10">
+            <div className="mx-auto -mb-5 flex h-[40%] w-full max-w-xl shrink-0 flex-col justify-end overflow-visible px-2 pt-8 sm:-mb-4 sm:px-3 sm:pt-10">
               <Link
                 href="/profiles"
                 className="play-glow-button flex min-h-14 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-b from-emerald-400 to-teal-600 px-6 py-3.5 font-display text-base font-extrabold text-white transition-transform hover:scale-[1.02] active:scale-[0.97] sm:text-lg"

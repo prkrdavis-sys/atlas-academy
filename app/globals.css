@@ -77,6 +77,19 @@ label {
   touch-action: manipulation;
 }
 
+/*
+ * iOS Safari auto-zooms focused form controls under 16px, which breaks
+ * fixed docks (tab bar mid-screen). Keep editable fields at least 16px on
+ * touch devices even when a utility class sets text-sm / text-xs.
+ */
+@media (hover: none) and (pointer: coarse) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="image"]):not([type="hidden"]),
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
+
 button:focus-visible,
 a:focus-visible,
 input:focus-visible {

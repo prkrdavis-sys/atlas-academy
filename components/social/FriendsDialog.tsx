@@ -76,16 +76,7 @@ export function FriendsDialog({ open, onClose, scope }: FriendsDialogProps) {
         }
         title={showingInbox ? "Inbox" : "Friends"}
         headerAction={
-          showingInbox ? (
-            <button
-              type="button"
-              onClick={() => setView("friends")}
-              className="flex min-h-9 shrink-0 items-center gap-1.5 rounded-xl px-2.5 text-xs font-bold text-slate-600 transition-colors hover:bg-slate-900/5 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
-            >
-              <span aria-hidden>👥</span>
-              Friends
-            </button>
-          ) : (
+          showingInbox ? undefined : (
             <button
               type="button"
               onClick={() => setView("inbox")}
