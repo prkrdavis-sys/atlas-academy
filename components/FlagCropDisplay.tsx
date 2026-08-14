@@ -1,7 +1,9 @@
 "use client";
 
+import { FlagNameBlurLayer } from "@/components/FlagNameBlur";
 import { getFlagPath } from "@/lib/countries";
 import { FLAG_CROP_DISPLAY_ASPECT_RATIO, getFlagCropStyle } from "@/lib/flag-crop";
+import { getCropFlagNameRegions } from "@/lib/flag-name-regions";
 import type { FlagCropOrientation } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -23,6 +25,8 @@ export function FlagCropDisplay({
   inverted?: boolean;
 }) {
   const cropStyle = getFlagCropStyle(code);
+  const flagSrc = getFlagPath(code);
+  const nameRegions = getCropFlagNameRegions(code);
 
   return (
     <div className="flex w-full justify-center px-1 sm:px-5">
@@ -43,10 +47,24 @@ export function FlagCropDisplay({
             inverted && "[filter:invert(1)]",
           )}
           style={{
-            backgroundImage: `url("${getFlagPath(code)}")`,
+            backgroundImage: `url("${flagSrc}")`,
             ...cropStyle,
           }}
-        />
+        >
+          <FlagNameBlurLayer
+            regions={nameRegions}
+            paint={(offsetStyle) => (
+              <span
+                className="block bg-no-repeat"
+                style={{
+                  ...offsetStyle,
+                  backgroundImage: `url("${flagSrc}")`,
+                  ...cropStyle,
+                }}
+              />
+            )}
+          />
+        </div>
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 shadow-[inset_0_0_0_1px_rgb(255_255_255_/_0.22),inset_0_0_42px_rgb(15_23_42_/_0.12)]"

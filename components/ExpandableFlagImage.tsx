@@ -34,7 +34,7 @@ export function ExpandableFlagImage({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        aria-label={`View full-size flag of ${countryName}`}
+        aria-label={`Open flag page for ${countryName}`}
         className={cn(
           "cursor-zoom-in rounded-[inherit] transition-transform hover:scale-[1.02] active:scale-[0.98]",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900",

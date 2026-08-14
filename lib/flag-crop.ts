@@ -30,9 +30,11 @@ function backgroundPositionForCenter(centerPercent: number, imageScale: number) 
   return Math.min(100, Math.max(0, position * 100));
 }
 
-export function getFlagCropStyle(code: string): {
-  backgroundPosition: string;
-  backgroundSize: string;
+export function getFlagCropTransform(code: string): {
+  widthScale: number;
+  heightScale: number;
+  posX: number;
+  posY: number;
 } {
   const crop = getFlagCrop(code) ?? {
     x: 50,
@@ -52,7 +54,21 @@ export function getFlagCropStyle(code: string): {
       : (FLAG_CROP_DISPLAY_ASPECT_RATIO / flagRatio) * crop.zoom;
 
   return {
-    backgroundPosition: `${backgroundPositionForCenter(crop.x, widthScale)}% ${backgroundPositionForCenter(crop.y, heightScale)}%`,
+    widthScale,
+    heightScale,
+    posX: backgroundPositionForCenter(crop.x, widthScale),
+    posY: backgroundPositionForCenter(crop.y, heightScale),
+  };
+}
+
+export function getFlagCropStyle(code: string): {
+  backgroundPosition: string;
+  backgroundSize: string;
+} {
+  const { widthScale, heightScale, posX, posY } = getFlagCropTransform(code);
+
+  return {
+    backgroundPosition: `${posX}% ${posY}%`,
     // Set both dimensions explicitly so corrected display ratios are applied
     // even though the source flag SVGs use a normalized 4:3 viewBox.
     backgroundSize: `${widthScale * 100}% ${heightScale * 100}%`,

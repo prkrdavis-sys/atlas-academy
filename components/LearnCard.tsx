@@ -20,6 +20,8 @@ type LearnCardProps = {
   heading?: ReactNode;
   /** Embedded in the game panel between the header and answer choices. */
   variant?: "default" | "inline";
+  /** Pin the capital on the context map (capital questions only). */
+  showCapitalMarker?: boolean;
 };
 
 function formatPrimaryLanguage(languages?: string): string {
@@ -157,6 +159,7 @@ function InlineLearnCard({
   heading,
   compareCountryCode,
   countryCode,
+  showCapitalMarker,
 }: {
   country: NonNullable<ReturnType<typeof getCountryByCode>>;
   isState: boolean;
@@ -165,6 +168,7 @@ function InlineLearnCard({
   heading?: ReactNode;
   compareCountryCode?: string;
   countryCode: string;
+  showCapitalMarker?: boolean;
 }) {
   return (
     <div
@@ -213,6 +217,7 @@ function InlineLearnCard({
             variant="learn"
             highlightNeighbors
             answerNeighborCode={answerNeighborCode}
+            showCapitalMarker={showCapitalMarker}
             className="!aspect-auto !min-h-0 h-full max-h-full w-full"
           />
         </div>
@@ -330,6 +335,7 @@ function InlineLearnCard({
             variant="learn"
             highlightNeighbors
             answerNeighborCode={answerNeighborCode}
+            showCapitalMarker={showCapitalMarker}
             className="!aspect-auto !min-h-0 h-full max-h-full w-full"
           />
         </div>
@@ -349,6 +355,7 @@ export function LearnCard({
   compareCountryCode,
   heading,
   variant = "default",
+  showCapitalMarker = false,
 }: LearnCardProps) {
   const country = getCountryByCode(countryCode);
   if (!country) return null;
@@ -364,6 +371,7 @@ export function LearnCard({
         heading={heading}
         compareCountryCode={compareCountryCode}
         countryCode={countryCode}
+        showCapitalMarker={showCapitalMarker}
       />
     );
   }
@@ -396,6 +404,7 @@ export function LearnCard({
             variant="learn"
             highlightNeighbors
             answerNeighborCode={answerNeighborCode}
+            showCapitalMarker={showCapitalMarker}
           />
         </div>
         <div

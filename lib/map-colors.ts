@@ -3,6 +3,7 @@ import {
   getMasteryGradientId,
   getMasterySolidColor,
 } from "@/lib/map-mastery-fx";
+import { getOceanFallbackHex } from "@/lib/ocean-depth-lut";
 import type { MapProgressDifficulty, PlaceMasteryLevel } from "@/lib/types";
 
 /** Panzoom skips pointer handling on elements with this class (and their descendants). */
@@ -18,13 +19,10 @@ export type MapPathStyle = {
   className?: string;
 };
 
-/** Bright boundary color used to make the selected geography easy to trace. */
-export const MAP_SELECTION_BORDER = "#facc15";
-
 type MapPalette = Record<MapPathRole, MapPathStyle> & { ocean: string };
 
 const LIGHT_MAP_PALETTE: MapPalette = {
-  ocean: "#e0f2fe",
+  ocean: getOceanFallbackHex(false),
   default: {
     // Pale stone with a whisper of sage — unstarted land in the concept art.
     fill: "#ccd4c9",
@@ -45,13 +43,14 @@ const LIGHT_MAP_PALETTE: MapPalette = {
   },
   highlight: {
     fill: "#14b8a6",
-    stroke: MAP_SELECTION_BORDER,
-    strokeWidth: 0.65,
+    // Fill contrast only — a selection stroke fattens thin countries like Chile.
+    stroke: "none",
+    strokeWidth: 0,
   },
 };
 
 const DARK_MAP_PALETTE: MapPalette = {
-  ocean: "#0f172a",
+  ocean: getOceanFallbackHex(true),
   default: {
     // Muted sage stone so bare land reads natural against the painted ocean.
     fill: "#5b685e",
@@ -70,13 +69,13 @@ const DARK_MAP_PALETTE: MapPalette = {
   },
   highlight: {
     fill: "#2dd4bf",
-    stroke: MAP_SELECTION_BORDER,
-    strokeWidth: 0.65,
+    stroke: "none",
+    strokeWidth: 0,
   },
 };
 
 const LIGHT_SUBTLE_NEIGHBOR: MapPathStyle = {
-  // Dusty clay — warm land tone, clear of teal highlight and sky ocean.
+  // Dusty clay — warm land tone, clear of teal highlight and navy ocean.
   // No stroke: fill contrast defines the edge so shared borders stay single.
   fill: "#e0b49a",
   stroke: "none",

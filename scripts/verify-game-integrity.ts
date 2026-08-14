@@ -20,6 +20,7 @@ import { PROFILE_AVATARS } from "../lib/profile-avatars";
 import { CONTEXT_MAP_TEMPLATES } from "../lib/context-maps";
 import { REGION_SHAPE_REGIONS, getRegionShapePath } from "../lib/continent-shapes";
 import flagCropData from "../data/flag-crops.json";
+import { getFlagLore } from "../lib/flag-lore";
 import { MIN_SHAPE_VIEWBOX, shapeViewBoxTooSmall } from "./map-path-utils";
 import {
   CONTINENTS,
@@ -110,6 +111,12 @@ for (const c of [...countries, ...usStates]) {
       if (crop.colors < 2) fail(`${c.name}: flag crop has fewer than two substantial colors`);
       if (!crop.reviewed) fail(`${c.name}: flag crop has not been reviewed`);
       if (crop.zoom < 2.6) fail(`${c.name}: flag crop is not challenging enough`);
+    }
+    const lore = getFlagLore(c.code);
+    if (!lore) {
+      fail(`${c.name}: missing flag lore`);
+    } else if (!lore.design.trim() || !lore.meaning.trim() || lore.colors.length === 0) {
+      fail(`${c.name}: incomplete flag lore`);
     }
   }
 }

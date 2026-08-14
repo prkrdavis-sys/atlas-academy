@@ -10,6 +10,8 @@
  * shallow water instead of a visible halo.
  */
 
+import { buildOceanDepthLut } from "@/lib/ocean-depth-lut";
+
 export const OCEAN_DEPTH_TEXTURE_PATH = "/globe/ocean-depth.png";
 
 let depthImagePromise: Promise<HTMLImageElement> | null = null;
@@ -29,51 +31,6 @@ export function loadOceanDepthImage(): Promise<HTMLImageElement> {
     });
   }
   return depthImagePromise;
-}
-
-type RampStop = { t: number; color: [number, number, number] };
-
-/**
- * Depth → blue ramps, same hue family as the flat palette ocean so the
- * painted-storybook look is preserved. `t` is normalized depth: 0 = shallow
- * (gray 255), 1 = deepest (gray 0). The mid stop sits near the old flat fill
- * (#1d4d85 dark / #2e6096 light) so the overall globe brightness is unchanged.
- */
-const DARK_OCEAN_RAMP: RampStop[] = [
-  { t: 0.0, color: [0x4a, 0x84, 0xc0] }, // shelf / coastal shallows
-  { t: 0.35, color: [0x35, 0x6c, 0xa8] },
-  { t: 0.62, color: [0x2a, 0x6a, 0xad] }, // ≈ flat ocean
-  { t: 1.0, color: [0x18, 0x45, 0x7a] }, // abyssal / trench
-];
-
-const LIGHT_OCEAN_RAMP: RampStop[] = [
-  { t: 0.0, color: [0x4c, 0x83, 0xba] },
-  { t: 0.35, color: [0x39, 0x6c, 0xa4] },
-  { t: 0.62, color: [0x2e, 0x60, 0x96] }, // ≈ old flat ocean
-  { t: 1.0, color: [0x1e, 0x45, 0x74] },
-];
-
-/** 256 RGB entries indexed by source gray (0 = deepest .. 255 = shallowest). */
-function buildDepthLut(ramp: RampStop[]): Uint8ClampedArray {
-  const lut = new Uint8ClampedArray(256 * 3);
-  for (let gray = 0; gray < 256; gray += 1) {
-    const t = 1 - gray / 255;
-    let lo = ramp[0];
-    let hi = ramp[ramp.length - 1];
-    for (let i = 0; i < ramp.length - 1; i += 1) {
-      if (t >= ramp[i].t && t <= ramp[i + 1].t) {
-        lo = ramp[i];
-        hi = ramp[i + 1];
-        break;
-      }
-    }
-    const span = Math.max(hi.t - lo.t, 1e-6);
-    const f = Math.min(1, Math.max(0, (t - lo.t) / span));
-    lut[gray * 3] = lo.color[0] + (hi.color[0] - lo.color[0]) * f;
-    lut[gray * 3 + 1] = lo.color[1] + (hi.color[1] - lo.color[1]) * f;
-    lut[gray * 3 + 2] = lo.color[2] + (hi.color[2] - lo.color[2]) * f;
-  }
-  return lut;
 }
 
 const tintedCanvasByTheme = new Map<string, HTMLCanvasElement>();
@@ -138,7 +95,7 @@ export function getOceanDepthCanvas(
   const ctx = canvas.getContext("2d", { willReadFrequently: true })!;
   ctx.drawImage(image, 0, 0, width, height);
 
-  const lut = buildDepthLut(isDark ? DARK_OCEAN_RAMP : LIGHT_OCEAN_RAMP);
+  const lut = buildOceanDepthLut(isDark);
   const imageData = ctx.getImageData(0, 0, width, height);
   const pixels = imageData.data;
   smoothPolarRows(pixels, width, height);
@@ -179,7 +136,7 @@ export async function ensureOceanDepthCanvas(
   const ctx = canvas.getContext("2d", { willReadFrequently: true })!;
   ctx.drawImage(image, 0, 0, width, height);
 
-  const lut = buildDepthLut(isDark ? DARK_OCEAN_RAMP : LIGHT_OCEAN_RAMP);
+  const lut = buildOceanDepthLut(isDark);
   const imageData = ctx.getImageData(0, 0, width, height);
   const pixels = imageData.data;
   smoothPolarRows(pixels, width, height);

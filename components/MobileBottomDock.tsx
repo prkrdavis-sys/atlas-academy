@@ -1,7 +1,7 @@
 "use client";
 
-import type { CSSProperties, ReactNode } from "react";
-import { useVisualViewportFrame } from "@/lib/use-visual-viewport-frame";
+import { useRef, type CSSProperties, type ReactNode } from "react";
+import { useVisualViewportDock } from "@/lib/use-visual-viewport-dock";
 import { cn } from "@/lib/utils";
 
 type MobileBottomDockProps = {
@@ -14,13 +14,9 @@ type MobileBottomDockProps = {
 /**
  * Pins children to the visible bottom edge on phones.
  *
- * Always uses a fixed shell sized with `top` + `height` from the visual
- * viewport (never layout-viewport `bottom: 0`), which avoids the iOS Safari
- * bug where the tab bar floats mid-screen after keyboard, chrome, or page-zoom
- * changes. While the keyboard is closed and scale is 1 the frame keeps
- * `offsetTop` at 0 so rubber-band overscroll cannot lift the bar; while
- * zoomed or the keyboard is open, the frame tracks the visual viewport so the
- * bar stays in the visible frame.
+ * The dock is only as tall as its content (`bottom: 0`, never a full-viewport
+ * shell). A visual-viewport measurement then translates it so Safari chrome,
+ * the keyboard, and page zoom cannot leave the bar floating mid-screen.
  */
 export function MobileBottomDock({
   children,
@@ -28,19 +24,16 @@ export function MobileBottomDock({
   barClassName,
   style,
 }: MobileBottomDockProps) {
-  const frame = useVisualViewportFrame();
+  const dockRef = useRef<HTMLDivElement>(null);
+  useVisualViewportDock(dockRef);
 
   return (
     <div
-      className={cn("pointer-events-none fixed inset-x-0 z-40 sm:hidden", className)}
-      style={{
-        ...(frame
-          ? { top: frame.offsetTop, height: frame.height }
-          : { top: 0, bottom: 0 }),
-        ...style,
-      }}
+      ref={dockRef}
+      className={cn("pointer-events-none fixed inset-x-0 bottom-0 z-40 sm:hidden", className)}
+      style={style}
     >
-      <div className={cn("pointer-events-auto absolute inset-x-0 bottom-0", barClassName)}>
+      <div className={cn("pointer-events-auto", barClassName)}>
         {children}
       </div>
     </div>

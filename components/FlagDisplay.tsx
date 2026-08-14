@@ -1,6 +1,7 @@
 "use client";
 
 import { type ReactNode } from "react";
+import { FlagNameBlurLayer } from "@/components/FlagNameBlur";
 import { getFlagPath } from "@/lib/countries";
 import {
   getFlagAspectRatio,
@@ -10,6 +11,7 @@ import {
   getFlagGridObjectPosition,
   isShapedFlag,
 } from "@/lib/flag-display";
+import { getDisplayFlagNameRegions } from "@/lib/flag-name-regions";
 import { cn } from "@/lib/utils";
 
 export type FlagFrameVariant = "none" | "sm" | "md" | "lg" | "pill";
@@ -36,6 +38,8 @@ type FlagImageProps = {
   priority?: boolean;
   /** CSS color invert for inverted-flag quiz modes. */
   inverted?: boolean;
+  /** Blur written place names so they cannot give away a quiz answer. */
+  obscureName?: boolean;
 };
 
 const RECT_FRAME_STYLES: Record<Exclude<FlagFrameVariant, "none">, string> = {
@@ -65,6 +69,7 @@ type FlagImgProps = {
   priority?: boolean;
   clipPath?: string;
   displayAspectRatio?: number;
+  obscureName?: boolean;
 };
 
 /** Combines optional invert with an existing Tailwind arbitrary filter class. */
@@ -84,9 +89,24 @@ function FlagImg({
   priority,
   clipPath,
   displayAspectRatio,
+  obscureName = false,
 }: FlagImgProps) {
   const isHeightConstrained = constrainedAxis === "height";
-  const aspectRatio = displayAspectRatio ?? getFlagAspectRatio(code);
+  const flagAspect = getFlagAspectRatio(code);
+  const aspectRatio = displayAspectRatio ?? flagAspect;
+  const flagSrc = getFlagPath(code);
+  // Absolute overlays collapse width-constrained-from-height layouts in WebKit.
+  // Named US state flags are always width-constrained in quiz displays.
+  const nameRegions =
+    obscureName && !isHeightConstrained
+      ? getDisplayFlagNameRegions(
+          code,
+          flagAspect,
+          aspectRatio,
+          objectFit,
+          objectPosition,
+        )
+      : [];
 
   return (
     <span
@@ -103,7 +123,7 @@ function FlagImg({
           aspect-ratio on the wrapper. Width-constrained: fill the box. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src={getFlagPath(code)}
+        src={flagSrc}
         alt={alt}
         decoding="async"
         loading={priority ? "eager" : "lazy"}
@@ -119,6 +139,23 @@ function FlagImg({
           ...(clipPath ? { clipPath } : null),
         }}
         {...(priority ? { fetchPriority: "high" as const } : {})}
+      />
+      <FlagNameBlurLayer
+        regions={nameRegions}
+        style={clipPath ? { clipPath } : undefined}
+        paint={(offsetStyle) => (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={flagSrc}
+            alt=""
+            className="max-w-none"
+            style={{
+              ...offsetStyle,
+              objectFit,
+              ...(objectPosition ? { objectPosition } : null),
+            }}
+          />
+        )}
       />
     </span>
   );
@@ -166,6 +203,7 @@ export function FlagImage({
   objectPosition,
   priority,
   inverted = false,
+  obscureName = false,
 }: FlagImageProps) {
   const shaped = isShapedFlag(code);
   const clipPath = getFlagClipPath(code);
@@ -198,6 +236,7 @@ export function FlagImage({
           displayAspectRatio={displayAspectRatio}
           objectFit={resolvedObjectFit}
           objectPosition={objectPosition}
+          obscureName={obscureName}
           className={cn("h-full w-full object-contain", flagFilterClass)}
         />
       </span>
@@ -211,6 +250,7 @@ export function FlagImage({
         displayAspectRatio={displayAspectRatio}
         objectFit={resolvedObjectFit}
         objectPosition={objectPosition}
+        obscureName={obscureName}
         className={imageClassName}
       />
     );
@@ -292,6 +332,7 @@ export function FlagDisplay({
         constrainedAxis={sizing.constrainedAxis}
         className={sizing.className}
         inverted={inverted}
+        obscureName
         priority
       />
     </div>
@@ -409,6 +450,7 @@ export function FlagGrid({
                 constrainedAxis="height"
                 className="h-full w-auto"
                 inverted={inverted}
+                obscureName={!revealed}
               />
             </div>
           ) : (
@@ -421,6 +463,7 @@ export function FlagGrid({
               objectFit={objectFit}
               objectPosition={cropsRightEdge ? getFlagGridObjectPosition(code) : undefined}
               inverted={inverted}
+              obscureName={!revealed}
             />
           );
 

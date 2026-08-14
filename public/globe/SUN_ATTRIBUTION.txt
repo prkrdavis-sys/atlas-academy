@@ -55,3 +55,9 @@ Source imagery: NASA Earth Observations (NEO) bathymetry (GEBCO),
 Source: https://neo.gsfc.nasa.gov/view.php?datasetId=GEBCO_BATHY
 License: Public domain (U.S. government work / NASA imagery)
 
+Derived: public/maps/ocean-depth-ne-{dark,light}.jpg and
+public/maps/ocean-depth-usa-{dark,light}.jpg — same GEBCO composite, warped
+into the Natural Earth / Albers USA projections used by Learn/Library
+context-map SVGs and recolored with the globe ocean ramp
+(scripts/generate-map-ocean-texture.ts).
+

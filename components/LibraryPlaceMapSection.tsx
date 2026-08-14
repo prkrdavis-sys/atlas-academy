@@ -46,7 +46,7 @@ export function LibraryPlaceMapSection({ country }: LibraryPlaceMapSectionProps)
         </Link>
       </div>
       <div className={`${GLASS_INSET_CLASS} overflow-hidden rounded-2xl p-1`}>
-        <PlaceContextMap country={country} variant="hero" interactive />
+        <PlaceContextMap country={country} variant="hero" interactive showCapitalMarker />
       </div>
     </section>
   );

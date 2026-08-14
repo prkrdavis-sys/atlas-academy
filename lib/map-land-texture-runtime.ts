@@ -218,8 +218,8 @@ export async function renderMapLandTextureCrop({
 
 /**
  * Produces geographically aligned NASA land color for a 2D map crop using the
- * exact projection that generated its SVG. Water stays the shared flat navy
- * palette so map cards never expose a mismatched rectangular ocean texture.
+ * exact projection that generated its SVG. Water is a separate full-map
+ * bathymetry bake (see lib/map-ocean-texture.ts), not a per-crop rectangle.
  */
 export async function renderMapSurfaceTextureCrop({
   templateKey,

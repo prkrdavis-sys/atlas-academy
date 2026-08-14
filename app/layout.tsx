@@ -64,13 +64,9 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  // Stop iOS Safari focus auto-zoom (inputs under 16px still need text-base).
-  // Page pinch-zoom would also break MobileBottomDock fixed positioning.
-  maximumScale: 1,
-  userScalable: false,
   viewportFit: "cover",
-  // Keep the layout viewport stable; MobileBottomDock sizes itself with
-  // visualViewport top+height so the tab bar stays pinned on iOS Safari.
+  // Keep the layout viewport stable; MobileBottomDock measures the visual
+  // viewport so the tab bar stays on the visible bottom edge (including zoom).
   interactiveWidget: "overlays-content",
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#f2f8f4" },

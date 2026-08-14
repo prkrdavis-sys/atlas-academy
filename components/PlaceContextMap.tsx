@@ -46,6 +46,7 @@ import {
   renderMapSurfaceTextureCrop,
   shouldUseRuntimeMapTexture,
 } from "@/lib/map-land-texture-runtime";
+import { getMapOceanTexture, preloadMapOceanTexture } from "@/lib/map-ocean-texture";
 import { MAP_PANZOOM_OPTIONS } from "@/lib/map-panzoom";
 import { getCountryByCode } from "@/lib/countries";
 import { isStateCode } from "@/lib/scope";
@@ -121,9 +122,8 @@ const learnCardPreloadInFlight = new Map<string, Promise<void>>();
  * Warm the learn-card context map (SVG template and bounds) so PlaceContextMap
  * can render without a loading pulse.
  */
-export function preloadLearnCardMap(countryCode: string, _isDark: boolean): Promise<void> {
-  void _isDark;
-  const key = countryCode.toUpperCase();
+export function preloadLearnCardMap(countryCode: string, isDark: boolean): Promise<void> {
+  const key = `${countryCode.toUpperCase()}:${isDark ? "d" : "l"}`;
   const existing = learnCardPreloadInFlight.get(key);
   if (existing) return existing;
 
@@ -132,6 +132,7 @@ export function preloadLearnCardMap(countryCode: string, _isDark: boolean): Prom
     if (!country || !countryHasContextMap(country)) return;
 
     const templateKey = getContextMapTemplateKey(country);
+    preloadMapOceanTexture(isStateCode(country.code) ? "usa" : "world", isDark);
     const [, bounds] = await Promise.all([
       loadContextMapTemplate(templateKey),
       loadMapBoundsManifest(),
@@ -160,6 +161,8 @@ type PlaceContextMapProps = {
   className?: string;
   /** Enable drag-to-pan and scroll/pinch zoom (no zoom toolbar). */
   interactive?: boolean;
+  /** Draw a capital pin at the projected city (library maps and capital learn cards). */
+  showCapitalMarker?: boolean;
 };
 
 type ContextMapSvgProps = {
@@ -185,7 +188,7 @@ type ContextMapSvgProps = {
   landTexture?: boolean;
   mapTemplateKey?: string;
   /** Projected capital marker for Learn/Library context maps. */
-  capitalMarker?: { x: number; y: number; label: string } | null;
+  capitalMarker?: { x: number; y: number; size: number; label: string } | null;
   onPathClick?: (pathId: string) => void;
   onPathHover?: (pathId: string | null) => void;
   onBackgroundClick?: () => void;
@@ -307,6 +310,7 @@ export function ContextMapSvg({
     };
   }, [textureEnabled, mapTemplateKey, viewBoxX, viewBoxY, viewBoxWidth, viewBoxHeight, isDark]);
 
+  const oceanTexture = getMapOceanTexture(mapTemplateKey, isDark);
   const vectorEffect = scaleStrokesWithMap ? undefined : "non-scaling-stroke";
   const styledPaths = orderedPaths.map((path) => {
     const resolvedStyle = pathStyleResolver?.(path.id);
@@ -412,6 +416,17 @@ export function ContextMapSvg({
         height={viewBoxHeight}
         fill={palette.ocean}
       />
+      {/* Full-map bathymetry in SVG user space so viewBox crops cannot leave gaps. */}
+      <image
+        href={oceanTexture.href}
+        x={0}
+        y={0}
+        width={oceanTexture.width}
+        height={oceanTexture.height}
+        preserveAspectRatio="none"
+        style={{ pointerEvents: "none" }}
+        aria-hidden
+      />
       {/* Fills first, then one stroke pass — a single clear border per place. */}
       {textureEnabled ? (
         <>
@@ -494,8 +509,9 @@ export function ContextMapSvg({
         <CapitalMapPin
           x={capitalMarker.x}
           y={capitalMarker.y}
-          size={capitalPinSizeForViewBox(viewBoxWidth, viewBoxHeight)}
+          size={capitalMarker.size}
           label={capitalMarker.label}
+          isDark={isDark}
         />
       ) : null}
     </svg>
@@ -510,6 +526,7 @@ export function PlaceContextMap({
   countryOnly = false,
   className,
   interactive = false,
+  showCapitalMarker = false,
 }: PlaceContextMapProps) {
   const { isDark, ready } = useIsDark();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -532,6 +549,8 @@ export function PlaceContextMap({
   );
   const [loadFailed, setLoadFailed] = useState(false);
   const [panzoomReady, setPanzoomReady] = useState(false);
+  /** Current Panzoom scale; pin size is divided by this so close-ups stay small. */
+  const [mapZoomScale, setMapZoomScale] = useState(1);
   const cropOptions = CROP_OPTIONS[variant];
 
   const highlightIds = useMemo(() => new Set(getContextMapPathIds(country)), [country]);
@@ -548,9 +567,9 @@ export function PlaceContextMap({
     return new Set(getContextMapPathIds(answerCountry));
   }, [answerNeighborCode]);
 
-  // Featured place (and answer callouts) get the only vector stroke. Surrounding
-  // land is fill-only so mismatched shared-border geometry cannot ghost a second
-  // outline against the subject.
+  // Featured place is fill-only (a selection stroke fattens thin geographies).
+  // Answer callouts keep a vector stroke. Surrounding land is fill-only so
+  // mismatched shared-border geometry cannot ghost a second outline.
   const pathStyleResolver = useMemo(() => {
     const mapPalette = getMapPalette(isDark);
     const subtleNeighbor = getSubtleNeighborMapStyle(isDark);
@@ -620,17 +639,45 @@ export function PlaceContextMap({
     : focusedViewBox;
 
   const capitalMarker = useMemo(() => {
+    if (!showCapitalMarker) return null;
     const latLng = getCapitalLatLng(country.code);
     if (!latLng || !country.capital) return null;
     const [lat, lng] = latLng;
     const point = projectLonLatToMap(lng, lat, templateKey);
     if (!point) return null;
+
+    const focusedCrop = interactiveViewBoxes?.focused
+      ?? (focusedViewBox ? parseSvgViewBox(focusedViewBox) : null);
+    if (!focusedCrop) return null;
+
+    // Interactive maps draw in the wide surroundings viewBox, then Panzoom
+    // zooms to the country. Size from the close-up crop and undo the current
+    // zoom so the pin stays a small, stable fraction of what is on screen.
+    const relativeZoom =
+      interactive && interactiveViewBoxes
+        ? mapZoomScale / interactiveViewBoxes.initialScale
+        : 1;
+
     return {
       x: point[0],
       y: point[1],
+      size: capitalPinSizeForViewBox(focusedCrop[2], focusedCrop[3], relativeZoom),
       label: `Capital: ${country.capital}`,
     };
-  }, [country.code, country.capital, templateKey]);
+  }, [
+    showCapitalMarker,
+    country.code,
+    country.capital,
+    templateKey,
+    focusedViewBox,
+    interactive,
+    interactiveViewBoxes,
+    mapZoomScale,
+  ]);
+
+  useEffect(() => {
+    preloadMapOceanTexture(templateKey === "usa" ? "usa" : "world", isDark);
+  }, [templateKey, isDark]);
 
   useEffect(() => {
     let cancelled = false;
@@ -672,6 +719,15 @@ export function PlaceContextMap({
       maxScale,
       startScale: interactiveViewBoxes.initialScale,
     });
+
+    const onZoom = (event: Event) => {
+      const scale = (event as CustomEvent<{ scale?: number }>).detail?.scale;
+      if (typeof scale === "number" && Number.isFinite(scale)) {
+        setMapZoomScale(scale);
+      }
+    };
+    element.addEventListener("panzoomzoom", onZoom);
+
     if (
       containerRef.current &&
       interactiveViewBoxes.initialScale > MAP_PANZOOM_OPTIONS.minScale + 0.01
@@ -684,6 +740,7 @@ export function PlaceContextMap({
         { animate: false, maxScale },
       );
     }
+    setMapZoomScale(panzoomRef.current.getScale());
     // Reveal after the focus transform has a frame to commit.
     const revealFrame = requestAnimationFrame(() => {
       setPanzoomReady(true);
@@ -712,6 +769,7 @@ export function PlaceContextMap({
 
     return () => {
       cancelAnimationFrame(revealFrame);
+      element.removeEventListener("panzoomzoom", onZoom);
       container?.removeEventListener("wheel", onWheel);
       panzoomRef.current?.destroy();
       panzoomRef.current = null;
@@ -764,7 +822,7 @@ export function PlaceContextMap({
     <div
       ref={containerRef}
       className={cn(
-        "overflow-hidden rounded-2xl border border-teal-100 bg-sky-50 dark:border-teal-900/50 dark:bg-slate-900",
+        "overflow-hidden rounded-2xl border border-teal-100 dark:border-teal-900/50",
         variant === "compact"
           ? "h-20 sm:h-24"
           : variant === "learn"
@@ -773,6 +831,7 @@ export function PlaceContextMap({
         interactive && "relative touch-none",
         className,
       )}
+      style={{ backgroundColor: getMapPalette(isDark).ocean }}
     >
       {map && ready && (!interactive || (interactiveViewBoxes && activeViewBox)) ? (
         <div

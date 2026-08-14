@@ -28,6 +28,7 @@
     "generate-context-maps": "tsx scripts/generate-context-maps.ts && tsx scripts/generate-usa-context-map.ts",
     "generate-usa-context-map": "tsx scripts/generate-usa-context-map.ts",
     "generate-map-land-texture": "tsx scripts/generate-map-land-texture.ts",
+    "generate-map-ocean-texture": "tsx scripts/generate-map-ocean-texture.ts",
     "generate-globe-data": "tsx scripts/generate-globe-texture-data.ts",
     "generate-gold-pbr": "tsx scripts/generate-mastery-gold-pbr.ts",
     "generate-closest-mainland": "tsx scripts/generate-closest-mainland.ts",

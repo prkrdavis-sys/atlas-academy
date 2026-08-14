@@ -18,7 +18,7 @@ import { VersusSummary } from "@/components/versus/VersusSummary";
 import { useProfiles } from "@/components/ProfileProvider";
 import { GameEngine } from "@/lib/game-engine";
 import { triggerHaptic } from "@/lib/haptics";
-import { isTextOnlyPrompt } from "@/lib/question-presentation";
+import { isCapitalQuestion, isTextOnlyPrompt } from "@/lib/question-presentation";
 import { playSound } from "@/lib/sound";
 import { useVersusMatch } from "@/lib/social/use-versus-match";
 import { cancelMatchInvite, VERSUS_DIFFICULTY } from "@/lib/social/versus";
@@ -190,6 +190,7 @@ export function VersusBoard({
                 countryCode={question.countryCode}
                 wasCorrect={yourAnswer?.is_correct ?? false}
                 variant="inline"
+                showCapitalMarker={isCapitalQuestion(question)}
               />
             </div>
           ) : textOnly ? (

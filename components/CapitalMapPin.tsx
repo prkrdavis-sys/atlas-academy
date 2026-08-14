@@ -1,52 +1,49 @@
-/**
- * CC0 3D star-in-circle badge from 3dicons medal
- * (https://3dicons.co/icons/39121b-medal), cropped to the medallion.
- */
-export const CAPITAL_PIN_SRC = "/maps/capital-pin.png";
-
-/** Intrinsic pixel size of {@link CAPITAL_PIN_SRC}. */
-export const CAPITAL_PIN_INTRINSIC = { width: 160, height: 160 } as const;
-
-/**
- * Hotspot as a fraction of the image box — center of the star/circle,
- * which marks the capital location.
- */
-export const CAPITAL_PIN_HOTSPOT = { x: 0.5, y: 0.5 } as const;
-
 type CapitalMapPinProps = {
   x: number;
   y: number;
-  /** SVG user-unit height of the full marker image. */
+  /** SVG user-unit height of the pin (tip → top). */
   size: number;
   label: string;
+  isDark?: boolean;
 };
 
 /**
- * Polished 3D capital marker (star in circle). Center sits on (x, y).
+ * Flat teardrop pin. The tip sits on (x, y) — the projected capital.
  */
-export function CapitalMapPin({ x, y, size, label }: CapitalMapPinProps) {
-  const aspect = CAPITAL_PIN_INTRINSIC.width / CAPITAL_PIN_INTRINSIC.height;
-  const height = size;
-  const width = height * aspect;
-  const imageX = x - width * CAPITAL_PIN_HOTSPOT.x;
-  const imageY = y - height * CAPITAL_PIN_HOTSPOT.y;
+export function CapitalMapPin({ x, y, size, label, isDark = false }: CapitalMapPinProps) {
+  const width = size * 0.7;
+  const holeR = size * 0.145;
+  const holeCy = -size * 0.63;
+  const strokeW = Math.max(size * 0.065, size * 0.04);
+  const fill = isDark ? "#fb7185" : "#e11d48";
+  const rim = isDark ? "#fff1f2" : "#ffffff";
+
+  const path = [
+    `M 0 0`,
+    `C ${width * 0.55} ${-size * 0.2}, ${width * 0.5} ${-size * 0.52}, 0 ${-size}`,
+    `C ${-width * 0.5} ${-size * 0.52}, ${-width * 0.55} ${-size * 0.2}, 0 0`,
+    "Z",
+  ].join(" ");
 
   return (
-    <g style={{ pointerEvents: "none" }} role="img" aria-label={label}>
-      <image
-        href={CAPITAL_PIN_SRC}
-        x={imageX}
-        y={imageY}
-        width={width}
-        height={height}
-        preserveAspectRatio="xMidYMid meet"
-      />
+    <g
+      transform={`translate(${x} ${y})`}
+      style={{ pointerEvents: "none" }}
+      role="img"
+      aria-label={label}
+    >
+      <path d={path} fill={fill} stroke={rim} strokeWidth={strokeW} strokeLinejoin="round" />
+      <circle cx={0} cy={holeCy} r={holeR} fill={rim} />
     </g>
   );
 }
 
-/** Marker size from the visible map diagonal — small enough not to bury the place. */
-export function capitalPinSizeForViewBox(viewBoxWidth: number, viewBoxHeight: number): number {
+/** Pin height from the close-up crop; `zoomScale` keeps on-screen size stable. */
+export function capitalPinSizeForViewBox(
+  viewBoxWidth: number,
+  viewBoxHeight: number,
+  zoomScale = 1,
+): number {
   const diagonal = Math.hypot(viewBoxWidth, viewBoxHeight);
-  return diagonal * 0.03;
+  return (diagonal * 0.034) / Math.max(zoomScale, 0.2);
 }

@@ -22,3 +22,12 @@ export function isInvertedFlagRound(question: Question): boolean {
     question.mode === "inverted-flag-crop-to-country"
   );
 }
+
+/** Learn-card maps show a capital pin only when the question was about the capital. */
+export function isCapitalQuestion(question: Question): boolean {
+  return (
+    question.mode === "capital-to-country" ||
+    question.mode === "country-to-capital" ||
+    question.atlasleTarget === "capital"
+  );
+}

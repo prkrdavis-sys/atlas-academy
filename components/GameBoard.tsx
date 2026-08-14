@@ -47,6 +47,7 @@ import { triggerHaptic } from "@/lib/haptics";
 import { playSound } from "@/lib/sound";
 import { getGlobalStreakOrZero } from "@/lib/stats-helpers";
 import {
+  isCapitalQuestion,
   isInvertedFlagRound as isInvertedFlagQuestion,
   isTextOnlyPrompt as isTextOnlyQuestion,
 } from "@/lib/question-presentation";
@@ -975,9 +976,8 @@ export function GameBoard({
     : scope;
   const roundTaskLabel = getQuestionTaskLabel(question, questionScope, answerPlace);
   const dailyDateLabel = isDailyChallenge ? formatDailyDateKey(dailyDateKey) : null;
-  const headerDailyTime = countStats
-    ? dailyCompletionElapsedCentiseconds ?? dailyElapsedCentiseconds
-    : storedDailyResult?.elapsedCentiseconds ?? 0;
+  const headerDailyTime =
+    dailyCompletionElapsedCentiseconds ?? dailyElapsedCentiseconds;
   const isTextOnlyPrompt = isTextOnlyQuestion(question);
   const isGlobeHuntRound = question.mode === "globe-hunt";
   const isAtlasleRound = question.displayType === "atlasle";
@@ -1012,6 +1012,7 @@ export function GameBoard({
     wasCorrect: lastCorrect,
     compareCountryCode:
       question.mode === "population-showdown" ? question.secondaryCountryCode : undefined,
+    showCapitalMarker: isCapitalQuestion(question),
   };
   const inlineLearnCard = (
     <LearnCard {...learnCardProps} variant="inline" />
@@ -1094,10 +1095,10 @@ export function GameBoard({
               <p className="game-stat-label text-[9px] font-semibold uppercase text-emerald-600 dark:text-emerald-400">Correct</p>
               <p className="font-display text-base font-extrabold leading-none text-emerald-700 dark:text-emerald-300 sm:text-lg">{correctAnswers}</p>
             </div>
-            {isDailyChallenge && (
+            {isDailyChallenge && countStats && (
               <div className="shrink-0 rounded-xl border-2 border-amber-200 bg-amber-50/90 px-1.5 py-1 text-center max-[430px]:rounded-lg max-[430px]:px-1 max-[430px]:py-0.5 dark:border-amber-800 dark:bg-amber-950/40 sm:rounded-2xl sm:px-3 sm:py-1.5">
                 <p className="game-stat-label text-[9px] font-semibold uppercase text-amber-600 dark:text-amber-400">
-                  {countStats ? "Time" : "Score"}
+                  Time
                 </p>
                 <p className="font-display text-base font-extrabold leading-none text-amber-700 dark:text-amber-300 sm:text-lg">
                   {formatDailyElapsedTime(headerDailyTime)}
