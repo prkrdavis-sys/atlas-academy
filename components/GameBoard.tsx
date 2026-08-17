@@ -1079,28 +1079,6 @@ export function GameBoard({
                 href={learnCardLibraryHref}
                 onClick={(e) => {
                   e.stopPropagation();
-                  const mem = (performance as Performance & { memory?: { usedJSHeapSize: number } }).memory;
-                  // #region agent log
-                  fetch("http://127.0.0.1:7905/ingest/53dc1e10-6e0b-4fef-9ca0-63e913b775c1", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "124d3d" },
-                    body: JSON.stringify({
-                      sessionId: "124d3d",
-                      runId: "pre-fix",
-                      hypothesisId: "A",
-                      location: "GameBoard.tsx:library-click",
-                      message: "Learn-card library click",
-                      data: {
-                        href: learnCardLibraryHref,
-                        mode,
-                        questionMode: question.mode,
-                        defaultPrevented: e.defaultPrevented,
-                        heap: mem?.usedJSHeapSize ?? null,
-                      },
-                      timestamp: Date.now(),
-                    }),
-                  }).catch(() => {});
-                  // #endregion
                   persistLearnCardResume();
                 }}
                 aria-label={`Open ${getCountryName(learnCardCountryCode)} in library`}

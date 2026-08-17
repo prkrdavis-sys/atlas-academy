@@ -142,7 +142,6 @@ export function LibraryDetailNav({
             sort={sort}
             isState={isState}
             mobileDropdownFullWidth
-            className="min-w-0 flex-1"
           />
 
           <div className="flex shrink-0 items-center gap-2 sm:gap-3">

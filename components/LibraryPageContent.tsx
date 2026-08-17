@@ -22,27 +22,6 @@ export function LibraryPageContent() {
   useEffect(() => {
     const scopeParam = searchParams.get("scope");
     const stored = getStoredLibraryScope();
-    // #region agent log
-    fetch("http://127.0.0.1:7905/ingest/53dc1e10-6e0b-4fef-9ca0-63e913b775c1", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "124d3d" },
-      body: JSON.stringify({
-        sessionId: "124d3d",
-        runId: "pre-fix",
-        hypothesisId: "E",
-        location: "LibraryPageContent.tsx:scope-effect",
-        message: "LibraryPageContent scope effect",
-        data: {
-          pathname,
-          onLibraryList,
-          scopeParam,
-          stored,
-          willReplaceUsa: onLibraryList && scopeParam === null && stored === "usa",
-        },
-        timestamp: Date.now(),
-      }),
-    }).catch(() => {});
-    // #endregion
 
     // Warm mounts on Map/Play must never change the URL.
     if (!onLibraryList) {

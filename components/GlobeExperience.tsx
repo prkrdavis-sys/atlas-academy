@@ -151,6 +151,40 @@ function resolveMapViewFromParams(searchParams: URLSearchParams): MapView | null
   return null;
 }
 
+type GlobeUrlParams = {
+  place: string | null;
+  view: MapView | null;
+  queryString: string;
+};
+
+const EMPTY_GLOBE_URL_PARAMS: GlobeUrlParams = {
+  place: null,
+  view: null,
+  queryString: "",
+};
+
+/**
+ * Isolated so `useSearchParams` can suspend without unmounting the WebGL globe.
+ * AppShell's Suspense fallback is `null`, which previously destroyed the canvas
+ * on every client navigation.
+ */
+function GlobeUrlParamsReader({
+  onParams,
+}: {
+  onParams: (params: GlobeUrlParams) => void;
+}) {
+  const searchParams = useSearchParams();
+  const place = searchParams.get("place");
+  const queryString = searchParams.toString();
+  const view = resolveMapViewFromParams(searchParams);
+
+  useEffect(() => {
+    onParams({ place, view, queryString });
+  }, [onParams, place, queryString, view]);
+
+  return null;
+}
+
 function MapViewToggle({
   view,
   views,
@@ -204,7 +238,6 @@ function MapViewToggle({
  */
 export function GlobeExperience({ children }: { children?: ReactNode }) {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const router = useRouter();
   const { activeProfile, hydrated, refresh } = useProfiles();
   const profile = hydrated ? activeProfile : null;
@@ -218,12 +251,13 @@ export function GlobeExperience({ children }: { children?: ReactNode }) {
       ? "library"
       : "home";
 
-  const initialPlaceCode = searchParams.get("place");
+  const [urlParams, setUrlParams] = useState<GlobeUrlParams>(EMPTY_GLOBE_URL_PARAMS);
+  const initialPlaceCode = urlParams.place;
   const resolvedInitialPlace = useMemo(
     () => resolvePlaceCodeFromParam(initialPlaceCode) ?? null,
     [initialPlaceCode],
   );
-  const paramView = useMemo(() => resolveMapViewFromParams(searchParams), [searchParams]);
+  const paramView = urlParams.view;
   const [storedView, setStoredView] = useState<MapView | null>(null);
   const [webglOk, setWebglOk] = useState<boolean | null>(null);
   const [showGlobeFallbackNotice, setShowGlobeFallbackNotice] = useState(false);
@@ -511,12 +545,12 @@ export function GlobeExperience({ children }: { children?: ReactNode }) {
     selectedGlobePlace ?? (initialPlaceDismissed ? null : resolvedInitialPlace);
 
   const clearPlaceQueryParam = useCallback(() => {
-    if (!searchParams.has("place")) return;
-    const params = new URLSearchParams(searchParams.toString());
+    if (!urlParams.place) return;
+    const params = new URLSearchParams(urlParams.queryString);
     params.delete("place");
     const query = params.toString();
     router.replace(query ? `/map?${query}` : "/map", { scroll: false });
-  }, [router, searchParams]);
+  }, [router, urlParams.place, urlParams.queryString]);
 
   const handleGlobeSelectPlace = useCallback(
     (code: string | null) => {
@@ -536,7 +570,7 @@ export function GlobeExperience({ children }: { children?: ReactNode }) {
       setStoredView(nextView);
       setSelectedGlobePlace(null);
       setInitialPlaceDismissed(true);
-      const params = new URLSearchParams(searchParams.toString());
+      const params = new URLSearchParams(urlParams.queryString);
       if (nextView === "globe") {
         params.delete("view");
       } else {
@@ -546,7 +580,7 @@ export function GlobeExperience({ children }: { children?: ReactNode }) {
       const query = params.toString();
       router.replace(query ? `/map?${query}` : "/map", { scroll: false });
     },
-    [router, searchParams],
+    [router, urlParams.queryString],
   );
 
   const availableViews = useMemo<readonly MapView[]>(
@@ -572,41 +606,6 @@ export function GlobeExperience({ children }: { children?: ReactNode }) {
 
   const globeActive = isGlobeExperienceRoute && globeLayerActive;
 
-  useEffect(() => {
-    const mem = (performance as Performance & { memory?: { usedJSHeapSize: number } }).memory;
-    // #region agent log
-    fetch("http://127.0.0.1:7905/ingest/53dc1e10-6e0b-4fef-9ca0-63e913b775c1", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "124d3d" },
-      body: JSON.stringify({
-        sessionId: "124d3d",
-        runId: "pre-fix",
-        hypothesisId: "B",
-        location: "GlobeExperience.tsx:pane-state",
-        message: "GlobeExperience pane state",
-        data: {
-          pathname,
-          mode,
-          isGlobeExperienceRoute,
-          isLibraryDetailRoute,
-          libraryWarmed,
-          globeActive,
-          panesMounted: isGlobeExperienceRoute,
-          heap: mem?.usedJSHeapSize ?? null,
-        },
-        timestamp: Date.now(),
-      }),
-    }).catch(() => {});
-    // #endregion
-  }, [
-    pathname,
-    mode,
-    isGlobeExperienceRoute,
-    isLibraryDetailRoute,
-    libraryWarmed,
-    globeActive,
-  ]);
-
   // Panels + stats follow the selection: world summary by default, USA
   // regions while a state is selected.
   const panelScope: GameScope = is2dView
@@ -630,6 +629,9 @@ export function GlobeExperience({ children }: { children?: ReactNode }) {
 
   return (
     <>
+      <Suspense fallback={null}>
+        <GlobeUrlParamsReader onParams={setUrlParams} />
+      </Suspense>
       <InteractiveGlobe
         profile={profile}
         difficulty={mapDifficulty}

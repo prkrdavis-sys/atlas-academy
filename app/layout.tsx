@@ -7,7 +7,9 @@ import { AppShell } from "@/components/AppShell";
 import { AudioUnlock } from "@/components/AudioUnlock";
 import { ProfileProvider } from "@/components/ProfileProvider";
 import { SocialProvider } from "@/components/social/SocialProvider";
+import { ThemeColorSync } from "@/components/ThemeColorSync";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { THEME_BACKGROUND, THEME_COLOR_INLINE_SCRIPT } from "@/lib/theme-colors";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -42,7 +44,7 @@ export const metadata: Metadata = {
   },
   appleWebApp: {
     capable: true,
-    statusBarStyle: "default",
+    statusBarStyle: "black-translucent",
     title: "Atlas Academy",
   },
   openGraph: {
@@ -68,10 +70,7 @@ export const viewport: Viewport = {
   // Keep the layout viewport stable; MobileBottomDock measures the visual
   // viewport so the tab bar stays on the visible bottom edge (including zoom).
   interactiveWidget: "overlays-content",
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f2f8f4" },
-    { media: "(prefers-color-scheme: dark)", color: "#0f172a" },
-  ],
+  themeColor: THEME_BACKGROUND.dark,
 };
 
 export default function RootLayout({
@@ -81,8 +80,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning className={`dark ${geistSans.variable} ${geistMono.variable} ${nunito.variable} h-full antialiased`}>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_COLOR_INLINE_SCRIPT }} />
+      </head>
       <body className="min-h-full">
         <ThemeProvider>
+          <ThemeColorSync />
           <CurrencyProvider>
             <AuthProvider>
               <ProfileProvider>

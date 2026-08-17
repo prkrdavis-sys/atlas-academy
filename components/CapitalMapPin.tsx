@@ -21,14 +21,12 @@ function fivePointStarPath(outerR: number, innerR: number): string {
 }
 
 /**
- * Five-pointed star centered on (x, y) — the projected capital.
+ * Filled five-pointed star centered on (x, y) — the projected capital.
  */
 export function CapitalMapPin({ x, y, size, label, isDark = false }: CapitalMapPinProps) {
   const outerR = size / 2;
   const innerR = outerR * 0.4;
-  const strokeW = Math.max(size * 0.08, size * 0.05);
   const fill = isDark ? "#fb7185" : "#e11d48";
-  const rim = isDark ? "#fff1f2" : "#ffffff";
 
   return (
     <g
@@ -37,13 +35,7 @@ export function CapitalMapPin({ x, y, size, label, isDark = false }: CapitalMapP
       role="img"
       aria-label={label}
     >
-      <path
-        d={fivePointStarPath(outerR, innerR)}
-        fill={fill}
-        stroke={rim}
-        strokeWidth={strokeW}
-        strokeLinejoin="round"
-      />
+      <path d={fivePointStarPath(outerR, innerR)} fill={fill} />
     </g>
   );
 }
@@ -55,5 +47,5 @@ export function capitalPinSizeForViewBox(
   zoomScale = 1,
 ): number {
   const diagonal = Math.hypot(viewBoxWidth, viewBoxHeight);
-  return (diagonal * 0.034) / Math.max(zoomScale, 0.2);
+  return (diagonal * 0.038) / Math.max(zoomScale, 0.2);
 }
