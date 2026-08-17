@@ -10,10 +10,9 @@ import {
 } from "@/lib/map-colors";
 import { getMasterySolidColor } from "@/lib/map-mastery-fx";
 import {
-  createGoldPbrMapSet,
-  createMasteryGoldPattern,
-  MASTERY_GOLD_TILE_BASE_PX,
-  paintGoldPbrForPath,
+  createGoldMaskCanvas,
+  fillGoldMaskPath,
+  MASTERY_GOLD_ALBEDO_FALLBACK,
 } from "@/lib/mastery-gold-texture";
 import { getLandColorCanvas } from "@/lib/globe-land-color";
 import { getPlaceMasteryLevel } from "@/lib/map-progress";
@@ -41,8 +40,12 @@ export const GLOBE_CLOSEUP_DEACTIVATE_DISTANCE = 2.4;
 /** Radius bias so the patch sits just above the textured sphere. */
 export const GLOBE_CLOSEUP_MESH_RADIUS = 1.001;
 
-/** Extra footprint padding so edges stay outside the viewport while fading. */
-const WINDOW_PADDING = 1.35;
+/**
+ * Extra footprint padding so edges stay outside the viewport while fading.
+ * Generous on purpose: a wider patch survives more camera drift before it has
+ * to be repainted, and repaints are the expensive part.
+ */
+const WINDOW_PADDING = 1.7;
 /** Minimum normalized span so tiny zooms still cover neighboring coasts. */
 const MIN_NORMALIZED_HALF_SPAN = 0.012;
 /** Soft edge feather as a fraction of the patch (each side). */
@@ -151,8 +154,9 @@ export function closeupWindowNeedsRebuild(
   const spanShift =
     Math.abs(next.halfX - prev.halfX) / Math.max(prev.halfX, 1e-6) +
     Math.abs(next.halfY - prev.halfY) / Math.max(prev.halfY, 1e-6);
-  // Rebuild after ~15% of the current footprint or a notable zoom change.
-  return dx > prev.halfX * 0.3 || dy > prev.halfY * 0.3 || spanShift > 0.25;
+  // The padded footprint tolerates a lot of drift before its edge is in view,
+  // so rebuild late — every repaint is a multi-megapixel canvas plus upload.
+  return dx > prev.halfX * 0.6 || dy > prev.halfY * 0.6 || spanShift > 0.5;
 }
 
 function unwrapDelta(dx: number): number {
@@ -392,17 +396,12 @@ export type PaintCloseupOptions = {
   oceanDepthImage?: HTMLImageElement | null;
   /** Preloaded Blue Marble natural-color land imagery. */
   landColorImage?: HTMLImageElement | null;
-  /** Preloaded gold foil albedo so Normal mastery-4 keeps its texture up close. */
-  goldColorImage?: HTMLImageElement | null;
-  goldRoughnessImage?: HTMLImageElement | null;
-  goldNormalImage?: HTMLImageElement | null;
 };
 
 export type CloseupPaintResult = {
   color: HTMLCanvasElement;
-  metalnessCanvas: HTMLCanvasElement | null;
-  roughnessCanvas: HTMLCanvasElement | null;
-  normalCanvas: HTMLCanvasElement | null;
+  /** White where Normal mastery-4 gold covers this window; null when none does. */
+  goldMaskCanvas: HTMLCanvasElement | null;
 };
 
 /** Grain scale cap so the tile never stretches into blur at extreme zoom. */
@@ -424,9 +423,6 @@ export function paintGlobeCloseupRegion(
     textureWidth = 2048,
     oceanDepthImage = null,
     landColorImage = null,
-    goldColorImage = null,
-    goldRoughnessImage = null,
-    goldNormalImage = null,
   }: PaintCloseupOptions = {},
 ): CloseupPaintResult {
   const aspect = (window.halfY * 2) / Math.max(window.halfX * 2, 1e-6);
@@ -475,15 +471,6 @@ export function paintGlobeCloseupRegion(
     grainOrigin,
   );
 
-  const goldPattern =
-    difficulty === "medium" && goldColorImage
-      ? createMasteryGoldPattern(
-          ctx,
-          goldColorImage,
-          Math.max(40, Math.round(MASTERY_GOLD_TILE_BASE_PX * effectiveScale)),
-        )
-      : null;
-
   const shapes = collectCloseupShapes(data, profile, difficulty, usMode, window);
   const shapePaths = shapes.map((shape) => ({
     shape,
@@ -517,37 +504,20 @@ export function paintGlobeCloseupRegion(
     ctx.restore();
   }
 
-  const goldTilePx = Math.max(40, Math.round(MASTERY_GOLD_TILE_BASE_PX * effectiveScale));
-  const useGoldPbr =
-    difficulty === "medium" &&
-    goldRoughnessImage != null &&
-    shapes.some((shape) => shape.level === 4);
-
-  let metalnessCanvas: HTMLCanvasElement | null = null;
-  let roughnessCanvas: HTMLCanvasElement | null = null;
-  let normalCanvas: HTMLCanvasElement | null = null;
-  let pbrMaps: ReturnType<typeof createGoldPbrMapSet> | null = null;
-  if (useGoldPbr) {
-    pbrMaps = createGoldPbrMapSet(width, height);
-    metalnessCanvas = pbrMaps.metalnessCanvas;
-    roughnessCanvas = pbrMaps.roughnessCanvas;
-    normalCanvas = pbrMaps.normalCanvas;
-  }
+  const useGoldMask =
+    difficulty === "medium" && shapes.some((shape) => shape.level === 4);
+  const goldMask = useGoldMask ? createGoldMaskCanvas(width, height) : null;
 
   for (const { shape, path } of shapePaths) {
     const level = shape.level as 0 | 1 | 2 | 3 | 4;
     if (level === 4) {
-      // Gold / legendary stays fully opaque over the imagery.
-      ctx.fillStyle = goldPattern ?? getMasterySolidColor(difficulty);
-      if (pbrMaps) {
-        paintGoldPbrForPath(
-          pbrMaps,
-          path,
-          goldTilePx,
-          goldRoughnessImage,
-          goldNormalImage,
-        );
-      }
+      // Gold / legendary stays fully opaque over the imagery. Normal gold is a
+      // flat base — the GPU adds the tiling grain, roughness, and relief.
+      ctx.fillStyle =
+        difficulty === "medium"
+          ? MASTERY_GOLD_ALBEDO_FALLBACK
+          : getMasterySolidColor(difficulty);
+      if (goldMask) fillGoldMaskPath(goldMask, path);
       ctx.fill(path, "evenodd");
     } else if (level === 0) {
       // Unstarted land is the imagery itself; flat fill only as fallback.
@@ -606,12 +576,7 @@ export function paintGlobeCloseupRegion(
   }
 
   applyEdgeFeather(ctx, width, height);
-  return {
-    color: canvas,
-    metalnessCanvas,
-    roughnessCanvas,
-    normalCanvas,
-  };
+  return { color: canvas, goldMaskCanvas: goldMask?.canvas ?? null };
 }
 
 /**

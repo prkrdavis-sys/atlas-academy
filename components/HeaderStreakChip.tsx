@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import { useProfiles } from "@/components/ProfileProvider";
 import {
@@ -11,6 +11,7 @@ import {
 } from "@/lib/login-streak";
 import { playSound } from "@/lib/sound";
 import { cn } from "@/lib/utils";
+import { useCoachMarkAnchor } from "@/components/CoachMarkProvider";
 
 const PANEL_GAP = 8;
 const PANEL_EDGE_MARGIN = 16;
@@ -27,6 +28,14 @@ export function HeaderStreakChip() {
   const [panelStyle, setPanelStyle] = useState<CSSProperties>({ visibility: "hidden" });
   const triggerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  const coachRef = useCoachMarkAnchor("streak-chip");
+  const setTriggerRef = useCallback(
+    (node: HTMLButtonElement | null) => {
+      triggerRef.current = node;
+      coachRef(node);
+    },
+    [coachRef],
+  );
 
   useEffect(() => {
     if (!open) return;
@@ -156,7 +165,7 @@ export function HeaderStreakChip() {
   return (
     <>
       <button
-        ref={triggerRef}
+        ref={setTriggerRef}
         type="button"
         onClick={() => {
           if (!open) {

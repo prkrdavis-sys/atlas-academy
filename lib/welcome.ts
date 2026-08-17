@@ -1,4 +1,5 @@
 export const WELCOME_SEEN_KEY = "atlas-academy-welcome-seen";
+export const WELCOME_SEEN_EVENT = "atlas-academy-welcome-seen";
 
 export function hasSeenWelcome(): boolean {
   if (typeof window === "undefined") return true;
@@ -8,4 +9,5 @@ export function hasSeenWelcome(): boolean {
 export function markWelcomeSeen(): void {
   if (typeof window === "undefined") return;
   window.localStorage.setItem(WELCOME_SEEN_KEY, "1");
+  window.dispatchEvent(new Event(WELCOME_SEEN_EVENT));
 }

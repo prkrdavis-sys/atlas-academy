@@ -12,6 +12,7 @@ import {
 import { GLASS_CONTROL_CLASS, GLASS_INSET_CLASS, GLASS_PANEL_CLASS } from "@/lib/glass";
 import { cn } from "@/lib/utils";
 import type { GameScope } from "@/lib/types";
+import { useCoachMarkAnchor } from "@/components/CoachMarkProvider";
 
 type LibrarySearchProps = {
   scope: GameScope;
@@ -52,11 +53,11 @@ export function LibrarySearch({
 }: LibrarySearchProps) {
   const router = useRouter();
   const listboxId = useId();
-  const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [query, setQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const searchInputRef = useCoachMarkAnchor("library-search");
 
   const matches = useMemo(
     () => searchLibraryPlaces(scope, query),
@@ -163,7 +164,7 @@ export function LibrarySearch({
       <div className="relative">
         <SearchIcon className="pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500 dark:text-slate-400" />
         <input
-          ref={inputRef}
+          ref={searchInputRef}
           type="search"
           value={query}
           onChange={(event) => {

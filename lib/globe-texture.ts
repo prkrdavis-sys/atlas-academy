@@ -20,11 +20,9 @@ import {
   sampleGradientColor,
 } from "@/lib/map-mastery-fx";
 import {
-  createGoldPbrMapSet,
-  createMasteryGoldPattern,
+  createGoldMaskCanvas,
+  fillGoldMaskPath,
   MASTERY_GOLD_ALBEDO_FALLBACK,
-  MASTERY_GOLD_TILE_BASE_PX,
-  paintGoldPbrForPath,
 } from "@/lib/mastery-gold-texture";
 import { getOceanDepthCanvas } from "@/lib/globe-ocean-depth";
 import { getLandColorCanvas } from "@/lib/globe-land-color";
@@ -368,11 +366,10 @@ function createMastery4FillStyle(
   height: number,
   difficulty: MapProgressDifficulty,
   phase: number,
-  goldPattern: CanvasPattern | null,
-): string | CanvasGradient | CanvasPattern {
-  if (difficulty === "medium") {
-    return goldPattern ?? MASTERY_GOLD_ALBEDO_FALLBACK;
-  }
+): string | CanvasGradient {
+  // Normal gold is a flat base here — the brushed grain, roughness, and relief
+  // are sampled on the GPU from tiling maps so they stay locked to geography.
+  if (difficulty === "medium") return MASTERY_GOLD_ALBEDO_FALLBACK;
 
   const stops = getMasteryGradientStops(difficulty);
   // Hard legendary: gentle holographic crawl across the map.
@@ -398,7 +395,6 @@ function drawShapeFill(
     height,
     phase,
     allowCanvasGlow,
-    goldPattern,
     hasLandImagery,
   }: {
     isDark: boolean;
@@ -408,7 +404,6 @@ function drawShapeFill(
     height: number;
     phase: number;
     allowCanvasGlow: boolean;
-    goldPattern: CanvasPattern | null;
     hasLandImagery: boolean;
   },
 ) {
@@ -433,14 +428,7 @@ function drawShapeFill(
   }
 
   if (level === 4) {
-    ctx.fillStyle = createMastery4FillStyle(
-      ctx,
-      width,
-      height,
-      difficulty,
-      phase,
-      goldPattern,
-    );
+    ctx.fillStyle = createMastery4FillStyle(ctx, width, height, difficulty, phase);
   } else {
     // Mastery 1–3 tints stay translucent over the imagery so terrain reads.
     if (hasLandImagery) ctx.globalAlpha = MASTERY_TINT_ALPHA;
@@ -480,22 +468,15 @@ export type GlobeTextureOptions = {
   oceanDepthImage?: HTMLImageElement | null;
   /** Preloaded Blue Marble natural-color land imagery. */
   landColorImage?: HTMLImageElement | null;
-  /** Preloaded brushed-gold albedo (Normal mastery 4). */
-  goldColorImage?: HTMLImageElement | null;
-  /** Preloaded brushed-gold roughness (Normal mastery 4 specular response). */
-  goldRoughnessImage?: HTMLImageElement | null;
-  /** Preloaded brushed-gold normal map (OpenGL). */
-  goldNormalImage?: HTMLImageElement | null;
 };
 
 export type GlobeTexturePaintHandle = {
   canvas: HTMLCanvasElement;
-  /** Metalness map — bright on Normal mastery-4 gold, dark elsewhere. */
-  metalnessCanvas: HTMLCanvasElement | null;
-  /** Roughness map — smoother (shinier) on Normal mastery-4 gold. */
-  roughnessCanvas: HTMLCanvasElement | null;
-  /** Normal map — brushed grain on Normal mastery-4 gold, flat elsewhere. */
-  normalCanvas: HTMLCanvasElement | null;
+  /**
+   * White where Normal mastery-4 gold covers the surface. The shader uses it
+   * to gate the tiling gold albedo / roughness / relief.
+   */
+  goldMaskCanvas: HTMLCanvasElement | null;
   /** True when any mastery-4 places exist. */
   hasMastery4: boolean;
   /** True when mastery-4 fills should animate (Hard legendary only, non-constrained). */
@@ -550,9 +531,6 @@ function resolveTextureOptions({
   allowMastery4Animation = !isGlobeFxConstrained(),
   oceanDepthImage = null,
   landColorImage = null,
-  goldColorImage = null,
-  goldRoughnessImage = null,
-  goldNormalImage = null,
 }: GlobeTextureOptions = {}) {
   return {
     difficulty,
@@ -565,9 +543,6 @@ function resolveTextureOptions({
     allowMastery4Animation,
     oceanDepthImage,
     landColorImage,
-    goldColorImage,
-    goldRoughnessImage,
-    goldNormalImage,
   };
 }
 
@@ -586,9 +561,6 @@ function buildGlobeTexturePaintSync(
     allowMastery4Animation,
     oceanDepthImage,
     landColorImage,
-    goldColorImage,
-    goldRoughnessImage,
-    goldNormalImage,
   } = resolveTextureOptions(options);
 
   const width = size;
@@ -615,12 +587,6 @@ function buildGlobeTexturePaintSync(
   base.width = width;
   base.height = height;
   const baseCtx = base.getContext("2d")!;
-
-  const goldTilePx = Math.max(40, Math.round(MASTERY_GOLD_TILE_BASE_PX * pixelScale));
-  const goldPattern =
-    difficulty === "medium" && goldColorImage
-      ? createMasteryGoldPattern(baseCtx, goldColorImage, goldTilePx)
-      : null;
 
   baseCtx.fillStyle = palette.ocean;
   baseCtx.fillRect(0, 0, width, height);
@@ -662,7 +628,6 @@ function buildGlobeTexturePaintSync(
     height,
     phase: 0.35,
     allowCanvasGlow,
-    goldPattern,
     hasLandImagery,
   };
 
@@ -696,26 +661,14 @@ function buildGlobeTexturePaintSync(
   canvas.height = height;
   const ctx = canvas.getContext("2d")!;
 
-  const useMetalMaps = difficulty === "medium" && hasMastery4;
-  let metalnessCanvas: HTMLCanvasElement | null = null;
-  let roughnessCanvas: HTMLCanvasElement | null = null;
-  let normalCanvas: HTMLCanvasElement | null = null;
+  const useGoldMask = difficulty === "medium" && hasMastery4;
+  let goldMaskCanvas: HTMLCanvasElement | null = null;
 
-  if (useMetalMaps) {
-    const pbrMaps = createGoldPbrMapSet(width, height);
-    metalnessCanvas = pbrMaps.metalnessCanvas;
-    roughnessCanvas = pbrMaps.roughnessCanvas;
-    normalCanvas = pbrMaps.normalCanvas;
-
+  if (useGoldMask) {
+    const mask = createGoldMaskCanvas(width, height);
+    goldMaskCanvas = mask.canvas;
     for (const shape of mastery4Shapes) {
-      const path = pathFor(shape.code, shape.rings);
-      paintGoldPbrForPath(
-        pbrMaps,
-        path,
-        goldTilePx,
-        goldRoughnessImage,
-        goldNormalImage,
-      );
+      fillGoldMaskPath(mask, pathFor(shape.code, shape.rings));
     }
   }
 
@@ -747,9 +700,7 @@ function buildGlobeTexturePaintSync(
 
   return {
     canvas,
-    metalnessCanvas,
-    roughnessCanvas,
-    normalCanvas,
+    goldMaskCanvas,
     hasMastery4,
     animateMastery4:
       hasMastery4 && allowMastery4Animation && mastery4ShouldAnimate(difficulty),
@@ -776,9 +727,6 @@ async function buildGlobeTexturePaintAsync(
     allowMastery4Animation,
     oceanDepthImage,
     landColorImage,
-    goldColorImage,
-    goldRoughnessImage,
-    goldNormalImage,
   } = resolveTextureOptions(options);
 
   const width = size;
@@ -805,12 +753,6 @@ async function buildGlobeTexturePaintAsync(
   base.width = width;
   base.height = height;
   const baseCtx = base.getContext("2d")!;
-
-  const goldTilePx = Math.max(40, Math.round(MASTERY_GOLD_TILE_BASE_PX * pixelScale));
-  const goldPattern =
-    difficulty === "medium" && goldColorImage
-      ? createMasteryGoldPattern(baseCtx, goldColorImage, goldTilePx)
-      : null;
 
   baseCtx.fillStyle = palette.ocean;
   baseCtx.fillRect(0, 0, width, height);
@@ -861,7 +803,6 @@ async function buildGlobeTexturePaintAsync(
     height,
     phase: 0.35,
     allowCanvasGlow,
-    goldPattern,
     hasLandImagery,
   };
 
@@ -902,31 +843,14 @@ async function buildGlobeTexturePaintAsync(
   canvas.height = height;
   const ctx = canvas.getContext("2d")!;
 
-  const useMetalMaps = difficulty === "medium" && hasMastery4;
-  let metalnessCanvas: HTMLCanvasElement | null = null;
-  let roughnessCanvas: HTMLCanvasElement | null = null;
-  let normalCanvas: HTMLCanvasElement | null = null;
+  const useGoldMask = difficulty === "medium" && hasMastery4;
+  let goldMaskCanvas: HTMLCanvasElement | null = null;
 
-  if (useMetalMaps) {
-    const pbrMaps = createGoldPbrMapSet(width, height);
-    metalnessCanvas = pbrMaps.metalnessCanvas;
-    roughnessCanvas = pbrMaps.roughnessCanvas;
-    normalCanvas = pbrMaps.normalCanvas;
-
-    for (let i = 0; i < mastery4Shapes.length; i += 1) {
-      const shape = mastery4Shapes[i];
-      const path = pathFor(shape.code, shape.rings);
-      paintGoldPbrForPath(
-        pbrMaps,
-        path,
-        goldTilePx,
-        goldRoughnessImage,
-        goldNormalImage,
-      );
-      if (i % TEXTURE_SHAPE_BATCH === TEXTURE_SHAPE_BATCH - 1) {
-        await awaitPaintYield(gate);
-        if (!gate.shouldContinue()) return null;
-      }
+  if (useGoldMask) {
+    const mask = createGoldMaskCanvas(width, height);
+    goldMaskCanvas = mask.canvas;
+    for (const shape of mastery4Shapes) {
+      fillGoldMaskPath(mask, pathFor(shape.code, shape.rings));
     }
   }
 
@@ -958,9 +882,7 @@ async function buildGlobeTexturePaintAsync(
 
   return {
     canvas,
-    metalnessCanvas,
-    roughnessCanvas,
-    normalCanvas,
+    goldMaskCanvas,
     hasMastery4,
     animateMastery4:
       hasMastery4 && allowMastery4Animation && mastery4ShouldAnimate(difficulty),

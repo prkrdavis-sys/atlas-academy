@@ -27,8 +27,14 @@ import { ensureOceanDepthCanvas, loadOceanDepthImage } from "@/lib/globe-ocean-d
 import { loadHurricaneTexture } from "@/lib/globe-hurricane-texture";
 import { loadLandColorImage } from "@/lib/globe-land-color";
 import {
-  loadMasteryGoldPbrImages,
-} from "@/lib/mastery-gold-texture";
+  applyGoldDetailAnisotropy,
+  createGoldMaskTexture,
+  createGoldSurfaceMaterial,
+  GOLD_FULL_GLOBE_UV_WINDOW,
+  loadGoldDetailTextures,
+  updateGoldDetailBlend,
+  type GoldDetailTextures,
+} from "@/lib/globe-gold-material";
 import { masteryFxPhaseFromTime } from "@/lib/map-mastery-fx";
 import { moonDirection, getMoonPosition } from "@/lib/moon-position";
 import {
@@ -223,9 +229,8 @@ export type GlobeTextureConfig = {
 
 export type GlobeSurfaceMaps = {
   map: THREE.CanvasTexture;
-  metalnessMap: THREE.CanvasTexture | null;
-  roughnessMap: THREE.CanvasTexture | null;
-  normalMap: THREE.CanvasTexture | null;
+  /** Gold coverage for the shader; null when nothing is mastered in Normal. */
+  goldMask: THREE.CanvasTexture | null;
   ready?: boolean;
 };
 
@@ -255,38 +260,16 @@ function mapsFromPaint(
   map.colorSpace = THREE.SRGBColorSpace;
   configureGlobeCanvasTexture(map, anisotropy);
 
-  const metalnessMap = paint.metalnessCanvas
-    ? new THREE.CanvasTexture(paint.metalnessCanvas)
+  const goldMask = paint.goldMaskCanvas
+    ? createGoldMaskTexture(paint.goldMaskCanvas, gl)
     : null;
-  if (metalnessMap) {
-    metalnessMap.colorSpace = THREE.NoColorSpace;
-    configureGlobeCanvasTexture(metalnessMap, anisotropy);
-  }
 
-  const roughnessMap = paint.roughnessCanvas
-    ? new THREE.CanvasTexture(paint.roughnessCanvas)
-    : null;
-  if (roughnessMap) {
-    roughnessMap.colorSpace = THREE.NoColorSpace;
-    configureGlobeCanvasTexture(roughnessMap, anisotropy);
-  }
-
-  const normalMap = paint.normalCanvas
-    ? new THREE.CanvasTexture(paint.normalCanvas)
-    : null;
-  if (normalMap) {
-    normalMap.colorSpace = THREE.NoColorSpace;
-    configureGlobeCanvasTexture(normalMap, anisotropy);
-  }
-
-  return { map, metalnessMap, roughnessMap, normalMap };
+  return { map, goldMask };
 }
 
 function disposeGlobeMaps(maps: GlobeSurfaceMaps) {
   maps.map.dispose();
-  maps.metalnessMap?.dispose();
-  maps.roughnessMap?.dispose();
-  maps.normalMap?.dispose();
+  maps.goldMask?.dispose();
 }
 
 /**
@@ -317,12 +300,6 @@ export function useGlobeTexture(
     () => resolveGlobeTextureSize(gl.capabilities.maxTextureSize, perfTier),
     [gl.capabilities.maxTextureSize, perfTier],
   );
-
-  const [goldMaps, setGoldMaps] = useState<{
-    color: HTMLImageElement | null;
-    roughness: HTMLImageElement | null;
-    normal: HTMLImageElement | null;
-  }>({ color: null, roughness: null, normal: null });
 
   const [oceanDepthImage, setOceanDepthImage] = useState<HTMLImageElement | null>(null);
   const [landColorImage, setLandColorImage] = useState<HTMLImageElement | null>(null);
@@ -356,24 +333,6 @@ export function useGlobeTexture(
     };
   }, []);
 
-  useEffect(() => {
-    if (difficulty !== "medium") {
-      setGoldMaps({ color: null, roughness: null, normal: null });
-      return;
-    }
-    let cancelled = false;
-    loadMasteryGoldPbrImages()
-      .then((images) => {
-        if (!cancelled) setGoldMaps(images);
-      })
-      .catch(() => {
-        if (!cancelled) setGoldMaps({ color: null, roughness: null, normal: null });
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [difficulty]);
-
   const paintOptions = useMemo(
     () => ({
       difficulty,
@@ -386,11 +345,8 @@ export function useGlobeTexture(
       allowMastery4Animation: !fxConstrained,
       oceanDepthImage,
       landColorImage,
-      goldColorImage: goldMaps.color,
-      goldRoughnessImage: goldMaps.roughness,
-      goldNormalImage: goldMaps.normal,
     }),
-    [difficulty, usMode, isDark, size, fxConstrained, goldMaps, oceanDepthImage, landColorImage],
+    [difficulty, usMode, isDark, size, fxConstrained, oceanDepthImage, landColorImage],
   );
 
   // First paint is a low-res preview so mount never freezes the spin; the
@@ -402,9 +358,6 @@ export function useGlobeTexture(
       size: previewSize,
       oceanDepthImage: null,
       landColorImage: null,
-      goldColorImage: null,
-      goldRoughnessImage: null,
-      goldNormalImage: null,
     });
     return { paint, maps: mapsFromPaint(paint, gl, fxConstrained) };
     // Intentionally once per mount identity — upgrades go through the effect.
@@ -870,27 +823,74 @@ export function globeFillDistance(
  */
 const GOLD_NORMAL_SCALE = new THREE.Vector2(2.4, 2.4);
 
-/** PBR tuning for Normal mastery-4 gold vs the matte globe surface. */
+/**
+ * PBR tuning for Normal mastery-4 gold vs the matte globe surface. Gold
+ * roughness is not listed here — it comes per-pixel from the tiling roughness
+ * map, which is what makes the foil catch the sun unevenly.
+ */
 export const GLOBE_GOLD_METALNESS = 0.96;
-export const GLOBE_GOLD_ROUGHNESS = 1;
 export const GLOBE_GOLD_EMISSIVE = "#c4921a";
 export const GLOBE_GOLD_EMISSIVE_INTENSITY = 0.07;
 export const GLOBE_GOLD_ENV_MAP_INTENSITY = 1.35;
 export const GLOBE_MATTE_METALNESS = 0.04;
 export const GLOBE_MATTE_ROUGHNESS = 0.72;
-/** Matte land/ocean must not pick up HDR tint — gold still uses the studio IBL. */
-export const GLOBE_MATTE_ENV_MAP_INTENSITY = 0;
 
-/** Shared StandardMaterial props for gold PBR on the globe and close-up patch. */
-export function globeGoldSurfaceProps(hasMetalMaps: boolean) {
+/**
+ * Shared gold-material configuration for the globe and the close-up patch, so
+ * both shade identically as the camera crosses the close-up activation
+ * distance. `uvWindow` is the region of global equirectangular space the mesh
+ * UVs cover — that is what keeps the tiling grain welded to geography.
+ */
+export function globeGoldMaterialConfig(
+  map: THREE.Texture,
+  goldMask: THREE.Texture,
+  detail: GoldDetailTextures,
+  uvWindow: THREE.Vector4,
+) {
   return {
-    metalness: hasMetalMaps ? GLOBE_GOLD_METALNESS : GLOBE_MATTE_METALNESS,
-    roughness: hasMetalMaps ? GLOBE_GOLD_ROUGHNESS : GLOBE_MATTE_ROUGHNESS,
-    emissive: hasMetalMaps ? GLOBE_GOLD_EMISSIVE : "#000000",
-    emissiveIntensity: hasMetalMaps ? GLOBE_GOLD_EMISSIVE_INTENSITY : 0,
-    envMapIntensity: hasMetalMaps ? GLOBE_GOLD_ENV_MAP_INTENSITY : GLOBE_MATTE_ENV_MAP_INTENSITY,
-    normalScale: hasMetalMaps ? GOLD_NORMAL_SCALE : undefined,
-  } as const;
+    map,
+    goldMask,
+    detail,
+    uvWindow,
+    goldMetalness: GLOBE_GOLD_METALNESS,
+    matteMetalness: GLOBE_MATTE_METALNESS,
+    matteRoughness: GLOBE_MATTE_ROUGHNESS,
+    emissive: GLOBE_GOLD_EMISSIVE,
+    emissiveIntensity: GLOBE_GOLD_EMISSIVE_INTENSITY,
+    envMapIntensity: GLOBE_GOLD_ENV_MAP_INTENSITY,
+    normalScale: GOLD_NORMAL_SCALE,
+  };
+}
+
+/**
+ * Loads the shared tiling gold PBR set once and keeps its anisotropy matched
+ * to the renderer. Returns null until the images decode, so the surface falls
+ * back to flat painted gold rather than blocking the first frame.
+ */
+export function useGoldDetailTextures(enabled: boolean): GoldDetailTextures | null {
+  const gl = useThree((state) => state.gl);
+  const invalidate = useThree((state) => state.invalidate);
+  const [detail, setDetail] = useState<GoldDetailTextures | null>(null);
+
+  useEffect(() => {
+    if (!enabled) return;
+    let cancelled = false;
+    loadGoldDetailTextures()
+      .then((textures) => {
+        if (cancelled) return;
+        applyGoldDetailAnisotropy(textures, gl, 8);
+        setDetail(textures);
+        invalidate();
+      })
+      .catch(() => {
+        // Flat painted gold remains the fallback.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [enabled, gl, invalidate]);
+
+  return enabled ? detail : null;
 }
 
 /**
@@ -903,12 +903,11 @@ export function GlobeMetalReflection({ perfTier = "desktop" }: { perfTier?: Glob
 }
 
 /**
- * Planet surface material: enough gloss for a polished 3D globe, still matte
- * enough that mastery colors and borders stay readable. Phones use Lambert
- * (no specular) unless Normal gold maps need brushed sheen. When metalness /
- * roughness maps are present (Normal gold mastery), sunlight catches those
- * places more than default land — and a soft gold emissive keeps the color
- * readable even on the shaded side of the globe.
+ * Planet surface material. Matte land and ocean stay Lambert so the painted
+ * colors read true. When any place is mastered gold, the surface upgrades to a
+ * StandardMaterial whose metal response is evaluated per-pixel from tiling gold
+ * maps, masked to those places — so gold reacts to the sun and the studio IBL
+ * without any canvas ever being repainted for lighting.
  *
  * Day/night does NOT use the color map as emissiveMap — that turned borders and
  * selection glow into a globe-wide lit grid whenever the texture updated.
@@ -917,47 +916,33 @@ export function GlobeMetalReflection({ perfTier = "desktop" }: { perfTier?: Glob
  */
 export function GlobeSurfaceMaterial({
   map,
-  metalnessMap = null,
-  roughnessMap = null,
-  normalMap = null,
-  perfTier = "desktop",
+  goldMask = null,
+  goldDetail = null,
 }: {
   map: THREE.Texture;
-  metalnessMap?: THREE.Texture | null;
-  roughnessMap?: THREE.Texture | null;
-  normalMap?: THREE.Texture | null;
-  perfTier?: GlobePerfTier;
+  goldMask?: THREE.Texture | null;
+  goldDetail?: GoldDetailTextures | null;
 }) {
-  const hasMetalMaps = Boolean(metalnessMap && roughnessMap);
-  const goldProps = globeGoldSurfaceProps(hasMetalMaps);
+  const material = useMemo(() => {
+    if (!goldMask || !goldDetail) return null;
+    return createGoldSurfaceMaterial(
+      globeGoldMaterialConfig(map, goldMask, goldDetail, GOLD_FULL_GLOBE_UV_WINDOW),
+    );
+  }, [map, goldMask, goldDetail]);
 
-  // Matte globe: Lambert so painted ocean/land colors read true. Standard + IBL
-  // was letting warm reflections and crushed midtones turn the planet brown.
-  if (!hasMetalMaps) {
-    return <meshLambertMaterial map={map} />;
-  }
+  useEffect(() => {
+    if (!material) return;
+    return () => material.dispose();
+  }, [material]);
 
-  void perfTier;
+  // The two tiling tiers cross-fade with camera distance: one float per frame,
+  // no repaint and no texture upload.
+  useFrame(({ camera }) => {
+    updateGoldDetailBlend(material, camera.position.length());
+  });
 
-  // Gold mastery: tiny emissive fill so shaded foil stays readable; specular +
-  // normal maps carry the brushed-metal shine.
-  const emissiveMap = metalnessMap!;
-
-  return (
-    <meshStandardMaterial
-      map={map}
-      metalnessMap={metalnessMap ?? undefined}
-      roughnessMap={roughnessMap ?? undefined}
-      normalMap={normalMap ?? undefined}
-      normalScale={goldProps.normalScale}
-      emissiveMap={emissiveMap}
-      emissive={goldProps.emissive}
-      emissiveIntensity={goldProps.emissiveIntensity}
-      envMapIntensity={goldProps.envMapIntensity}
-      roughness={goldProps.roughness}
-      metalness={goldProps.metalness}
-    />
-  );
+  if (!material) return <meshLambertMaterial map={map} />;
+  return <primitive object={material} attach="material" />;
 }
 
 /**
@@ -1592,13 +1577,14 @@ export function GlobePlanet({
 }: GlobePlanetProps) {
   const internalMeshRef = useRef<THREE.Mesh>(null);
   const planetMeshRef = meshRef ?? internalMeshRef;
-  const { map, metalnessMap, roughnessMap, normalMap, ready } = useGlobeTexture(profile, {
+  const { map, goldMask, ready } = useGlobeTexture(profile, {
     difficulty,
     usMode,
     isDark,
     selectedCode,
     perfTier,
   });
+  const goldDetail = useGoldDetailTextures(goldMask !== null);
   const segments = getGlobeSphereSegments(perfTier);
 
   if (!ready) {
@@ -1609,13 +1595,7 @@ export function GlobePlanet({
     <>
       <mesh ref={planetMeshRef} {...meshProps}>
         <sphereGeometry args={[1, segments, segments]} />
-        <GlobeSurfaceMaterial
-          map={map}
-          metalnessMap={metalnessMap}
-          roughnessMap={roughnessMap}
-          normalMap={normalMap}
-          perfTier={perfTier}
-        />
+        <GlobeSurfaceMaterial map={map} goldMask={goldMask} goldDetail={goldDetail} />
         <GlobeCityLights dayNight={dayNight} perfTier={perfTier} />
         {!isDark ? <DistantSun isDark={isDark} perfTier={perfTier} /> : null}
         <EarthSunLight dayNight={dayNight} />

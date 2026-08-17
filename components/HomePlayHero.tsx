@@ -24,6 +24,7 @@ import { playSound } from "@/lib/sound";
 import { recordModeSelection, updateProfileSettings } from "@/lib/storage";
 import type { GameMode, GameScope, GlobalStreakSnapshot, Profile } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { CoachMarkLink, useCoachMarkAnchor } from "@/components/CoachMarkProvider";
 
 /** Time a tip stays fully visible so it can be read comfortably. */
 const PRO_TIP_DWELL_MS = 11_000;
@@ -147,6 +148,7 @@ export function HomePlayHero({
   }, [profile, heroTagline, tipVisible, advanceTagline]);
 
   const hideProfileDialog = useCallback(() => setShowProfileDialog(false), []);
+  const playButtonRef = useCoachMarkAnchor(profile ? "play-button" : null);
 
   const startPlay = useCallback(() => {
     if (!profile) {
@@ -214,6 +216,7 @@ export function HomePlayHero({
             <div className="mx-auto -mb-5 flex h-[40%] min-h-0 w-full max-w-xl shrink-0 flex-col justify-end gap-2 overflow-visible px-2 pt-8 sm:-mb-4 sm:gap-2.5 sm:px-3 sm:pt-10">
               <button
                 type="button"
+                ref={playButtonRef}
                 onClick={startPlay}
                 className="play-glow-button relative flex min-h-14 w-full items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-b from-emerald-400 to-teal-600 px-8 py-3.5 font-display text-xl font-extrabold text-white transition-transform hover:scale-[1.02] active:scale-[0.97] sm:min-h-16 sm:text-2xl"
               >
@@ -304,6 +307,14 @@ function GlobeDragZone({ href, globeHandleRef }: GlobeDragZoneProps) {
   const dragRef = useRef<{ pointerId: number; lastX: number; lastY: number } | null>(null);
   const traveledRef = useRef(0);
   const zoneRef = useRef<HTMLAnchorElement>(null);
+  const coachRef = useCoachMarkAnchor("globe-tap");
+  const setZoneRef = useCallback(
+    (node: HTMLAnchorElement | null) => {
+      zoneRef.current = node;
+      coachRef(node);
+    },
+    [coachRef],
+  );
 
   // iOS Safari can still scroll a parent even with touch-action: none unless
   // touchmove is cancelled with a non-passive listener while dragging.
@@ -333,7 +344,7 @@ function GlobeDragZone({ href, globeHandleRef }: GlobeDragZoneProps) {
 
   return (
     <Link
-      ref={zoneRef}
+      ref={setZoneRef}
       href={href}
       aria-label="Open your progress map"
       data-tab-swipe-ignore
@@ -397,7 +408,8 @@ function ModeLoadoutRow({ profile, mode, scope }: ModeLoadoutRowProps) {
   const summary = [...parts, `${scopeInfo.icon} ${scopeInfo.shortLabel}`].join("  ·  ");
 
   return (
-    <Link
+    <CoachMarkLink
+      markId="change-setup"
       href={`/play/setup${scopeQuery(getStoredScope())}`}
       aria-label={`Current game: ${summary}. Change game mode and settings.`}
       className="flex min-h-11 w-full items-center gap-3 rounded-[1.25rem] border border-slate-900/10 bg-white/60 px-3.5 py-2 backdrop-blur-md transition-colors hover:border-slate-900/25 hover:bg-white/80 active:bg-white/90 dark:border-white/15 dark:bg-white/[0.07] dark:hover:border-white/40 dark:hover:bg-white/15 dark:active:bg-white/20"
@@ -413,7 +425,7 @@ function ModeLoadoutRow({ profile, mode, scope }: ModeLoadoutRowProps) {
         Change
         <span aria-hidden>›</span>
       </span>
-    </Link>
+    </CoachMarkLink>
   );
 }
 
@@ -438,7 +450,8 @@ function DailyChallengeBadge({
       : "Play today's challenge.";
 
   return (
-    <Link
+    <CoachMarkLink
+      markId="daily-badge"
       href={scopedHref("/play/daily-challenge", scope, { autostart: "1" })}
       aria-label={`Daily challenge. ${statusLabel} Daily run: ${dailyRun} ${dailyRun === 1 ? "day" : "days"}.`}
       title={`Daily challenge. ${statusLabel}`}
@@ -469,6 +482,6 @@ function DailyChallengeBadge({
           {dailyRun}
         </span>
       ) : null}
-    </Link>
+    </CoachMarkLink>
   );
 }

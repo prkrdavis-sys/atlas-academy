@@ -86,6 +86,15 @@ export function normalizedToLocalDirection(nx: number, ny: number): THREE.Vector
   );
 }
 
+/** WGS84 lon/lat (degrees) → unit direction in mesh-local space. */
+export function lonLatToLocalDirection(lng: number, lat: number): THREE.Vector3 {
+  const wrappedLon = ((((lng + 180) % 360) + 360) % 360) - 180;
+  const clampedLat = THREE.MathUtils.clamp(lat, -90, 90);
+  const nx = (wrappedLon + 180) / 360;
+  const ny = (90 - clampedLat) / 180;
+  return normalizedToLocalDirection(nx, ny);
+}
+
 /** Angular half-extent of the mainland ring from its centroid, in radians. */
 function ringAngularRadius(ring: number[]): number {
   const [nx, ny] = ringCentroid(ring);

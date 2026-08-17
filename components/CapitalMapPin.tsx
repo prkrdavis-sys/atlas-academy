@@ -1,29 +1,34 @@
 type CapitalMapPinProps = {
   x: number;
   y: number;
-  /** SVG user-unit height of the pin (tip → top). */
+  /** SVG user-unit diameter of the star. */
   size: number;
   label: string;
   isDark?: boolean;
 };
 
+function fivePointStarPath(outerR: number, innerR: number): string {
+  const commands: string[] = [];
+  for (let i = 0; i < 10; i += 1) {
+    const radius = i % 2 === 0 ? outerR : innerR;
+    const angle = -Math.PI / 2 + (i * Math.PI) / 5;
+    const x = Math.cos(angle) * radius;
+    const y = Math.sin(angle) * radius;
+    commands.push(`${i === 0 ? "M" : "L"}${x.toFixed(3)} ${y.toFixed(3)}`);
+  }
+  commands.push("Z");
+  return commands.join(" ");
+}
+
 /**
- * Flat teardrop pin. The tip sits on (x, y) — the projected capital.
+ * Five-pointed star centered on (x, y) — the projected capital.
  */
 export function CapitalMapPin({ x, y, size, label, isDark = false }: CapitalMapPinProps) {
-  const width = size * 0.7;
-  const holeR = size * 0.145;
-  const holeCy = -size * 0.63;
-  const strokeW = Math.max(size * 0.065, size * 0.04);
+  const outerR = size / 2;
+  const innerR = outerR * 0.4;
+  const strokeW = Math.max(size * 0.08, size * 0.05);
   const fill = isDark ? "#fb7185" : "#e11d48";
   const rim = isDark ? "#fff1f2" : "#ffffff";
-
-  const path = [
-    `M 0 0`,
-    `C ${width * 0.55} ${-size * 0.2}, ${width * 0.5} ${-size * 0.52}, 0 ${-size}`,
-    `C ${-width * 0.5} ${-size * 0.52}, ${-width * 0.55} ${-size * 0.2}, 0 0`,
-    "Z",
-  ].join(" ");
 
   return (
     <g
@@ -32,13 +37,18 @@ export function CapitalMapPin({ x, y, size, label, isDark = false }: CapitalMapP
       role="img"
       aria-label={label}
     >
-      <path d={path} fill={fill} stroke={rim} strokeWidth={strokeW} strokeLinejoin="round" />
-      <circle cx={0} cy={holeCy} r={holeR} fill={rim} />
+      <path
+        d={fivePointStarPath(outerR, innerR)}
+        fill={fill}
+        stroke={rim}
+        strokeWidth={strokeW}
+        strokeLinejoin="round"
+      />
     </g>
   );
 }
 
-/** Pin height from the close-up crop; `zoomScale` keeps on-screen size stable. */
+/** Star diameter from the close-up crop; `zoomScale` keeps on-screen size stable. */
 export function capitalPinSizeForViewBox(
   viewBoxWidth: number,
   viewBoxHeight: number,

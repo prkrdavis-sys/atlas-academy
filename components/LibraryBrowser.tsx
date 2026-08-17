@@ -309,14 +309,14 @@ export function LibraryBrowser({ scope = "world" }: LibraryBrowserProps) {
                   onClick={openDetailFromList}
                   className={`${GLASS_PANEL_CLASS} group relative flex h-full min-h-48 flex-col overflow-hidden rounded-2xl p-3 shadow-sm transition-all hover:-translate-y-0.5 hover:border-teal-400 hover:shadow-md active:translate-y-0 dark:hover:border-teal-500 sm:min-h-56 sm:p-4`}
                 >
-                  {isCommonlyMissed ? (
-                    <span className="absolute right-2 top-2 z-10 rounded-full bg-rose-100 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-rose-800 dark:bg-rose-950/80 dark:text-rose-200">
-                      Missed
-                    </span>
-                  ) : null}
                   <div
-                    className={`${GLASS_INSET_CLASS} flex min-h-28 flex-1 items-center justify-center rounded-xl p-3 sm:min-h-32`}
+                    className={`${GLASS_INSET_CLASS} relative isolate flex min-h-28 flex-1 items-center justify-center rounded-xl p-3 sm:min-h-32`}
                   >
+                    {isCommonlyMissed ? (
+                      <span className="absolute right-1.5 top-1.5 z-10 rounded-full bg-rose-100 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-rose-800 dark:bg-rose-950/80 dark:text-rose-200">
+                        Missed
+                      </span>
+                    ) : null}
                     <LibraryPlaceVisual country={country} variant="card" />
                   </div>
                   <div className="mt-3 flex items-center gap-2.5">

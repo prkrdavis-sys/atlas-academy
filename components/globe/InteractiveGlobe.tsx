@@ -30,6 +30,7 @@ import {
   useGlobeFrameloop,
   useGlobeSceneEnvironment,
 } from "@/components/globe/globe-scene";
+import { GlobeCapitalMarker } from "@/components/globe/GlobeCapitalMarker";
 import { GlobeCloseupLayer } from "@/components/globe/GlobeCloseupLayer";
 import { GlobeClouds } from "@/components/globe/GlobeClouds";
 import { GlobeOrbitISS } from "@/components/globe/GlobeOrbitISS";
@@ -664,6 +665,8 @@ type GlobeSceneProps = {
   reducedMotion: boolean;
   /** False once the globe fills the viewport — parks the ISS orbit. */
   outerSpaceVisible: boolean;
+  /** Skip the cloud deck so country borders stay readable (globe hunt). */
+  showClouds: boolean;
   spinGroupRef: RefObject<THREE.Group | null>;
   controlsRef: RefObject<OrbitControlsImpl | null>;
   onPickPlace: (code: string | null) => void;
@@ -684,6 +687,7 @@ function PickableGlobe({
   perfTier,
   reducedMotion,
   outerSpaceVisible,
+  showClouds,
   spinGroupRef,
   controlsRef,
   onPickPlace,
@@ -737,12 +741,14 @@ function PickableGlobe({
         meshProps={{ onClick: () => {} }}
       />
       <DistantMoon isDark={isDark} perfTier={perfTier} />
-      <GlobeClouds
-        isDark={isDark}
-        perfTier={perfTier}
-        reducedMotion={reducedMotion}
-        onActivity={onAmbientMotion}
-      />
+      {showClouds ? (
+        <GlobeClouds
+          isDark={isDark}
+          perfTier={perfTier}
+          reducedMotion={reducedMotion}
+          onActivity={onAmbientMotion}
+        />
+      ) : null}
       {isDark && outerSpaceVisible ? (
         <GlobeOrbitISS
           perfTier={perfTier}
@@ -766,6 +772,7 @@ function PickableGlobe({
         controlsRef={controlsRef}
         spinGroupRef={spinGroupRef}
       />
+      <GlobeCapitalMarker selectedCode={selectedCode} isDark={isDark} />
     </group>
   );
 }
@@ -817,6 +824,12 @@ type InteractiveGlobeProps = {
   autoSpinEnabled?: boolean;
   /** Hide the map progress panel while keeping place highlighting and picking. */
   showSelectionPanel?: boolean;
+  /**
+   * Skip clouds and ignore the day/night preference so country borders stay
+   * readable. Used by globe hunt, where weather and night-side darkness hide
+   * the geography the player needs to pick.
+   */
+  clearGeography?: boolean;
   onSelectPlace: (code: string | null) => void;
   className?: string;
   handleRef?: RefObject<GlobeHandle | null>;
@@ -935,6 +948,7 @@ export default function InteractiveGlobe({
   focusPlaceCode = null,
   autoSpinEnabled = true,
   showSelectionPanel = true,
+  clearGeography = false,
   onSelectPlace,
   className,
   handleRef,
@@ -942,7 +956,8 @@ export default function InteractiveGlobe({
   const { webglOk, reducedMotion, pageVisible, perfTier } = useGlobeSceneEnvironment();
   const { canvasKey, remountCanvas, resetRecoveryAttempts } = useGlobeCanvasKey();
   const { isDark, ready } = useIsDark();
-  const { enabled: dayNight } = useGlobeDayNight();
+  const { enabled: dayNightPreference } = useGlobeDayNight();
+  const dayNight = clearGeography ? false : dayNightPreference;
   const { enabled: showMapProgress } = useShowMapProgress();
   /** Null profile → natural land texture (no mastery fills) on the planet surface. */
   const paintProfile = showMapProgress ? profile : null;
@@ -1252,6 +1267,7 @@ export default function InteractiveGlobe({
               perfTier={perfTier}
               reducedMotion={reducedMotion}
               outerSpaceVisible={outerSpaceVisible}
+              showClouds={!clearGeography}
               spinGroupRef={spinGroupRef}
               controlsRef={controlsRef}
               onAmbientMotion={bumpActivity}

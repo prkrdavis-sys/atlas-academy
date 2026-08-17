@@ -68,6 +68,7 @@ export function GlobeHuntSurface({
             focusPlaceCode={revealedCode}
             autoSpinEnabled={false}
             showSelectionPanel={false}
+            clearGeography
             onSelectPlace={handleSelect}
             className="absolute inset-0 h-full w-full"
           />

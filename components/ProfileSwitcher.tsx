@@ -15,6 +15,7 @@ import { SoundToggle } from "@/components/SoundToggle";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { cn } from "@/lib/utils";
 import { CurrencySelector } from "@/components/CurrencySelector";
+import { useCoachMarkAnchor } from "@/components/CoachMarkProvider";
 
 const MENU_PANEL_CLASS =
   "overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl dark:border-slate-700 dark:bg-slate-900";
@@ -168,6 +169,7 @@ export function ProfileSwitcher({ compact = false }: { compact?: boolean }) {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const triggerRef = useCoachMarkAnchor("profile-menu");
 
   useEffect(() => {
     setMounted(true);
@@ -228,6 +230,7 @@ export function ProfileSwitcher({ compact = false }: { compact?: boolean }) {
   return (
     <div className="relative" ref={ref}>
       <button
+        ref={triggerRef}
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}

@@ -1,17 +1,23 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { getPrimaryNavHref, isExploreRoute } from "@/lib/navigation";
 import { useLibraryNavHref } from "@/lib/use-library-nav-href";
 import { LIBRARY_ICON } from "@/lib/library";
+import { CoachMarkLink } from "@/components/CoachMarkProvider";
 import { cn } from "@/lib/utils";
+import type { CoachMarkId } from "@/lib/coach-marks";
 
 const PLAY_MODE_ITEMS = [
-  { href: "/map" as const, label: "Map", icon: "🗺️" },
-  { href: "/" as const, label: "Play", icon: "🌎" },
-  { href: "library" as const, label: "Library", icon: LIBRARY_ICON },
-] as const;
+  { href: "/map" as const, label: "Map", icon: "🗺️", markId: "map-nav" as const },
+  { href: "/" as const, label: "Play", icon: "🌎", markId: null },
+  { href: "library" as const, label: "Library", icon: LIBRARY_ICON, markId: "library-nav" as const },
+] as const satisfies readonly {
+  href: "/map" | "/" | "library";
+  label: string;
+  icon: string;
+  markId: CoachMarkId | null;
+}[];
 
 export function PlayModeSwitcher() {
   const pathname = usePathname();
@@ -44,8 +50,9 @@ export function PlayModeSwitcher() {
           ? activeHref === "/library"
           : item.href === activeHref;
         return (
-          <Link
+          <CoachMarkLink
             key={item.label}
+            markId={item.markId}
             href={href}
             scroll={item.href === "library" && !onLibraryTab ? false : undefined}
             role="tab"
@@ -61,7 +68,7 @@ export function PlayModeSwitcher() {
               {item.icon}
             </span>
             {item.label}
-          </Link>
+          </CoachMarkLink>
         );
       })}
     </div>

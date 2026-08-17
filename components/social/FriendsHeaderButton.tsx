@@ -6,6 +6,7 @@ import { SocialSignInPrompt } from "@/components/social/SocialSignInPrompt";
 import { useSocial } from "@/components/social/SocialProvider";
 import { getStoredScope } from "@/lib/scope";
 import { cn } from "@/lib/utils";
+import { useCoachMarkAnchor } from "@/components/CoachMarkProvider";
 
 /**
  * Always-visible header entry for the friends list. Guests get the sign-up
@@ -14,6 +15,7 @@ import { cn } from "@/lib/utils";
 export function FriendsHeaderButton({ compact = false }: { compact?: boolean }) {
   const { enabled, friends, inboxCount } = useSocial();
   const [open, setOpen] = useState(false);
+  const triggerRef = useCoachMarkAnchor("friends");
   const onlineCount = friends.filter((friend) => friend.presence).length;
 
   const label = enabled
@@ -29,6 +31,7 @@ export function FriendsHeaderButton({ compact = false }: { compact?: boolean }) 
   return (
     <>
       <button
+        ref={triggerRef}
         type="button"
         onClick={() => setOpen(true)}
         aria-label={label}

@@ -27,6 +27,7 @@ import {
   MapProgressFillLegend,
 } from "@/components/PlaceMapProgressPanel";
 import { useProfiles } from "@/components/ProfileProvider";
+import { useCoachMarkAnchor } from "@/components/CoachMarkProvider";
 import type { GlobeHandle } from "@/components/globe/InteractiveGlobe";
 import { resolvePlaceCodeFromParam } from "@/lib/context-maps";
 import { getDailyChallengeRun, hasCompletedDailyToday } from "@/lib/game-engine";
@@ -248,6 +249,7 @@ export function GlobeExperience({ children }: { children?: ReactNode }) {
   const [paneSliding, setPaneSliding] = useState(false);
   const wasGlobeRouteRef = useRef(isGlobeExperienceRoute);
   const heroRef = useRef<HTMLElement>(null);
+  const mapPaneRef = useCoachMarkAnchor("map-place");
   const { scope } = useGameScope({ layoutAnchorRef: heroRef });
   const paneIndex = PANE_ORDER.indexOf(mode);
   const prevPaneIndexRef = useRef(paneIndex);
@@ -570,6 +572,41 @@ export function GlobeExperience({ children }: { children?: ReactNode }) {
 
   const globeActive = isGlobeExperienceRoute && globeLayerActive;
 
+  useEffect(() => {
+    const mem = (performance as Performance & { memory?: { usedJSHeapSize: number } }).memory;
+    // #region agent log
+    fetch("http://127.0.0.1:7905/ingest/53dc1e10-6e0b-4fef-9ca0-63e913b775c1", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "124d3d" },
+      body: JSON.stringify({
+        sessionId: "124d3d",
+        runId: "pre-fix",
+        hypothesisId: "B",
+        location: "GlobeExperience.tsx:pane-state",
+        message: "GlobeExperience pane state",
+        data: {
+          pathname,
+          mode,
+          isGlobeExperienceRoute,
+          isLibraryDetailRoute,
+          libraryWarmed,
+          globeActive,
+          panesMounted: isGlobeExperienceRoute,
+          heap: mem?.usedJSHeapSize ?? null,
+        },
+        timestamp: Date.now(),
+      }),
+    }).catch(() => {});
+    // #endregion
+  }, [
+    pathname,
+    mode,
+    isGlobeExperienceRoute,
+    isLibraryDetailRoute,
+    libraryWarmed,
+    globeActive,
+  ]);
+
   // Panels + stats follow the selection: world summary by default, USA
   // regions while a state is selected.
   const panelScope: GameScope = is2dView
@@ -624,6 +661,7 @@ export function GlobeExperience({ children }: { children?: ReactNode }) {
             >
               {/* ---- Map pane ---- */}
               <section
+                ref={mapPaneRef}
                 aria-label="Progress map"
                 inert={mode !== "map" || undefined}
                 className="pointer-events-none relative h-full w-full shrink-0"

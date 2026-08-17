@@ -23,7 +23,7 @@ export function isInvertedFlagRound(question: Question): boolean {
   );
 }
 
-/** Learn-card maps show a capital pin only when the question was about the capital. */
+/** Learn-card maps show a capital star only when the question was about the capital. */
 export function isCapitalQuestion(question: Question): boolean {
   return (
     question.mode === "capital-to-country" ||

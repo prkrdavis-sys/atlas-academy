@@ -161,7 +161,7 @@ type PlaceContextMapProps = {
   className?: string;
   /** Enable drag-to-pan and scroll/pinch zoom (no zoom toolbar). */
   interactive?: boolean;
-  /** Draw a capital pin at the projected city (library maps and capital learn cards). */
+  /** Draw a capital star at the projected city (library maps and capital learn cards). */
   showCapitalMarker?: boolean;
 };
 
@@ -549,7 +549,7 @@ export function PlaceContextMap({
   );
   const [loadFailed, setLoadFailed] = useState(false);
   const [panzoomReady, setPanzoomReady] = useState(false);
-  /** Current Panzoom scale; pin size is divided by this so close-ups stay small. */
+  /** Current Panzoom scale; star size is divided by this so close-ups stay small. */
   const [mapZoomScale, setMapZoomScale] = useState(1);
   const cropOptions = CROP_OPTIONS[variant];
 
@@ -652,7 +652,7 @@ export function PlaceContextMap({
 
     // Interactive maps draw in the wide surroundings viewBox, then Panzoom
     // zooms to the country. Size from the close-up crop and undo the current
-    // zoom so the pin stays a small, stable fraction of what is on screen.
+    // zoom so the star stays a small, stable fraction of what is on screen.
     const relativeZoom =
       interactive && interactiveViewBoxes
         ? mapZoomScale / interactiveViewBoxes.initialScale
@@ -674,6 +674,39 @@ export function PlaceContextMap({
     interactiveViewBoxes,
     mapZoomScale,
   ]);
+
+  const hasCapitalMarker = Boolean(capitalMarker);
+  useEffect(() => {
+    if (!showCapitalMarker) return;
+    // #region agent log
+    fetch("http://127.0.0.1:7905/ingest/53dc1e10-6e0b-4fef-9ca0-63e913b775c1", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "124d3d" },
+      body: JSON.stringify({
+        sessionId: "124d3d",
+        runId: "pre-fix",
+        hypothesisId: "C",
+        location: "PlaceContextMap.tsx:capital-marker",
+        message: "PlaceContextMap capital marker",
+        data: {
+          code: country.code,
+          showCapitalMarker,
+          interactive,
+          hasMarker: hasCapitalMarker,
+          x: capitalMarker?.x ?? null,
+          y: capitalMarker?.y ?? null,
+          size: capitalMarker?.size ?? null,
+          finite:
+            !capitalMarker ||
+            (Number.isFinite(capitalMarker.x) &&
+              Number.isFinite(capitalMarker.y) &&
+              Number.isFinite(capitalMarker.size)),
+        },
+        timestamp: Date.now(),
+      }),
+    }).catch(() => {});
+    // #endregion
+  }, [capitalMarker, country.code, hasCapitalMarker, interactive, showCapitalMarker]);
 
   useEffect(() => {
     preloadMapOceanTexture(templateKey === "usa" ? "usa" : "world", isDark);

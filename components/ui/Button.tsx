@@ -1,9 +1,10 @@
 import { cn } from "@/lib/utils";
-import type { ButtonHTMLAttributes } from "react";
+import type { ButtonHTMLAttributes, Ref } from "react";
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: "primary" | "secondary" | "ghost" | "danger";
   size?: "sm" | "md" | "lg";
+  ref?: Ref<HTMLButtonElement>;
 };
 
 export function Button({
@@ -11,10 +12,12 @@ export function Button({
   variant = "primary",
   size = "md",
   type = "button",
+  ref,
   ...props
 }: ButtonProps) {
   return (
     <button
+      ref={ref}
       className={cn(
         // Game-style press: thick bottom edge that collapses on :active
         "inline-flex min-h-11 items-center justify-center rounded-2xl font-bold transition-all duration-100",

@@ -13,26 +13,28 @@ import { useAuth } from "@/components/AuthProvider";
 import {
   deleteCloudProfile,
   loadCloudProfiles,
+  normalizeCloudProfile,
   saveCloudProfiles,
   toCloudError,
-  type CloudProfileRow,
 } from "@/lib/cloud-profiles";
 import { getMillisecondsUntilDailyReset } from "@/lib/game-engine";
+import {
+  cloudProfilesNeedSave,
+  mergeProfileLists,
+} from "@/lib/profile-merge";
 import {
   PROFILE_STORAGE_CHANGE_EVENT,
   createProfile,
   deleteProfile,
   getStorageAccount,
   loadState,
-  normalizeProfile,
   recordDailyLogin,
   saveState,
   setActiveProfile,
   setStorageAccount,
   upsertProfile,
 } from "@/lib/storage";
-import { mergeLocalBestGameScores } from "@/lib/stats-helpers";
-import type { Profile, ProfileAvatarId, ProfileAvatarSelection } from "@/lib/types";
+import type { Profile, ProfileAvatarSelection } from "@/lib/types";
 
 type ProfileContextValue = {
   profiles: Profile[];
@@ -52,24 +54,6 @@ const EMPTY_STATE = { profiles: [] as Profile[], activeProfileId: null as string
 const SYNC_RETRY_BASE_MS = 2000;
 const SYNC_RETRY_MAX_MS = 60_000;
 
-function normalizeCloudProfile(row: CloudProfileRow): Profile | null {
-  try {
-    if (!row.profile_data || typeof row.profile_data !== "object") return null;
-    const rawProfile = row.profile_data as Partial<Profile>;
-    const profile = {
-      ...rawProfile,
-      id: row.id,
-      name: row.name,
-      avatarColor: row.avatar_color,
-      avatarId: row.avatar_id ? (row.avatar_id as ProfileAvatarId) : undefined,
-      createdAt: rawProfile.createdAt ?? row.created_at,
-    } as Profile;
-    return normalizeProfile(profile);
-  } catch {
-    return null;
-  }
-}
-
 function getSyncErrorMessage(error: unknown) {
   return toCloudError(error).message;
 }
@@ -78,38 +62,11 @@ function cloneProfiles(profiles: Profile[]) {
   return profiles.map((profile) => structuredClone(profile));
 }
 
-/** Keep local daily results that cloud sync has not caught up with yet. */
-function mergeLocalDailyChallengeProgress(cloud: Profile, local: Profile | undefined): Profile {
-  if (!local) return cloud;
-
-  const mergedResults = {
-    ...(cloud.dailyChallengeResults ?? {}),
-  };
-  for (const [dateKey, result] of Object.entries(local.dailyChallengeResults ?? {})) {
-    if (!mergedResults[dateKey]) {
-      mergedResults[dateKey] = result;
-    }
+function resolveActiveProfileId(profiles: Profile[], activeProfileId: string | null) {
+  if (activeProfileId && profiles.some((profile) => profile.id === activeProfileId)) {
+    return activeProfileId;
   }
-
-  const withDaily = {
-    ...cloud,
-    dailyChallengeResults: mergedResults,
-    dailyChallengeCompletions: [
-      ...new Set([
-        ...(cloud.dailyChallengeCompletions ?? []),
-        ...(local.dailyChallengeCompletions ?? []),
-        ...Object.keys(mergedResults),
-      ]),
-    ],
-    dailyChallengePlayedDates: [
-      ...new Set([
-        ...(cloud.dailyChallengePlayedDates ?? []),
-        ...(local.dailyChallengePlayedDates ?? []),
-      ]),
-    ],
-  };
-
-  return mergeLocalBestGameScores(withDaily, local);
+  return profiles[0]?.id ?? null;
 }
 
 export function ProfileProvider({ children }: { children: React.ReactNode }) {
@@ -121,13 +78,52 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
   const userIdRef = useRef<string | null>(null);
   const syncGenerationRef = useRef(0);
   const syncQueueRef = useRef(Promise.resolve());
+  const anonymousMigrateRef = useRef<Profile[] | null>(null);
 
-  const enqueueSync = useCallback((profiles: Profile[], deletedProfileId?: string) => {
+  const applyMergedState = useCallback((profiles: Profile[], activeProfileId: string | null) => {
+    const nextState = {
+      profiles,
+      activeProfileId: resolveActiveProfileId(profiles, activeProfileId),
+    };
+    saveState(nextState, { notify: false });
+    setState(nextState);
+    return nextState;
+  }, []);
+
+  const reconcileWithCloud = useCallback(async () => {
+    const userId = userIdRef.current;
+    if (!userId) return;
+
+    const rows = await loadCloudProfiles(userId);
+    let cloudProfiles = rows
+      .map(normalizeCloudProfile)
+      .filter((profile): profile is Profile => profile !== null);
+
+    const anonymousProfiles = anonymousMigrateRef.current;
+    if (cloudProfiles.length === 0 && anonymousProfiles?.length) {
+      cloudProfiles = cloneProfiles(anonymousProfiles);
+      await saveCloudProfiles(userId, cloudProfiles);
+      anonymousMigrateRef.current = null;
+    }
+
+    const localState = loadState();
+    const merged = mergeProfileLists(localState.profiles, cloudProfiles);
+    if (cloudProfilesNeedSave(merged, cloudProfiles)) {
+      await saveCloudProfiles(userId, merged);
+    }
+
+    const latest = loadState();
+    const applied = mergeProfileLists(latest.profiles, merged);
+    if (cloudProfilesNeedSave(applied, latest.profiles)) {
+      applyMergedState(applied, latest.activeProfileId);
+    }
+  }, [applyMergedState]);
+
+  const enqueueReconcile = useCallback((deletedProfileId?: string) => {
     const userId = userIdRef.current;
     if (!userId || !remoteReadyRef.current) return;
 
     const generation = syncGenerationRef.current;
-    const profileSnapshot = cloneProfiles(profiles);
     syncQueueRef.current = syncQueueRef.current
       .catch(() => undefined)
       .then(async () => {
@@ -135,7 +131,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
         if (deletedProfileId) {
           await deleteCloudProfile(userId, deletedProfileId);
         }
-        await saveCloudProfiles(userId, profileSnapshot);
+        await reconcileWithCloud();
       })
       .then(
         () => {
@@ -149,7 +145,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
           }
         },
       );
-  }, []);
+  }, [reconcileWithCloud]);
 
   useEffect(() => {
     if (!authHydrated) return;
@@ -160,6 +156,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     syncGenerationRef.current = generation;
     remoteReadyRef.current = false;
     userIdRef.current = nextUserId;
+    anonymousMigrateRef.current = null;
     // The auth session is an external source; reset profile hydration when it changes.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setSyncError(null);
@@ -178,53 +175,26 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
       };
     }
 
-    const userId = nextUserId;
     const cachedState = loadState();
     setState(cachedState);
+    anonymousMigrateRef.current = anonymousState?.profiles.length
+      ? cloneProfiles(anonymousState.profiles)
+      : null;
 
     async function hydrateFromCloud() {
       try {
-        const rows = await loadCloudProfiles(userId);
-        let profiles = rows
-          .map(normalizeCloudProfile)
-          .filter((profile): profile is Profile => profile !== null);
+        await reconcileWithCloud();
+        if (cancelled || generation !== syncGenerationRef.current) return;
 
-        if (rows.length === 0 && anonymousState?.profiles.length) {
-          profiles = anonymousState.profiles;
-          await saveCloudProfiles(userId, profiles);
-        } else {
-          const localById = new Map(
-            [...(anonymousState?.profiles ?? []), ...cachedState.profiles].map((profile) => [
-              profile.id,
-              profile,
-            ]),
-          );
-          profiles = profiles.map((profile) =>
-            mergeLocalDailyChallengeProgress(profile, localById.get(profile.id)),
-          );
-        }
-
-        if (cancelled) return;
-
-        const activeProfileId =
-          cachedState.activeProfileId && profiles.some((profile) => profile.id === cachedState.activeProfileId)
-            ? cachedState.activeProfileId
-            : profiles[0]?.id ?? null;
-        const nextState = { profiles, activeProfileId };
-        saveState(nextState, { notify: false });
         remoteReadyRef.current = true;
-        setState(nextState);
         setHydrated(true);
 
-        if (profiles.length) {
-          void saveCloudProfiles(userId, profiles).catch(() => undefined);
-        }
-
+        const activeProfileId = loadState().activeProfileId;
         if (activeProfileId) {
           setState(recordDailyLogin(activeProfileId).state);
         }
       } catch (error: unknown) {
-        if (cancelled) return;
+        if (cancelled || generation !== syncGenerationRef.current) return;
         // Keep local cache usable and let the resume scheduler own the first push.
         setSyncError(getSyncErrorMessage(error));
         remoteReadyRef.current = true;
@@ -239,20 +209,22 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
       cancelled = true;
       remoteReadyRef.current = false;
     };
-  }, [authHydrated, user?.id]);
+  }, [authHydrated, reconcileWithCloud, user?.id]);
 
-  // Single resume policy: exponential backoff while syncError is sticky, plus
-  // immediate retry on tab focus/visibility or access-token refresh.
+  // Pull cloud progress when this tab is focused again, and retry failed
+  // syncs with backoff. A signed-in computer otherwise keeps a stale
+  // localStorage snapshot until a full reload.
   useEffect(() => {
-    if (!authHydrated || !user?.id || !syncError || !session?.access_token) return;
+    if (!authHydrated || !user?.id || !session?.access_token) return;
 
     let cancelled = false;
     let attempt = 0;
     let timer: number | undefined;
+    let lastResumeAt = 0;
 
     function retry() {
       if (cancelled || !userIdRef.current || !remoteReadyRef.current) return;
-      enqueueSync(loadState().profiles);
+      enqueueReconcile();
     }
 
     function schedule(delayMs: number) {
@@ -260,6 +232,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
       timer = window.setTimeout(() => {
         if (cancelled) return;
         retry();
+        if (!syncError) return;
         attempt += 1;
         schedule(Math.min(SYNC_RETRY_BASE_MS * 2 ** attempt, SYNC_RETRY_MAX_MS));
       }, delayMs);
@@ -267,21 +240,27 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
 
     function handleResume() {
       if (document.visibilityState !== "visible") return;
+      const now = Date.now();
+      if (!syncError && now - lastResumeAt < 1500) return;
+      lastResumeAt = now;
       attempt = 0;
       schedule(0);
     }
 
-    schedule(0);
+    if (syncError) schedule(0);
+
     window.addEventListener("focus", handleResume);
+    window.addEventListener("pageshow", handleResume);
     document.addEventListener("visibilitychange", handleResume);
 
     return () => {
       cancelled = true;
       window.clearTimeout(timer);
       window.removeEventListener("focus", handleResume);
+      window.removeEventListener("pageshow", handleResume);
       document.removeEventListener("visibilitychange", handleResume);
     };
-  }, [authHydrated, enqueueSync, session?.access_token, syncError, user?.id]);
+  }, [authHydrated, enqueueReconcile, session?.access_token, syncError, user?.id]);
 
   useEffect(() => {
     function handleStorage(event: StorageEvent) {
@@ -298,7 +277,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
       const loaded = loadState();
       setState(loaded);
       const detail = (event as CustomEvent<{ deletedProfileId?: string }>).detail;
-      enqueueSync(loaded.profiles, detail?.deletedProfileId);
+      enqueueReconcile(detail?.deletedProfileId);
     }
 
     window.addEventListener("storage", handleStorage);
@@ -307,11 +286,12 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
       window.removeEventListener("storage", handleStorage);
       window.removeEventListener(PROFILE_STORAGE_CHANGE_EVENT, handleLocalStateChange);
     };
-  }, [enqueueSync]);
+  }, [enqueueReconcile]);
 
   const refresh = useCallback(() => {
     setState(loadState());
-  }, []);
+    enqueueReconcile();
+  }, [enqueueReconcile]);
 
   const profiles = state.profiles;
   const activeProfileId = state.activeProfileId;

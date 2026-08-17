@@ -3,7 +3,7 @@ import { STREAK_SNUFF_MIN } from "@/lib/streak-tier";
 
 /**
  * Tiny Web Audio synth for game feedback. Most cues are short envelope-shaped
- * tones; end-of-game uses a short trumpet fanfare sample (`complete`).
+ * tones; end-of-game uses a bright level-complete jingle (`complete`).
  *
  * AudioContext starts suspended under browser autoplay rules and can re-suspend
  * after backgrounding. Lifecycle (gesture prime, resume, mobile keep-alive) is
@@ -29,13 +29,13 @@ export type PlaySoundOptions = {
   lostStreak?: number;
 };
 
-/** Sample-backed cues (Mixkit Orchestra trumpets ending — free Mixkit License). */
+/** Sample-backed cues (Mixkit Game level completed — free Mixkit License). */
 const SAMPLE_URLS = {
-  complete: "/sounds/complete-fanfare.mp3",
+  complete: "/sounds/complete.mp3",
 } as const;
 
 const SAMPLE_GAIN = {
-  complete: 0.28,
+  complete: 0.24,
 } as const;
 
 type SampleSoundKind = keyof typeof SAMPLE_URLS;
@@ -420,7 +420,7 @@ function loadSample(ctx: AudioContext, kind: SampleSoundKind): Promise<AudioBuff
   return load;
 }
 
-/** Warm sample decode after unlock so end-of-game fanfare is ready on first play. */
+/** Warm sample decode after unlock so end-of-game jingle is ready on first play. */
 function preloadSamples(ctx: AudioContext): void {
   for (const kind of Object.keys(SAMPLE_URLS) as SampleSoundKind[]) {
     void loadSample(ctx, kind);

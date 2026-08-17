@@ -10,16 +10,23 @@ import { MobileBottomDock } from "@/components/MobileBottomDock";
 import { PlayModeSwitcher } from "@/components/PlayModeSwitcher";
 import { ProfileSwitcher } from "@/components/ProfileSwitcher";
 import { FriendsHeaderButton } from "@/components/social/FriendsHeaderButton";
+import { CoachMarkLink } from "@/components/CoachMarkProvider";
 import { getPrimaryNavHref, isExploreRoute } from "@/lib/navigation";
 import { useLibraryNavHref } from "@/lib/use-library-nav-href";
 import { LIBRARY_ICON } from "@/lib/library";
+import type { CoachMarkId } from "@/lib/coach-marks";
 import { cn } from "@/lib/utils";
 
 const MOBILE_NAV_ITEMS = [
-  { href: "/map" as const, label: "Map", icon: "🗺️" },
-  { href: "/" as const, label: "Play", icon: "🌎" },
-  { href: "library" as const, label: "Library", icon: LIBRARY_ICON },
-] as const;
+  { href: "/map" as const, label: "Map", icon: "🗺️", markId: "map-nav" as const },
+  { href: "/" as const, label: "Play", icon: "🌎", markId: null },
+  { href: "library" as const, label: "Library", icon: LIBRARY_ICON, markId: "library-nav" as const },
+] as const satisfies readonly {
+  href: "/map" | "/" | "library";
+  label: string;
+  icon: string;
+  markId: CoachMarkId | null;
+}[];
 
 function isMobileNavItemActive(
   pathname: string,
@@ -95,8 +102,9 @@ export function AppHeader() {
                   const href = item.href === "library" ? libraryHref : item.href;
                   const active = isMobileNavItemActive(pathname, item);
                   return (
-                    <Link
+                    <CoachMarkLink
                       key={item.label}
+                      markId={item.markId}
                       href={href}
                       scroll={item.href === "library" && !onLibraryTab ? false : undefined}
                       aria-current={active ? "page" : undefined}
@@ -107,7 +115,7 @@ export function AppHeader() {
                     >
                       <span className="text-xl leading-none" aria-hidden>{item.icon}</span>
                       <span>{item.label}</span>
-                    </Link>
+                    </CoachMarkLink>
                   );
                 })}
               </div>
