@@ -45,6 +45,10 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+body.coach-mark-open canvas {
+  pointer-events: none !important;
+}
+
 /* Fixed atmosphere layer so overscroll bounce never reveals blank white —
    gradients stay pinned to the viewport in both light and dark mode. */
 body::before {

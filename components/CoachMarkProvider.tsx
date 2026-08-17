@@ -157,6 +157,8 @@ function CoachMarkHost() {
   const [placement, setPlacement] = useState<CoachMarkPlacement>("below");
   const [settleReady, setSettleReady] = useState(false);
   const [shownThisVisit, setShownThisVisit] = useState(false);
+  const [sessionSeen, setSessionSeen] = useState<ReadonlySet<CoachMarkId>>(() => new Set());
+  const [clickShield, setClickShield] = useState(false);
   const [prevScreen, setPrevScreen] = useState(screen);
 
   if (screen !== prevScreen) {
@@ -201,9 +203,12 @@ function CoachMarkHost() {
     }
   }
 
+  const seen = new Set(getSeenCoachMarks());
+  for (const id of sessionSeen) seen.add(id);
+
   const activeId =
     ctx && welcomeSeen && settleReady && screen && !shownThisVisit
-      ? pickCoachMark(screen, getSeenCoachMarks(), visibleIds)
+      ? pickCoachMark(screen, seen, visibleIds)
       : null;
   const activeEl =
     ctx && activeId
@@ -211,10 +216,23 @@ function CoachMarkHost() {
       : null;
 
   const dismiss = useCallback((id: CoachMarkId) => {
-    markCoachMarkSeen(id);
+    setSessionSeen((prev) => {
+      if (prev.has(id)) return prev;
+      const next = new Set(prev);
+      next.add(id);
+      return next;
+    });
     setShownThisVisit(true);
     setTargetRect(null);
+    setClickShield(true);
+    markCoachMarkSeen(id);
   }, []);
+
+  useEffect(() => {
+    if (!clickShield) return;
+    const timer = window.setTimeout(() => setClickShield(false), 400);
+    return () => window.clearTimeout(timer);
+  }, [clickShield]);
 
   useEffect(() => {
     if (!activeId || !activeEl) return;
@@ -239,29 +257,6 @@ function CoachMarkHost() {
     const observer = new ResizeObserver(updateRect);
     observer.observe(tipEl);
 
-    function onDocumentClick(event: MouseEvent) {
-      if (event.defaultPrevented) return;
-      const eventTarget = event.target;
-      if (!(eventTarget instanceof Element)) return;
-      if (eventTarget.closest("[data-coach-bubble]")) return;
-
-      if (tipEl.contains(eventTarget)) {
-        dismiss(tipId);
-        return;
-      }
-
-      const copy = COACH_MARKS[tipId];
-      const rect = getSpotlightRect(tipEl, copy.spotlight);
-      if (
-        event.clientX >= rect.left &&
-        event.clientX <= rect.right &&
-        event.clientY >= rect.top &&
-        event.clientY <= rect.bottom
-      ) {
-        dismiss(tipId);
-      }
-    }
-
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
         event.preventDefault();
@@ -269,49 +264,88 @@ function CoachMarkHost() {
       }
     }
 
-    document.addEventListener("click", onDocumentClick, true);
     window.addEventListener("keydown", onKeyDown);
     return () => {
       window.cancelAnimationFrame(frame);
       window.removeEventListener("resize", updateRect);
       window.removeEventListener("scroll", updateRect, true);
       observer.disconnect();
-      document.removeEventListener("click", onDocumentClick, true);
       window.removeEventListener("keydown", onKeyDown);
     };
   }, [activeId, activeEl, dismiss]);
 
   const copy = activeId ? COACH_MARKS[activeId] : null;
-  if (!copy || !targetRect || !activeEl || typeof document === "undefined") return null;
+  const overlayOpen = Boolean(copy && targetRect && activeEl) || clickShield;
 
-  return createPortal(
-    <>
+  useEffect(() => {
+    if (!overlayOpen) return;
+    document.body.classList.add("coach-mark-open");
+    return () => document.body.classList.remove("coach-mark-open");
+  }, [overlayOpen]);
+
+  if (typeof document === "undefined") return null;
+
+  if (copy && targetRect && activeEl) {
+    return createPortal(
+      <div
+        className="fixed inset-0 z-[100] touch-manipulation"
+        data-coach-root=""
+        onPointerDownCapture={(event) => {
+          if (event.button !== 0) return;
+          event.preventDefault();
+          event.stopPropagation();
+          dismiss(copy.id);
+        }}
+        onClick={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          dismiss(copy.id);
+        }}
+      >
+        <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div
+            className={cn(
+              "absolute ring-2 ring-teal-400 ring-offset-2 ring-offset-transparent",
+              copy.spotlight === "center" ? "rounded-full" : "rounded-2xl",
+            )}
+            style={{
+              top: targetRect.top - 6,
+              left: targetRect.left - 6,
+              width: targetRect.width + 12,
+              height: targetRect.height + 12,
+              boxShadow: "0 0 0 9999px rgb(15 23 42 / 0.45)",
+            }}
+          />
+        </div>
+        <CoachMarkBubble
+          title={copy.title}
+          body={copy.body}
+          target={targetRect}
+          placement={placement}
+          onDismiss={() => dismiss(copy.id)}
+        />
+      </div>,
+      document.body,
+    );
+  }
+
+  if (clickShield) {
+    return createPortal(
       <div
         aria-hidden
-        className="pointer-events-none fixed inset-0 z-[68] overflow-hidden"
-      >
-        <div
-          className={cn(
-            "absolute ring-2 ring-teal-400 ring-offset-2 ring-offset-transparent",
-            copy.spotlight === "center" ? "rounded-full" : "rounded-2xl",
-          )}
-          style={{
-            top: targetRect.top - 6,
-            left: targetRect.left - 6,
-            width: targetRect.width + 12,
-            height: targetRect.height + 12,
-            boxShadow: "0 0 0 9999px rgb(15 23 42 / 0.45)",
-          }}
-        />
-      </div>
-      <CoachMarkBubble
-        title={copy.title}
-        body={copy.body}
-        target={targetRect}
-        placement={placement}
-        onDismiss={() => dismiss(copy.id)}
-      />
-    </>,
-    document.body,
-  );
+        className="fixed inset-0 z-[100]"
+        onPointerDown={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+        }}
+        onClick={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+        }}
+      />,
+      document.body,
+    );
+  }
+
+  return null;
 }

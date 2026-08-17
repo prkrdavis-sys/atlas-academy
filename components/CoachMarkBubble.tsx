@@ -66,7 +66,7 @@ export function CoachMarkBubble({
       aria-modal="false"
       aria-labelledby={titleId}
       aria-describedby={bodyId}
-      className="fixed z-[70] w-[min(20rem,calc(100vw-1.5rem))]"
+      className="pointer-events-auto fixed z-[70] w-[min(20rem,calc(100vw-1.5rem))]"
       data-coach-bubble=""
       style={{
         left,
@@ -102,7 +102,19 @@ export function CoachMarkBubble({
           size="sm"
           className="mt-3 w-full"
           autoFocus
-          onClick={onDismiss}
+          data-coach-dismiss=""
+          onPointerDown={(event) => {
+            // Pointer-down dismisses even when iOS drops the following click
+            // (button :active translate, or the overlay unmounting under the tap).
+            event.preventDefault();
+            event.stopPropagation();
+            onDismiss();
+          }}
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            onDismiss();
+          }}
         >
           Got it
         </Button>

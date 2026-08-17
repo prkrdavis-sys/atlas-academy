@@ -205,10 +205,14 @@ export function hasSeenCoachMark(id: CoachMarkId): boolean {
 
 export function markCoachMarkSeen(id: CoachMarkId): void {
   if (typeof window === "undefined") return;
-  const seen = readStoredSeen();
-  seen.add(id);
-  window.localStorage.setItem(
-    COACH_MARKS_STORAGE_KEY,
-    JSON.stringify({ seen: [...seen] } satisfies StoredCoachMarks),
-  );
+  try {
+    const seen = readStoredSeen();
+    seen.add(id);
+    window.localStorage.setItem(
+      COACH_MARKS_STORAGE_KEY,
+      JSON.stringify({ seen: [...seen] } satisfies StoredCoachMarks),
+    );
+  } catch {
+    // Private mode / quota: session state still hides the tip.
+  }
 }
