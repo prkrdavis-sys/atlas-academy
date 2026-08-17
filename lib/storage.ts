@@ -448,7 +448,11 @@ export function saveState(
   options: SaveStateOptions = {},
 ) {
   if (typeof window === "undefined") return;
-  localStorage.setItem(getStorageKey(), JSON.stringify(state));
+  try {
+    localStorage.setItem(getStorageKey(), JSON.stringify(state));
+  } catch {
+    // Quota / private-mode failures must not crash a round; in-memory state remains.
+  }
   if (options.notify !== false) {
     notifyStateChange({ deletedProfileId: options.deletedProfileId });
   }

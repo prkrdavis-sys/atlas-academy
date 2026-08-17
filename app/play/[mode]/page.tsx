@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { GameBoard } from "@/components/GameBoard";
+import { GameCrashBoundary } from "@/components/GameCrashBoundary";
 import { QuickStartOverlay } from "@/components/QuickStartOverlay";
 import { useProfiles, useRequiredProfile } from "@/components/ProfileProvider";
 import {
@@ -25,7 +26,8 @@ import {
 } from "@/lib/game-engine";
 import {
   clearGameResumeSnapshot,
-  consumeGameResumeSnapshot,
+  consumeFreshPlay,
+  loadMatchingGameResumeSnapshot,
   type GameResumeSnapshot,
 } from "@/lib/game-resume";
 import { getScopedModeInfo, scopedHref } from "@/lib/scope";
@@ -51,7 +53,6 @@ function PlayPageInner() {
   const profile = useRequiredProfile();
   const requestedMode = params.mode as GameMode;
   const scope = useResolvedGameScope();
-  const wantsResume = searchParams.get("resume") === "1";
 
   const resolved = resolvePlayConfig(
     {
@@ -126,25 +127,25 @@ function PlayPageInner() {
     if (!scope) return;
     if (autoStartedRef.current || started) return;
 
-    if (wantsResume) {
-      const snapshot = consumeGameResumeSnapshot(requestedMode, scope);
-      if (snapshot) {
-        autoStartedRef.current = true;
-        setResumeSnapshot(snapshot);
-        setCountStats(snapshot.countStats);
-        if (snapshot.mode === "daily-challenge" && snapshot.countStats) {
-          sessionStorage.setItem(DAILY_COUNTING_SESSION_KEY, snapshot.dailyDateKey ?? dailyDateKey);
-        }
-        setSessionKey((key) => key + 1);
-        setStarted(true);
-        setShowOverlay(false);
-        router.replace(
-          scopedHref(`/play/${snapshot.mode}`, scope, {
-            ...(snapshot.dailyDateKey ? { date: snapshot.dailyDateKey } : {}),
-          }),
-        );
-        return;
+    const snapshot = consumeFreshPlay(requestedMode, scope)
+      ? null
+      : loadMatchingGameResumeSnapshot({
+          mode: requestedMode,
+          scope,
+          profileId: profile.id,
+          dailyDateKey: isDailyChallenge ? dailyDateKey : undefined,
+        });
+    if (snapshot) {
+      autoStartedRef.current = true;
+      setResumeSnapshot(snapshot);
+      setCountStats(snapshot.countStats);
+      if (snapshot.mode === "daily-challenge" && snapshot.countStats) {
+        sessionStorage.setItem(DAILY_COUNTING_SESSION_KEY, snapshot.dailyDateKey ?? dailyDateKey);
       }
+      setSessionKey((key) => key + 1);
+      setStarted(true);
+      setShowOverlay(false);
+      return;
     }
 
     if (!modeInfo) return;
@@ -152,7 +153,6 @@ function PlayPageInner() {
     if (!isDailyChallenge && availableCountryCount === 0) return;
 
     autoStartedRef.current = true;
-    clearGameResumeSnapshot();
 
     if (isDailyChallenge) {
       const today = dailyDateKey;
@@ -176,10 +176,35 @@ function PlayPageInner() {
     setSessionKey((key) => key + 1);
     setStarted(true);
     setShowOverlay(true);
-  }, [scope, dailyDate, dailyDateKey, isDailyChallenge, profile, requestedMode, mode, router, wantsResume]);
+  }, [
+    scope,
+    dailyDate,
+    dailyDateKey,
+    isDailyChallenge,
+    profile.id,
+    requestedMode,
+    mode,
+  ]);
   /* eslint-enable react-hooks/set-state-in-effect */
 
+  function handleCrashRetry() {
+    if (!scope) return;
+    const snapshot = loadMatchingGameResumeSnapshot({
+      mode: requestedMode,
+      scope,
+      profileId: profile.id,
+      dailyDateKey: isDailyChallenge ? dailyDateKey : undefined,
+    });
+    if (snapshot) {
+      setResumeSnapshot(snapshot);
+      setCountStats(snapshot.countStats);
+      setShowOverlay(false);
+    }
+    setSessionKey((key) => key + 1);
+  }
+
   function handlePlayAgain() {
+    clearGameResumeSnapshot();
     setResumeSnapshot(null);
     if (isDailyChallenge && profile.dailyChallengeResults?.[dailyDateKey]) {
       setCountStats(false);
@@ -252,7 +277,9 @@ function PlayPageInner() {
           showOverlay && "pointer-events-none select-none blur-[2px]",
         )}
       >
-        <GameBoard key={sessionKey} {...gameProps} onPlayAgain={handlePlayAgain} />
+        <GameCrashBoundary onRetry={handleCrashRetry}>
+          <GameBoard key={sessionKey} {...gameProps} onPlayAgain={handlePlayAgain} />
+        </GameCrashBoundary>
       </div>
       {showOverlay ? (
         <QuickStartOverlay

@@ -2,12 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { MobileBottomDock } from "@/components/MobileBottomDock";
-import {
-  clearGameResumeSnapshot,
-  loadGameResumeSnapshot,
-} from "@/lib/game-resume";
+import { loadGameResumeSnapshot } from "@/lib/game-resume";
 import { isExploreRoute } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 
@@ -17,34 +14,27 @@ function isResumePlayPath(pathname: string, playHref: string): boolean {
 }
 
 /**
- * Green resume CTA while browsing the library after leaving a learn-card mid-round.
- * Clears when the user leaves the library tab (except to resume) or taps resume.
+ * Green resume CTA while browsing the library after leaving a round mid-game.
  */
 export function GameResumeBar() {
   const pathname = usePathname();
   const [playHref, setPlayHref] = useState<string | null>(null);
-  const prevPathRef = useRef(pathname);
   const onLibrary = isExploreRoute(pathname);
 
   useEffect(() => {
-    const previousPath = prevPathRef.current;
-    prevPathRef.current = pathname;
-
-    if (isExploreRoute(pathname)) {
-      setPlayHref(loadGameResumeSnapshot()?.playHref ?? null);
-      return;
-    }
-
-    if (!isExploreRoute(previousPath)) return;
-
     const snapshot = loadGameResumeSnapshot();
-    if (snapshot && isResumePlayPath(pathname, snapshot.playHref)) {
-      // Heading back into the game — keep snapshot for GameBoard hydrate.
+    if (!snapshot) {
       setPlayHref(null);
       return;
     }
-
-    clearGameResumeSnapshot();
+    if (isResumePlayPath(pathname, snapshot.playHref)) {
+      setPlayHref(null);
+      return;
+    }
+    if (isExploreRoute(pathname)) {
+      setPlayHref(snapshot.playHref);
+      return;
+    }
     setPlayHref(null);
   }, [pathname]);
 

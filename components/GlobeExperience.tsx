@@ -458,15 +458,11 @@ export function GlobeExperience({ children }: { children?: ReactNode }) {
   // Keep the library list mounted across Map / Play / Library once warmed so
   // tab slides do not remount ~250 place cards.
   useEffect(() => {
-    if (!isGlobeExperienceRoute) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setLibraryWarmed(false);
-      return;
-    }
     if (mode === "library" || isLibraryRoute) {
       setLibraryWarmed(true);
       return;
     }
+    if (!isGlobeExperienceRoute) return;
 
     const warm = () => setLibraryWarmed(true);
     if (typeof window.requestIdleCallback === "function") {
@@ -645,10 +641,16 @@ export function GlobeExperience({ children }: { children?: ReactNode }) {
         className="fixed inset-0 z-0"
       />
 
-      {isGlobeExperienceRoute ? (
-        <>
-          {/* Three panes of one page: [map | play | library]. The globe behind never moves. */}
-          <div className="pointer-events-none relative z-10 min-h-0 w-full flex-1 overflow-hidden">
+      {/* Three panes of one page: [map | play | library]. The globe behind never moves.
+          Stay mounted during /play so returning to Library does not remount the list. */}
+          <div
+            className={cn(
+              "pointer-events-none relative z-10 min-h-0 w-full flex-1 overflow-hidden",
+              !isGlobeExperienceRoute && "hidden",
+            )}
+            aria-hidden={!isGlobeExperienceRoute || undefined}
+            inert={!isGlobeExperienceRoute || undefined}
+          >
             <div
               ref={sliderRef}
               className={cn(
@@ -872,8 +874,6 @@ export function GlobeExperience({ children }: { children?: ReactNode }) {
             profile={profile}
             difficulty={mapDifficulty}
           />
-        </>
-      ) : null}
     </>
   );
 }

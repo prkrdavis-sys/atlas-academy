@@ -1200,7 +1200,7 @@ export default function InteractiveGlobe({
           onSelectPlace(null);
         }}
       >
-        {webglOk && ready ? (
+        {webglOk && ready && active ? (
           <Canvas
             key={canvasKey}
             camera={{

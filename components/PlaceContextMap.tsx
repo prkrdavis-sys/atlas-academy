@@ -644,7 +644,13 @@ export function PlaceContextMap({
     if (!latLng || !country.capital) return null;
     const [lat, lng] = latLng;
     const point = projectLonLatToMap(lng, lat, templateKey);
-    if (!point) return null;
+    if (
+      !point ||
+      !Number.isFinite(point[0]) ||
+      !Number.isFinite(point[1])
+    ) {
+      return null;
+    }
 
     const focusedCrop = interactiveViewBoxes?.focused
       ?? (focusedViewBox ? parseSvgViewBox(focusedViewBox) : null);

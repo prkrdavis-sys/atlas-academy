@@ -24,6 +24,10 @@ function fivePointStarPath(outerR: number, innerR: number): string {
  * Filled five-pointed star centered on (x, y) — the projected capital.
  */
 export function CapitalMapPin({ x, y, size, label, isDark = false }: CapitalMapPinProps) {
+  if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(size) || size <= 0) {
+    return null;
+  }
+
   const outerR = size / 2;
   const innerR = outerR * 0.4;
   const fill = isDark ? "#fb7185" : "#e11d48";
@@ -46,6 +50,7 @@ export function capitalPinSizeForViewBox(
   viewBoxHeight: number,
   zoomScale = 1,
 ): number {
+  if (!Number.isFinite(viewBoxWidth) || !Number.isFinite(viewBoxHeight)) return 0;
   const diagonal = Math.hypot(viewBoxWidth, viewBoxHeight);
   return (diagonal * 0.038) / Math.max(zoomScale, 0.2);
 }

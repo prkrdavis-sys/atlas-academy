@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   AnswerFeedbackLayer,
@@ -60,6 +61,7 @@ import {
 import { buildLibraryDetailHref, LIBRARY_ICON } from "@/lib/library";
 import {
   buildGameResumePlayHref,
+  clearGameResumeSnapshot,
   saveGameResumeSnapshot,
   type GameResumeSnapshot,
 } from "@/lib/game-resume";
@@ -175,7 +177,9 @@ export function GameBoard({
   });
   /** Streak length captured when a miss ends the round (marathon / stop-on-wrong). */
   const [endedStreak, setEndedStreak] = useState(() => resumeSnapshot?.endedStreak ?? 0);
-  const [showLearnCard, setShowLearnCard] = useState(() => Boolean(resumeSnapshot));
+  const [showLearnCard, setShowLearnCard] = useState(
+    () => resumeSnapshot?.showLearnCard ?? Boolean(resumeSnapshot),
+  );
   const learnCardLibraryRef = useCoachMarkAnchor(
     showLearnCard && !isDailyChallenge ? "learn-card-library" : null,
   );
@@ -421,9 +425,22 @@ export function GameBoard({
     saveDailyTimerSession({ dateKey: dailyDateKey, startedAt: dailyStartedAt });
   }, [mode, countStats, dailyDateKey, dailyStartedAt]);
 
-  function persistLearnCardResume() {
-    if (!question || !showLearnCard) return;
-    saveGameResumeSnapshot({
+  const hasFinishedQuestions = !question && questionCount > 0;
+  const hasReachedQuestionLimit = Boolean(
+    sessionQuestionLimit && questionCount >= sessionQuestionLimit,
+  );
+  const roundEnded =
+    exitedEarly ||
+    gameOver ||
+    sessionComplete ||
+    hasFinishedQuestions ||
+    hasReachedQuestionLimit;
+  const showSummary = roundEnded && !showLearnCard;
+
+  function buildResumeSnapshot(): GameResumeSnapshot | null {
+    if (!question || showSummary) return null;
+    if (questionCount === 0 && !showLearnCard) return null;
+    return {
       version: 1,
       playHref: buildGameResumePlayHref(
         mode,
@@ -431,6 +448,7 @@ export function GameBoard({
         isDailyChallenge ? dailyDateKey : undefined,
       ),
       createdAt: Date.now(),
+      profileId: activeProfile.id,
       mode,
       challengeModifier,
       continents,
@@ -451,12 +469,13 @@ export function GameBoard({
       questionIndex: engine.getQuestionIndex(),
       roundCountryCodes: engine.getRoundCountryCodes(),
       question,
+      showLearnCard,
       streak,
       endedStreak,
       lastCorrect,
       lastSelectedAnswer,
       lastSelectedCode,
-      disabled: true,
+      disabled,
       hiddenOptions,
       usedFiftyFifty,
       usedSkip,
@@ -467,20 +486,58 @@ export function GameBoard({
       timeLeft,
       gameOver,
       sessionComplete,
-    });
+    };
   }
 
-  const hasFinishedQuestions = !question && questionCount > 0;
-  const hasReachedQuestionLimit = Boolean(
-    sessionQuestionLimit && questionCount >= sessionQuestionLimit,
-  );
-  const roundEnded =
-    exitedEarly ||
-    gameOver ||
-    sessionComplete ||
-    hasFinishedQuestions ||
-    hasReachedQuestionLimit;
-  const showSummary = roundEnded && !showLearnCard;
+  const resumeSnapshotRef = useRef<GameResumeSnapshot | null>(null);
+  resumeSnapshotRef.current = buildResumeSnapshot();
+
+  useLayoutEffect(() => {
+    const snapshot = resumeSnapshotRef.current;
+    if (snapshot) {
+      saveGameResumeSnapshot(snapshot);
+    } else if (showSummary) {
+      clearGameResumeSnapshot();
+    }
+
+    function flushResume() {
+      const next = resumeSnapshotRef.current;
+      if (next) saveGameResumeSnapshot(next);
+    }
+
+    function handleVisibility() {
+      if (document.visibilityState === "hidden") flushResume();
+    }
+
+    window.addEventListener("pagehide", flushResume);
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => {
+      flushResume();
+      window.removeEventListener("pagehide", flushResume);
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
+  }, [
+    showSummary,
+    question,
+    showLearnCard,
+    questionCount,
+    streak,
+    endedStreak,
+    lastCorrect,
+    lastSelectedAnswer,
+    lastSelectedCode,
+    disabled,
+    hiddenOptions,
+    usedFiftyFifty,
+    usedSkip,
+    correctAnswers,
+    skippedAnswers,
+    hintsUsed,
+    timeLeft,
+    gameOver,
+    sessionComplete,
+    dailyAnswers,
+  ]);
 
   useEffect(() => {
     if (
@@ -1071,15 +1128,14 @@ export function GameBoard({
               <span aria-hidden>←</span>
               <span>Exit</span>
             </Button>
-            {/* Release the gameplay/WebGL tree before loading the library detail route.
-                Hidden on daily challenge — the header already has extra time/score chips. */}
             {showLearnCard && !isDailyChallenge && (
-              <a
+              <Link
                 ref={learnCardLibraryRef}
                 href={learnCardLibraryHref}
                 onClick={(e) => {
                   e.stopPropagation();
-                  persistLearnCardResume();
+                  const snapshot = resumeSnapshotRef.current;
+                  if (snapshot) saveGameResumeSnapshot(snapshot);
                 }}
                 aria-label={`Open ${getCountryName(learnCardCountryCode)} in library`}
                 className={cn(
@@ -1088,7 +1144,7 @@ export function GameBoard({
               >
                 <span aria-hidden>{LIBRARY_ICON}</span>
                 <span className="hidden sm:inline">Library</span>
-              </a>
+              </Link>
             )}
           </div>
           <div className="hidden min-w-0 px-1 text-center leading-tight sm:block">

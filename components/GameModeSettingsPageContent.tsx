@@ -26,6 +26,7 @@ import {
   SCOPE_INFO,
 } from "@/lib/scope";
 import { getCommonlyMissedCountries } from "@/lib/stats-helpers";
+import { markFreshPlay } from "@/lib/game-resume";
 import { recordModeSelection, updateProfileSettings } from "@/lib/storage";
 import { useResolvedGameScope } from "@/lib/use-game-scope";
 import {
@@ -141,6 +142,7 @@ export function GameModeSettingsPageContent({ mode }: GameModeSettingsPageConten
   const handlePlay = () => {
     if (startDisabled) return;
     persistCurrentDraft();
+    markFreshPlay(mode, scope);
     router.push(scopedHref(`/play/${mode}`, scope, { autostart: "1" }));
   };
 
