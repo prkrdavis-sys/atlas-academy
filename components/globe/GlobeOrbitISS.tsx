@@ -248,7 +248,7 @@ type GlobeOrbitISSProps = {
  * globe around, and the opaque planet occludes the station on the far leg of
  * every revolution.
  */
-export function GlobeOrbitISS({ perfTier, reducedMotion, onActivity }: GlobeOrbitISSProps) {
+export function GlobeOrbitISS({ perfTier, reducedMotion }: GlobeOrbitISSProps) {
   const detail = GLOBE_ISS_DETAIL_BY_TIER[perfTier];
   const stationRef = useRef<THREE.Group>(null);
   const beaconRef = useRef<THREE.MeshBasicMaterial>(null);
@@ -277,7 +277,6 @@ export function GlobeOrbitISS({ perfTier, reducedMotion, onActivity }: GlobeOrbi
 
     if (!reducedMotion) {
       elapsedRef.current += Math.min(delta, 0.1);
-      onActivity?.();
     }
 
     const angle = (elapsedRef.current / ORBIT_PERIOD_S) * Math.PI * 2;

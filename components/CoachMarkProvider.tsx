@@ -81,6 +81,54 @@ function getCoachPlacement(rect: DOMRect): CoachMarkPlacement {
   return spaceAbove >= spaceBelow ? "above" : "below";
 }
 
+function rectsClose(a: DOMRect, b: DOMRect): boolean {
+  return (
+    Math.abs(a.x - b.x) < 0.5 &&
+    Math.abs(a.y - b.y) < 0.5 &&
+    Math.abs(a.width - b.width) < 0.5 &&
+    Math.abs(a.height - b.height) < 0.5
+  );
+}
+
+const SPOTLIGHT_PAD = 6;
+const DIMMER_CLASS = "absolute bg-slate-900/45";
+
+/**
+ * Dims the page with four viewport-sized rects instead of a 9999px box-shadow,
+ * which forced the browser to paint a ~20k-pixel layer and froze the UI.
+ * The hole is empty so the real control (Play, Map, …) still receives taps.
+ */
+function CoachMarkScrim({
+  rect,
+  spotlight,
+}: {
+  rect: DOMRect;
+  spotlight: CoachSpotlight;
+}) {
+  const top = Math.max(0, rect.top - SPOTLIGHT_PAD);
+  const left = Math.max(0, rect.left - SPOTLIGHT_PAD);
+  const width = rect.width + SPOTLIGHT_PAD * 2;
+  const height = rect.height + SPOTLIGHT_PAD * 2;
+  const right = left + width;
+  const bottom = top + height;
+
+  return (
+    <div aria-hidden className="pointer-events-none absolute inset-0">
+      <div className={DIMMER_CLASS} style={{ top: 0, left: 0, right: 0, height: top }} />
+      <div className={DIMMER_CLASS} style={{ top: bottom, left: 0, right: 0, bottom: 0 }} />
+      <div className={DIMMER_CLASS} style={{ top, left: 0, width: left, height }} />
+      <div className={DIMMER_CLASS} style={{ top, left: right, right: 0, height }} />
+      <div
+        className={cn(
+          "absolute ring-2 ring-teal-400 ring-offset-2 ring-offset-transparent",
+          spotlight === "center" ? "rounded-full" : "rounded-2xl",
+        )}
+        style={{ top, left, width, height }}
+      />
+    </div>
+  );
+}
+
 export function useCoachMarkAnchor<T extends HTMLElement = HTMLElement>(
   id: CoachMarkId | null,
 ) {
@@ -158,7 +206,6 @@ function CoachMarkHost() {
   const [settleReady, setSettleReady] = useState(false);
   const [shownThisVisit, setShownThisVisit] = useState(false);
   const [sessionSeen, setSessionSeen] = useState<ReadonlySet<CoachMarkId>>(() => new Set());
-  const [clickShield, setClickShield] = useState(false);
   const [prevScreen, setPrevScreen] = useState(screen);
 
   if (screen !== prevScreen) {
@@ -224,15 +271,8 @@ function CoachMarkHost() {
     });
     setShownThisVisit(true);
     setTargetRect(null);
-    setClickShield(true);
     markCoachMarkSeen(id);
   }, []);
-
-  useEffect(() => {
-    if (!clickShield) return;
-    const timer = window.setTimeout(() => setClickShield(false), 400);
-    return () => window.clearTimeout(timer);
-  }, [clickShield]);
 
   useEffect(() => {
     if (!activeId || !activeEl) return;
@@ -242,13 +282,14 @@ function CoachMarkHost() {
 
     function updateRect() {
       if (!tipEl.isConnected || !isCoachAnchorVisible(tipEl)) {
-        setTargetRect(null);
+        setTargetRect((prev) => (prev ? null : prev));
         return;
       }
       const copy = COACH_MARKS[tipId];
       const rect = getSpotlightRect(tipEl, copy.spotlight);
-      setTargetRect(rect);
-      setPlacement(getCoachPlacement(rect));
+      const nextPlacement = getCoachPlacement(rect);
+      setTargetRect((prev) => (prev && rectsClose(prev, rect) ? prev : rect));
+      setPlacement((prev) => (prev === nextPlacement ? prev : nextPlacement));
     }
 
     const frame = window.requestAnimationFrame(updateRect);
@@ -257,6 +298,15 @@ function CoachMarkHost() {
     const observer = new ResizeObserver(updateRect);
     observer.observe(tipEl);
 
+    function onPointerDown(event: PointerEvent) {
+      if (event.button !== 0) return;
+      if (!(event.target instanceof Element)) return;
+      // Got it handles itself. Everything else dismisses without preventDefault
+      // so Play / nav still receive the same tap.
+      if (event.target.closest("[data-coach-bubble]")) return;
+      dismiss(tipId);
+    }
+
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
         event.preventDefault();
@@ -264,18 +314,20 @@ function CoachMarkHost() {
       }
     }
 
+    document.addEventListener("pointerdown", onPointerDown, true);
     window.addEventListener("keydown", onKeyDown);
     return () => {
       window.cancelAnimationFrame(frame);
       window.removeEventListener("resize", updateRect);
       window.removeEventListener("scroll", updateRect, true);
       observer.disconnect();
+      document.removeEventListener("pointerdown", onPointerDown, true);
       window.removeEventListener("keydown", onKeyDown);
     };
   }, [activeId, activeEl, dismiss]);
 
   const copy = activeId ? COACH_MARKS[activeId] : null;
-  const overlayOpen = Boolean(copy && targetRect && activeEl) || clickShield;
+  const overlayOpen = Boolean(copy && targetRect && activeEl);
 
   useEffect(() => {
     if (!overlayOpen) return;
@@ -288,35 +340,10 @@ function CoachMarkHost() {
   if (copy && targetRect && activeEl) {
     return createPortal(
       <div
-        className="fixed inset-0 z-[100] touch-manipulation"
+        className="pointer-events-none fixed inset-0 z-[100]"
         data-coach-root=""
-        onPointerDownCapture={(event) => {
-          if (event.button !== 0) return;
-          event.preventDefault();
-          event.stopPropagation();
-          dismiss(copy.id);
-        }}
-        onClick={(event) => {
-          event.preventDefault();
-          event.stopPropagation();
-          dismiss(copy.id);
-        }}
       >
-        <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div
-            className={cn(
-              "absolute ring-2 ring-teal-400 ring-offset-2 ring-offset-transparent",
-              copy.spotlight === "center" ? "rounded-full" : "rounded-2xl",
-            )}
-            style={{
-              top: targetRect.top - 6,
-              left: targetRect.left - 6,
-              width: targetRect.width + 12,
-              height: targetRect.height + 12,
-              boxShadow: "0 0 0 9999px rgb(15 23 42 / 0.45)",
-            }}
-          />
-        </div>
+        <CoachMarkScrim rect={targetRect} spotlight={copy.spotlight} />
         <CoachMarkBubble
           title={copy.title}
           body={copy.body}
@@ -325,24 +352,6 @@ function CoachMarkHost() {
           onDismiss={() => dismiss(copy.id)}
         />
       </div>,
-      document.body,
-    );
-  }
-
-  if (clickShield) {
-    return createPortal(
-      <div
-        aria-hidden
-        className="fixed inset-0 z-[100]"
-        onPointerDown={(event) => {
-          event.preventDefault();
-          event.stopPropagation();
-        }}
-        onClick={(event) => {
-          event.preventDefault();
-          event.stopPropagation();
-        }}
-      />,
       document.body,
     );
   }

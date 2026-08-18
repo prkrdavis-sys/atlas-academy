@@ -217,6 +217,7 @@ export function HomePlayHero({
               <button
                 type="button"
                 ref={playButtonRef}
+                data-tab-swipe-ignore
                 onClick={startPlay}
                 className="play-glow-button relative flex min-h-14 w-full items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-b from-emerald-400 to-teal-600 px-8 py-3.5 font-display text-xl font-extrabold text-white transition-transform hover:scale-[1.02] active:scale-[0.97] sm:min-h-16 sm:text-2xl"
               >

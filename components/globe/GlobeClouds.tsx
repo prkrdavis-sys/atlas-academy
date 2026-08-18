@@ -974,8 +974,6 @@ function HurricaneStorm({
       }
     }
 
-    if (strengthRef.current > 0.001) onActivity?.();
-
     if (
       !completedRef.current &&
       currentPhase === "fade_out" &&
@@ -1155,7 +1153,6 @@ export function GlobeClouds({
     if (cloudsGroupRef.current) {
       cloudsGroupRef.current.rotation.y += elapsed * CLOUD_ROTATION_SPEED;
     }
-    onActivity?.();
   });
 
   return (

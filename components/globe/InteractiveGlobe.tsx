@@ -631,18 +631,15 @@ function KeepFrameloopAlive({
   controlsRef,
   autoSpin,
   ambientMotion,
-  onActivity,
 }: {
   controlsRef: RefObject<OrbitControlsImpl | null>;
   autoSpin: boolean;
   /** Continuous scene motion (drifting clouds, the orbiting ISS). */
   ambientMotion: boolean;
-  onActivity: () => void;
 }) {
   const invalidate = useThree((state) => state.invalidate);
   useFrame(() => {
     if (autoSpin || ambientMotion) {
-      onActivity();
       invalidate();
       return;
     }
@@ -997,7 +994,9 @@ export default function InteractiveGlobe({
     !settleRunning;
   // Park the frameloop entirely while a 2D map view covers the globe.
   const { frameloop, bumpActivity } = useGlobeFrameloop(pageVisible && active, {
-    forceAlways: autoSpinActive || introRunning || settleRunning,
+    // Clouds / ISS / flybys keep the loop running; calling bumpActivity every
+    // frame was resetting a timeout 60×/s for no extra frames.
+    forceAlways: autoSpinActive || introRunning || settleRunning || !reducedMotion,
   });
   const canvasGl = getGlobeCanvasGlSettings(perfTier);
   const starCount = getGlobeStarCount(perfTier);
@@ -1298,7 +1297,6 @@ export default function InteractiveGlobe({
               controlsRef={controlsRef}
               autoSpin={autoSpinActive}
               ambientMotion={!reducedMotion}
-              onActivity={bumpActivity}
             />
             <OrbitControls
               ref={controlsRef}

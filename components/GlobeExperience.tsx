@@ -320,6 +320,9 @@ export function GlobeExperience({ children }: { children?: ReactNode }) {
       if (!isGlobeExperienceRoute || swipeNavigationLockedRef.current) return;
       // Mouse drag on desktop must not swipe panes; touch/pen only.
       if (event.pointerType === "mouse") return;
+      // Clear leftover suppress before bailing on buttons. Otherwise a cancelled
+      // horizontal swipe ate the next Play / link tap.
+      suppressSwipeClickRef.current = false;
       if (isSwipeExcludedTarget(event.target)) return;
 
       swipeGestureRef.current = {
@@ -331,7 +334,6 @@ export function GlobeExperience({ children }: { children?: ReactNode }) {
         // links/buttons still receive their click / navigation.
         captureTarget: event.currentTarget,
       };
-      suppressSwipeClickRef.current = false;
     },
     [isGlobeExperienceRoute],
   );
@@ -381,6 +383,7 @@ export function GlobeExperience({ children }: { children?: ReactNode }) {
 
       const deltaX = event.clientX - gesture.startX;
       if (cancelled || gesture.axis !== "horizontal") {
+        suppressSwipeClickRef.current = false;
         setSwipeDragging(false);
         setSwipeOffset(0);
         return;

@@ -297,7 +297,6 @@ export function SpaceFlybys({
 
     const dt = Math.min(delta, 0.05);
     elapsedRef.current += dt;
-    let anyActive = false;
 
     // --- Meteor spawn (dark mode only) ---
     if (isDark && elapsedRef.current >= nextMeteorAtRef.current) {
@@ -362,7 +361,6 @@ export function SpaceFlybys({
         continue;
       }
 
-      anyActive = true;
       const u = slot.t;
       posScratch.lerpVectors(slot.start, slot.end, u);
       lookScratch.lerpVectors(slot.start, slot.end, Math.min(1, u + 0.02));
@@ -388,7 +386,6 @@ export function SpaceFlybys({
           flyby.active = false;
           flybyGroup.visible = false;
         } else {
-          anyActive = true;
           const u = easeInOutQuad(flyby.t);
           posScratch.lerpVectors(flyby.start, flyby.end, u);
           lookScratch.lerpVectors(flyby.start, flyby.end, Math.min(1, u + 0.01));
@@ -438,7 +435,6 @@ export function SpaceFlybys({
         explosion.active = false;
         explosionGroup.visible = false;
       } else {
-        anyActive = true;
         const easeOut = 1 - (1 - progress) ** 3;
         const flash = explosionFlashRef.current;
         const core = explosionCoreRef.current;
@@ -479,8 +475,6 @@ export function SpaceFlybys({
         }
       }
     }
-
-    if (anyActive) onActivity();
   });
 
   const flybyScale = simplified ? 0.045 : 0.055;
