@@ -66,7 +66,11 @@ export function CoachMarkBubble({
       aria-modal="false"
       aria-labelledby={titleId}
       aria-describedby={bodyId}
-      className="pointer-events-auto fixed z-[70] w-[min(20rem,calc(100vw-1.5rem))]"
+      // The bubble often sits over other controls (the tip for the bottom nav
+      // lands on Play). Only "Got it" takes taps; the card itself stays
+      // transparent to pointers so the control underneath still receives the
+      // tap — and CoachMarkHost sees that tap and dismisses the tip.
+      className="pointer-events-none fixed z-[70] w-[min(20rem,calc(100vw-1.5rem))]"
       data-coach-bubble=""
       style={{
         left,
@@ -100,7 +104,7 @@ export function CoachMarkBubble({
         <Button
           ref={gotItRef}
           size="sm"
-          className="mt-3 w-full"
+          className="pointer-events-auto mt-3 w-full"
           autoFocus
           data-coach-dismiss=""
           onPointerDown={(event) => {

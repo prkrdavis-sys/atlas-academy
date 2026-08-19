@@ -4,7 +4,6 @@ type CapitalMapPinProps = {
   /** SVG user-unit diameter of the star. */
   size: number;
   label: string;
-  isDark?: boolean;
 };
 
 function fivePointStarPath(outerR: number, innerR: number): string {
@@ -23,14 +22,13 @@ function fivePointStarPath(outerR: number, innerR: number): string {
 /**
  * Filled five-pointed star centered on (x, y) — the projected capital.
  */
-export function CapitalMapPin({ x, y, size, label, isDark = false }: CapitalMapPinProps) {
+export function CapitalMapPin({ x, y, size, label }: CapitalMapPinProps) {
   if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(size) || size <= 0) {
     return null;
   }
 
   const outerR = size / 2;
-  const innerR = outerR * 0.4;
-  const fill = isDark ? "#fb7185" : "#e11d48";
+  const innerR = outerR * 0.38;
 
   return (
     <g
@@ -39,7 +37,7 @@ export function CapitalMapPin({ x, y, size, label, isDark = false }: CapitalMapP
       role="img"
       aria-label={label}
     >
-      <path d={fivePointStarPath(outerR, innerR)} fill={fill} />
+      <path d={fivePointStarPath(outerR, innerR)} fill="#111111" />
     </g>
   );
 }
@@ -52,5 +50,5 @@ export function capitalPinSizeForViewBox(
 ): number {
   if (!Number.isFinite(viewBoxWidth) || !Number.isFinite(viewBoxHeight)) return 0;
   const diagonal = Math.hypot(viewBoxWidth, viewBoxHeight);
-  return (diagonal * 0.038) / Math.max(zoomScale, 0.2);
+  return (diagonal * 0.022) / Math.max(zoomScale, 0.2);
 }

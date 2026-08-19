@@ -7,14 +7,23 @@ import { useIsDark } from "@/lib/use-is-dark";
 const THEME_COLOR_META = "theme-color";
 const APPLE_STATUS_BAR_META = "apple-mobile-web-app-status-bar-style";
 
+/**
+ * Rewrites every matching meta in place. `viewport.themeColor` in the root
+ * layout is rendered by React, so removing those nodes would leave React with a
+ * detached child and crash the next commit ("Cannot read properties of null
+ * (reading 'removeChild')") — which blanked the page mid-navigation.
+ */
 function setMetaContent(name: string, content: string) {
-  let meta = document.querySelector(`meta[name="${name}"]`);
-  if (!meta) {
-    meta = document.createElement("meta");
-    meta.setAttribute("name", name);
-    document.head.appendChild(meta);
+  const existing = document.querySelectorAll(`meta[name="${name}"]`);
+  if (existing.length > 0) {
+    existing.forEach((meta) => meta.setAttribute("content", content));
+    return;
   }
+
+  const meta = document.createElement("meta");
+  meta.setAttribute("name", name);
   meta.setAttribute("content", content);
+  document.head.appendChild(meta);
 }
 
 export function ThemeColorSync() {
@@ -22,10 +31,6 @@ export function ThemeColorSync() {
 
   useEffect(() => {
     if (!ready) return;
-
-    document
-      .querySelectorAll(`meta[name="${THEME_COLOR_META}"]`)
-      .forEach((meta) => meta.remove());
 
     setMetaContent(THEME_COLOR_META, isDark ? THEME_BACKGROUND.dark : THEME_BACKGROUND.light);
     setMetaContent(APPLE_STATUS_BAR_META, isDark ? "black-translucent" : "default");

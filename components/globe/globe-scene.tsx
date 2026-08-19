@@ -164,6 +164,13 @@ export function getGlobeStarCount(tier: GlobePerfTier): number {
 }
 
 const MAX_CANVAS_RECOVERY_ATTEMPTS = 5;
+/**
+ * How long a freshly mounted renderer must survive before its recovery budget
+ * is refilled. Resetting on mount alone would refill the budget on every
+ * recovery attempt, so a device that keeps dropping the context would remount
+ * the canvas forever — each remount replaying the intro zoom.
+ */
+const CANVAS_RECOVERY_STABLE_MS = 10_000;
 
 /** Remount key for a globe Canvas after WebGL context loss. */
 export function useGlobeCanvasKey() {
@@ -208,11 +215,11 @@ export function GlobeContextRecovery({ onContextLost }: { onContextLost: () => v
   return null;
 }
 
-/** Resets context-loss recovery once the renderer has mounted. */
+/** Refills the context-loss recovery budget once the renderer has held up. */
 export function GlobeRecoveryReset({ onStable }: { onStable: () => void }) {
   useEffect(() => {
-    const id = requestAnimationFrame(onStable);
-    return () => cancelAnimationFrame(id);
+    const id = setTimeout(onStable, CANVAS_RECOVERY_STABLE_MS);
+    return () => clearTimeout(id);
   }, [onStable]);
 
   return null;

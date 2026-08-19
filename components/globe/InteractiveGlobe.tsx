@@ -769,7 +769,7 @@ function PickableGlobe({
         controlsRef={controlsRef}
         spinGroupRef={spinGroupRef}
       />
-      <GlobeCapitalMarker selectedCode={selectedCode} isDark={isDark} />
+      <GlobeCapitalMarker selectedCode={selectedCode} />
     </group>
   );
 }

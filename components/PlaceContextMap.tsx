@@ -511,7 +511,6 @@ export function ContextMapSvg({
           y={capitalMarker.y}
           size={capitalMarker.size}
           label={capitalMarker.label}
-          isDark={isDark}
         />
       ) : null}
     </svg>
