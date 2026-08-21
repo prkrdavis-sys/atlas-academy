@@ -1,3 +1,8 @@
+import {
+  FLAG_QUESTION_MODES,
+  mapProgressCategoryForMode,
+  modeCountsTowardMapProgress as registryModeCountsTowardMapProgress,
+} from "@/lib/mode-registry";
 import { filterCountries, getRegionsForScope } from "@/lib/countries";
 import {
   getCountryCodeByMapPathId,
@@ -18,15 +23,7 @@ import type {
 } from "@/lib/types";
 import { MAP_PROGRESS_CATEGORIES } from "@/lib/types";
 
-/** Flag quiz modes share one map-progress category. */
-export const FLAG_MAP_PROGRESS_MODES = [
-  "flag-to-country",
-  "flag-crop-to-country",
-  "inverted-flag-crop-to-country",
-  "country-to-flag",
-  "inverted-flag-to-country",
-  "inverted-country-to-flag",
-] as const satisfies readonly GameMode[];
+export const FLAG_MAP_PROGRESS_MODES = FLAG_QUESTION_MODES;
 
 export const MAP_PROGRESS_CATEGORY_INFO: Record<
   MapProgressCategory,
@@ -35,7 +32,7 @@ export const MAP_PROGRESS_CATEGORY_INFO: Record<
   flag: {
     label: "Flag",
     icon: "🏳️",
-    modes: FLAG_MAP_PROGRESS_MODES,
+    modes: FLAG_QUESTION_MODES,
   },
   shape: {
     label: "Shape",
@@ -55,40 +52,15 @@ export const MAP_PROGRESS_CATEGORY_INFO: Record<
 };
 
 function resolveMapProgressCategoryFromGameMode(mode: GameMode): MapProgressCategory | null {
-  if ((FLAG_MAP_PROGRESS_MODES as readonly GameMode[]).includes(mode)) {
-    return "flag";
-  }
-
-  switch (mode) {
-    case "shape-to-country":
-      return "shape";
-    case "capital-to-country":
-    case "country-to-capital":
-      return "capital";
-    case "fact-to-country":
-      return "trivia";
-    default:
-      return null;
-  }
+  return mapProgressCategoryForMode(mode);
 }
-
-/** Shuffle / challenge modes that fill mastery via category questions. */
-const COMPOSITE_MAP_PROGRESS_MODES = [
-  "mixed",
-  "daily-challenge",
-  "marathon",
-  "speed-round",
-] as const satisfies readonly GameMode[];
 
 /**
  * Modes whose questions (or shuffled category questions) can fill map mastery
  * on Normal/Hard. Used by the setup page chip.
  */
 export function modeCountsTowardMapProgress(mode: GameMode): boolean {
-  if ((COMPOSITE_MAP_PROGRESS_MODES as readonly GameMode[]).includes(mode)) {
-    return true;
-  }
-  return resolveMapProgressCategoryFromGameMode(mode) !== null;
+  return registryModeCountsTowardMapProgress(mode);
 }
 
 export function toMapProgressDifficulty(

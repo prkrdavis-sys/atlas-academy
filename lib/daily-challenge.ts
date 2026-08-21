@@ -1,8 +1,8 @@
 import { saveCloudProfile } from "@/lib/cloud-profiles";
+import { getDailySeedForDateKey } from "@/lib/daily-calendar";
 import {
   buildDailyChallengeSnapshot,
   DAILY_CHALLENGE_CONTENT_VERSION,
-  getDailySeedForDateKey,
 } from "@/lib/game-engine";
 import { createClient } from "@/lib/supabase/client";
 import type {

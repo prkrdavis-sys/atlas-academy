@@ -7,7 +7,6 @@ import type {
   ProfileAvatarSelection,
   AchievementSessionContext,
   Question,
-  SpeedRoundQuestionType,
 } from "@/lib/types";
 import {
   recordPlaceMapProgress,
@@ -21,13 +20,12 @@ import {
   DEFAULT_SELECTED_MODE,
   DIFFICULTIES,
   GAME_MODES,
-  SPEED_ROUND_ALL_TYPES,
   US_REGIONS,
   normalizeRoundQuestionSetting,
 } from "@/lib/types";
 import { checkAchievements as evaluateAchievements, reconcileAchievements } from "@/lib/achievements";
-import { isValidSetupMode } from "@/lib/game-setup";
-import { getDailyDateKey, offsetDailyDateKey } from "@/lib/game-engine";
+import { isValidSetupMode, questionTypeToBaseMode } from "@/lib/game-setup";
+import { getDailyDateKey, offsetDailyDateKey } from "@/lib/daily-calendar";
 import { MAX_LOGIN_DATE_HISTORY_DAYS } from "@/lib/login-streak";
 import { isProfileAvatarId } from "@/lib/profile-avatars";
 import {
@@ -96,10 +94,6 @@ function createEmptyStats(): ReturnType<typeof createEmptyScopedStats> {
 
 function createEmptyGlobalStreaks(): Profile["globalStreaks"] {
   return createEmptyScopedGlobalStreaks();
-}
-
-function questionTypeToBaseMode(questionType: SpeedRoundQuestionType): GameMode {
-  return questionType === SPEED_ROUND_ALL_TYPES ? "mixed" : questionType;
 }
 
 function getDefaultProfileSettings(): Profile["settings"] {
@@ -538,7 +532,7 @@ export function recordAnswer(
 ) {
   const state = loadState();
   const profile = state.profiles.find((p) => p.id === profileId);
-  if (!profile) return state;
+  if (!profile) return { state, stats: null };
 
   const stats = profile.stats[scope][mode][difficulty];
   const globalStreak = profile.globalStreaks[scope][difficulty];

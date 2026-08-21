@@ -260,3 +260,18 @@ export function restoreLibraryListScrollState(state: LibraryListScrollState): vo
   }
   window.scrollTo(0, y);
 }
+
+/** Layout can settle after fonts/images; retry the same restore a few times. */
+export function scheduleRestoreAttempts(apply: () => void): () => void {
+  apply();
+  const raf = requestAnimationFrame(apply);
+  const shortDelay = window.setTimeout(apply, 100);
+  const longDelay = window.setTimeout(apply, 400);
+  window.addEventListener("load", apply, { once: true });
+  return () => {
+    cancelAnimationFrame(raf);
+    window.clearTimeout(shortDelay);
+    window.clearTimeout(longDelay);
+    window.removeEventListener("load", apply);
+  };
+}

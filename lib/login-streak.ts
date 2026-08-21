@@ -1,4 +1,4 @@
-import { getDailyDateKey, getWeekdayInEastern, offsetDailyDateKey } from "@/lib/game-engine";
+import { getDailyDateKey, getWeekdayInEastern, offsetDailyDateKey } from "@/lib/daily-calendar";
 import type { Profile } from "@/lib/types";
 
 /** How many recent login date keys to keep on the profile (enough for the week view). */

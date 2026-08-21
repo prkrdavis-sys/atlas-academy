@@ -51,7 +51,7 @@ export function isValidSetupMode(value: string | null | undefined): value is Gam
   return SETUP_MODES.includes(value as GameMode);
 }
 
-function questionTypeToBaseMode(questionType: SpeedRoundQuestionType): GameMode {
+export function questionTypeToBaseMode(questionType: SpeedRoundQuestionType): GameMode {
   return questionType === SPEED_ROUND_ALL_TYPES ? "mixed" : questionType;
 }
 

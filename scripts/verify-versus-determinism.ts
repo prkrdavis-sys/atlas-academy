@@ -24,17 +24,16 @@ function questionContent(questions: ReturnType<typeof buildRound>) {
 }
 
 function buildRound(mode: GameMode, seed: number) {
-  const engine = new GameEngine(
+  const engine = new GameEngine({
     mode,
-    [...getRegionsForScope("world")],
-    "medium",
-    undefined,
+    continents: [...getRegionsForScope("world")],
+    difficulty: "medium",
     seed,
-    normalizeRoundQuestionSetting(QUESTION_COUNT),
-    false,
-    "world",
-    "none",
-  );
+    questionLimit: normalizeRoundQuestionSetting(QUESTION_COUNT),
+    includeTerritories: false,
+    scope: "world",
+    challengeModifier: "none",
+  });
 
   const questions = [];
   for (let index = 0; index < QUESTION_COUNT; index += 1) {

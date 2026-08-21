@@ -1,7 +1,9 @@
 import closestMainlandData from "@/data/closest-mainland.json";
 import countriesData from "@/data/countries.json";
 import statesData from "@/data/states.json";
+import { isAtlasleEligible } from "@/lib/atlasle";
 import { isFlagCropEligible } from "@/lib/flag-crop";
+import { NON_ISLAND_AND_NAMES } from "@/lib/place-geography";
 import {
   CONTINENTS,
   CORE_QUESTION_TYPES,
@@ -64,6 +66,47 @@ function matchesContinentSelection(country: Country, continents: Region[]): bool
   return !country.isTerritory;
 }
 
+function countryMatchesQuestionMode(country: Country, mode: GameMode): boolean {
+  switch (mode) {
+    case "globe-hunt":
+      return !country.isTerritory;
+    case "shape-to-country":
+      return country.hasShape;
+    case "flag-to-country":
+    case "country-to-flag":
+    case "inverted-flag-to-country":
+    case "inverted-country-to-flag":
+      return country.hasFlag;
+    case "flag-crop-to-country":
+    case "inverted-flag-crop-to-country":
+      return country.hasFlag && isFlagCropEligible(country.code);
+    case "capital-to-country":
+      return country.capital.length > 0 && country.hasCapitalImage;
+    case "country-to-capital":
+      return country.capital.length > 0;
+    case "country-to-language":
+      return getPrimaryLanguage(country) !== undefined;
+    case "neighbor-quiz":
+      return country.borders.length > 0;
+    case "population-showdown":
+      return country.population > 0 && country.hasFlag;
+    case "fact-to-country":
+      return country.factQuestion.trim().length > 0 || country.factQuestion2.trim().length > 0;
+    case "atlasle":
+      return isAtlasleEligible(country);
+    case "daily-challenge":
+    case "marathon":
+    case "speed-round":
+    case "weak-spots":
+    case "mixed":
+      return true;
+    default: {
+      const _exhaustive: never = mode;
+      return _exhaustive;
+    }
+  }
+}
+
 export function filterCountries(options: FilterOptions): Country[] {
   const scope = options.scope ?? "world";
   const dataset = getPlacesForScope(scope);
@@ -85,73 +128,9 @@ export function filterCountries(options: FilterOptions): Country[] {
   }
   let pool = [...byCode.values()];
 
-  if (options.mode === "globe-hunt") {
-    pool = pool.filter((c) => !c.isTerritory);
-  }
-
-  if (options.mode === "shape-to-country") {
-    pool = pool.filter((c) => c.hasShape);
-  }
-
-  if (
-    options.mode === "flag-to-country" ||
-    options.mode === "flag-crop-to-country" ||
-    options.mode === "inverted-flag-crop-to-country" ||
-    options.mode === "country-to-flag" ||
-    options.mode === "inverted-flag-to-country" ||
-    options.mode === "inverted-country-to-flag"
-  ) {
-    pool = pool.filter((c) => c.hasFlag);
-  }
-
-  if (
-    options.mode === "flag-crop-to-country" ||
-    options.mode === "inverted-flag-crop-to-country"
-  ) {
-    pool = pool.filter((c) => isFlagCropEligible(c.code));
-  }
-
-  if (options.mode === "capital-to-country") {
-    pool = pool.filter((c) => c.capital.length > 0 && c.hasCapitalImage);
-  }
-
-  if (options.mode === "country-to-capital") {
-    pool = pool.filter((c) => c.capital.length > 0);
-  }
-
-  if (options.mode === "country-to-language") {
-    pool = pool.filter((c) => getPrimaryLanguage(c) !== undefined);
-  }
-
-  if (options.mode === "neighbor-quiz") {
-    pool = pool.filter((c) => c.borders.length > 0);
-  }
-
-  if (options.mode === "population-showdown") {
-    pool = pool.filter((c) => c.population > 0 && c.hasFlag);
-  }
-
-  if (options.mode === "fact-to-country") {
-    pool = pool.filter(
-      (c) => c.factQuestion.trim().length > 0 || c.factQuestion2.trim().length > 0,
-    );
-  }
-
-  if (options.mode === "atlasle") {
-    pool = pool.filter((c) => {
-      const nameLetters = c.name
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[^a-zA-Z]/g, "");
-      const capitalLetters = c.capital
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[^a-zA-Z]/g, "");
-      const nameOk = nameLetters.length >= 4 && nameLetters.length <= 12;
-      const capitalOk =
-        capitalLetters.length >= 4 && capitalLetters.length <= 12;
-      return nameOk || capitalOk;
-    });
+  if (options.mode) {
+    const mode = options.mode;
+    pool = pool.filter((country) => countryMatchesQuestionMode(country, mode));
   }
 
   if (options.mode === "weak-spots" && options.weakSpotCodes?.length) {
@@ -184,22 +163,7 @@ export function getRegionsForScope(scope: GameScope): readonly Region[] {
 }
 
 export function getEligibleCoreQuestionTypes(country: Country): CoreQuestionType[] {
-  return CORE_QUESTION_TYPES.filter((type) => {
-    switch (type) {
-      case "flag-to-country":
-        return country.hasFlag;
-      case "shape-to-country":
-        return country.hasShape;
-      case "capital-to-country":
-        return country.capital.length > 0 && country.hasCapitalImage;
-      case "country-to-capital":
-        return country.capital.length > 0;
-      default: {
-        const _exhaustive: never = type;
-        return _exhaustive;
-      }
-    }
-  });
+  return CORE_QUESTION_TYPES.filter((type) => countryMatchesQuestionMode(country, type));
 }
 
 export function getEligibleMixedQuestionTypes(country: Country): MixedQuestionType[] {
@@ -332,7 +296,6 @@ export function formatBorderFact(borderCount: number, scope: GameScope = "world"
   return `It borders ${borderCount} countr${borderCount === 1 ? "y" : "ies"}.`;
 }
 
-const NON_ARCHIPELAGO_AND_NAMES = new Set(["Bosnia and Herzegovina"]);
 
 const ISLAND_SUBREGIONS = new Set([
   "Caribbean",
@@ -391,7 +354,7 @@ function getRegionLabel(country: Country): string {
 }
 
 function isArchipelagoPlace(country: Country): boolean {
-  if (NON_ARCHIPELAGO_AND_NAMES.has(country.name)) return false;
+  if (NON_ISLAND_AND_NAMES.has(country.name)) return false;
   if (/\bIslands\b/i.test(country.name)) return true;
   return /\band\b/i.test(country.name);
 }

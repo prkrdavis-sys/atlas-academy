@@ -1,51 +1,28 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import {
+  parseBooleanFlag,
+  serializeBooleanFlag,
+  useStoredPreference,
+  type StoredPreferenceOptions,
+} from "@/lib/stored-preference";
 
-const STORAGE_KEY = "atlas-academy-library-opaque";
-const CHANGE_EVENT = "atlas-academy-library-opaque-change";
-const DEFAULT_OPAQUE = false;
+const PREF = {
+  key: "atlas-academy-library-opaque",
+  changeEvent: "atlas-academy-library-opaque-change",
+  defaultValue: false,
+  parse: (value: string | null) => parseBooleanFlag(value, false),
+  serialize: serializeBooleanFlag,
+} as const satisfies StoredPreferenceOptions<boolean>;
 
-function normalizeOpaque(value: string | null): boolean {
-  return value === "1" || value === "true";
-}
-
-function getStoredLibraryOpaque(): boolean {
-  if (typeof window === "undefined") return DEFAULT_OPAQUE;
-  return normalizeOpaque(localStorage.getItem(STORAGE_KEY));
-}
-
-/** Device-wide preference for showing the Library pane with an opaque backing. */
+/**
+ * Device-wide preference for showing the Library pane with an opaque backing.
+ */
 export function useLibraryBackground(): {
   opaque: boolean;
   setOpaque: (opaque: boolean) => void;
   ready: boolean;
 } {
-  const [opaque, setOpaqueState] = useState(DEFAULT_OPAQUE);
-  const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setOpaqueState(getStoredLibraryOpaque());
-    setReady(true);
-
-    const onChange = () => setOpaqueState(getStoredLibraryOpaque());
-    const onStorage = (event: StorageEvent) => {
-      if (event.key === STORAGE_KEY) onChange();
-    };
-    window.addEventListener(CHANGE_EVENT, onChange);
-    window.addEventListener("storage", onStorage);
-    return () => {
-      window.removeEventListener(CHANGE_EVENT, onChange);
-      window.removeEventListener("storage", onStorage);
-    };
-  }, []);
-
-  const setOpaque = useCallback((next: boolean) => {
-    localStorage.setItem(STORAGE_KEY, next ? "1" : "0");
-    setOpaqueState(next);
-    window.dispatchEvent(new Event(CHANGE_EVENT));
-  }, []);
-
+  const { value: opaque, setValue: setOpaque, ready } = useStoredPreference(PREF);
   return { opaque, setOpaque, ready };
 }

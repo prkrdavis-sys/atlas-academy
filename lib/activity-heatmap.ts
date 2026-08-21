@@ -1,5 +1,5 @@
 import type { Profile } from "@/lib/types";
-import { getDailyDateKey } from "@/lib/game-engine";
+import { getDailyDateKey } from "@/lib/daily-calendar";
 import { DAILY_CHALLENGE_QUESTION_COUNT } from "@/lib/types";
 
 export type ActivityLevel = 0 | 1 | 2 | 3 | 4;

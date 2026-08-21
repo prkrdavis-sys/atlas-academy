@@ -1,4 +1,4 @@
-import { getDailyDateKey } from "@/lib/game-engine";
+import { getDailyDateKey } from "@/lib/daily-calendar";
 import type {
   Difficulty,
   GameMode,

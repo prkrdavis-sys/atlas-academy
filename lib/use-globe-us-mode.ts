@@ -1,26 +1,26 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
 import type { GlobeUsMode } from "@/lib/globe-texture";
-
-const STORAGE_KEY = "atlas-academy-globe-us-mode";
-/** Custom event so every mounted globe updates when the main-menu toggle flips. */
-const CHANGE_EVENT = "atlas-academy-globe-us-mode-change";
+import {
+  readStoredPreference,
+  useStoredPreference,
+  type StoredPreferenceOptions,
+} from "@/lib/stored-preference";
 
 const DEFAULT_US_MODE: GlobeUsMode = "states";
 
-function normalizeUsMode(value: string | null): GlobeUsMode {
-  return value === "country" ? "country" : DEFAULT_US_MODE;
-}
+const PREF = {
+  key: "atlas-academy-globe-us-mode",
+  changeEvent: "atlas-academy-globe-us-mode-change",
+  defaultValue: DEFAULT_US_MODE,
+  parse: (value: string | null): GlobeUsMode =>
+    value === "country" ? "country" : DEFAULT_US_MODE,
+  serialize: (value: GlobeUsMode) => value,
+  persistDefault: true,
+} as const satisfies StoredPreferenceOptions<GlobeUsMode>;
 
 export function getStoredGlobeUsMode(): GlobeUsMode {
-  if (typeof window === "undefined") return DEFAULT_US_MODE;
-  const stored = localStorage.getItem(STORAGE_KEY);
-  if (stored === null) {
-    localStorage.setItem(STORAGE_KEY, DEFAULT_US_MODE);
-    return DEFAULT_US_MODE;
-  }
-  return normalizeUsMode(stored);
+  return readStoredPreference(PREF);
 }
 
 /**
@@ -32,29 +32,6 @@ export function useGlobeUsMode(): {
   usMode: GlobeUsMode;
   setUsMode: (mode: GlobeUsMode) => void;
 } {
-  const [usMode, setUsModeState] = useState<GlobeUsMode>(DEFAULT_US_MODE);
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setUsModeState(getStoredGlobeUsMode());
-
-    const onChange = () => setUsModeState(getStoredGlobeUsMode());
-    const onStorage = (event: StorageEvent) => {
-      if (event.key === STORAGE_KEY) onChange();
-    };
-    window.addEventListener(CHANGE_EVENT, onChange);
-    window.addEventListener("storage", onStorage);
-    return () => {
-      window.removeEventListener(CHANGE_EVENT, onChange);
-      window.removeEventListener("storage", onStorage);
-    };
-  }, []);
-
-  const setUsMode = useCallback((mode: GlobeUsMode) => {
-    localStorage.setItem(STORAGE_KEY, mode);
-    setUsModeState(mode);
-    window.dispatchEvent(new Event(CHANGE_EVENT));
-  }, []);
-
+  const { value: usMode, setValue: setUsMode } = useStoredPreference(PREF);
   return { usMode, setUsMode };
 }

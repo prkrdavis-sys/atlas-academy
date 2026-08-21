@@ -17,7 +17,7 @@ import {
   saveCloudProfiles,
   toCloudError,
 } from "@/lib/cloud-profiles";
-import { getMillisecondsUntilDailyReset } from "@/lib/game-engine";
+import { getMillisecondsUntilDailyReset } from "@/lib/daily-calendar";
 import {
   cloudProfilesNeedSave,
   mergeProfileLists,

@@ -294,7 +294,15 @@ for (const mode of MODES) {
     isFlagPickMode || mode === "globe-hunt" ? ["easy", "medium", "hard"] : ["easy", "medium"];
   for (const difficulty of difficulties) {
     for (let run = 0; run < RUNS; run += 1) {
-      const engine = new GameEngine(mode, regions, difficulty, undefined, run, "all", true, scope);
+      const engine = new GameEngine({
+        mode,
+        continents: regions,
+        difficulty,
+        seed: run,
+        questionLimit: "all",
+        includeTerritories: true,
+        scope,
+      });
       let q: Question | null;
       while ((q = engine.nextQuestion())) {
         questionsChecked += 1;
@@ -422,7 +430,14 @@ for (const mode of MODES) {
 }
 
 // Type-in (hard mode) checks on name-answer modes
-const nameEngine = new GameEngine("flag-to-country", [...CONTINENTS], "hard", undefined, 1, "all", true);
+const nameEngine = new GameEngine({
+  mode: "flag-to-country",
+  continents: [...CONTINENTS],
+  difficulty: "hard",
+  seed: 1,
+  questionLimit: "all",
+  includeTerritories: true,
+});
 for (const c of [...countries, ...usStates].filter((x) => x.hasFlag)) {
   const q: Question = {
     id: "t",

@@ -66,6 +66,7 @@ import {
   type GameResumeSnapshot,
 } from "@/lib/game-resume";
 import { getQuestionTaskLabel, getTypeInPlacePlaceholder, isStateCode, scopeText, SCOPE_INFO } from "@/lib/scope";
+import { getRoundSummaryCopy } from "@/lib/game-summary";
 import { getStatsMode } from "@/lib/game-setup";
 import { useIsDark } from "@/lib/use-is-dark";
 import { setStoredMapProgressDifficulty } from "@/lib/use-map-progress-difficulty";
@@ -139,18 +140,18 @@ export function GameBoard({
     : undefined;
   const dailyQuestionsForResult = dailyQuestions ?? resumeSnapshot?.dailyQuestions ?? [];
   const [{ engine, firstQuestion, sessionQuestionLimit }] = useState(() => {
-    const gameEngine = new GameEngine(
+    const gameEngine = new GameEngine({
       mode,
       continents,
       difficulty,
       weakSpotCodes,
       seed,
-      maxQuestions,
+      questionLimit: maxQuestions,
       includeTerritories,
       scope,
       challengeModifier,
-      dailyQuestions ?? resumeSnapshot?.dailyQuestions,
-    );
+      dailyQuestionSnapshot: dailyQuestions ?? resumeSnapshot?.dailyQuestions,
+    });
     if (resumeSnapshot) {
       gameEngine.restoreResumeProgress(
         resumeSnapshot.questionIndex,
@@ -338,16 +339,77 @@ export function GameBoard({
     }
   }
 
-  function awardAchievements(session: {
-    sessionCorrect: number;
-    sessionTotal: number;
-    sessionEnded: boolean;
-  }) {
-    const state = loadState();
-    const updatedProfile = state.profiles.find((p) => p.id === activeProfile.id);
-    if (!updatedProfile) return;
-    const earned = checkAchievements(updatedProfile, statsMode, difficulty, session, scope);
+  function awardAchievements(
+    session: {
+      sessionCorrect: number;
+      sessionTotal: number;
+      sessionEnded: boolean;
+    },
+    profile = loadState().profiles.find((p) => p.id === activeProfile.id),
+  ) {
+    if (!profile) return;
+    const earned = checkAchievements(profile, statsMode, difficulty, session, scope);
     if (earned.length) setNewAchievements((prev) => [...prev, ...earned]);
+  }
+
+  function persistQuestionOutcome({
+    currentQuestion,
+    skipped,
+    correct,
+    completedQuestions,
+    sessionCorrect,
+    completedSkipped,
+    dailyAnswer,
+  }: {
+    currentQuestion: Question;
+    skipped: boolean;
+    correct: boolean;
+    completedQuestions: number;
+    sessionCorrect: number;
+    completedSkipped: number;
+    dailyAnswer: DailyChallengeAnswer;
+  }) {
+    if (!countStats) return;
+    const { state } = recordAnswer(
+      activeProfile.id,
+      statsMode,
+      difficulty,
+      skipped ? false : correct,
+      currentQuestion.countryCode,
+      skipped,
+      scope,
+      mode === "weak-spots",
+      skipped ? undefined : currentQuestion,
+    );
+    if (mode === "daily-challenge") {
+      markDailyChallengePlayed(activeProfile.id, dailyDateKey);
+    }
+    const completedDailyAnswers = isDailyChallenge
+      ? [...dailyAnswers, dailyAnswer]
+      : dailyAnswers;
+    const sessionEnded =
+      Boolean(sessionQuestionLimit && completedQuestions >= sessionQuestionLimit) ||
+      (!skipped && stopOnWrong && !correct);
+    if (sessionEnded) {
+      maybeRecordDailyCompletion(
+        completedQuestions,
+        sessionCorrect,
+        completedSkipped,
+        completedDailyAnswers,
+      );
+    }
+    if (!skipped) {
+      persistBestGameScore(sessionCorrect, { notify: false });
+    }
+    refresh();
+    awardAchievements(
+      {
+        sessionCorrect,
+        sessionTotal: completedQuestions,
+        sessionEnded,
+      },
+      state.profiles.find((p) => p.id === activeProfile.id),
+    );
   }
 
   // Feedback bursts live in their own list so advancing to the next question
@@ -666,10 +728,7 @@ export function GameBoard({
     setLastSelectedAnswer(answer);
     setLastSelectedCode(code ?? null);
     if (isDailyChallenge) {
-      setDailyAnswers((answers) => [
-        ...answers,
-        dailyAnswer,
-      ]);
+      setDailyAnswers((answers) => [...answers, dailyAnswer]);
     }
     spawnBurst(correct, lostStreak);
     playSound(correct ? "correct" : "incorrect", activeProfile, {
@@ -678,52 +737,16 @@ export function GameBoard({
     });
     triggerHaptic(correct ? "correct" : "incorrect", activeProfile, { lostStreak });
 
-    if (countStats) {
-      recordAnswer(
-        activeProfile.id,
-        statsMode,
-        difficulty,
-        correct,
-        question.countryCode,
-        false,
-        scope,
-        mode === "weak-spots",
-        question,
-      );
-      if (mode === "daily-challenge") {
-        markDailyChallengePlayed(activeProfile.id, dailyDateKey);
-      }
-
-      const completedQuestions = questionCount + 1;
-      const sessionCorrect = correctAnswers + (correct ? 1 : 0);
-      const completedDailyAnswers = isDailyChallenge
-        ? [...dailyAnswers, dailyAnswer]
-        : dailyAnswers;
-      const sessionEnded =
-        Boolean(sessionQuestionLimit && completedQuestions >= sessionQuestionLimit) ||
-        (stopOnWrong && !correct);
-
-      if (sessionEnded) {
-        maybeRecordDailyCompletion(
-          completedQuestions,
-          sessionCorrect,
-          skippedAnswers,
-          completedDailyAnswers,
-        );
-      }
-
-      // Keep the personal-best numerator current during the round (silent until leave/summary).
-      persistBestGameScore(sessionCorrect, { notify: false });
-
-      refresh();
-      awardAchievements({
-        sessionCorrect,
-        sessionTotal: completedQuestions,
-        sessionEnded,
-      });
-    }
-
     const completedQuestions = questionCount + 1;
+    persistQuestionOutcome({
+      currentQuestion: question,
+      skipped: false,
+      correct,
+      completedQuestions,
+      sessionCorrect: correctAnswers + (correct ? 1 : 0),
+      completedSkipped: skippedAnswers,
+      dailyAnswer,
+    });
 
     if (correct) {
       setStreak((s) => s + 1);
@@ -755,10 +778,7 @@ export function GameBoard({
       skipped: true,
     };
     if (isDailyChallenge) {
-      setDailyAnswers((answers) => [
-        ...answers,
-        dailyAnswer,
-      ]);
+      setDailyAnswers((answers) => [...answers, dailyAnswer]);
     }
     const completedQuestions = questionCount + 1;
     setQuestionCount(completedQuestions);
@@ -766,34 +786,15 @@ export function GameBoard({
     if (sessionQuestionLimit && completedQuestions >= sessionQuestionLimit) {
       setSessionComplete(true);
     }
-    if (countStats) {
-      recordAnswer(activeProfile.id, statsMode, difficulty, false, question.countryCode, true, scope);
-      if (mode === "daily-challenge") {
-        markDailyChallengePlayed(activeProfile.id, dailyDateKey);
-      }
-
-      const sessionEnded = Boolean(
-        sessionQuestionLimit && completedQuestions >= sessionQuestionLimit,
-      );
-      const completedDailyAnswers = isDailyChallenge
-        ? [...dailyAnswers, dailyAnswer]
-        : dailyAnswers;
-      if (sessionEnded) {
-        maybeRecordDailyCompletion(
-          completedQuestions,
-          correctAnswers,
-          skippedAnswers + 1,
-          completedDailyAnswers,
-        );
-      }
-
-      refresh();
-      awardAchievements({
-        sessionCorrect: correctAnswers,
-        sessionTotal: completedQuestions,
-        sessionEnded,
-      });
-    }
+    persistQuestionOutcome({
+      currentQuestion: question,
+      skipped: true,
+      correct: false,
+      completedQuestions,
+      sessionCorrect: correctAnswers,
+      completedSkipped: skippedAnswers + 1,
+      dailyAnswer,
+    });
   }
 
   function handleFiftyFifty() {
@@ -877,26 +878,14 @@ export function GameBoard({
       !exitedEarly &&
       !gameOver &&
       (sessionComplete || hasFinishedQuestions || hasReachedQuestionLimit);
-    const title = exitedEarly
-      ? mode === "daily-challenge" && !countStats
-        ? "Review ended"
-        : "Round ended"
-      : challengeComplete
-        ? mode === "daily-challenge" && !countStats
-          ? "Review complete!"
-          : "Challenge complete!"
-        : "Game over";
-    const description = exitedEarly
-      ? mode === "daily-challenge" && !countStats
-        ? `You attempted ${questionCount} question${questionCount === 1 ? "" : "s"}. Stats were not recorded.`
-        : `You attempted ${questionCount} question${questionCount === 1 ? "" : "s"}.`
-      : challengeComplete
-        ? mode === "daily-challenge" && !countStats
-          ? `You reviewed all ${questionCount} questions. Stats were not recorded.`
-          : `You completed all ${questionCount} questions.`
-        : timed
-          ? `Time's up after ${questionCount} questions.`
-          : `Your streak ended at ${endedStreak}.`;
+    const { title, description } = getRoundSummaryCopy({
+      exitedEarly,
+      challengeComplete,
+      timed,
+      isReview: mode === "daily-challenge" && !countStats,
+      questionCount,
+      endedStreak,
+    });
 
     return (
       <>

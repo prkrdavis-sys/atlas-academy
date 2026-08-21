@@ -6,7 +6,6 @@ import { ExpandableFlagImage } from "@/components/ExpandableFlagImage";
 import { FlagImage } from "@/components/FlagDisplay";
 import { LibraryDetailGrid } from "@/components/LibraryDetailGrid";
 import { LibraryDetailNav } from "@/components/LibraryDetailNav";
-import { LibraryDetailBackListener } from "@/components/LibraryDetailBackListener";
 import { LibraryScrollRestore } from "@/components/LibraryScrollRestore";
 import { LibraryPlaceMapSection } from "@/components/LibraryPlaceMapSection";
 import { LibraryPlaceVisual } from "@/components/LibraryPlaceVisual";
@@ -69,7 +68,6 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
   return (
     <article className="space-y-5 sm:space-y-7">
       <LibraryScrollRestore />
-      <LibraryDetailBackListener />
       <Suspense
         fallback={
           <div className="-mx-4 h-[3.75rem] animate-pulse px-4 py-2 sm:mx-0 sm:px-0">

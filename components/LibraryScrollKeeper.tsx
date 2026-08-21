@@ -4,6 +4,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useRef } from "react";
 import {
   LIBRARY_LAST_PATH_KEY,
+  markLibraryScrollRestore,
   persistLibrarySession,
   type LibraryLocation,
 } from "@/lib/library-scroll";
@@ -41,6 +42,16 @@ export function LibraryScrollKeeper() {
       persistLibrarySession(libraryLocationRef.current);
     }
   }, [pathname]);
+
+  useEffect(() => {
+    const onPopState = () => {
+      if (isExploreRoute(window.location.pathname)) {
+        markLibraryScrollRestore();
+      }
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
 
   return null;
 }

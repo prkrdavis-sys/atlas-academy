@@ -31,17 +31,16 @@ import { normalizeRoundQuestionSetting, type Question } from "@/lib/types";
  * arrays are identical.
  */
 function buildQuestions(match: MatchRow): Question[] {
-  const engine = new GameEngine(
-    match.settings.mode,
-    match.settings.continents,
-    VERSUS_DIFFICULTY,
-    undefined,
-    match.seed,
-    normalizeRoundQuestionSetting(match.question_count),
-    match.settings.includeTerritories,
-    match.settings.scope,
-    "none",
-  );
+  const engine = new GameEngine({
+    mode: match.settings.mode,
+    continents: match.settings.continents,
+    difficulty: VERSUS_DIFFICULTY,
+    seed: match.seed,
+    questionLimit: normalizeRoundQuestionSetting(match.question_count),
+    includeTerritories: match.settings.includeTerritories,
+    scope: match.settings.scope,
+    challengeModifier: "none",
+  });
 
   const questions: Question[] = [];
   for (let index = 0; index < match.question_count; index += 1) {

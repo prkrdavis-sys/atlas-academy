@@ -1,7 +1,7 @@
 "use client";
 
 import { useId } from "react";
-import { getDailyCalendarParts } from "@/lib/game-engine";
+import { getDailyCalendarParts } from "@/lib/daily-calendar";
 import { cn } from "@/lib/utils";
 
 type DailyCalendarIconProps = {

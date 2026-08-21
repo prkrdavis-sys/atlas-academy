@@ -1,22 +1,23 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import {
+  parseBooleanFlag,
+  serializeBooleanFlag,
+  useStoredPreference,
+  type StoredPreferenceOptions,
+} from "@/lib/stored-preference";
 
-const STORAGE_KEY = "atlas-academy-show-map-progress";
-/** Custom event so every mounted map/globe updates when the main-menu toggle flips. */
-const CHANGE_EVENT = "atlas-academy-show-map-progress-change";
-
-const DEFAULT_ENABLED = true;
-
-function normalizeEnabled(value: string | null): boolean {
-  if (value === "0" || value === "false") return false;
-  if (value === "1" || value === "true") return true;
-  return DEFAULT_ENABLED;
-}
+const PREF = {
+  key: "atlas-academy-show-map-progress",
+  changeEvent: "atlas-academy-show-map-progress-change",
+  defaultValue: true,
+  parse: (value: string | null) => parseBooleanFlag(value, true),
+  serialize: serializeBooleanFlag,
+} as const satisfies StoredPreferenceOptions<boolean>;
 
 export function getStoredShowMapProgress(): boolean {
-  if (typeof window === "undefined") return DEFAULT_ENABLED;
-  return normalizeEnabled(localStorage.getItem(STORAGE_KEY));
+  if (typeof window === "undefined") return PREF.defaultValue;
+  return parseBooleanFlag(localStorage.getItem(PREF.key), PREF.defaultValue);
 }
 
 /**
@@ -29,31 +30,6 @@ export function useShowMapProgress(): {
   setEnabled: (enabled: boolean) => void;
   ready: boolean;
 } {
-  const [enabled, setEnabledState] = useState(DEFAULT_ENABLED);
-  const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setEnabledState(getStoredShowMapProgress());
-    setReady(true);
-
-    const onChange = () => setEnabledState(getStoredShowMapProgress());
-    const onStorage = (event: StorageEvent) => {
-      if (event.key === STORAGE_KEY) onChange();
-    };
-    window.addEventListener(CHANGE_EVENT, onChange);
-    window.addEventListener("storage", onStorage);
-    return () => {
-      window.removeEventListener(CHANGE_EVENT, onChange);
-      window.removeEventListener("storage", onStorage);
-    };
-  }, []);
-
-  const setEnabled = useCallback((next: boolean) => {
-    localStorage.setItem(STORAGE_KEY, next ? "1" : "0");
-    setEnabledState(next);
-    window.dispatchEvent(new Event(CHANGE_EVENT));
-  }, []);
-
+  const { value: enabled, setValue: setEnabled, ready } = useStoredPreference(PREF);
   return { enabled, setEnabled, ready };
 }

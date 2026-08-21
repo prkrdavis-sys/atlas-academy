@@ -1,26 +1,28 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
 import type { MapProgressDifficulty } from "@/lib/types";
-
-const STORAGE_KEY = "atlas-academy-map-progress-difficulty";
-/** Custom event so home, map, and stats stay in sync when the toggle flips. */
-const CHANGE_EVENT = "atlas-academy-map-progress-difficulty-change";
+import {
+  readStoredPreference,
+  useStoredPreference,
+  writeStoredPreference,
+  type StoredPreferenceOptions,
+} from "@/lib/stored-preference";
 
 const DEFAULT_DIFFICULTY: MapProgressDifficulty = "medium";
 
-function normalizeDifficulty(value: string | null): MapProgressDifficulty {
-  return value === "hard" ? "hard" : DEFAULT_DIFFICULTY;
-}
+const PREF = {
+  key: "atlas-academy-map-progress-difficulty",
+  changeEvent: "atlas-academy-map-progress-difficulty-change",
+  defaultValue: DEFAULT_DIFFICULTY,
+  parse: (value: string | null): MapProgressDifficulty =>
+    value === "hard" ? "hard" : DEFAULT_DIFFICULTY,
+  serialize: (value: MapProgressDifficulty) => value,
+  persistDefault: true,
+  skipIfUnchanged: true,
+} as const satisfies StoredPreferenceOptions<MapProgressDifficulty>;
 
 export function getStoredMapProgressDifficulty(): MapProgressDifficulty {
-  if (typeof window === "undefined") return DEFAULT_DIFFICULTY;
-  const stored = localStorage.getItem(STORAGE_KEY);
-  if (stored === null) {
-    localStorage.setItem(STORAGE_KEY, DEFAULT_DIFFICULTY);
-    return DEFAULT_DIFFICULTY;
-  }
-  return normalizeDifficulty(stored);
+  return readStoredPreference(PREF);
 }
 
 /**
@@ -31,10 +33,7 @@ export function getStoredMapProgressDifficulty(): MapProgressDifficulty {
 export function setStoredMapProgressDifficulty(
   difficulty: MapProgressDifficulty,
 ): void {
-  if (typeof window === "undefined") return;
-  if (localStorage.getItem(STORAGE_KEY) === difficulty) return;
-  localStorage.setItem(STORAGE_KEY, difficulty);
-  window.dispatchEvent(new Event(CHANGE_EVENT));
+  writeStoredPreference(PREF, difficulty);
 }
 
 /**
@@ -48,29 +47,7 @@ export function useMapProgressDifficulty(): {
   mapDifficulty: MapProgressDifficulty;
   setMapDifficulty: (difficulty: MapProgressDifficulty) => void;
 } {
-  const [mapDifficulty, setMapDifficultyState] =
-    useState<MapProgressDifficulty>(DEFAULT_DIFFICULTY);
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setMapDifficultyState(getStoredMapProgressDifficulty());
-
-    const onChange = () => setMapDifficultyState(getStoredMapProgressDifficulty());
-    const onStorage = (event: StorageEvent) => {
-      if (event.key === STORAGE_KEY) onChange();
-    };
-    window.addEventListener(CHANGE_EVENT, onChange);
-    window.addEventListener("storage", onStorage);
-    return () => {
-      window.removeEventListener(CHANGE_EVENT, onChange);
-      window.removeEventListener("storage", onStorage);
-    };
-  }, []);
-
-  const setMapDifficulty = useCallback((difficulty: MapProgressDifficulty) => {
-    setStoredMapProgressDifficulty(difficulty);
-    setMapDifficultyState(difficulty);
-  }, []);
-
+  const { value: mapDifficulty, setValue: setMapDifficulty } =
+    useStoredPreference(PREF);
   return { mapDifficulty, setMapDifficulty };
 }
