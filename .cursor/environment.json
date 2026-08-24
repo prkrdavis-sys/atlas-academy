@@ -1,0 +1,17 @@
+{
+  "name": "atlas-academy",
+  "install": "npm ci",
+  "terminals": [
+    {
+      "name": "dev",
+      "command": "npm run dev",
+      "description": "Next.js 16.2.10 Atlas Academy app. After it prints Ready, open http://localhost:3000 to play and verify UI changes."
+    }
+  ],
+  "ports": [
+    {
+      "name": "web",
+      "port": 3000
+    }
+  ]
+}

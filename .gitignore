@@ -36,8 +36,9 @@ yarn-error.log*
 # vercel
 .vercel
 
-# local agent scratch
-.cursor
+# local agent scratch (keep the shared Cloud Agent environment committed)
+.cursor/*
+!.cursor/environment.json
 
 # typescript
 *.tsbuildinfo
