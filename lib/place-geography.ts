@@ -4,6 +4,21 @@ import type { Country } from "@/lib/types";
 export const NON_ISLAND_AND_NAMES = new Set(["Bosnia and Herzegovina"]);
 
 /**
+ * Name-based island vocabulary used by distractors and learn-card copy.
+ * Border heuristics (sovereign nations with no land neighbors) live in
+ * `isIslandCountry` — they are not a name kind.
+ */
+export type NamedIslandKind = "archipelago" | "remote-island";
+
+export function namedIslandKind(country: Country): NamedIslandKind | null {
+  if (NON_ISLAND_AND_NAMES.has(country.name)) return null;
+  if (/\bIslands\b/i.test(country.name)) return "archipelago";
+  if (/\band\b/i.test(country.name)) return "archipelago";
+  if (/\bIsland\b/i.test(country.name)) return "remote-island";
+  return null;
+}
+
+/**
  * Heuristic used when picking lookalike distractors: island nations should
  * mostly see other islands in the multiple-choice set.
  */

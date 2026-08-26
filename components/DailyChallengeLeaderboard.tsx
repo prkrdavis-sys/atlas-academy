@@ -15,14 +15,14 @@ import {
   type DailyChallengeLeaderboardEntry,
 } from "@/lib/daily-challenge";
 import {
-  buildDailyChallengeSnapshot,
   dailyDateKeyToDate,
+  formatDailyDateKey,
   getDailyCalendarParts,
   getDailyDateKey,
-  offsetDailyDateKey,
-  formatDailyDateKey,
   isValidDailyDateKey,
-} from "@/lib/game-engine";
+  offsetDailyDateKey,
+} from "@/lib/daily-calendar";
+import { buildDailyChallengeSnapshot } from "@/lib/game-engine";
 import type { DailyChallengeSnapshot, Profile } from "@/lib/types";
 import { cn } from "@/lib/utils";
 

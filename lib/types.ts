@@ -491,9 +491,14 @@ export const FLAG_CROP_ORIENTATIONS = [
 
 export type FlagCropOrientation = (typeof FLAG_CROP_ORIENTATIONS)[number];
 
+export type QuestionKind = Exclude<
+  GameMode,
+  "daily-challenge" | "marathon" | "speed-round" | "weak-spots" | "mixed"
+>;
+
 export type Question = {
   id: string;
-  mode: GameMode;
+  mode: QuestionKind;
   countryCode: string;
   prompt: string;
   correctAnswer: string;

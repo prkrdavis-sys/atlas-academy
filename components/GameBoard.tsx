@@ -1,73 +1,62 @@
 "use client";
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {
-  AnswerFeedbackLayer,
-  type FeedbackBurst,
-} from "@/components/AnswerFeedback";
-import { AnswerAtlasle } from "@/components/AnswerAtlasle";
-import { AnswerMultipleChoice } from "@/components/AnswerMultipleChoice";
-import { AnswerTypeIn } from "@/components/AnswerTypeIn";
-import { AchievementToast } from "@/components/AchievementToast";
-import { FlagGrid } from "@/components/FlagDisplay";
-import { GameMapProgressSummary } from "@/components/GameMapProgressSummary";
-import { GlobeHuntSurface } from "@/components/GlobeHuntSurface";
-import { LearnCard } from "@/components/LearnCard";
+import { type FeedbackBurst } from "@/components/AnswerFeedback";
+import { GameQuestionStage } from "@/components/GameQuestionStage";
+import { GameRoundSummary } from "@/components/GameRoundSummary";
 import { preloadLearnCardMap } from "@/components/PlaceContextMap";
-import { QuestionMedia } from "@/components/QuestionMedia";
-import { StreakCounter } from "@/components/StreakCounter";
-import { GameActionButton } from "@/components/GameActionButton";
 import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/components/AuthProvider";
 import { useProfiles, useRequiredProfile } from "@/components/ProfileProvider";
-import { getCountryName, getCountryByCode } from "@/lib/countries";
-import {
-  DAILY_COUNTING_SESSION_KEY,
-  GameEngine,
-  formatDailyDateKey,
-  getDailyDateKey,
-} from "@/lib/game-engine";
+import { useCoachMarkAnchor } from "@/components/CoachMarkProvider";
+import { getCountryByCode, getCountryName } from "@/lib/countries";
+import { DAILY_COUNTING_SESSION_KEY, formatDailyDateKey, getDailyDateKey } from "@/lib/daily-calendar";
 import {
   clearDailyTimerSession,
   ensureDailyChallengeResultSubmitted,
-  formatDailyElapsedTime,
   loadDailyTimerSession,
   saveDailyTimerSession,
 } from "@/lib/daily-challenge";
-import {
-  checkAchievements,
-  loadState,
-  markDailyChallengePlayed,
-  recordBestGameScore,
-  recordAnswer,
-  recordDailyChallengeResult,
-} from "@/lib/storage";
-import { triggerHaptic } from "@/lib/haptics";
-import { playSound } from "@/lib/sound";
-import { getGlobalStreakOrZero } from "@/lib/stats-helpers";
-import {
-  isCapitalQuestion,
-  isInvertedFlagRound as isInvertedFlagQuestion,
-  isTextOnlyPrompt as isTextOnlyQuestion,
-} from "@/lib/question-presentation";
-import { STREAK_SNUFF_MIN } from "@/lib/streak-tier";
-import {
-  getMapProgressSummary,
-  modeCountsTowardMapProgress,
-  toMapProgressDifficulty,
-} from "@/lib/map-progress";
-import { buildLibraryDetailHref, LIBRARY_ICON } from "@/lib/library";
+import { GameEngine } from "@/lib/game-engine";
+import { getStatsMode } from "@/lib/game-setup";
+import { getRoundSummaryCopy, resolveRoundEnd } from "@/lib/game-summary";
 import {
   buildGameResumePlayHref,
   clearGameResumeSnapshot,
   saveGameResumeSnapshot,
   type GameResumeSnapshot,
 } from "@/lib/game-resume";
-import { getQuestionTaskLabel, getTypeInPlacePlaceholder, isStateCode, scopeText, SCOPE_INFO } from "@/lib/scope";
-import { getRoundSummaryCopy } from "@/lib/game-summary";
-import { getStatsMode } from "@/lib/game-setup";
+import { triggerHaptic } from "@/lib/haptics";
+import { buildLibraryDetailHref } from "@/lib/library";
+import {
+  getMapProgressSummary,
+  modeCountsTowardMapProgress,
+  toMapProgressDifficulty,
+} from "@/lib/map-progress";
+import {
+  isCapitalQuestion,
+  isInvertedFlagRound as isInvertedFlagQuestion,
+  isTextOnlyPrompt as isTextOnlyQuestion,
+} from "@/lib/question-presentation";
+import {
+  createInitialSession,
+  quizSessionReducer,
+  type QuizSession,
+  type QuizSessionAction,
+} from "@/lib/quiz-session";
+import { getQuestionTaskLabel, isStateCode, scopeText } from "@/lib/scope";
+import { playSound } from "@/lib/sound";
+import { getGlobalStreakOrZero } from "@/lib/stats-helpers";
+import {
+  checkAchievements,
+  loadState,
+  markDailyChallengePlayed,
+  recordAnswer,
+  recordBestGameScore,
+  recordDailyChallengeResult,
+} from "@/lib/storage";
+import { STREAK_SNUFF_MIN } from "@/lib/streak-tier";
 import { useIsDark } from "@/lib/use-is-dark";
 import { setStoredMapProgressDifficulty } from "@/lib/use-map-progress-difficulty";
 import type {
@@ -80,8 +69,6 @@ import type {
   Region,
   RoundQuestionSetting,
 } from "@/lib/types";
-import { cn } from "@/lib/utils";
-import { useCoachMarkAnchor } from "@/components/CoachMarkProvider";
 
 type GameBoardProps = {
   mode: GameMode;
@@ -139,6 +126,7 @@ export function GameBoard({
     ? activeProfile.dailyChallengeResults?.[dailyDateKey]
     : undefined;
   const dailyQuestionsForResult = dailyQuestions ?? resumeSnapshot?.dailyQuestions ?? [];
+
   const [{ engine, firstQuestion, sessionQuestionLimit }] = useState(() => {
     const gameEngine = new GameEngine({
       mode,
@@ -169,50 +157,44 @@ export function GameBoard({
       sessionQuestionLimit: gameEngine.getRoundQuestionLimit(),
     };
   });
-  const [question, setQuestion] = useState<Question | null>(firstQuestion);
-  const [streak, setStreak] = useState(() => {
-    if (resumeSnapshot) return resumeSnapshot.streak;
-    return mode === "daily-challenge" && !countStats
-      ? 0
-      : getGlobalStreakOrZero(activeProfile, difficulty, scope).currentStreak;
-  });
-  /** Streak length captured when a miss ends the round (marathon / stop-on-wrong). */
-  const [endedStreak, setEndedStreak] = useState(() => resumeSnapshot?.endedStreak ?? 0);
-  const [showLearnCard, setShowLearnCard] = useState(
-    () => resumeSnapshot?.showLearnCard ?? Boolean(resumeSnapshot),
+
+  const [session, setSession] = useState<QuizSession>(() =>
+    createInitialSession({
+      firstQuestion,
+      resumeSnapshot,
+      mode,
+      countStats,
+      activeStreak: getGlobalStreakOrZero(activeProfile, difficulty, scope).currentStreak,
+    }),
   );
+
+  const {
+    question,
+    streak,
+    endedStreak,
+    showLearnCard,
+    lastCorrect,
+    lastSelectedAnswer,
+    lastSelectedCode,
+    globeRevealCode,
+    disabled,
+    hiddenOptions,
+    usedFiftyFifty,
+    usedSkip,
+    questionCount,
+    correctAnswers,
+    skippedAnswers,
+    hintsUsed,
+    gameOver,
+    sessionComplete,
+    dailyAnswers,
+    exitedEarly,
+  } = session;
+
   const learnCardLibraryRef = useCoachMarkAnchor(
     showLearnCard && !isDailyChallenge ? "learn-card-library" : null,
   );
-  const [lastCorrect, setLastCorrect] = useState(() => resumeSnapshot?.lastCorrect ?? true);
-  const [lastSelectedAnswer, setLastSelectedAnswer] = useState<string | null>(
-    () => resumeSnapshot?.lastSelectedAnswer ?? null,
-  );
-  const [lastSelectedCode, setLastSelectedCode] = useState<string | null>(
-    () => resumeSnapshot?.lastSelectedCode ?? null,
-  );
-  const [globeRevealCode, setGlobeRevealCode] = useState<string | null>(() => {
-    if (!resumeSnapshot?.question || resumeSnapshot.question.mode !== "globe-hunt") return null;
-    if (resumeSnapshot.lastCorrect) return null;
-    return resumeSnapshot.question.correctCode ?? resumeSnapshot.question.countryCode;
-  });
-  const [disabled, setDisabled] = useState(() => resumeSnapshot?.disabled ?? false);
-  const [hiddenOptions, setHiddenOptions] = useState<string[]>(
-    () => resumeSnapshot?.hiddenOptions ?? [],
-  );
-  const [usedFiftyFifty, setUsedFiftyFifty] = useState(
-    () => resumeSnapshot?.usedFiftyFifty ?? false,
-  );
-  const [usedSkip, setUsedSkip] = useState(() => resumeSnapshot?.usedSkip ?? false);
-  const [questionCount, setQuestionCount] = useState(() => resumeSnapshot?.questionCount ?? 0);
-  const [correctAnswers, setCorrectAnswers] = useState(() => resumeSnapshot?.correctAnswers ?? 0);
-  const [skippedAnswers, setSkippedAnswers] = useState(() => resumeSnapshot?.skippedAnswers ?? 0);
-  const [hintsUsed, setHintsUsed] = useState(() => resumeSnapshot?.hintsUsed ?? 0);
   const [timeLeft, setTimeLeft] = useState(() => resumeSnapshot?.timeLeft ?? 60);
-  const [gameOver, setGameOver] = useState(() => resumeSnapshot?.gameOver ?? false);
-  const [sessionComplete, setSessionComplete] = useState(
-    () => resumeSnapshot?.sessionComplete ?? false,
-  );
   const [dailyStartedAt] = useState<number | null>(() => {
     if (!isDailyChallenge || !countStats) return null;
     return (
@@ -233,10 +215,6 @@ export function GameBoard({
     return Date.now();
   });
   const [reviewElapsedCentiseconds, setReviewElapsedCentiseconds] = useState(0);
-  const [dailyAnswers, setDailyAnswers] = useState<DailyChallengeAnswer[]>(
-    () => resumeSnapshot?.dailyAnswers ?? [],
-  );
-  const [exitedEarly, setExitedEarly] = useState(false);
   const [newAchievements, setNewAchievements] = useState<string[]>([]);
   const [initialMapProgress] = useState(() => {
     if (!mapProgressDifficulty) return null;
@@ -245,6 +223,8 @@ export function GameBoard({
       overall: getMapProgressSummary(scope, activeProfile, mapProgressDifficulty),
     };
   });
+  const [bursts, setBursts] = useState<FeedbackBurst[]>([]);
+  const burstIdRef = useRef(0);
   const speedSessionCheckedRef = useRef(false);
   const dailyCompletionRecordedRef = useRef(false);
   const summaryAchievementsCheckedRef = useRef(false);
@@ -257,16 +237,23 @@ export function GameBoard({
     scope,
     countStats,
   });
-  correctAnswersRef.current = correctAnswers;
-  bestScoreContextRef.current = {
-    profileId: activeProfile.id,
-    mode,
-    difficulty,
-    scope,
-    countStats,
-  };
+  useEffect(() => {
+    correctAnswersRef.current = correctAnswers;
+    bestScoreContextRef.current = {
+      profileId: activeProfile.id,
+      mode,
+      difficulty,
+      scope,
+      countStats,
+    };
+  }, [correctAnswers, activeProfile.id, mode, difficulty, scope, countStats]);
 
-  /** Highest correct answers in this session — persists even if the player leaves mid-round. */
+  function commit(action: QuizSessionAction): QuizSession {
+    const next = quizSessionReducer(session, action);
+    setSession(next);
+    return next;
+  }
+
   function persistBestGameScore(
     sessionCorrect: number,
     options: { notify?: boolean } = {},
@@ -284,13 +271,11 @@ export function GameBoard({
     );
   }
 
-  // Flush the running best when leaving mid-round (browser back, library link, etc.).
-  // Unmount-only: always read the latest score/context from refs.
   useEffect(() => {
     return () => {
       persistBestGameScore(correctAnswersRef.current);
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps -- unmount flush via refs
+  }, []);
 
   function maybeRecordDailyCompletion(
     completedQuestions: number,
@@ -340,82 +325,62 @@ export function GameBoard({
   }
 
   function awardAchievements(
-    session: {
+    context: {
       sessionCorrect: number;
       sessionTotal: number;
       sessionEnded: boolean;
     },
-    profile = loadState().profiles.find((p) => p.id === activeProfile.id),
+    profile = loadState().profiles.find((entry) => entry.id === activeProfile.id),
   ) {
     if (!profile) return;
-    const earned = checkAchievements(profile, statsMode, difficulty, session, scope);
+    const earned = checkAchievements(profile, statsMode, difficulty, context, scope);
     if (earned.length) setNewAchievements((prev) => [...prev, ...earned]);
   }
 
-  function persistQuestionOutcome({
-    currentQuestion,
-    skipped,
-    correct,
-    completedQuestions,
-    sessionCorrect,
-    completedSkipped,
-    dailyAnswer,
-  }: {
-    currentQuestion: Question;
-    skipped: boolean;
-    correct: boolean;
-    completedQuestions: number;
-    sessionCorrect: number;
-    completedSkipped: number;
-    dailyAnswer: DailyChallengeAnswer;
-  }) {
+  function persistQuestionOutcome(
+    currentQuestion: Question,
+    next: QuizSession,
+    skipped: boolean,
+    correct: boolean,
+  ) {
     if (!countStats) return;
-    const { state } = recordAnswer(
-      activeProfile.id,
-      statsMode,
+    const { profile } = recordAnswer({
+      profileId: activeProfile.id,
+      mode: statsMode,
       difficulty,
-      skipped ? false : correct,
-      currentQuestion.countryCode,
+      correct: skipped ? false : correct,
+      countryCode: currentQuestion.countryCode,
       skipped,
       scope,
-      mode === "weak-spots",
-      skipped ? undefined : currentQuestion,
-    );
+      isPracticeMode: mode === "weak-spots",
+      question: skipped ? undefined : currentQuestion,
+    });
     if (mode === "daily-challenge") {
       markDailyChallengePlayed(activeProfile.id, dailyDateKey);
     }
-    const completedDailyAnswers = isDailyChallenge
-      ? [...dailyAnswers, dailyAnswer]
-      : dailyAnswers;
-    const sessionEnded =
-      Boolean(sessionQuestionLimit && completedQuestions >= sessionQuestionLimit) ||
-      (!skipped && stopOnWrong && !correct);
-    if (sessionEnded) {
+    if (next.sessionComplete || next.gameOver) {
       maybeRecordDailyCompletion(
-        completedQuestions,
-        sessionCorrect,
-        completedSkipped,
-        completedDailyAnswers,
+        next.questionCount,
+        next.correctAnswers,
+        next.skippedAnswers,
+        next.dailyAnswers,
       );
     }
     if (!skipped) {
-      persistBestGameScore(sessionCorrect, { notify: false });
+      persistBestGameScore(next.correctAnswers, { notify: false });
     }
     refresh();
-    awardAchievements(
-      {
-        sessionCorrect,
-        sessionTotal: completedQuestions,
-        sessionEnded,
-      },
-      state.profiles.find((p) => p.id === activeProfile.id),
-    );
+    if (profile) {
+      awardAchievements(
+        {
+          sessionCorrect: next.correctAnswers,
+          sessionTotal: next.questionCount,
+          sessionEnded: next.sessionComplete || next.gameOver,
+        },
+        profile,
+      );
+    }
   }
-
-  // Feedback bursts live in their own list so advancing to the next question
-  // never unmounts an in-flight animation.
-  const [bursts, setBursts] = useState<FeedbackBurst[]>([]);
-  const burstIdRef = useRef(0);
 
   const spawnBurst = useCallback((correct: boolean, lostStreak?: number) => {
     burstIdRef.current += 1;
@@ -430,14 +395,13 @@ export function GameBoard({
   }, []);
 
   const removeBurst = useCallback((id: number) => {
-    setBursts((prev) => prev.filter((b) => b.id !== id));
+    setBursts((prev) => prev.filter((burst) => burst.id !== id));
   }, []);
 
   const dismissAchievements = useCallback(() => {
     setNewAchievements([]);
   }, []);
 
-  // Remember the last Normal/Hard session so the map and globe show that track.
   useEffect(() => {
     if (tracksMapProgress && mapProgressDifficulty) {
       setStoredMapProgressDifficulty(mapProgressDifficulty);
@@ -447,12 +411,12 @@ export function GameBoard({
   useEffect(() => {
     if (!timed || gameOver) return;
     const timer = setTimeout(() => {
-      setTimeLeft((t) => {
-        if (t <= 1) {
-          setGameOver(true);
+      setTimeLeft((remaining) => {
+        if (remaining <= 1) {
+          setSession((current) => quizSessionReducer(current, { type: "time-up" }));
           return 0;
         }
-        return t - 1;
+        return remaining - 1;
       });
     }, 1000);
     return () => clearTimeout(timer);
@@ -482,7 +446,6 @@ export function GameBoard({
   useEffect(() => {
     if (mode !== "daily-challenge" || !countStats || dailyStartedAt === null) return;
     if (typeof window === "undefined") return;
-    // Keep the counting session alive across navigation and resume.
     sessionStorage.setItem(DAILY_COUNTING_SESSION_KEY, dailyDateKey);
     saveDailyTimerSession({ dateKey: dailyDateKey, startedAt: dailyStartedAt });
   }, [mode, countStats, dailyDateKey, dailyStartedAt]);
@@ -552,10 +515,10 @@ export function GameBoard({
   }
 
   const resumeSnapshotRef = useRef<GameResumeSnapshot | null>(null);
-  resumeSnapshotRef.current = buildResumeSnapshot();
 
   useLayoutEffect(() => {
-    const snapshot = resumeSnapshotRef.current;
+    const snapshot = buildResumeSnapshot();
+    resumeSnapshotRef.current = snapshot;
     if (snapshot) {
       saveGameResumeSnapshot(snapshot);
     } else if (showSummary) {
@@ -563,7 +526,8 @@ export function GameBoard({
     }
 
     function flushResume() {
-      const next = resumeSnapshotRef.current;
+      const next = buildResumeSnapshot();
+      resumeSnapshotRef.current = next;
       if (next) saveGameResumeSnapshot(next);
     }
 
@@ -630,8 +594,6 @@ export function GameBoard({
     return () => window.clearInterval(timer);
   }, [isDailyChallenge, reviewStartedAt, showSummary]);
 
-  // Warm learn-card maps while the player answers / reads, so the terrain crop
-  // is already cached when PlaceContextMap mounts.
   useEffect(() => {
     if (!question || !themeReady || showSummary) return;
 
@@ -708,15 +670,11 @@ export function GameBoard({
     );
   }
 
-  function handleAnswer(answer: string, code?: string) {
+  function handleAnswer(answer: string, code?: string, hintCount = 0) {
     if (!question || disabled) return;
-    setDisabled(true);
 
     const isCodeSelection = code !== undefined;
     const correct = engine.checkAnswer(question, code ?? answer, isCodeSelection);
-    if (question.mode === "globe-hunt") {
-      setGlobeRevealCode(correct ? null : question.correctCode ?? question.countryCode);
-    }
     const lostStreak = !correct && streak >= STREAK_SNUFF_MIN ? streak : undefined;
     const dailyAnswer: DailyChallengeAnswer = {
       questionIndex: questionCount,
@@ -724,12 +682,6 @@ export function GameBoard({
       correct,
       skipped: false,
     };
-    setLastCorrect(correct);
-    setLastSelectedAnswer(answer);
-    setLastSelectedCode(code ?? null);
-    if (isDailyChallenge) {
-      setDailyAnswers((answers) => [...answers, dailyAnswer]);
-    }
     spawnBurst(correct, lostStreak);
     playSound(correct ? "correct" : "incorrect", activeProfile, {
       streak: correct ? streak + 1 : undefined,
@@ -737,71 +689,47 @@ export function GameBoard({
     });
     triggerHaptic(correct ? "correct" : "incorrect", activeProfile, { lostStreak });
 
-    const completedQuestions = questionCount + 1;
-    persistQuestionOutcome({
-      currentQuestion: question,
-      skipped: false,
+    const next = commit({
+      type: "answer",
       correct,
-      completedQuestions,
-      sessionCorrect: correctAnswers + (correct ? 1 : 0),
-      completedSkipped: skippedAnswers,
+      answer,
+      code,
+      globeRevealCode:
+        question.mode === "globe-hunt"
+          ? correct
+            ? null
+            : question.correctCode ?? question.countryCode
+          : globeRevealCode,
       dailyAnswer,
+      isDailyChallenge,
+      stopOnWrong,
+      sessionQuestionLimit,
+      hintCount,
     });
-
-    if (correct) {
-      setStreak((s) => s + 1);
-      setCorrectAnswers((count) => count + 1);
-    } else {
-      setEndedStreak(streak);
-      setStreak(0);
-      if (stopOnWrong) setGameOver(true);
-    }
-
-    setQuestionCount(completedQuestions);
-    if (sessionQuestionLimit && completedQuestions >= sessionQuestionLimit) {
-      setSessionComplete(true);
-    }
-    setShowLearnCard(true);
+    persistQuestionOutcome(question, next, false, correct);
   }
 
   function handleSkip() {
     if (!question || usedSkip || difficulty !== "easy") return;
-    setUsedSkip(true);
-    setShowLearnCard(true);
-    setLastCorrect(false);
-    setLastSelectedAnswer(null);
-    setLastSelectedCode(null);
     const dailyAnswer: DailyChallengeAnswer = {
       questionIndex: questionCount,
       answer: null,
       correct: false,
       skipped: true,
     };
-    if (isDailyChallenge) {
-      setDailyAnswers((answers) => [...answers, dailyAnswer]);
-    }
-    const completedQuestions = questionCount + 1;
-    setQuestionCount(completedQuestions);
-    setSkippedAnswers((count) => count + 1);
-    if (sessionQuestionLimit && completedQuestions >= sessionQuestionLimit) {
-      setSessionComplete(true);
-    }
-    persistQuestionOutcome({
-      currentQuestion: question,
-      skipped: true,
-      correct: false,
-      completedQuestions,
-      sessionCorrect: correctAnswers,
-      completedSkipped: skippedAnswers + 1,
+    const next = commit({
+      type: "skip",
       dailyAnswer,
+      isDailyChallenge,
+      sessionQuestionLimit,
     });
+    persistQuestionOutcome(question, next, true, false);
   }
 
   function handleFiftyFifty() {
     if (!question?.options || usedFiftyFifty || difficulty !== "easy") return;
-    const wrong = question.options.filter((o) => o !== question.correctAnswer);
-    setHiddenOptions(wrong.slice(0, 2));
-    setUsedFiftyFifty(true);
+    const wrong = question.options.filter((option) => option !== question.correctAnswer);
+    commit({ type: "fifty-fifty", hiddenOptions: wrong.slice(0, 2) });
   }
 
   function handleExit() {
@@ -810,8 +738,7 @@ export function GameBoard({
       return;
     }
     persistBestGameScore(correctAnswers);
-    setShowLearnCard(false);
-    setExitedEarly(true);
+    commit({ type: "exit" });
     if (isDailyChallenge && countStats) {
       clearDailyTimerSession();
       if (typeof window !== "undefined") {
@@ -822,34 +749,23 @@ export function GameBoard({
   }
 
   function handleContinue() {
-    setShowLearnCard(false);
-    setDisabled(false);
-    setHiddenOptions([]);
-    setUsedFiftyFifty(false);
-    setUsedSkip(false);
-    setLastSelectedAnswer(null);
-    setLastSelectedCode(null);
-    setGlobeRevealCode(null);
-
-    if (
+    const shouldComplete =
       gameOver ||
       sessionComplete ||
-      (sessionQuestionLimit && questionCount >= sessionQuestionLimit)
-    ) {
-      setSessionComplete(true);
-      if (!gameOver) {
-        playSound("complete", activeProfile);
-      }
+      Boolean(sessionQuestionLimit && questionCount >= sessionQuestionLimit);
+    if (shouldComplete) {
+      commit({ type: "continue", nextQuestion: null, complete: true });
+      if (!gameOver) playSound("complete", activeProfile);
       return;
     }
 
     const nextQuestion = engine.nextQuestion();
     if (!nextQuestion) {
-      setSessionComplete(true);
+      commit({ type: "continue", nextQuestion: null, complete: true });
       playSound("complete", activeProfile);
       return;
     }
-    setQuestion(nextQuestion);
+    commit({ type: "continue", nextQuestion, complete: false });
   }
 
   if (showSummary) {
@@ -868,138 +784,58 @@ export function GameBoard({
             overall: getMapProgressSummary(scope, activeProfile, mapProgressDifficulty),
           }
         : null;
-    const mapHref = scope === "usa" ? "/map?view=usa" : "/map";
-    const dailyLeaderboardHref = `/daily-challenge?date=${dailyDateKey}`;
-    const summaryDailyTime =
-      dailyCompletionElapsedCentiseconds ??
-      storedDailyResult?.elapsedCentiseconds ??
-      dailyElapsedCentiseconds;
     const challengeComplete =
       !exitedEarly &&
       !gameOver &&
       (sessionComplete || hasFinishedQuestions || hasReachedQuestionLimit);
-    const { title, description } = getRoundSummaryCopy({
-      exitedEarly,
-      challengeComplete,
-      timed,
-      isReview: mode === "daily-challenge" && !countStats,
-      questionCount,
-      endedStreak,
-    });
+    const { title, description } = getRoundSummaryCopy(
+      resolveRoundEnd({
+        exitedEarly,
+        challengeComplete,
+        timed,
+        isReview: mode === "daily-challenge" && !countStats,
+        questionCount,
+        endedStreak,
+      }),
+    );
 
     return (
-      <>
-        <AnswerFeedbackLayer bursts={bursts} onDone={removeBurst} />
-        <AchievementToast
-          achievementIds={newAchievements}
-          onDismiss={dismissAchievements}
-        />
-        <div className="animate-card-pop-in my-auto rounded-[1.75rem] border-2 border-slate-200 bg-white/90 p-5 text-center shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90 sm:p-8">
-          <p className="text-4xl">{challengeComplete || exitedEarly ? "🎉" : "🏁"}</p>
-          <h2 className="mt-2 font-display text-3xl font-extrabold">{title}</h2>
-          <p className="mt-2 text-slate-600 dark:text-slate-400">{description}</p>
-          <div className={`mx-auto mt-6 grid max-w-sm gap-3 ${difficulty === "easy" ? "grid-cols-3" : "grid-cols-2"}`}>
-            <div className="rounded-2xl bg-emerald-50 p-3 dark:bg-emerald-950/50">
-              <p className="font-display text-2xl font-extrabold text-emerald-700 dark:text-emerald-400">{correctAnswers}</p>
-              <p className="text-xs font-semibold text-emerald-800 dark:text-emerald-300">Correct</p>
-            </div>
-            <div className="rounded-2xl bg-sky-50 p-3 dark:bg-sky-950/50">
-              <p className="font-display text-2xl font-extrabold text-sky-700 dark:text-sky-400">{accuracy}%</p>
-              <p className="text-xs font-semibold text-sky-800 dark:text-sky-300">Accuracy</p>
-            </div>
-            {isDailyChallenge && (
-              <div className="rounded-2xl bg-amber-50 p-3 dark:bg-amber-950/50">
-                <p className="font-display text-2xl font-extrabold text-amber-700 dark:text-amber-400">
-                  {formatDailyElapsedTime(summaryDailyTime)}
-                </p>
-                <p className="text-xs font-semibold text-amber-800 dark:text-amber-300">
-                  {countStats ? "Time" : "Original time"}
-                </p>
-              </div>
-            )}
-            {difficulty === "easy" && mode === "atlasle" && (
-              <div className="rounded-2xl bg-amber-50 p-3 dark:bg-amber-950/50">
-                <p className="font-display text-2xl font-extrabold text-amber-700 dark:text-amber-400">{hintsUsed}</p>
-                <p className="text-xs font-semibold text-amber-800 dark:text-amber-300">Hints</p>
-              </div>
-            )}
-            {difficulty === "easy" && mode !== "atlasle" && (
-              <div className="rounded-2xl bg-slate-100 p-3 dark:bg-slate-800">
-                <p className="font-display text-2xl font-extrabold text-slate-700 dark:text-slate-200">{skippedAnswers}</p>
-                <p className="text-xs font-semibold text-slate-600 dark:text-slate-400">Skipped</p>
-              </div>
-            )}
-          </div>
-          {tracksMapProgress &&
-            mapProgressDifficulty &&
-            initialMapProgress &&
-            currentMapProgress && (
-            <GameMapProgressSummary
-              scope={scope}
-              continents={continents}
-              difficulty={mapProgressDifficulty}
-              initialSummary={initialMapProgress.area}
-              currentSummary={currentMapProgress.area}
-              initialOverallSummary={initialMapProgress.overall}
-              currentOverallSummary={currentMapProgress.overall}
-            />
-          )}
-          <div className="mt-6 flex flex-col gap-3">
-            {exitedEarly ? (
-              <GameActionButton icon="🏠" onClick={() => router.push("/")}>
-                Home
-              </GameActionButton>
-            ) : (
-              onPlayAgain && (
-                <GameActionButton icon={SCOPE_INFO[scope].icon} onClick={onPlayAgain}>
-                  Play again
-                </GameActionButton>
-              )
-            )}
-            <div className="grid grid-cols-2 gap-2 max-[360px]:grid-cols-1 sm:gap-3">
-              <Button
-                variant="secondary"
-                size="lg"
-                className="w-full min-w-0 gap-1.5 px-3 text-base max-sm:gap-1 max-sm:px-2.5 max-sm:text-sm sm:gap-2.5 sm:px-5 sm:text-lg"
-                onClick={() => router.push(isDailyChallenge ? dailyLeaderboardHref : mapHref)}
-              >
-                <span className="shrink-0 text-xl leading-none max-sm:text-lg sm:text-2xl" aria-hidden>
-                  {isDailyChallenge ? "🏆" : "🗺️"}
-                </span>
-                <span className="truncate">{isDailyChallenge ? "Leaderboard" : "Map"}</span>
-              </Button>
-              {exitedEarly && onPlayAgain ? (
-                <Button
-                  size="lg"
-                  className="w-full min-w-0 gap-1.5 px-3 text-base max-sm:gap-1 max-sm:px-2.5 max-sm:text-sm sm:gap-2.5 sm:px-5 sm:text-lg"
-                  onClick={onPlayAgain}
-                >
-                  <span className="shrink-0 text-xl leading-none max-sm:text-lg sm:text-2xl" aria-hidden>
-                    {SCOPE_INFO[scope].icon}
-                  </span>
-                  <span className="truncate">Play again</span>
-                </Button>
-              ) : (
-                <Button
-                  size="lg"
-                  className="w-full min-w-0 gap-1.5 px-3 text-base max-sm:gap-1 max-sm:px-2.5 max-sm:text-sm sm:gap-2.5 sm:px-5 sm:text-lg"
-                  onClick={() => router.push("/")}
-                >
-                  <img
-                    src="/icons/home.svg"
-                    alt=""
-                    aria-hidden
-                    className="size-6 shrink-0 max-sm:size-5 sm:size-7"
-                    draggable={false}
-                  />
-                  <span className="truncate sm:hidden">Home</span>
-                  <span className="hidden truncate sm:inline">Take me home</span>
-                </Button>
-              )}
-            </div>
-          </div>
-        </div>
-      </>
+      <GameRoundSummary
+        title={title}
+        description={description}
+        celebrate={challengeComplete || exitedEarly}
+        bursts={bursts}
+        onBurstDone={removeBurst}
+        achievementIds={newAchievements}
+        onDismissAchievements={dismissAchievements}
+        correctAnswers={correctAnswers}
+        accuracy={accuracy}
+        difficulty={difficulty}
+        mode={mode}
+        scope={scope}
+        continents={continents}
+        isDailyChallenge={isDailyChallenge}
+        countStats={countStats}
+        summaryDailyTime={
+          dailyCompletionElapsedCentiseconds ??
+          storedDailyResult?.elapsedCentiseconds ??
+          dailyElapsedCentiseconds
+        }
+        hintsUsed={hintsUsed}
+        skippedAnswers={skippedAnswers}
+        exitedEarly={exitedEarly}
+        tracksMapProgress={tracksMapProgress}
+        mapProgressDifficulty={mapProgressDifficulty}
+        initialMapProgress={initialMapProgress}
+        currentMapProgress={currentMapProgress}
+        onHome={() => router.push("/")}
+        onPlayAgain={onPlayAgain}
+        onSecondary={() =>
+          router.push(isDailyChallenge ? `/daily-challenge?date=${dailyDateKey}` : scope === "usa" ? "/map?view=usa" : "/map")
+        }
+        secondaryLabel={isDailyChallenge ? "Leaderboard" : "Map"}
+        secondaryIcon={isDailyChallenge ? "🏆" : "🗺️"}
+      />
     );
   }
 
@@ -1024,392 +860,86 @@ export function GameBoard({
       ? "usa"
       : "world"
     : scope;
-  const roundTaskLabel = getQuestionTaskLabel(question, questionScope, answerPlace);
-  const dailyDateLabel = isDailyChallenge ? formatDailyDateKey(dailyDateKey) : null;
-  const headerDailyTime =
-    dailyCompletionElapsedCentiseconds ?? dailyElapsedCentiseconds;
-  const isTextOnlyPrompt = isTextOnlyQuestion(question);
-  const isGlobeHuntRound = question.mode === "globe-hunt";
-  const isAtlasleRound = question.displayType === "atlasle";
-  const isInvertedFlagRound = isInvertedFlagQuestion(question);
   const isMultipleChoiceRound =
-    !isAtlasleRound &&
+    question.displayType !== "atlasle" &&
     (question.displayType === "flags-grid" ||
       Boolean(question.options && difficulty !== "hard"));
-  const showChoiceReveal = showLearnCard && isMultipleChoiceRound;
-  const learnCardCountryCode = question.countryCode;
-  const learnCardHeading =
-    question.mode === "neighbor-quiz" ? (
-      <>
-        <span className="font-black">{getCountryName(question.countryCode)}</span>
-        <span className="font-bold opacity-95">
-          {answerPlace?.isTerritory ? "'s neighboring territory is " : "'s neighbor is "}
-        </span>
-        <span className="font-black">{question.correctAnswer}</span>
-      </>
-    ) : undefined;
-  const learnCardLibraryScope = isStateCode(learnCardCountryCode) ? "usa" : scope;
-  const learnCardLibraryHref = buildLibraryDetailHref(
-    learnCardCountryCode,
-    learnCardLibraryScope,
-    "All",
-  );
-  const learnCardProps = {
-    countryCode: learnCardCountryCode,
-    answerNeighborCode:
-      question.mode === "neighbor-quiz" ? question.correctCode : undefined,
-    heading: learnCardHeading,
-    wasCorrect: lastCorrect,
-    compareCountryCode:
-      question.mode === "population-showdown" ? question.secondaryCountryCode : undefined,
-    showCapitalMarker: isCapitalQuestion(question),
-  };
-  const inlineLearnCard = (
-    <LearnCard {...learnCardProps} variant="inline" />
-  );
-  const overlayLearnCard = (
-    <LearnCard {...learnCardProps} variant="default" />
-  );
-  const roundTitlePanel = (
-    <>
-      <p className="text-[9px] font-black uppercase tracking-[0.18em] text-teal-700/70 sm:text-[10px]">
-        {dailyDateLabel ?? "Your task"}
-      </p>
-      <p className="font-display text-sm font-extrabold leading-snug text-slate-700 dark:text-slate-200 sm:truncate sm:text-base">
-        {roundTaskLabel}
-      </p>
-      {mode === "daily-challenge" && !countStats && (
-        <p className="mt-0.5 text-[10px] font-semibold text-amber-600 dark:text-amber-400">
-          Review — stats won&apos;t count
-        </p>
-      )}
-    </>
-  );
 
   return (
-    <div
-      className={cn(
-        "flex min-h-0 flex-1 flex-col gap-2 overflow-hidden sm:gap-3",
-        interactionLocked && "pointer-events-none",
+    <GameQuestionStage
+      question={question}
+      questionScope={questionScope}
+      difficulty={difficulty}
+      interactionLocked={interactionLocked}
+      isDailyChallenge={isDailyChallenge}
+      countStats={countStats}
+      timed={timed}
+      sessionQuestionLimit={sessionQuestionLimit}
+      timeLeft={timeLeft}
+      headerDailyTime={dailyCompletionElapsedCentiseconds ?? dailyElapsedCentiseconds}
+      reviewElapsedCentiseconds={reviewElapsedCentiseconds}
+      dailyDateLabel={isDailyChallenge ? formatDailyDateKey(dailyDateKey) : null}
+      roundTaskLabel={getQuestionTaskLabel(question, questionScope, answerPlace)}
+      answerPlace={answerPlace}
+      isTextOnlyPrompt={isTextOnlyQuestion(question)}
+      isGlobeHuntRound={question.mode === "globe-hunt"}
+      isAtlasleRound={question.displayType === "atlasle"}
+      isInvertedFlagRound={isInvertedFlagQuestion(question)}
+      isMultipleChoiceRound={isMultipleChoiceRound}
+      showChoiceReveal={showLearnCard && isMultipleChoiceRound}
+      showLearnCard={showLearnCard}
+      lastSelectedAnswer={lastSelectedAnswer}
+      lastSelectedCode={lastSelectedCode}
+      globeRevealCode={globeRevealCode}
+      disabled={disabled}
+      hiddenOptions={hiddenOptions}
+      usedFiftyFifty={usedFiftyFifty}
+      usedSkip={usedSkip}
+      streak={streak}
+      correctAnswers={correctAnswers}
+      questionCount={questionCount}
+      learnCardLibraryHref={buildLibraryDetailHref(
+        question.countryCode,
+        isStateCode(question.countryCode) ? "usa" : scope,
+        "All",
       )}
-      aria-hidden={interactionLocked}
-    >
-      {!showLearnCard && (
-        <AchievementToast
-          achievementIds={newAchievements}
-          onDismiss={dismissAchievements}
-        />
-      )}
-
-      <div className="relative z-50 shrink-0 px-0.5 py-1.5 sm:px-1 sm:py-2">
-        <div className="flex items-center justify-between gap-1 sm:grid sm:grid-cols-[1fr_auto_1fr] sm:items-center sm:gap-2">
-          <div className="flex min-w-0 items-center gap-1.5">
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleExit();
-              }}
-              aria-label="Exit this round and return home"
-              className="min-h-10 gap-1.5 font-extrabold sm:px-4"
-            >
-              <span aria-hidden>←</span>
-              <span>Exit</span>
-            </Button>
-            {showLearnCard && !isDailyChallenge && (
-              <Link
-                ref={learnCardLibraryRef}
-                href={learnCardLibraryHref}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  const snapshot = resumeSnapshotRef.current;
-                  if (snapshot) saveGameResumeSnapshot(snapshot);
-                }}
-                aria-label={`Open ${getCountryName(learnCardCountryCode)} in library`}
-                className={cn(
-                  "inline-flex min-h-10 items-center justify-center gap-1.5 rounded-2xl border-2 border-slate-200 bg-white px-3 py-2 text-sm font-extrabold text-slate-700 shadow-[0_3px_0_var(--color-slate-200)] transition-all duration-100 hover:border-sky-300 hover:text-sky-700 active:translate-y-[3px] active:shadow-none dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:shadow-[0_3px_0_var(--color-slate-700)] dark:hover:border-sky-500 dark:hover:text-sky-300 sm:px-4",
-                )}
-              >
-                <span aria-hidden>{LIBRARY_ICON}</span>
-                <span className="hidden sm:inline">Library</span>
-              </Link>
-            )}
-          </div>
-          <div className="hidden min-w-0 px-1 text-center leading-tight sm:block">
-            {roundTitlePanel}
-          </div>
-          <div className="flex min-w-0 flex-1 items-stretch justify-end gap-1 max-[380px]:gap-0.5 sm:flex-none sm:gap-1.5">
-            <StreakCounter streak={streak} compact />
-            <div className="shrink-0 rounded-xl border-2 border-emerald-200 bg-emerald-50/90 px-1.5 py-1 text-center max-[430px]:rounded-lg max-[430px]:px-1 max-[430px]:py-0.5 dark:border-emerald-800 dark:bg-emerald-950/40 sm:rounded-2xl sm:px-3 sm:py-1.5">
-              <p className="game-stat-label text-[9px] font-semibold uppercase text-emerald-600 dark:text-emerald-400">Correct</p>
-              <p className="font-display text-base font-extrabold leading-none text-emerald-700 dark:text-emerald-300 sm:text-lg">{correctAnswers}</p>
-            </div>
-            {isDailyChallenge && countStats && (
-              <div className="shrink-0 rounded-xl border-2 border-amber-200 bg-amber-50/90 px-1.5 py-1 text-center max-[430px]:rounded-lg max-[430px]:px-1 max-[430px]:py-0.5 dark:border-amber-800 dark:bg-amber-950/40 sm:rounded-2xl sm:px-3 sm:py-1.5">
-                <p className="game-stat-label text-[9px] font-semibold uppercase text-amber-600 dark:text-amber-400">
-                  Time
-                </p>
-                <p className="font-display text-base font-extrabold leading-none text-amber-700 dark:text-amber-300 sm:text-lg">
-                  {formatDailyElapsedTime(headerDailyTime)}
-                </p>
-              </div>
-            )}
-            {isDailyChallenge && !countStats && (
-              <div className="shrink-0 rounded-xl border-2 border-violet-200 bg-violet-50/90 px-1.5 py-1 text-center max-[430px]:rounded-lg max-[430px]:px-1 max-[430px]:py-0.5 dark:border-violet-800 dark:bg-violet-950/40 sm:rounded-2xl sm:px-3 sm:py-1.5">
-                <p className="game-stat-label text-[9px] font-semibold uppercase text-violet-600 dark:text-violet-400">Review</p>
-                <p className="font-display text-base font-extrabold leading-none text-violet-700 dark:text-violet-300 sm:text-lg">
-                  {formatDailyElapsedTime(reviewElapsedCentiseconds)}
-                </p>
-              </div>
-            )}
-            {timed && (
-              <div className={`shrink-0 rounded-xl border-2 px-1.5 py-1 text-center max-[430px]:rounded-lg max-[430px]:px-1 max-[430px]:py-0.5 sm:rounded-2xl sm:px-3 sm:py-1.5 ${timeLeft <= 10 ? "border-rose-300 bg-rose-50 dark:border-rose-700 dark:bg-rose-950/50" : "border-slate-200 bg-white/90 dark:border-slate-700 dark:bg-slate-900/90"}`}>
-                <p className={`game-stat-label text-[9px] font-semibold uppercase ${timeLeft <= 10 ? "text-rose-500 dark:text-rose-400" : "text-slate-500 dark:text-slate-400"}`}>Time</p>
-                <p className={`font-display text-base font-extrabold leading-none sm:text-lg ${timeLeft <= 10 ? "text-rose-600" : ""}`}>{timeLeft}s</p>
-              </div>
-            )}
-            {(timed || sessionQuestionLimit) && (
-              <div className="shrink-0 rounded-xl border-2 border-slate-200 bg-white/90 px-1.5 py-1 text-center max-[430px]:rounded-lg max-[430px]:px-1 max-[430px]:py-0.5 dark:border-slate-700 dark:bg-slate-900/90 sm:rounded-2xl sm:px-3 sm:py-1.5">
-                <p className="game-stat-label text-[9px] font-semibold uppercase text-slate-500 dark:text-slate-400">Question</p>
-                <p className="font-display text-base font-extrabold leading-none sm:text-lg">
-                  {timed ? questionCount + 1 : `${questionCount + 1}/${sessionQuestionLimit}`}
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-        <div className="mt-1.5 px-1 text-center leading-tight sm:hidden">
-          {roundTitlePanel}
-        </div>
-      </div>
-
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border-2 border-slate-200 bg-white/90 p-3 shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-900/90 sm:rounded-3xl sm:p-4">
-        {!showChoiceReveal && !isTextOnlyPrompt && !isGlobeHuntRound && (
-          <h2 className="mb-2 hidden shrink-0 text-center font-display text-base font-extrabold leading-tight sm:mb-3 sm:block sm:text-xl">
-            {question.prompt}
-          </h2>
-        )}
-
-        <div
-          className={`@container/size flex min-h-0 flex-1 flex-col ${
-            showChoiceReveal ? "justify-start overflow-hidden" : "overflow-hidden"
-          } ${showChoiceReveal || question.displayType === "flags-grid" ? "sm:justify-start" : "sm:justify-center"}`}
-        >
-          {!showChoiceReveal &&
-            !isGlobeHuntRound &&
-            !(showLearnCard && !isMultipleChoiceRound) &&
-            !isAtlasleRound && (
+      learnCardLibraryRef={learnCardLibraryRef}
+      learnCard={{
+        countryCode: question.countryCode,
+        answerNeighborCode:
+          question.mode === "neighbor-quiz" ? question.correctCode : undefined,
+        heading:
+          question.mode === "neighbor-quiz" ? (
             <>
-              <div
-                className={`min-h-0 sm:hidden ${difficulty === "hard" ? "flex-[0.06]" : "flex-[0.24]"}`}
-                aria-hidden
-              />
-
-              <div className="shrink-0 px-3 pb-2 text-center sm:hidden">
-                <p
-                  className={`font-display font-extrabold leading-snug text-slate-800 dark:text-slate-100 ${
-                    isTextOnlyPrompt ? "text-2xl" : "text-base"
-                  }`}
-                >
-                  {question.prompt}
-                </p>
-              </div>
+              <span className="font-black">{getCountryName(question.countryCode)}</span>
+              <span className="font-bold opacity-95">
+                {answerPlace?.isTerritory ? "'s neighboring territory is " : "'s neighbor is "}
+              </span>
+              <span className="font-black">{question.correctAnswer}</span>
             </>
-          )}
-
-          {!showLearnCard && isAtlasleRound && (
-            <div className="shrink-0 px-3 pb-2 text-center sm:hidden">
-              <p className="font-display text-base font-extrabold leading-snug text-slate-800 dark:text-slate-100">
-                {question.prompt}
-              </p>
-            </div>
-          )}
-
-          {showChoiceReveal && isTextOnlyPrompt && (
-            <div className="shrink-0 px-2 pb-1 text-center sm:px-3 sm:pb-3">
-              <p className="font-display text-sm font-extrabold leading-snug text-slate-800 dark:text-slate-100 sm:text-xl">
-                {question.prompt}
-              </p>
-            </div>
-          )}
-
-          {!showLearnCard && isTextOnlyPrompt && (
-            <div
-              className={`hidden px-4 text-center sm:flex ${
-                difficulty === "hard"
-                  ? "shrink-0 justify-center pb-2 pt-1"
-                  : "min-h-0 flex-1 items-center justify-center py-6"
-              }`}
-            >
-              <p className="max-w-2xl font-display text-2xl font-extrabold leading-snug text-slate-800 dark:text-slate-100 sm:text-3xl md:text-4xl">
-                {question.prompt}
-              </p>
-            </div>
-          )}
-
-          {!showLearnCard && isTextOnlyPrompt && difficulty !== "hard" && (
-            <div className="min-h-0 flex-[0.76] sm:hidden" aria-hidden />
-          )}
-
-          {isGlobeHuntRound ? (
-            <GlobeHuntSurface
-              key={question.id}
-              question={question}
-              scope={questionScope}
-              difficulty={difficulty}
-              disabled={disabled}
-              initialSelectedCode={resumeSnapshot?.lastSelectedCode ?? null}
-              revealedCode={globeRevealCode}
-              onConfirm={(code) => handleAnswer(code, code)}
-            />
-          ) : showChoiceReveal ? (
-            <div
-              className={`flex min-h-0 w-full flex-col items-stretch ${
-                question.displayType === "flags-grid"
-                  ? "min-h-0 flex-1 gap-2 overflow-hidden sm:gap-3"
-                  : "min-h-0 flex-1 overflow-hidden py-1 sm:py-2"
-              }`}
-            >
-              <div className="mx-auto flex min-h-0 w-full max-w-2xl flex-1 flex-col">
-                {inlineLearnCard}
-              </div>
-              {question.displayType === "flags-grid" && question.optionCodes && (
-                <div className="flex h-[min(44cqh,22rem)] min-h-0 w-full min-w-0 shrink-0 items-center justify-center overflow-hidden pb-2 sm:h-[min(28cqh,13rem)]">
-                  <FlagGrid
-                    codes={question.optionCodes.filter((c) => !hiddenOptions.includes(c))}
-                    onSelect={(code) => handleAnswer(code, code)}
-                    compact
-                    revealed
-                    selectedCode={lastSelectedCode}
-                    correctCode={question.correctCode ?? question.countryCode}
-                    inverted={isInvertedFlagRound}
-                  />
-                </div>
-              )}
-            </div>
-          ) : showLearnCard && !isMultipleChoiceRound ? (
-            <div className="flex min-h-0 flex-1 flex-col overflow-hidden sm:hidden">
-              <div className="mx-auto flex min-h-0 w-full max-w-2xl flex-1 flex-col">{inlineLearnCard}</div>
-            </div>
-          ) : !showLearnCard && isAtlasleRound ? (
-            <div className="flex min-h-0 flex-1 flex-col items-center justify-start overflow-y-auto py-1 sm:justify-center">
-              <AnswerAtlasle
-                countryCode={question.countryCode}
-                correctAnswer={question.correctAnswer}
-                target={question.atlasleTarget ?? "name"}
-                maxGuesses={question.atlasleMaxGuesses ?? 6}
-                difficulty={difficulty}
-                scope={questionScope}
-                disabled={disabled || interactionLocked}
-                onComplete={(_correct, finalGuess, puzzleHints) => {
-                  setHintsUsed((count) => count + puzzleHints);
-                  handleAnswer(finalGuess);
-                }}
-              />
-            </div>
-          ) : !showLearnCard && !isTextOnlyPrompt ? (
-            <div
-              className={`flex min-h-0 flex-col items-center justify-center overflow-hidden ${
-                difficulty === "hard" ? "max-h-[38%] shrink-0 sm:max-h-none sm:flex-1" : "flex-[0.76] sm:flex-1"
-              }`}
-            >
-              <QuestionMedia
-                question={question}
-                hiddenOptions={hiddenOptions}
-                onSelectFlag={(code) => handleAnswer(code, code)}
-              />
-            </div>
-          ) : null}
-
-          {/* Hard mode: keep the type-in field high so it stays visible above the keyboard. */}
-          {!showLearnCard &&
-            difficulty === "hard" &&
-            !isGlobeHuntRound &&
-            !isAtlasleRound &&
-            question.displayType !== "flags-grid" && (
-            <>
-              <div className="mx-auto w-full max-w-2xl shrink-0 px-1 pt-2 sm:pt-3">
-                <AnswerTypeIn
-                  onSubmit={handleAnswer}
-                  disabled={disabled}
-                placeholder={
-                  question.mode === "country-to-capital"
-                    ? "Type the capital..."
-                    : question.mode === "country-to-language"
-                      ? "Type the language..."
-                    : getTypeInPlacePlaceholder(questionScope, answerPlace?.isTerritory ?? false)
-                }
-                />
-              </div>
-              <div className="min-h-0 flex-1" aria-hidden />
-            </>
-          )}
-        </div>
-
-        {(showChoiceReveal || !showLearnCard) &&
-          !isGlobeHuntRound &&
-          question.displayType !== "flags-grid" &&
-          !isAtlasleRound &&
-          difficulty !== "hard" && (
-          <div className="mt-2 shrink-0 space-y-2 sm:mt-3 sm:space-y-3">
-            {!showLearnCard && difficulty === "easy" && (
-              <div className="flex justify-end gap-2">
-                {(question.options?.length ?? 0) > 2 && (
-                  <Button variant="secondary" size="sm" onClick={handleFiftyFifty} disabled={usedFiftyFifty}>
-                    50/50
-                  </Button>
-                )}
-                <Button variant="secondary" size="sm" onClick={handleSkip} disabled={usedSkip}>
-                  Skip
-                </Button>
-              </div>
-            )}
-
-            {question.options ? (
-              <AnswerMultipleChoice
-                options={question.options}
-                optionCodes={question.optionCodes}
-                onSelect={handleAnswer}
-                disabled={disabled}
-                hiddenOptions={hiddenOptions}
-                revealed={showChoiceReveal}
-                selectedAnswer={lastSelectedAnswer}
-                selectedCode={lastSelectedCode}
-                correctAnswer={question.correctAnswer}
-                correctCode={question.correctCode}
-              />
-            ) : null}
-          </div>
-        )}
-      </div>
-
-      <AnswerFeedbackLayer bursts={bursts} onDone={removeBurst} />
-
-      {showLearnCard && (
-        <>
-          <div
-            className={`fixed inset-0 z-40 cursor-pointer ${
-              isMultipleChoiceRound ? "" : "sm:bg-slate-900/50 sm:backdrop-blur-[2px]"
-            }`}
-            onClick={handleContinue}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") handleContinue();
-            }}
-            role="button"
-            tabIndex={-1}
-            aria-label="Continue to next question"
-          />
-          {!isMultipleChoiceRound && (
-            <div
-              className="pointer-events-none fixed inset-0 z-[45] hidden items-center justify-center p-4 sm:flex"
-              aria-hidden
-            >
-              <div className="max-h-[88dvh] w-full max-w-lg overflow-y-auto">{overlayLearnCard}</div>
-            </div>
-          )}
-        </>
-      )}
-    </div>
+          ) : undefined,
+        wasCorrect: lastCorrect,
+        compareCountryCode:
+          question.mode === "population-showdown" ? question.secondaryCountryCode : undefined,
+        showCapitalMarker: isCapitalQuestion(question),
+      }}
+      resumeSnapshot={resumeSnapshot}
+      bursts={bursts}
+      onBurstDone={removeBurst}
+      achievementIds={newAchievements}
+      onDismissAchievements={dismissAchievements}
+      onExit={handleExit}
+      onLibraryClick={() => {
+        const snapshot = buildResumeSnapshot();
+        if (snapshot) saveGameResumeSnapshot(snapshot);
+      }}
+      onAnswer={handleAnswer}
+      onSkip={handleSkip}
+      onFiftyFifty={handleFiftyFifty}
+      onContinue={handleContinue}
+      onAtlasleComplete={(finalGuess, puzzleHints) => {
+        handleAnswer(finalGuess, undefined, puzzleHints);
+      }}
+    />
   );
 }

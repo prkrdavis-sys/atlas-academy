@@ -1,5 +1,6 @@
 import {
   FLAG_QUESTION_MODES,
+  asQuestionKind,
   mapProgressCategoryForMode,
   modeCountsTowardMapProgress as registryModeCountsTowardMapProgress,
 } from "@/lib/mode-registry";
@@ -93,7 +94,9 @@ export function resolveMapProgressCategory(
   question: Question,
   statsMode?: GameMode,
 ): MapProgressCategory | null {
-  const fromQuestion = resolveMapProgressCategoryFromGameMode(question.mode);
+  const fromQuestion = resolveMapProgressCategoryFromGameMode(
+    asQuestionKind(question.mode),
+  );
   if (fromQuestion) return fromQuestion;
   if (question.mode === "country-to-language") return null;
 

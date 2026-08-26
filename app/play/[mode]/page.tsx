@@ -14,16 +14,16 @@ import {
 } from "@/lib/game-setup";
 import {
   DAILY_COUNTING_SESSION_KEY,
-  buildDailyChallengeSnapshot,
-  getDailyDateKey,
   dailyDateKeyToDate,
   formatDailyDateKey,
   getDailyChallengeRun,
+  getDailyDateKey,
   getDailySeedForDateKey,
   hasCompletedDailyToday,
   hasPlayedDailyToday,
   isValidDailyDateKey,
-} from "@/lib/game-engine";
+} from "@/lib/daily-calendar";
+import { buildDailyChallengeSnapshot } from "@/lib/game-engine";
 import {
   clearGameResumeSnapshot,
   consumeFreshPlay,

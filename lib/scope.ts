@@ -202,8 +202,8 @@ export function getQuestionTaskLabel(
   scope: GameScope,
   place?: PlaceLike | null,
 ): string {
-  // Always label from the question on screen so mixed/daily per-question
-  // types and silent engine fallbacks (e.g. language → flag) stay accurate.
+  // Always label from the question kind on screen so mixed/daily rounds
+  // show the task for this question, not the session policy.
   const effectiveMode = question.mode;
   const isTerritory = scope === "world" && (place?.isTerritory ?? false);
 
@@ -234,19 +234,6 @@ export function getQuestionTaskLabel(
       return "Name the capital";
     case "country-to-language":
       return "Name the language";
-    case "marathon":
-      return "Keep your streak alive";
-    case "speed-round":
-      return "Beat the clock";
-    case "mixed":
-      return "All types, shuffled";
-    case "daily-challenge":
-      return "Daily challenge";
-    case "weak-spots":
-      return scopeText(
-        scope === "world" ? "Practice commonly missed countries and territories" : "Practice commonly missed states",
-        scope,
-      );
     default: {
       const _exhaustive: never = effectiveMode;
       return _exhaustive;

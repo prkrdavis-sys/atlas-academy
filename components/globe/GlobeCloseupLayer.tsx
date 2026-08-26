@@ -7,7 +7,7 @@ import * as THREE from "three";
 import {
   globeGoldMaterialConfig,
   useGoldDetailTextures,
-} from "@/components/globe/globe-scene";
+} from "@/components/globe/globe-materials";
 import {
   createGoldMaskTexture,
   createGoldSurfaceMaterial,

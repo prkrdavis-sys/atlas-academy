@@ -15,14 +15,29 @@ export function Button({
   ref,
   ...props
 }: ButtonProps) {
+  const hasLip = variant !== "ghost";
+  const hasBorder = variant === "secondary";
+
   return (
     <button
       ref={ref}
       className={cn(
         // Game-style press: thick bottom edge that collapses on :active
-        "inline-flex min-h-11 items-center justify-center rounded-2xl font-bold transition-all duration-100",
+        "relative inline-flex min-h-11 appearance-none items-center justify-center rounded-2xl font-bold transition-all duration-100",
         "active:translate-y-[3px] active:shadow-none",
         "disabled:cursor-not-allowed disabled:opacity-50 disabled:active:translate-y-0",
+        // Native outline hugs the face, not the 3px lip, and can shift on a
+        // transformed ancestor. Draw the ring on ::after around the full 3D box.
+        "focus-visible:outline-none",
+        "after:pointer-events-none after:absolute after:border-[3px] after:border-transparent after:content-['']",
+        "focus-visible:after:border-[rgb(14_165_233_/_0.45)]",
+        hasLip &&
+          !hasBorder &&
+          "after:-inset-x-[5px] after:-top-[5px] after:-bottom-[8px] after:rounded-[calc(1rem+5px)]",
+        hasLip &&
+          hasBorder &&
+          "after:-inset-x-[7px] after:-top-[7px] after:-bottom-[10px] after:rounded-[calc(1rem+5px)]",
+        !hasLip && "after:-inset-[5px] after:rounded-[calc(1rem+5px)]",
         variant === "primary" &&
           "bg-emerald-500 text-white shadow-[0_3px_0_var(--color-emerald-700)] hover:bg-emerald-400 disabled:shadow-[0_3px_0_var(--color-emerald-700)]",
         variant === "secondary" &&

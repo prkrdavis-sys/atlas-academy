@@ -1,3 +1,4 @@
+import { asQuestionKind } from "@/lib/mode-registry";
 import { scopedHref } from "@/lib/scope";
 import type {
   ChallengeModifier,
@@ -96,11 +97,20 @@ export function isResumeSnapshot(value: unknown): value is GameResumeSnapshot {
   );
 }
 
+function normalizeResumeQuestion(question: Question): Question {
+  return {
+    ...question,
+    mode: asQuestionKind(question.mode),
+  };
+}
+
 function normalizeResumeSnapshot(snapshot: GameResumeSnapshot): GameResumeSnapshot {
   return {
     ...snapshot,
     // Older snapshots were only written on the learn card.
     showLearnCard: snapshot.showLearnCard ?? true,
+    question: normalizeResumeQuestion(snapshot.question),
+    dailyQuestions: snapshot.dailyQuestions?.map(normalizeResumeQuestion),
   };
 }
 

@@ -1,4 +1,6 @@
-import type { GameMode, MapProgressCategory } from "@/lib/types";
+import type { GameMode, MapProgressCategory, QuestionKind } from "@/lib/types";
+
+export type { QuestionKind };
 
 /** Modes that pick a question kind at runtime instead of being a kind themselves. */
 export const SESSION_POLICY_MODES = [
@@ -46,6 +48,11 @@ export function isFlagCropQuestionMode(mode: GameMode): boolean {
 
 export function isSessionPolicyMode(mode: GameMode): mode is SessionPolicyMode {
   return (SESSION_POLICY_MODES as readonly GameMode[]).includes(mode);
+}
+
+/** Session-policy values on stored/resume questions collapse to a flag kind. */
+export function asQuestionKind(mode: GameMode): QuestionKind {
+  return isSessionPolicyMode(mode) ? "flag-to-country" : mode;
 }
 
 export function mapProgressCategoryForMode(mode: GameMode): MapProgressCategory | null {

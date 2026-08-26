@@ -8,7 +8,7 @@ import {
   GLOBE_TAP_TRAVEL_THRESHOLD,
   tryReleasePointerCapture,
   trySetPointerCapture,
-} from "@/components/globe/globe-scene";
+} from "@/components/globe/globe-runtime";
 import { orbitCameraToKeepGrab, pointerGlobeUnit } from "@/lib/globe-grab";
 
 type GlobeGrabOrbitProps = {

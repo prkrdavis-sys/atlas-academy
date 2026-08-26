@@ -3,7 +3,7 @@ import countriesData from "@/data/countries.json";
 import statesData from "@/data/states.json";
 import { isAtlasleEligible } from "@/lib/atlasle";
 import { isFlagCropEligible } from "@/lib/flag-crop";
-import { NON_ISLAND_AND_NAMES } from "@/lib/place-geography";
+import { namedIslandKind } from "@/lib/place-geography";
 import {
   CONTINENTS,
   CORE_QUESTION_TYPES,
@@ -353,12 +353,6 @@ function getRegionLabel(country: Country): string {
   return REGIONS_WITH_THE.has(label) ? `the ${label}` : label;
 }
 
-function isArchipelagoPlace(country: Country): boolean {
-  if (NON_ISLAND_AND_NAMES.has(country.name)) return false;
-  if (/\bIslands\b/i.test(country.name)) return true;
-  return /\band\b/i.test(country.name);
-}
-
 /** Explains why a place has no bordering neighbors in the library view. */
 export function formatNoNeighborsMessage(country: Country, scope: GameScope = "world"): string {
   if (scope === "usa") {
@@ -377,11 +371,12 @@ export function formatNoNeighborsMessage(country: Country, scope: GameScope = "w
     return `${country.name} lies in Antarctica and has no land neighbors — only ice and ocean surround it.`;
   }
 
-  if (isArchipelagoPlace(country)) {
+  const islandKind = namedIslandKind(country);
+  if (islandKind === "archipelago") {
     return `${country.name} is an island archipelago in ${region} with no land neighbors.`;
   }
 
-  if (/\bIsland\b/i.test(country.name)) {
+  if (islandKind === "remote-island") {
     return `${country.name} is a remote island in ${region} with no land neighbors.`;
   }
 

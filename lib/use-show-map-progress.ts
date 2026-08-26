@@ -2,6 +2,7 @@
 
 import {
   parseBooleanFlag,
+  readStoredPreference,
   serializeBooleanFlag,
   useStoredPreference,
   type StoredPreferenceOptions,
@@ -16,8 +17,7 @@ const PREF = {
 } as const satisfies StoredPreferenceOptions<boolean>;
 
 export function getStoredShowMapProgress(): boolean {
-  if (typeof window === "undefined") return PREF.defaultValue;
-  return parseBooleanFlag(localStorage.getItem(PREF.key), PREF.defaultValue);
+  return readStoredPreference(PREF);
 }
 
 /**

@@ -30,7 +30,7 @@ import { useProfiles } from "@/components/ProfileProvider";
 import { useCoachMarkAnchor } from "@/components/CoachMarkProvider";
 import type { GlobeHandle } from "@/components/globe/InteractiveGlobe";
 import { resolvePlaceCodeFromParam } from "@/lib/context-maps";
-import { getDailyChallengeRun, hasCompletedDailyToday } from "@/lib/game-engine";
+import { getDailyChallengeRun, hasCompletedDailyToday } from "@/lib/daily-calendar";
 import { isExploreRoute, isMapRoute } from "@/lib/navigation";
 import { isStateCode } from "@/lib/scope";
 import {

@@ -12,24 +12,21 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, Stars } from "@react-three/drei";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
+import { DistantMoon, GlobeAssetPreloader } from "@/components/globe/globe-celestial";
+import { GlobeFillLights, GlobeMetalReflection } from "@/components/globe/globe-materials";
+import { globeFillDistance, GlobePlanet } from "@/components/globe/globe-planet";
 import {
   GLOBE_IDLE_AUTO_SPIN_MS,
   GLOBE_ROTATION_SPEED,
   getGlobeCanvasGlSettings,
   getGlobeStarCount,
-  GlobeAssetPreloader,
   GlobeContextRecovery,
-  GlobeFillLights,
-  globeFillDistance,
-  GlobeInitialInvalidate,
-  GlobeMetalReflection,
-  DistantMoon,
-  GlobePlanet,
   GlobeRecoveryReset,
   useGlobeCanvasKey,
   useGlobeFrameloop,
   useGlobeSceneEnvironment,
-} from "@/components/globe/globe-scene";
+} from "@/components/globe/globe-runtime";
+import { GlobeInitialInvalidate } from "@/components/globe/globe-scene";
 import { GlobeCapitalMarker } from "@/components/globe/GlobeCapitalMarker";
 import { GlobeCloseupLayer } from "@/components/globe/GlobeCloseupLayer";
 import { GlobeClouds } from "@/components/globe/GlobeClouds";

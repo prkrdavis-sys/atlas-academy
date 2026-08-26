@@ -5,7 +5,7 @@ import { DailyCalendarIcon } from "@/components/DailyCalendarIcon";
 import {
   formatDailyResetCountdown,
   getMillisecondsUntilDailyReset,
-} from "@/lib/game-engine";
+} from "@/lib/daily-calendar";
 import { filterDailyDatesByScope, scopeText } from "@/lib/scope";
 import {
   DAILY_CHALLENGE_QUESTION_COUNT,

@@ -519,20 +519,32 @@ export function recordModeSelection(profileId: string, mode: GameMode) {
   return state;
 }
 
-export function recordAnswer(
-  profileId: string,
-  mode: GameMode,
-  difficulty: Difficulty,
-  correct: boolean,
-  countryCode: string,
+export type RecordAnswerInput = {
+  profileId: string;
+  mode: GameMode;
+  difficulty: Difficulty;
+  correct: boolean;
+  countryCode: string;
+  skipped?: boolean;
+  scope?: GameScope;
+  isPracticeMode?: boolean;
+  question?: Question;
+};
+
+export function recordAnswer({
+  profileId,
+  mode,
+  difficulty,
+  correct,
+  countryCode,
   skipped = false,
-  scope: GameScope = "world",
+  scope = "world",
   isPracticeMode = mode === "weak-spots",
-  question?: Question,
-) {
+  question,
+}: RecordAnswerInput) {
   const state = loadState();
   const profile = state.profiles.find((p) => p.id === profileId);
-  if (!profile) return { state, stats: null };
+  if (!profile) return { state, stats: null, profile: null };
 
   const stats = profile.stats[scope][mode][difficulty];
   const globalStreak = profile.globalStreaks[scope][difficulty];
@@ -611,7 +623,7 @@ export function recordAnswer(
   }
 
   saveState(state);
-  return { state, stats };
+  return { state, stats, profile };
 }
 
 export function recordBestGameScore(

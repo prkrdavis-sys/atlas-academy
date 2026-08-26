@@ -28,6 +28,7 @@ import {
   type GameScope,
   type Region,
   type Question,
+  type QuestionKind,
   type RoundQuestionSetting,
 } from "@/lib/types";
 import {
@@ -41,6 +42,7 @@ import {
 import { getCapitalCityDistractors } from "@/lib/city-distractors";
 import { uniqueBy } from "@/lib/utils";
 import { isIslandCountry } from "@/lib/place-geography";
+import { isSessionPolicyMode } from "@/lib/mode-registry";
 import {
   getDailySeedForDateKey,
 } from "@/lib/daily-calendar";
@@ -409,21 +411,28 @@ export class GameEngine {
     return this.roundCountries[this.questionIndex] ?? null;
   }
 
-  private buildNextQuestionForCountry(country: Country): Question {
-    let questionMode: GameMode;
+  private resolveQuestionKind(country: Country): QuestionKind {
     if (this.mode === "mixed") {
       const eligibleTypes = getEligibleMixedQuestionTypes(country);
-      questionMode =
-        eligibleTypes.length > 0
-          ? pickFromPool(eligibleTypes, this.random)
-          : "flag-to-country";
-    } else {
-      questionMode = this.mode;
+      if (eligibleTypes.length === 0) {
+        throw new Error(`Mixed pool admitted ${country.code} with no eligible question kinds`);
+      }
+      return pickFromPool(eligibleTypes, this.random);
     }
-    return this.buildQuestion(country, questionMode);
+    if (this.mode === "daily-challenge") {
+      throw new Error("Daily challenge questions must use a concrete question type");
+    }
+    if (isSessionPolicyMode(this.mode)) {
+      return "flag-to-country";
+    }
+    return this.mode;
   }
 
-  private buildQuestion(country: Country, mode: GameMode, stableIndex?: number): Question {
+  private buildNextQuestionForCountry(country: Country): Question {
+    return this.buildQuestion(country, this.resolveQuestionKind(country));
+  }
+
+  private buildQuestion(country: Country, mode: QuestionKind, stableIndex?: number): Question {
     const id =
       stableIndex === undefined
         ? `${mode}-${country.code}-${Date.now()}-${this.questionIndex}`
@@ -439,28 +448,16 @@ export class GameEngine {
       case "flag-to-country":
       case "flag-crop-to-country":
       case "inverted-flag-crop-to-country":
-      case "inverted-flag-to-country":
-      case "marathon":
-      case "weak-spots": {
+      case "inverted-flag-to-country": {
         const mc =
           this.difficulty !== "hard"
             ? buildNameMcOptions(country, this.pool, this.difficulty, undefined, 4, this.random)
             : undefined;
         const isFlagCrop =
           mode === "flag-crop-to-country" || mode === "inverted-flag-crop-to-country";
-        const resolvedMode =
-          mode === "marathon" || mode === "weak-spots"
-            ? mode
-            : mode === "flag-crop-to-country"
-              ? "flag-crop-to-country"
-              : mode === "inverted-flag-crop-to-country"
-                ? "inverted-flag-crop-to-country"
-                : mode === "inverted-flag-to-country"
-                  ? "inverted-flag-to-country"
-                  : "flag-to-country";
         return {
           id,
-          mode: resolvedMode,
+          mode,
           countryCode: country.code,
           prompt: placeText(
             mode === "inverted-flag-crop-to-country"
@@ -523,7 +520,7 @@ export class GameEngine {
       case "country-to-language": {
         const primary = getPrimaryLanguage(country);
         if (!primary) {
-          return this.buildQuestion(country, "flag-to-country");
+          throw new Error(`Language pool admitted ${country.code} without a primary language`);
         }
         const mc =
           this.difficulty !== "hard"
@@ -612,7 +609,7 @@ export class GameEngine {
           (c) => c.code !== country.code && c.population !== country.population,
         );
         if (opponents.length === 0) {
-          return this.buildQuestion(country, "flag-to-country");
+          throw new Error(`Population pool admitted ${country.code} without a comparable opponent`);
         }
         let other = pickFromPool(opponents, this.random);
         if (country.population > other.population) {
@@ -669,7 +666,7 @@ export class GameEngine {
       case "atlasle": {
         const targets = getAtlasleTargets(country);
         if (targets.length === 0) {
-          return this.buildQuestion(country, "flag-to-country");
+          throw new Error(`Atlasle pool admitted ${country.code} without a guess target`);
         }
         const target = pickFromPool(targets, this.random);
         const answer = getAtlasleAnswer(country, target);
@@ -690,11 +687,6 @@ export class GameEngine {
           atlasleMaxGuesses: maxGuesses,
         };
       }
-      case "daily-challenge":
-        throw new Error("Daily challenge questions must use a concrete question type");
-      case "speed-round":
-      case "mixed":
-        return this.buildQuestion(country, "flag-to-country");
       default: {
         const _exhaustive: never = mode;
         return _exhaustive;
@@ -763,25 +755,6 @@ export function buildDailyChallengeSnapshot(dateKey: string): DailyChallengeSnap
     questions,
   };
 }
-
-export {
-  DAILY_COUNTING_SESSION_KEY,
-  dailyDateKeyToDate,
-  formatDailyDate,
-  formatDailyDateKey,
-  formatDailyResetCountdown,
-  getDailyCalendarParts,
-  getDailyChallengeRun,
-  getDailyDateKey,
-  getDailySeed,
-  getDailySeedForDateKey,
-  getMillisecondsUntilDailyReset,
-  getWeekdayInEastern,
-  hasCompletedDailyToday,
-  hasPlayedDailyToday,
-  isValidDailyDateKey,
-  offsetDailyDateKey,
-} from "@/lib/daily-calendar";
 
 export function getWeakSpotCodes(codes: string[]): string[] {
   const counts = new Map<string, number>();
