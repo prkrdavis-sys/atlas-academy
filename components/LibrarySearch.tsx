@@ -139,9 +139,7 @@ export function LibrarySearch({
   };
 
   const fullPlaceholder = isState ? "Search states…" : "Search countries…";
-  const [isFocused, setIsFocused] = useState(false);
   const [isWideLayout, setIsWideLayout] = useState(false);
-  const [isIconOnly, setIsIconOnly] = useState(false);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(min-width: 640px)");
@@ -154,65 +152,19 @@ export function LibrarySearch({
     return () => mediaQuery.removeEventListener("change", updateWideLayout);
   }, []);
 
-  useEffect(() => {
-    const container = containerRef.current;
-    const parent = container?.parentElement;
-    if (!container || !parent) return;
-
-    const searchPlaceholderMinWidth = 56;
-    const horizontalPadding = 60;
-
-    const updateIconOnly = () => {
-      const parentStyles = getComputedStyle(parent);
-      const columnGap = Number.parseFloat(parentStyles.columnGap) || 0;
-      const siblingWidth = Array.from(parent.children).reduce((total, child) => {
-        if (child === container) return total;
-        return total + child.getBoundingClientRect().width;
-      }, 0);
-      const gapCount = Math.max(parent.children.length - 1, 0);
-      const availableWidth =
-        parent.clientWidth - siblingWidth - columnGap * gapCount;
-
-      setIsIconOnly(
-        availableWidth < searchPlaceholderMinWidth + horizontalPadding,
-      );
-    };
-
-    updateIconOnly();
-    const observer = new ResizeObserver(updateIconOnly);
-    observer.observe(parent);
-    for (const child of parent.children) {
-      observer.observe(child);
-    }
-    return () => observer.disconnect();
-  }, []);
-
-  const showCollapsedIcon = isIconOnly && !query && !isFocused;
-  const placeholder = isIconOnly
-    ? ""
-    : isWideLayout
-      ? fullPlaceholder
-      : "Search";
+  const placeholder = isWideLayout ? fullPlaceholder : "Search";
 
   return (
     <div
       ref={containerRef}
       className={cn(
-        "relative min-w-0",
-        showCollapsedIcon ? "w-11 shrink-0 flex-none" : "min-w-0 flex-1",
+        "relative min-w-0 w-full",
         mobileDropdownFullWidth && "max-sm:static",
         className,
       )}
     >
-      <div className="relative">
-        <SearchIcon
-          className={cn(
-            "pointer-events-none absolute top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500 dark:text-slate-400",
-            showCollapsedIcon
-              ? "left-1/2 -translate-x-1/2"
-              : "left-3.5",
-          )}
-        />
+      <div className="relative min-w-0">
+        <SearchIcon className="pointer-events-none absolute top-1/2 left-3.5 h-5 w-5 -translate-y-1/2 text-slate-500 dark:text-slate-400" />
         <input
           ref={searchInputRef}
           type="search"
@@ -224,10 +176,8 @@ export function LibrarySearch({
             setHighlightedIndex(nextQuery.trim() ? 0 : -1);
           }}
           onFocus={() => {
-            setIsFocused(true);
             if (query.trim()) setIsOpen(true);
           }}
-          onBlur={() => setIsFocused(false)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           aria-label={fullPlaceholder}
@@ -242,10 +192,8 @@ export function LibrarySearch({
           }
           className={cn(
             GLASS_CONTROL_CLASS,
-            "min-h-11 rounded-full py-2.5 text-base font-semibold text-slate-800 shadow-sm placeholder:font-medium placeholder:text-slate-400 focus:border-teal-400 focus:outline-none focus:ring-2 focus:ring-teal-200 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-teal-500 dark:focus:ring-teal-900/60 sm:text-sm",
-            showCollapsedIcon
-              ? "w-11 shrink-0 px-0"
-              : "w-full pl-11 pr-4",
+            "h-11 min-h-11 w-full min-w-0 appearance-none rounded-full py-0 pl-11 pr-4 text-base leading-none font-semibold text-slate-800 shadow-sm placeholder:font-medium placeholder:text-slate-400 focus:border-teal-400 focus:outline-none focus:ring-2 focus:ring-teal-200 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-teal-500 dark:focus:ring-teal-900/60 sm:text-sm",
+            "[&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none [&::-webkit-search-results-button]:appearance-none [&::-webkit-search-results-decoration]:appearance-none",
           )}
         />
       </div>
@@ -256,7 +204,7 @@ export function LibrarySearch({
           role="listbox"
           aria-label={isState ? "Matching states" : "Matching countries"}
           className={cn(
-            `${GLASS_PANEL_CLASS} absolute z-20 mt-2 max-h-72 w-full overflow-y-auto rounded-2xl p-1.5 shadow-lg`,
+            `${GLASS_PANEL_CLASS} absolute z-20 mt-2 max-h-[min(28rem,70vh)] w-full overflow-y-auto rounded-2xl p-1.5 shadow-lg`,
             mobileDropdownFullWidth &&
               "max-sm:-left-4 max-sm:-right-4 max-sm:top-[calc(100%+0.5rem)] max-sm:mt-0 max-sm:w-auto",
           )}

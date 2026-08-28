@@ -31,6 +31,7 @@
     "generate-map-ocean-texture": "tsx scripts/generate-map-ocean-texture.ts",
     "generate-globe-data": "tsx scripts/generate-globe-texture-data.ts",
     "generate-gold-pbr": "tsx scripts/generate-mastery-gold-pbr.ts",
+    "generate-diamond-pbr": "tsx scripts/generate-mastery-diamond-pbr.ts",
     "generate-closest-mainland": "tsx scripts/generate-closest-mainland.ts",
     "generate-capital-coordinates": "tsx scripts/generate-capital-coordinates.ts",
     "generate-flag-display-data": "tsx scripts/generate-flag-display-data.ts",

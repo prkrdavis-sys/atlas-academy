@@ -8,7 +8,7 @@ import {
   getProgressFillColor,
   MAP_SELECTION_GLOW_BLUR,
 } from "@/lib/map-colors";
-import { getMasterySolidColor } from "@/lib/map-mastery-fx";
+import { MASTERY_DIAMOND_ALBEDO_FALLBACK } from "@/lib/mastery-diamond-texture";
 import {
   createGoldMaskCanvas,
   fillGoldMaskPath,
@@ -400,7 +400,7 @@ export type PaintCloseupOptions = {
 
 export type CloseupPaintResult = {
   color: HTMLCanvasElement;
-  /** White where Normal mastery-4 gold covers this window; null when none does. */
+  /** White where mastery-4 gold or diamond covers this window; null when none does. */
   goldMaskCanvas: HTMLCanvasElement | null;
 };
 
@@ -504,19 +504,16 @@ export function paintGlobeCloseupRegion(
     ctx.restore();
   }
 
-  const useGoldMask =
-    difficulty === "medium" && shapes.some((shape) => shape.level === 4);
+  const useGoldMask = shapes.some((shape) => shape.level === 4);
   const goldMask = useGoldMask ? createGoldMaskCanvas(width, height) : null;
 
   for (const { shape, path } of shapePaths) {
     const level = shape.level as 0 | 1 | 2 | 3 | 4;
     if (level === 4) {
-      // Gold / legendary stays fully opaque over the imagery. Normal gold is a
-      // flat base — the GPU adds the tiling grain, roughness, and relief.
+      // Gold / diamond stays fully opaque over the imagery. The GPU adds the
+      // tiling grain, roughness, and relief from the mastery detail maps.
       ctx.fillStyle =
-        difficulty === "medium"
-          ? MASTERY_GOLD_ALBEDO_FALLBACK
-          : getMasterySolidColor(difficulty);
+        difficulty === "hard" ? MASTERY_DIAMOND_ALBEDO_FALLBACK : MASTERY_GOLD_ALBEDO_FALLBACK;
       if (goldMask) fillGoldMaskPath(goldMask, path);
       ctx.fill(path, "evenodd");
     } else if (level === 0) {

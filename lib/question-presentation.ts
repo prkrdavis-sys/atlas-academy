@@ -1,4 +1,4 @@
-import type { Question } from "@/lib/types";
+import type { Difficulty, Question } from "@/lib/types";
 
 /**
  * Presentation predicates shared by the solo and head-to-head boards, so both
@@ -21,6 +21,11 @@ export function isInvertedFlagRound(question: Question): boolean {
     question.mode === "inverted-country-to-flag" ||
     question.mode === "inverted-flag-crop-to-country"
   );
+}
+
+/** Easy shape rounds show the learn-card regional map instead of a lone silhouette. */
+export function showShapeContextMap(difficulty: Difficulty): boolean {
+  return difficulty === "easy";
 }
 
 /** Learn-card maps show a capital star only when the question was about the capital. */

@@ -185,7 +185,7 @@ export function LibraryBrowser({ scope = "world" }: LibraryBrowserProps) {
   return (
     <div className="space-y-5 sm:space-y-7">
       <LibraryListScrollRestore scope={scope} filter={filter} sort={sort} />
-      <header className={`${GLASS_PANEL_CLASS} rounded-[1.75rem] p-5 shadow-sm sm:p-8`}>
+      <header className={`${GLASS_PANEL_CLASS} relative z-20 rounded-[1.75rem] p-5 shadow-sm sm:p-8`}>
         <h1 className="font-display text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 sm:text-4xl">
           {scopeInfo.libraryTitle}
         </h1>
@@ -222,16 +222,15 @@ export function LibraryBrowser({ scope = "world" }: LibraryBrowserProps) {
             );
           })}
         </div>
+        <LibrarySearch
+          scope={scope}
+          filter={filter}
+          sort={sort}
+          isState={isUsa}
+          className="mt-4 w-full"
+          onNavigateToDetail={openDetailFromList}
+        />
       </header>
-
-      <LibrarySearch
-        scope={scope}
-        filter={filter}
-        sort={sort}
-        isState={isUsa}
-        className="w-full max-w-xl"
-        onNavigateToDetail={openDetailFromList}
-      />
 
       <section
         aria-labelledby="library-filter-heading"

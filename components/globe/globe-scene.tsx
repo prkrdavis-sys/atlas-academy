@@ -84,7 +84,7 @@ function disposeGlobeMaps(maps: GlobeSurfaceMaps) {
 /**
  * Builds the progress-painted planet texture at the highest resolution the
  * device's GPU comfortably supports, rebuilding when inputs change. Hard
- * mastery-4 places get a gentle holographic drift; Normal gold uses a brushed
+ * mastery-4 places use a diamond-camo tile; Normal gold uses a brushed
  * metal albedo plus metalness/roughness maps so sunlight catches those places.
  * Selection highlight updates without rebuilding the base layer.
  *

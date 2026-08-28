@@ -76,7 +76,7 @@ const HURRICANE_EVENT_CHANCE = 1;
 const HURRICANE_FADE_IN_DAMP = 2.1;
 const HURRICANE_FADE_OUT_DAMP = 3.2;
 
-/** Slight independent clockwise spin (local outward axis). */
+/** Slight independent counterclockwise spin (local outward axis). */
 const HURRICANE_SPIN_SPEED = 0.14;
 const HURRICANE_RADIUS = CLOUD_DECK_RADIUS;
 

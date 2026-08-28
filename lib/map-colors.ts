@@ -30,11 +30,11 @@ const LIGHT_MAP_PALETTE: MapPalette = {
     strokeWidth: 0.35,
   },
   neighbor: {
-    fill: "#99f6e4",
-    // Same border ink as default land — neighbors are told apart by fill only.
-    // Separate neighbor strokes ghost against mismatched shared-border geometry.
-    stroke: "#94a3b8",
-    strokeWidth: 0.35,
+    // Honey gold + bronze ink — warm land, clear of teal highlight and navy ocean.
+    // Width is CSS px with non-scaling-stroke so cropped maps keep a visible outline.
+    fill: "#e8c96a",
+    stroke: "#3a2508",
+    strokeWidth: 2.25,
   },
   answer: {
     fill: "#f59e0b",
@@ -58,9 +58,9 @@ const DARK_MAP_PALETTE: MapPalette = {
     strokeWidth: 0.35,
   },
   neighbor: {
-    fill: "#115e59",
-    stroke: "#64748b",
-    strokeWidth: 0.35,
+    fill: "#7d6328",
+    stroke: "#f2e2a0",
+    strokeWidth: 2.25,
   },
   answer: {
     fill: "#fbbf24",
@@ -72,20 +72,6 @@ const DARK_MAP_PALETTE: MapPalette = {
     stroke: "none",
     strokeWidth: 0,
   },
-};
-
-const LIGHT_SUBTLE_NEIGHBOR: MapPathStyle = {
-  // Dusty clay — warm land tone, clear of teal highlight and navy ocean.
-  // No stroke: fill contrast defines the edge so shared borders stay single.
-  fill: "#e0b49a",
-  stroke: "none",
-  strokeWidth: 0,
-};
-
-const DARK_SUBTLE_NEIGHBOR: MapPathStyle = {
-  fill: "#7a4f3c",
-  stroke: "none",
-  strokeWidth: 0,
 };
 
 export function getMapPalette(isDark: boolean): MapPalette {
@@ -122,7 +108,7 @@ export function fillSelectedMapPath(
 }
 
 export function getSubtleNeighborMapStyle(isDark: boolean): MapPathStyle {
-  return isDark ? DARK_SUBTLE_NEIGHBOR : LIGHT_SUBTLE_NEIGHBOR;
+  return getMapPalette(isDark).neighbor;
 }
 
 export function getMapPathRole(
@@ -203,8 +189,8 @@ const DARK_PROGRESS_FILL_COLORS: Record<PlaceMasteryLevel, string> = {
 
 /**
  * Hard progress — pale lavender deepening through violet to magenta, with
- * level 4 as a Clash Royale–style legendary solid (animated holographic
- * texture on map/globe). Same deepening direction as the Normal ladder.
+ * level 4 as a Call of Duty–style diamond camo tile (static texture on
+ * map/globe). Same deepening direction as the Normal ladder.
  */
 const LIGHT_HARD_PROGRESS_FILL_COLORS: Record<PlaceMasteryLevel, string> = {
   0: LIGHT_MAP_PALETTE.default.fill,

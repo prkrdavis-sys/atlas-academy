@@ -198,6 +198,7 @@ export function VersusBoard({
             <div className="flex min-h-0 flex-1 flex-col items-center justify-center overflow-hidden">
               <QuestionMedia
                 question={question}
+                difficulty={VERSUS_DIFFICULTY}
                 onSelectFlag={(code) =>
                   versus.selectAnswer(code, code === question.correctAnswer)
                 }

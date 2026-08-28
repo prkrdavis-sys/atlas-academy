@@ -12,13 +12,12 @@ import {
   MAP_SELECTION_GLOW_BLUR,
 } from "@/lib/map-colors";
 import {
-  getMasteryGradientStops,
   getMasterySolidColor,
   MASTERY_GLOW_BY_LEVEL,
   mastery4ShouldAnimate,
   masteryFxPhaseFromTime,
-  sampleGradientColor,
 } from "@/lib/map-mastery-fx";
+import { MASTERY_DIAMOND_ALBEDO_FALLBACK } from "@/lib/mastery-diamond-texture";
 import {
   createGoldMaskCanvas,
   fillGoldMaskPath,
@@ -225,7 +224,7 @@ export type GlobeGrainKind = "ocean" | "land";
 /**
  * Alpha for mastery 1–3 fills painted over the real land imagery — opaque
  * enough that the ladder reads at a glance, translucent enough that the
- * Blue Marble terrain still shows through. Mastery 4 (gold / legendary)
+ * Blue Marble terrain still shows through. Mastery 4 (gold / diamond)
  * stays fully opaque.
  */
 export const MASTERY_TINT_ALPHA = 0.62;
@@ -360,27 +359,10 @@ export function profileHasMastery4(
   return collectShapes(profile, difficulty, usMode).some((shape) => shape.level === 4);
 }
 
-function createMastery4FillStyle(
-  ctx: CanvasRenderingContext2D,
-  width: number,
-  height: number,
-  difficulty: MapProgressDifficulty,
-  phase: number,
-): string | CanvasGradient {
-  // Normal gold is a flat base here — the brushed grain, roughness, and relief
-  // are sampled on the GPU from tiling maps so they stay locked to geography.
-  if (difficulty === "medium") return MASTERY_GOLD_ALBEDO_FALLBACK;
-
-  const stops = getMasteryGradientStops(difficulty);
-  // Hard legendary: gentle holographic crawl across the map.
-  const ox = ((phase * 0.55) % 1) * width * 0.35;
-  const oy = ((phase * 0.3) % 1) * height * 0.25;
-  const grad = ctx.createLinearGradient(ox, oy, ox + width * 0.7, oy + height * 0.55);
-  for (const stop of stops) {
-    const t = Math.min(0.999, Math.max(0, stop.offset));
-    grad.addColorStop(t, sampleGradientColor(stops, stop.offset + phase * 0.35));
-  }
-  return grad;
+function createMastery4FillStyle(difficulty: MapProgressDifficulty): string {
+  // Flat base only — grain, roughness, and relief are sampled on the GPU
+  // from tiling maps so they stay locked to geography.
+  return difficulty === "hard" ? MASTERY_DIAMOND_ALBEDO_FALLBACK : MASTERY_GOLD_ALBEDO_FALLBACK;
 }
 
 function drawShapeFill(
@@ -391,9 +373,6 @@ function drawShapeFill(
     isDark,
     difficulty,
     pixelScale,
-    width,
-    height,
-    phase,
     allowCanvasGlow,
     hasLandImagery,
   }: {
@@ -414,21 +393,16 @@ function drawShapeFill(
   const solid = getProgressFillColor(level, isDark, difficulty);
 
   ctx.save();
-  // Skip canvas glow for Normal gold — metallic texture should stay crisp.
+  // Skip canvas glow for mastery 4 — metal / diamond tiles should stay crisp.
   // Phones skip shadowBlur entirely (very expensive on large canvases).
-  const allowGlow =
-    allowCanvasGlow && glow.blur > 0 && !(difficulty === "medium" && level === 4);
+  const allowGlow = allowCanvasGlow && glow.blur > 0 && level !== 4;
   if (allowGlow) {
-    const glowColor =
-      level === 4
-        ? sampleGradientColor(getMasteryGradientStops(difficulty), phase)
-        : solid;
-    ctx.shadowColor = glowColor;
+    ctx.shadowColor = solid;
     ctx.shadowBlur = glow.blur * pixelScale;
   }
 
   if (level === 4) {
-    ctx.fillStyle = createMastery4FillStyle(ctx, width, height, difficulty, phase);
+    ctx.fillStyle = createMastery4FillStyle(difficulty);
   } else {
     // Mastery 1–3 tints stay translucent over the imagery so terrain reads.
     if (hasLandImagery) ctx.globalAlpha = MASTERY_TINT_ALPHA;
@@ -458,7 +432,7 @@ export type GlobeTextureOptions = {
   size?: number;
   /** Place code currently selected on the map globe (teal fill, normal border). */
   selectedCode?: string | null;
-  /** 0–1 animation phase for mastery-4 holographic / gold drift. */
+  /** 0–1 animation phase kept for the paint-frame API (mastery-4 is static). */
   phase?: number;
   /** When false, skip canvas shadowBlur (phones). Default: not constrained. */
   allowCanvasGlow?: boolean;
@@ -473,13 +447,13 @@ export type GlobeTextureOptions = {
 export type GlobeTexturePaintHandle = {
   canvas: HTMLCanvasElement;
   /**
-   * White where Normal mastery-4 gold covers the surface. The shader uses it
-   * to gate the tiling gold albedo / roughness / relief.
+   * White where mastery-4 gold or diamond covers the surface. The shader
+   * uses it to gate the tiling albedo / roughness / relief.
    */
   goldMaskCanvas: HTMLCanvasElement | null;
   /** True when any mastery-4 places exist. */
   hasMastery4: boolean;
-  /** True when mastery-4 fills should animate (Hard legendary only, non-constrained). */
+  /** True when mastery-4 fills should animate (unused — both tiles are static). */
   animateMastery4: boolean;
   /** Recompose the visible canvas from the cached base + mastery-4 layer. */
   paintFrame: (phase: number) => void;
@@ -661,7 +635,7 @@ function buildGlobeTexturePaintSync(
   canvas.height = height;
   const ctx = canvas.getContext("2d")!;
 
-  const useGoldMask = difficulty === "medium" && hasMastery4;
+  const useGoldMask = hasMastery4;
   let goldMaskCanvas: HTMLCanvasElement | null = null;
 
   if (useGoldMask) {
@@ -843,7 +817,7 @@ async function buildGlobeTexturePaintAsync(
   canvas.height = height;
   const ctx = canvas.getContext("2d")!;
 
-  const useGoldMask = difficulty === "medium" && hasMastery4;
+  const useGoldMask = hasMastery4;
   let goldMaskCanvas: HTMLCanvasElement | null = null;
 
   if (useGoldMask) {
@@ -896,7 +870,7 @@ async function buildGlobeTexturePaintAsync(
 /**
  * Paints the equirectangular globe texture: ocean, dim base land, and the
  * player's mastery in the same fill scale as the 2D progress map (teal/gold
- * for Normal, violet→legendary for Hard), wrapped around the planet.
+ * for Normal, violet→diamond for Hard), wrapped around the planet.
  */
 export function buildGlobeTextureCanvas(
   profile: Profile | null,

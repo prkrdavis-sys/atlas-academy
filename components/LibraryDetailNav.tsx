@@ -126,12 +126,12 @@ export function LibraryDetailNav({
             `${GLASS_PANEL_CLASS} rounded-none border-x-0 border-t-0`,
         )}
       >
-        <div className="relative flex items-center gap-2 sm:gap-3">
+        <div className="relative grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 sm:flex sm:flex-nowrap sm:gap-3">
           <Link
             href={buildLibraryListHref(scope, resolvedFilter, sort)}
             onClick={markLibraryScrollRestore}
             scroll={false}
-            className={`${navButtonClass} shrink-0`}
+            className={`${navButtonClass} shrink-0 justify-self-start`}
           >
             {isState ? "← All states" : "← All countries"}
           </Link>
@@ -142,9 +142,10 @@ export function LibraryDetailNav({
             sort={sort}
             isState={isState}
             mobileDropdownFullWidth
+            className="col-span-2 min-w-0 sm:col-auto sm:flex-1"
           />
 
-          <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+          <div className="col-start-2 row-start-1 flex shrink-0 items-center gap-2 sm:col-auto sm:row-auto sm:gap-3">
             {positionLabel ? (
               <p className="hidden text-sm font-semibold tabular-nums text-slate-500 dark:text-slate-400 sm:block">
                 {positionLabel}

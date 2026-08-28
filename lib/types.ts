@@ -233,6 +233,9 @@ export function getDifficultyHint(mode: GameMode, level: Difficulty): string {
 
   switch (level) {
     case "easy":
+      if (mode === "shape-to-country") {
+        return " - multiple choice + regional map + boosts";
+      }
       return " - multiple choice + boosts";
     case "medium":
       return " - multiple choice";
@@ -268,6 +271,9 @@ export function getDifficultyDescription(mode: GameMode, level: Difficulty): str
 
   switch (level) {
     case "easy":
+      if (mode === "shape-to-country") {
+        return "Multiple choice, with a regional map so you can see the surrounding area, plus hints and boosts.";
+      }
       return "Multiple choice, with hints and boosts to help you along.";
     case "medium":
       return "Multiple choice with four options and no extra help.";

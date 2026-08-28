@@ -606,7 +606,7 @@ input:focus-visible {
   animation: achievement-toast-dismiss 0.35s cubic-bezier(0.4, 0, 1, 1) both;
 }
 
-/* Map mastery edge tint + metallic/legendary texture FX (no heavy pulse). */
+/* Map mastery edge tint + metallic/diamond texture FX (no heavy pulse). */
 .mastery-glow-2,
 .mastery-glow-3,
 .mastery-glow-4 {
@@ -623,8 +623,8 @@ input:focus-visible {
   --mastery-glow-color: rgb(232 121 249 / 0.28);
 }
 
-.mastery-glow-legendary {
-  --mastery-glow-color: rgb(34 211 238 / 0.32);
+.mastery-glow-diamond {
+  --mastery-glow-color: rgb(186 230 253 / 0.28);
 }
 
 .mastery-glow-2 {
@@ -639,8 +639,9 @@ input:focus-visible {
   filter: drop-shadow(0 0 1.6px var(--mastery-glow-color));
 }
 
-/* Normal mastery 4 — static brushed-metal look, no glow pulse. */
-.mastery-metal-gold {
+/* Mastery 4 — static metal / diamond tiles, no glow pulse. */
+.mastery-metal-gold,
+.mastery-metal-diamond {
   filter: none;
 }
 
@@ -650,36 +651,10 @@ input:focus-visible {
   background-position: center;
 }
 
-.mastery-texture-legendary {
-  background-image: linear-gradient(
-    125deg,
-    #22d3ee 0%,
-    #a78bfa 16%,
-    #e879f9 32%,
-    #f472b6 48%,
-    #fbbf24 64%,
-    #c084fc 80%,
-    #22d3ee 100%
-  );
-  background-size: 180% 180%;
-  animation: mastery-texture-shift 5.5s linear infinite;
-}
-
-@keyframes mastery-texture-shift {
-  0% {
-    background-position: 0% 45%;
-  }
-  50% {
-    background-position: 100% 55%;
-  }
-  100% {
-    background-position: 0% 45%;
-  }
-}
-
-/* Animated SVG gradient motion is driven by SMIL inside the map defs (Hard only). */
-#map-mastery-legendary stop {
-  transition: stop-color 0.2s linear;
+.mastery-texture-diamond {
+  background-image: url("/textures/mastery-diamond-color.jpg");
+  background-size: 220%;
+  background-position: center;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -739,8 +714,7 @@ input:focus-visible {
   .mastery-glow-1,
   .mastery-glow-2,
   .mastery-glow-3,
-  .mastery-glow-4,
-  .mastery-texture-legendary {
+  .mastery-glow-4 {
     animation: none;
   }
 }
@@ -750,13 +724,8 @@ input:focus-visible {
   .mastery-glow-2,
   .mastery-glow-3,
   .mastery-glow-4,
-  .mastery-glow-legendary,
-  .mastery-metal-gold {
+  .mastery-metal-gold,
+  .mastery-metal-diamond {
     filter: none;
-  }
-
-  .mastery-texture-legendary {
-    animation: none;
-    background-size: 100% 100%;
   }
 }

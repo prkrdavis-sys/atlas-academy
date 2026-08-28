@@ -69,8 +69,18 @@ const CINEMATIC_REST_DISTANCE = 3.25;
 const CINEMATIC_ZOOM_DURATION_S = 3.2;
 /** Seconds to spin and zoom toward a linked place from the library. */
 const PLACE_FOCUS_DURATION_S = 2.8;
-/** Seconds to ease the camera home after the reset button. */
-const RESET_HOME_DURATION_S = 1.8;
+/**
+ * Seconds for the reset-button pullback. Longer than place-focus so zooming
+ * out from a close-up reads as a slow, cinematic settle rather than a snap.
+ */
+const RESET_HOME_DURATION_S = 3.6;
+/** Cap a hitch so the first settle frame cannot finish the whole ease. */
+const RESET_HOME_MAX_FRAME_DELTA_S = 1 / 20;
+
+/** Ease-out sine: motion starts immediately, then soft-lands on the rest pose. */
+function easeOutSine(t: number): number {
+  return Math.sin((t * Math.PI) / 2);
+}
 /**
  * Altitude multiplier for one zoom button press. Applied to height above the
  * unit sphere (not center-distance) so close-in steps stay readable.
@@ -548,10 +558,12 @@ function ViewSettleAnimation({
   const offsetRef = useRef(new THREE.Vector3());
   const sphericalRef = useRef(new THREE.Spherical());
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    const controls = controlsRef.current;
+    if (controls) controls.enabled = false;
     return () => {
-      const controls = controlsRef.current;
-      if (controls) controls.enabled = true;
+      const next = controlsRef.current;
+      if (next) next.enabled = true;
     };
   }, [controlsRef]);
 
@@ -602,17 +614,13 @@ function ViewSettleAnimation({
 
     if (reducedMotion) {
       applyHome(1);
-      controls.update();
       finish();
       return;
     }
 
-    controls.enabled = false;
-    elapsedRef.current += delta;
+    elapsedRef.current += Math.min(delta, RESET_HOME_MAX_FRAME_DELTA_S);
     const t = Math.min(1, elapsedRef.current / RESET_HOME_DURATION_S);
-    const eased = 1 - (1 - t) ** 3;
-    applyHome(eased);
-    controls.update();
+    applyHome(easeOutSine(t));
 
     if (t >= 1) finish();
   });

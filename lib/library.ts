@@ -1,6 +1,7 @@
 import { formatAirportChip } from "@/lib/airport";
 import { getPlacesForScope, getRegionsForScope } from "@/lib/countries";
 import { normalizeAnswerText } from "@/lib/answer-matcher";
+import { getFlagSearchTerms } from "@/lib/flag-search";
 import { formatTimeZoneName } from "@/lib/timezone";
 import type { Country, GameScope, Region } from "@/lib/types";
 
@@ -98,7 +99,9 @@ export type LibrarySearchCategory =
   | "airport"
   | "currency"
   | "time zone"
-  | "trivia";
+  | "trivia"
+  | "flag color"
+  | "flag";
 
 export type LibrarySearchMatch = {
   place: Country;
@@ -211,7 +214,44 @@ function getSearchDescriptors(place: Country): SearchDescriptor[] {
     addSearchDescriptor(descriptors, seen, keyword, "trivia");
   }
 
+  if (place.hasFlag) {
+    for (const term of getFlagSearchTerms(place.code)) {
+      addSearchDescriptor(descriptors, seen, term.label, term.category, term.values);
+    }
+  }
+
   return descriptors;
+}
+
+function isSimpleWordSuffix(rest: string): boolean {
+  return rest === "s" || rest === "es";
+}
+
+function getWordMatchRank(word: string, normalizedQuery: string): number | null {
+  if (!word) return null;
+  if (word === normalizedQuery) return 3;
+  if (!word.startsWith(normalizedQuery)) return null;
+  const rest = word.slice(normalizedQuery.length);
+  if (isSimpleWordSuffix(rest)) return 3;
+  if (normalizedQuery.length >= 4) return 4;
+  return null;
+}
+
+function getMetadataMatchRank(
+  normalizedValue: string,
+  normalizedQuery: string,
+): number | null {
+  if (normalizedValue === normalizedQuery) return 3;
+
+  let bestRank = getWordMatchRank(normalizedValue, normalizedQuery);
+  for (const word of normalizedValue.split(" ")) {
+    const rank = getWordMatchRank(word, normalizedQuery);
+    if (rank === null) continue;
+    bestRank = bestRank === null ? rank : Math.min(bestRank, rank);
+    if (bestRank === 3) return 3;
+  }
+
+  return bestRank;
 }
 
 function getDescriptorMatch(
@@ -224,22 +264,17 @@ function getDescriptorMatch(
     const normalizedValue = normalizeAnswerText(value);
     if (!normalizedValue) continue;
 
-    const isExact = normalizedValue === normalizedQuery;
-    const isPrefix = normalizedValue.startsWith(normalizedQuery);
-    const isSubstring = normalizedValue.includes(normalizedQuery);
-    if (!isSubstring) continue;
-
-    const rank = descriptor.isPlaceName
-      ? isExact
-        ? 0
-        : isPrefix
-          ? 1
-          : 2
-      : isExact
-        ? 3
-        : isPrefix
-          ? 4
-          : 5;
+    let rank: number | null;
+    if (descriptor.isPlaceName) {
+      const isExact = normalizedValue === normalizedQuery;
+      const isPrefix = normalizedValue.startsWith(normalizedQuery);
+      const isSubstring = normalizedValue.includes(normalizedQuery);
+      if (!isSubstring) continue;
+      rank = isExact ? 0 : isPrefix ? 1 : 2;
+    } else {
+      rank = getMetadataMatchRank(normalizedValue, normalizedQuery);
+      if (rank === null) continue;
+    }
 
     bestRank = bestRank === null ? rank : Math.min(bestRank, rank);
   }
@@ -247,11 +282,25 @@ function getDescriptorMatch(
   return bestRank === null ? null : { rank: bestRank };
 }
 
+const DEFAULT_LIBRARY_SEARCH_LIMIT = 8;
+
+function isExpandedFlagQuery(
+  normalizedQuery: string,
+  matches: ScoredSearchMatch[],
+): boolean {
+  if (normalizedQuery.length < 3) return false;
+  return matches.some(
+    (match) =>
+      (match.category === "flag color" || match.category === "flag") &&
+      match.rank <= 4,
+  );
+}
+
 /** Searches the full scope pool, ranking direct names and metadata matches. */
 export function searchLibraryPlaces(
   scope: GameScope,
   query: string,
-  limit = 8,
+  limit = DEFAULT_LIBRARY_SEARCH_LIMIT,
 ): LibrarySearchMatch[] {
   const normalizedQuery = normalizeAnswerText(query);
   if (!normalizedQuery) return [];
@@ -285,6 +334,10 @@ export function searchLibraryPlaces(
     if (bestMatch) matches.push(bestMatch);
   }
 
+  const resultLimit = isExpandedFlagQuery(normalizedQuery, matches)
+    ? matches.length
+    : limit;
+
   return matches
     .toSorted((a, b) => {
       if (a.rank !== b.rank) return a.rank - b.rank;
@@ -292,7 +345,7 @@ export function searchLibraryPlaces(
       if (nameOrder !== 0) return nameOrder;
       return (a.keyword ?? "").localeCompare(b.keyword ?? "");
     })
-    .slice(0, limit);
+    .slice(0, resultLimit);
 }
 
 export function getLibraryNeighbors(

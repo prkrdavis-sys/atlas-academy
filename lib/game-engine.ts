@@ -46,6 +46,7 @@ import { isSessionPolicyMode } from "@/lib/mode-registry";
 import {
   getDailySeedForDateKey,
 } from "@/lib/daily-calendar";
+import { showShapeContextMap } from "@/lib/question-presentation";
 
 function seededRandom(seed: number) {
   let value = seed;
@@ -546,7 +547,13 @@ export class GameEngine {
           id,
           mode,
           countryCode: country.code,
-          prompt: placeText("Which country matches this shape?", displayScope, country),
+          prompt: placeText(
+            showShapeContextMap(this.difficulty)
+              ? "Which country is highlighted on this map?"
+              : "Which country matches this shape?",
+            displayScope,
+            country,
+          ),
           correctAnswer: country.name,
           correctCode: country.code,
           displayType: "shape",

@@ -1,84 +1,43 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import {
-  MASTERY_GOLD_GRADIENT_ID,
-  MASTERY_LEGENDARY_GRADIENT_ID,
-  MASTERY_LEGENDARY_STOPS,
-  type MasteryGradientStop,
-} from "@/lib/map-mastery-fx";
+import { MASTERY_DIAMOND_GRADIENT_ID, MASTERY_GOLD_GRADIENT_ID } from "@/lib/map-mastery-fx";
+import { MASTERY_DIAMOND_TEXTURE_PATH } from "@/lib/mastery-diamond-texture";
 import { MASTERY_GOLD_TEXTURE_PATH } from "@/lib/mastery-gold-texture";
 
-function MasteryGradientDef({
+function MasteryTexturePattern({
   id,
-  stops,
-  durationSec,
-  animate,
+  href,
+  tile = 0.18,
 }: {
   id: string;
-  stops: readonly MasteryGradientStop[];
-  durationSec: number;
-  animate: boolean;
+  href: string;
+  tile?: number;
 }) {
   return (
-    <linearGradient id={id} x1="0%" y1="0%" x2="100%" y2="100%" gradientUnits="objectBoundingBox">
-      {stops.map((stop) => (
-        <stop
-          key={`${id}-${stop.offset}`}
-          offset={`${Math.round(stop.offset * 100)}%`}
-          stopColor={stop.color}
-        />
-      ))}
-      {animate ? (
-        <animateTransform
-          attributeName="gradientTransform"
-          type="translate"
-          values="-0.12 0; 0.12 0.04; -0.12 0"
-          dur={`${durationSec}s`}
-          repeatCount="indefinite"
-        />
-      ) : null}
-    </linearGradient>
+    <pattern
+      id={id}
+      patternUnits="objectBoundingBox"
+      width={tile}
+      height={tile}
+      patternContentUnits="objectBoundingBox"
+    >
+      <image href={href} width={tile} height={tile} preserveAspectRatio="none" />
+    </pattern>
   );
 }
 
 /**
  * Shared mastery-4 fills for progress-map paths.
- * Gold uses a tiled brushed-metal photo texture; legendary drifts holographically.
+ * Gold and diamond use tiled photo textures so every country reads encrusted.
  */
 export function MapMasteryFxDefs() {
-  const [animateLegendary, setAnimateLegendary] = useState(true);
-
-  useEffect(() => {
-    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const sync = () => setAnimateLegendary(!query.matches);
-    sync();
-    query.addEventListener("change", sync);
-    return () => query.removeEventListener("change", sync);
-  }, []);
-
   return (
     <defs>
-      {/* objectBoundingBox tiles so each country shows dense ornate ring relief */}
-      <pattern
-        id={MASTERY_GOLD_GRADIENT_ID}
-        patternUnits="objectBoundingBox"
-        width="0.18"
-        height="0.18"
-        patternContentUnits="objectBoundingBox"
-      >
-        <image
-          href={MASTERY_GOLD_TEXTURE_PATH}
-          width="0.18"
-          height="0.18"
-          preserveAspectRatio="none"
-        />
-      </pattern>
-      <MasteryGradientDef
-        id={MASTERY_LEGENDARY_GRADIENT_ID}
-        stops={MASTERY_LEGENDARY_STOPS}
-        durationSec={5.5}
-        animate={animateLegendary}
+      <MasteryTexturePattern id={MASTERY_GOLD_GRADIENT_ID} href={MASTERY_GOLD_TEXTURE_PATH} />
+      <MasteryTexturePattern
+        id={MASTERY_DIAMOND_GRADIENT_ID}
+        href={MASTERY_DIAMOND_TEXTURE_PATH}
+        tile={0.38}
       />
     </defs>
   );

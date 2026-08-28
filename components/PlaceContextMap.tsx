@@ -163,6 +163,8 @@ type PlaceContextMapProps = {
   interactive?: boolean;
   /** Draw a capital star at the projected city (library maps and capital learn cards). */
   showCapitalMarker?: boolean;
+  /** Override the default label so quiz maps do not name the featured country. */
+  ariaLabel?: string;
 };
 
 type ContextMapSvgProps = {
@@ -178,7 +180,7 @@ type ContextMapSvgProps = {
   /** Scale borders with geography (better for static zoomed crops). */
   scaleStrokesWithMap?: boolean;
   pathStyleResolver?: (pathId: string) => MapPathStyle | null;
-  /** Include animated gold/legendary gradient defs for progress-map fills. */
+  /** Include gold/diamond texture defs for progress-map fills. */
   includeMasteryFxDefs?: boolean;
   /**
    * Optional Blue Marble land fill. Off by default — terrain coasts and thick
@@ -311,16 +313,16 @@ export function ContextMapSvg({
   }, [textureEnabled, mapTemplateKey, viewBoxX, viewBoxY, viewBoxWidth, viewBoxHeight, isDark]);
 
   const oceanTexture = getMapOceanTexture(mapTemplateKey, isDark);
-  const vectorEffect = scaleStrokesWithMap ? undefined : "non-scaling-stroke";
   const styledPaths = orderedPaths.map((path) => {
     const resolvedStyle = pathStyleResolver?.(path.id);
     const role = getMapPathRole(path.id, highlightIds, neighborIds, answerNeighborIds);
     const style: MapPathStyle = resolvedStyle ?? palette[role];
+    const keepNeighborOutline = role === "neighbor";
     const strokeWidth = strokeWidthForViewBox(
       style.strokeWidth,
       viewBoxWidth,
       viewBoxHeight,
-      scaleStrokesWithMap,
+      scaleStrokesWithMap && !keepNeighborOutline,
     );
     const tintOpacity =
       !textureEnabled
@@ -340,6 +342,8 @@ export function ContextMapSvg({
       style,
       strokeWidth,
       stroke: strokeWidth > 0 ? style.stroke : "none",
+      pathVectorEffect:
+        scaleStrokesWithMap && !keepNeighborOutline ? undefined : "non-scaling-stroke",
       fill: textureEnabled ? `url(#${landPatternId})` : style.fill,
       tintOpacity,
     };
@@ -489,7 +493,7 @@ export function ContextMapSvg({
           />
         ))
       )}
-      {styledPaths.map(({ path, stroke, strokeWidth }) =>
+      {styledPaths.map(({ path, stroke, strokeWidth, pathVectorEffect }) =>
         strokeWidth > 0 && stroke !== "none" ? (
           <path
             key={`stroke-${path.id}`}
@@ -497,7 +501,7 @@ export function ContextMapSvg({
             fill="none"
             stroke={stroke}
             strokeWidth={strokeWidth}
-            vectorEffect={vectorEffect}
+            vectorEffect={pathVectorEffect}
             strokeLinejoin="round"
             strokeLinecap="round"
             style={{ pointerEvents: "none" }}
@@ -526,6 +530,7 @@ export function PlaceContextMap({
   className,
   interactive = false,
   showCapitalMarker = false,
+  ariaLabel: ariaLabelOverride,
 }: PlaceContextMapProps) {
   const { isDark, ready } = useIsDark();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -567,8 +572,8 @@ export function PlaceContextMap({
   }, [answerNeighborCode]);
 
   // Featured place is fill-only (a selection stroke fattens thin geographies).
-  // Answer callouts keep a vector stroke. Surrounding land is fill-only so
-  // mismatched shared-border geometry cannot ghost a second outline.
+  // Answer callouts and neighbors keep a vector stroke so their outline is
+  // not the same color as the fill. Other surrounding land is fill-only.
   const pathStyleResolver = useMemo(() => {
     const mapPalette = getMapPalette(isDark);
     const subtleNeighbor = getSubtleNeighborMapStyle(isDark);
@@ -813,7 +818,7 @@ export function PlaceContextMap({
     return null;
   }
 
-  const ariaLabel = getContextMapAriaLabel(country, isState);
+  const ariaLabel = ariaLabelOverride ?? getContextMapAriaLabel(country, isState);
   const mapAriaLabel = [
     answerNeighborIds.size > 0
       ? `${ariaLabel}; the correct neighboring country is highlighted in amber`

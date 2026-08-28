@@ -8,11 +8,15 @@ import {
   applyGoldDetailAnisotropy,
   createGoldSurfaceMaterial,
   GOLD_FULL_GLOBE_UV_WINDOW,
+  loadDiamondDetailTextures,
   loadGoldDetailTextures,
   updateGoldDetailBlend,
   type GoldDetailTextures,
 } from "@/lib/globe-gold-material";
 import type { GlobePerfTier } from "@/lib/globe-performance";
+import { MASTERY_DIAMOND_TILE_BASE_PX } from "@/lib/mastery-diamond-texture";
+import { MASTERY_GOLD_TILE_BASE_PX } from "@/lib/mastery-gold-texture";
+import type { MapProgressDifficulty } from "@/lib/types";
 
 /**
  * One lighting rig for every globe surface and zoom level.
@@ -47,16 +51,20 @@ export function globeEarthshineIntensity(): number {
  * compensates for mip softening at globe scale so sun glints stay crisp.
  */
 const GOLD_NORMAL_SCALE = new THREE.Vector2(2.4, 2.4);
+const DIAMOND_NORMAL_SCALE = new THREE.Vector2(3.1, 3.1);
 
 /**
- * PBR tuning for Normal mastery-4 gold vs the matte globe surface. Gold
- * roughness is not listed here — it comes per-pixel from the tiling roughness
- * map, which is what makes the foil catch the sun unevenly.
+ * PBR tuning for mastery-4 gold / diamond vs the matte globe surface.
+ * Roughness comes per-pixel from the tiling roughness map.
  */
 export const GLOBE_GOLD_METALNESS = 0.96;
 export const GLOBE_GOLD_EMISSIVE = "#c4921a";
 export const GLOBE_GOLD_EMISSIVE_INTENSITY = 0.07;
 export const GLOBE_GOLD_ENV_MAP_INTENSITY = 1.35;
+export const GLOBE_DIAMOND_METALNESS = 0.84;
+export const GLOBE_DIAMOND_EMISSIVE = "#9ec4dc";
+export const GLOBE_DIAMOND_EMISSIVE_INTENSITY = 0.09;
+export const GLOBE_DIAMOND_ENV_MAP_INTENSITY = 1.65;
 export const GLOBE_MATTE_METALNESS = 0.04;
 export const GLOBE_MATTE_ROUGHNESS = 0.72;
 
@@ -71,19 +79,22 @@ export function globeGoldMaterialConfig(
   goldMask: THREE.Texture,
   detail: GoldDetailTextures,
   uvWindow: THREE.Vector4,
+  difficulty: MapProgressDifficulty = "medium",
 ) {
+  const diamond = difficulty === "hard";
   return {
     map,
     goldMask,
     detail,
     uvWindow,
-    goldMetalness: GLOBE_GOLD_METALNESS,
+    goldMetalness: diamond ? GLOBE_DIAMOND_METALNESS : GLOBE_GOLD_METALNESS,
     matteMetalness: GLOBE_MATTE_METALNESS,
     matteRoughness: GLOBE_MATTE_ROUGHNESS,
-    emissive: GLOBE_GOLD_EMISSIVE,
-    emissiveIntensity: GLOBE_GOLD_EMISSIVE_INTENSITY,
-    envMapIntensity: GLOBE_GOLD_ENV_MAP_INTENSITY,
-    normalScale: GOLD_NORMAL_SCALE,
+    emissive: diamond ? GLOBE_DIAMOND_EMISSIVE : GLOBE_GOLD_EMISSIVE,
+    emissiveIntensity: diamond ? GLOBE_DIAMOND_EMISSIVE_INTENSITY : GLOBE_GOLD_EMISSIVE_INTENSITY,
+    envMapIntensity: diamond ? GLOBE_DIAMOND_ENV_MAP_INTENSITY : GLOBE_GOLD_ENV_MAP_INTENSITY,
+    normalScale: diamond ? DIAMOND_NORMAL_SCALE : GOLD_NORMAL_SCALE,
+    tileBasePx: diamond ? MASTERY_DIAMOND_TILE_BASE_PX : MASTERY_GOLD_TILE_BASE_PX,
   };
 }
 
@@ -92,15 +103,23 @@ export function globeGoldMaterialConfig(
  * to the renderer. Returns null until the images decode, so the surface falls
  * back to flat painted gold rather than blocking the first frame.
  */
-export function useGoldDetailTextures(enabled: boolean): GoldDetailTextures | null {
+export function useGoldDetailTextures(
+  enabled: boolean,
+  difficulty: MapProgressDifficulty = "medium",
+): GoldDetailTextures | null {
   const gl = useThree((state) => state.gl);
   const invalidate = useThree((state) => state.invalidate);
   const [detail, setDetail] = useState<GoldDetailTextures | null>(null);
 
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled) {
+      setDetail(null);
+      return;
+    }
     let cancelled = false;
-    loadGoldDetailTextures()
+    setDetail(null);
+    const load = difficulty === "hard" ? loadDiamondDetailTextures : loadGoldDetailTextures;
+    load()
       .then((textures) => {
         if (cancelled) return;
         applyGoldDetailAnisotropy(textures, gl, 8);
@@ -108,12 +127,12 @@ export function useGoldDetailTextures(enabled: boolean): GoldDetailTextures | nu
         invalidate();
       })
       .catch(() => {
-        // Flat painted gold remains the fallback.
+        // Flat painted gold / diamond remains the fallback.
       });
     return () => {
       cancelled = true;
     };
-  }, [enabled, gl, invalidate]);
+  }, [enabled, difficulty, gl, invalidate]);
 
   return enabled ? detail : null;
 }
@@ -129,10 +148,10 @@ export function GlobeMetalReflection({ perfTier = "desktop" }: { perfTier?: Glob
 
 /**
  * Planet surface material. Matte land and ocean stay Lambert so the painted
- * colors read true. When any place is mastered gold, the surface upgrades to a
- * StandardMaterial whose metal response is evaluated per-pixel from tiling gold
- * maps, masked to those places — so gold reacts to the sun and the studio IBL
- * without any canvas ever being repainted for lighting.
+ * colors read true. When any place is mastered gold or diamond, the surface
+ * upgrades to a StandardMaterial whose metal response is evaluated per-pixel
+ * from tiling maps, masked to those places — so the camo reacts to the sun
+ * and the studio IBL without any canvas ever being repainted for lighting.
  *
  * Day/night does NOT use the color map as emissiveMap — that turned borders and
  * selection glow into a globe-wide lit grid whenever the texture updated.
@@ -143,17 +162,19 @@ export function GlobeSurfaceMaterial({
   map,
   goldMask = null,
   goldDetail = null,
+  difficulty = "medium",
 }: {
   map: THREE.Texture;
   goldMask?: THREE.Texture | null;
   goldDetail?: GoldDetailTextures | null;
+  difficulty?: MapProgressDifficulty;
 }) {
   const material = useMemo(() => {
     if (!goldMask || !goldDetail) return null;
     return createGoldSurfaceMaterial(
-      globeGoldMaterialConfig(map, goldMask, goldDetail, GOLD_FULL_GLOBE_UV_WINDOW),
+      globeGoldMaterialConfig(map, goldMask, goldDetail, GOLD_FULL_GLOBE_UV_WINDOW, difficulty),
     );
-  }, [map, goldMask, goldDetail]);
+  }, [map, goldMask, goldDetail, difficulty]);
 
   useEffect(() => {
     if (!material) return;

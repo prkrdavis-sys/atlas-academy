@@ -1,8 +1,8 @@
 import type { MapProgressDifficulty, PlaceMasteryLevel } from "@/lib/types";
 
-/** SVG paint ids for animated mastery-4 fills on the 2D progress map. */
+/** SVG paint ids for mastery-4 fills on the 2D progress map. */
 export const MASTERY_GOLD_GRADIENT_ID = "map-mastery-gold";
-export const MASTERY_LEGENDARY_GRADIENT_ID = "map-mastery-legendary";
+export const MASTERY_DIAMOND_GRADIENT_ID = "map-mastery-diamond";
 
 export type MasteryGradientStop = { offset: number; color: string };
 
@@ -19,23 +19,18 @@ export const MASTERY_GOLD_STOPS: readonly MasteryGradientStop[] = [
   { offset: 1, color: "#eab308" },
 ];
 
-/**
- * Clash Royale–style holographic legendary: cyan → magenta → gold → purple,
- * bright and saturated so it reads as rarity chrome on the map.
- */
-export const MASTERY_LEGENDARY_STOPS: readonly MasteryGradientStop[] = [
-  { offset: 0, color: "#22d3ee" },
-  { offset: 0.16, color: "#a78bfa" },
-  { offset: 0.32, color: "#e879f9" },
-  { offset: 0.48, color: "#f472b6" },
-  { offset: 0.64, color: "#fbbf24" },
-  { offset: 0.8, color: "#c084fc" },
-  { offset: 1, color: "#22d3ee" },
+/** Icy diamond fallback for consumers that cannot paint the tiled camo. */
+export const MASTERY_DIAMOND_STOPS: readonly MasteryGradientStop[] = [
+  { offset: 0, color: "#7aa3bd" },
+  { offset: 0.28, color: "#c5dce8" },
+  { offset: 0.5, color: "#f4fbff" },
+  { offset: 0.72, color: "#b7d0e0" },
+  { offset: 1, color: "#8eb4cc" },
 ];
 
-/** Representative solid for consumers that cannot paint a gradient. */
+/** Representative solid for consumers that cannot paint a texture. */
 export const MASTERY_GOLD_SOLID = "#d4af37";
-export const MASTERY_LEGENDARY_SOLID = "#e879f9";
+export const MASTERY_DIAMOND_SOLID = "#c5dce8";
 
 export type MasteryGlowIntensity = {
   /** Canvas shadowBlur multiplier (relative to texture pixel scale). */
@@ -108,15 +103,15 @@ export function getMapProgressChrome(difficulty: MapProgressDifficulty): MapProg
 }
 
 export function getMasteryGradientStops(difficulty: MapProgressDifficulty): readonly MasteryGradientStop[] {
-  return difficulty === "hard" ? MASTERY_LEGENDARY_STOPS : MASTERY_GOLD_STOPS;
+  return difficulty === "hard" ? MASTERY_DIAMOND_STOPS : MASTERY_GOLD_STOPS;
 }
 
 export function getMasteryGradientId(difficulty: MapProgressDifficulty): string {
-  return difficulty === "hard" ? MASTERY_LEGENDARY_GRADIENT_ID : MASTERY_GOLD_GRADIENT_ID;
+  return difficulty === "hard" ? MASTERY_DIAMOND_GRADIENT_ID : MASTERY_GOLD_GRADIENT_ID;
 }
 
 export function getMasterySolidColor(difficulty: MapProgressDifficulty): string {
-  return difficulty === "hard" ? MASTERY_LEGENDARY_SOLID : MASTERY_GOLD_SOLID;
+  return difficulty === "hard" ? MASTERY_DIAMOND_SOLID : MASTERY_GOLD_SOLID;
 }
 
 /** CSS class for SVG path edge presence at a mastery level (no pulse). */
@@ -127,26 +122,25 @@ export function getMasteryGlowClass(
   if (level <= 1) return undefined;
   const accent = difficulty === "hard" ? "mastery-glow-hard" : "mastery-glow-normal";
   if (level === 4) {
-    // Normal gold is texture-only; Hard keeps a faint legendary edge tint.
-    if (difficulty === "medium") return "mastery-metal-gold";
-    return ["mastery-glow-4", accent, "mastery-glow-legendary"].join(" ");
+    // Gold and diamond are texture-only so facet/metal edges stay crisp.
+    return difficulty === "hard" ? "mastery-metal-diamond" : "mastery-metal-gold";
   }
   return [`mastery-glow-${level}`, accent].join(" ");
 }
 
-/** CSS class for mastery-4 swatch fills (static gold / drifting legendary). */
+/** CSS class for mastery-4 swatch fills (static gold / diamond camo). */
 export function getMasteryTextureClass(difficulty: MapProgressDifficulty): string {
-  return difficulty === "hard" ? "mastery-texture-legendary" : "mastery-texture-gold";
+  return difficulty === "hard" ? "mastery-texture-diamond" : "mastery-texture-gold";
 }
 
-/** Whether mastery-4 fills should animate (Hard legendary only). */
-export function mastery4ShouldAnimate(difficulty: MapProgressDifficulty): boolean {
-  return difficulty === "hard";
+/** Mastery-4 fills are static photo tiles — nothing drifts. */
+export function mastery4ShouldAnimate(_difficulty: MapProgressDifficulty): boolean {
+  return false;
 }
 
 /**
  * Samples a looping gradient at `t` in [0, 1). Used by the globe canvas so
- * gold/legendary fills drift like Clash Royale rarity chrome.
+ * gold/diamond fallbacks sample a looping ramp when a solid isn't enough.
  */
 export function sampleGradientColor(
   stops: readonly MasteryGradientStop[],

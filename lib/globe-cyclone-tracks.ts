@@ -168,7 +168,7 @@ export const TROPICAL_CYCLONE_TRACKS: TropicalCycloneTrack[] = [
 export type TropicalCycloneSpawn = {
   track: TropicalCycloneTrack;
   /**
-   * Local mesh Z spin (viewed from outside the globe). Negative = clockwise.
+   * Local mesh Z spin (viewed from outside the globe). Positive = counterclockwise.
    */
   spinSign: number;
   /** Horizontal mirror so spiral arms trail the spin direction. */
@@ -188,10 +188,10 @@ export function pickTropicalCycloneSpawn(random: () => number): TropicalCycloneS
   }
 
   /**
-   * Florence density spirals clockwise in UV space. All storms use the raw art
-   * and spin clockwise (negative local Z).
+   * Florence density curls counterclockwise. All storms use the raw art and
+   * spin counterclockwise (positive local Z) so the arms trail the rotation.
    */
-  return { track, spinSign: -1, mirrorTexture: false };
+  return { track, spinSign: 1, mirrorTexture: false };
 }
 
 export function sampleCycloneTrack(

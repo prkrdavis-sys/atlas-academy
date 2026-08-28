@@ -16,7 +16,7 @@ const regionsByCode = new Map<string, FlagNameRegion[]>(
 );
 
 /** Extra padding so letter edges don't stay sharp at the overlay clip. */
-const REGION_PAD_RATIO = 0.14;
+const REGION_PAD_RATIO = 0.18;
 
 export function getFlagNameRegions(code: string): FlagNameRegion[] {
   return regionsByCode.get(code.toUpperCase()) ?? [];

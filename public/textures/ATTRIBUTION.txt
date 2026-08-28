@@ -8,3 +8,13 @@ simplex noise, then:
 - Roughness: polished base with scattering scratches and duller dent bowls
 - Color: near-uniform gold with gentle cavity shading and bright scratch lines
 Regenerate with: npm run generate-gold-pbr
+
+mastery-diamond-color.jpg / mastery-diamond-roughness.jpg / mastery-diamond-normal.webp
+
+Source: procedurally generated in-repo (scripts/generate-mastery-diamond-pbr.ts).
+No external assets — a Call of Duty–style diamond camo (princess-cut gems
+in a gold setting) is rasterized as a seamless grid, then:
+- Normal: derived from facet / bezel height (OpenGL tangent space)
+- Roughness: polished tables, slightly duller gold channels
+- Color: icy faceted diamonds with baked studio sparkle
+Regenerate with: npm run generate-diamond-pbr

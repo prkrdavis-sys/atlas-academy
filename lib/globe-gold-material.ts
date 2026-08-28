@@ -12,6 +12,11 @@
 
 import * as THREE from "three";
 import {
+  MASTERY_DIAMOND_NORMAL_PATH,
+  MASTERY_DIAMOND_ROUGHNESS_PATH,
+  MASTERY_DIAMOND_TEXTURE_PATH,
+} from "@/lib/mastery-diamond-texture";
+import {
   MASTERY_GOLD_NORMAL_PATH,
   MASTERY_GOLD_ROUGHNESS_PATH,
   MASTERY_GOLD_TEXTURE_PATH,
@@ -25,19 +30,19 @@ export type GoldDetailTextures = {
   normal: THREE.Texture;
 };
 
-/**
- * Tile repeats across a full equirectangular wrap. X uses the historical
- * canvas tile size; Y is halved because the map is twice as wide as it is
- * tall, which keeps tiles square on the sphere.
- */
-const COARSE_TILE_REPEAT_X = GLOBE_BASE_TEXTURE_SIZE / MASTERY_GOLD_TILE_BASE_PX;
-const COARSE_TILE_REPEAT = new THREE.Vector2(
-  COARSE_TILE_REPEAT_X,
-  COARSE_TILE_REPEAT_X / 2,
-);
 /** Fine tier for close-up zoom. Power of two so both tiers stay mip-aligned. */
 const FINE_TILE_MULTIPLIER = 4;
-const FINE_TILE_REPEAT = COARSE_TILE_REPEAT.clone().multiplyScalar(FINE_TILE_MULTIPLIER);
+
+/**
+ * Tile repeats across a full equirectangular wrap. X uses the canvas tile
+ * size; Y is halved because the map is twice as wide as it is tall, which
+ * keeps tiles square on the sphere.
+ */
+function tileRepeats(tileBasePx: number): { coarse: THREE.Vector2; fine: THREE.Vector2 } {
+  const x = GLOBE_BASE_TEXTURE_SIZE / tileBasePx;
+  const coarse = new THREE.Vector2(x, x / 2);
+  return { coarse, fine: coarse.clone().multiplyScalar(FINE_TILE_MULTIPLIER) };
+}
 
 /** Camera distance at which the coarse tier is used on its own. */
 const DETAIL_BLEND_FAR_DISTANCE = 2.6;
@@ -64,26 +69,54 @@ function loadTexture(src: string, colorSpace: THREE.ColorSpace): Promise<THREE.T
         resolve(texture);
       },
       undefined,
-      () => reject(new Error(`Failed to load gold detail texture: ${src}`)),
+      () => reject(new Error(`Failed to load mastery detail texture: ${src}`)),
     );
   });
 }
 
-let detailPromise: Promise<GoldDetailTextures> | null = null;
+let goldDetailPromise: Promise<GoldDetailTextures> | null = null;
+let diamondDetailPromise: Promise<GoldDetailTextures> | null = null;
+
+function loadDetailSet(
+  colorPath: string,
+  roughPath: string,
+  normalPath: string,
+): Promise<GoldDetailTextures> {
+  return Promise.all([
+    loadTexture(colorPath, THREE.SRGBColorSpace),
+    loadTexture(roughPath, THREE.NoColorSpace),
+    loadTexture(normalPath, THREE.NoColorSpace),
+  ]).then(([color, roughness, normal]) => ({ color, roughness, normal }));
+}
 
 /** Loads the shared tiling gold PBR set once per session (browser only). */
 export function loadGoldDetailTextures(): Promise<GoldDetailTextures> {
   if (typeof window === "undefined") {
     return Promise.reject(new Error("Gold detail textures require a browser environment"));
   }
-  if (!detailPromise) {
-    detailPromise = Promise.all([
-      loadTexture(MASTERY_GOLD_TEXTURE_PATH, THREE.SRGBColorSpace),
-      loadTexture(MASTERY_GOLD_ROUGHNESS_PATH, THREE.NoColorSpace),
-      loadTexture(MASTERY_GOLD_NORMAL_PATH, THREE.NoColorSpace),
-    ]).then(([color, roughness, normal]) => ({ color, roughness, normal }));
+  if (!goldDetailPromise) {
+    goldDetailPromise = loadDetailSet(
+      MASTERY_GOLD_TEXTURE_PATH,
+      MASTERY_GOLD_ROUGHNESS_PATH,
+      MASTERY_GOLD_NORMAL_PATH,
+    );
   }
-  return detailPromise;
+  return goldDetailPromise;
+}
+
+/** Loads the shared tiling diamond-camo PBR set once per session (browser only). */
+export function loadDiamondDetailTextures(): Promise<GoldDetailTextures> {
+  if (typeof window === "undefined") {
+    return Promise.reject(new Error("Diamond detail textures require a browser environment"));
+  }
+  if (!diamondDetailPromise) {
+    diamondDetailPromise = loadDetailSet(
+      MASTERY_DIAMOND_TEXTURE_PATH,
+      MASTERY_DIAMOND_ROUGHNESS_PATH,
+      MASTERY_DIAMOND_NORMAL_PATH,
+    );
+  }
+  return diamondDetailPromise;
 }
 
 /** Raises anisotropy on the shared tiles to the renderer's supported maximum. */
@@ -141,6 +174,8 @@ export type GoldMaterialConfig = {
   goldMetalness: number;
   matteMetalness: number;
   matteRoughness: number;
+  /** Pixel size of one detail tile at {@link GLOBE_BASE_TEXTURE_SIZE}. */
+  tileBasePx?: number;
   emissive: THREE.ColorRepresentation;
   emissiveIntensity: number;
   envMapIntensity: number;
@@ -176,12 +211,13 @@ export function createGoldSurfaceMaterial(
     side: config.side ?? THREE.FrontSide,
   });
 
+  const repeats = tileRepeats(config.tileBasePx ?? MASTERY_GOLD_TILE_BASE_PX);
   const uniforms: GoldDetailUniforms = {
     uGoldMask: { value: config.goldMask },
     uGoldColorTex: { value: config.detail.color },
     uGoldRoughTex: { value: config.detail.roughness },
-    uGoldDetailRepeatA: { value: COARSE_TILE_REPEAT.clone() },
-    uGoldDetailRepeatB: { value: FINE_TILE_REPEAT.clone() },
+    uGoldDetailRepeatA: { value: repeats.coarse },
+    uGoldDetailRepeatB: { value: repeats.fine },
     uGoldDetailBlend: { value: 0 },
     uGoldUvWindow: { value: config.uvWindow.clone() },
     uGoldMetalness: { value: config.goldMetalness },

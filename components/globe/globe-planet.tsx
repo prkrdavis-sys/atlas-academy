@@ -100,7 +100,7 @@ export function GlobePlanet({
     selectedCode,
     perfTier,
   });
-  const goldDetail = useGoldDetailTextures(goldMask !== null);
+  const goldDetail = useGoldDetailTextures(goldMask !== null, difficulty);
   const segments = getGlobeSphereSegments(perfTier);
 
   if (!ready) {
@@ -111,7 +111,12 @@ export function GlobePlanet({
     <>
       <mesh ref={planetMeshRef} {...meshProps}>
         <sphereGeometry args={[1, segments, segments]} />
-        <GlobeSurfaceMaterial map={map} goldMask={goldMask} goldDetail={goldDetail} />
+        <GlobeSurfaceMaterial
+          map={map}
+          goldMask={goldMask}
+          goldDetail={goldDetail}
+          difficulty={difficulty}
+        />
         <GlobeCityLights dayNight={dayNight} perfTier={perfTier} />
         {!isDark ? <DistantSun isDark={isDark} perfTier={perfTier} /> : null}
         <EarthSunLight dayNight={dayNight} />

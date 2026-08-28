@@ -125,7 +125,8 @@ export function GlobeCloseupLayer({
   const localCameraRef = useRef(new THREE.Vector3());
 
   const goldDetail = useGoldDetailTextures(
-    difficulty === "medium" && profileHasMastery4(profile, difficulty, usMode),
+    profileHasMastery4(profile, difficulty, usMode),
+    difficulty,
   );
 
   const [oceanDepthImage, setOceanDepthImage] = useState<HTMLImageElement | null>(null);
@@ -259,6 +260,7 @@ export function GlobeCloseupLayer({
                 window.halfX * 2,
                 window.halfY * 2,
               ),
+              inputs.difficulty,
             ),
             transparent: true,
             opacity: 0,

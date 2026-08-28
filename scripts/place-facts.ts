@@ -1,4 +1,6 @@
-/** Curated trivia for library detail pages and game mode — two remarkable facts per place. */
+/** Curated trivia for library detail pages and game mode — two remarkable facts per place.
+ *  Questions must describe a place without naming it, its capital, or its cities.
+ */
 
 export type PlaceFactEntry = {
   fact: string;
@@ -21,7 +23,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
   ALA: [
     {
       fact: "An autonomous, Swedish-speaking archipelago that belongs to Finland but has its own parliament and flag.",
-      question: "Which autonomous Swedish-speaking archipelago belongs to Finland but has its own parliament and flag?",
+      question: "Which autonomous Swedish-speaking archipelago has its own parliament and flag while remaining part of a nearby Nordic country?",
     },
     {
       fact: "These Baltic islands have been demilitarized since 1856, meaning no military forces or fortifications are allowed there.",
@@ -85,7 +87,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
     },
     {
       fact: "Its capital, The Valley, is one of the smallest capital settlements in the Caribbean.",
-      question: "Which country has a capital called The Valley?",
+      question: "Which country has one of the smallest capital settlements in the Caribbean?",
     },
   ],
   ATA: [
@@ -151,7 +153,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
   AUT: [
     {
       fact: "Vienna ranked among Europe's great imperial capitals; Mozart, Beethoven, and Strauss all made their mark here.",
-      question: "Which country is home to Vienna, where Mozart, Beethoven, and Strauss all made their mark?",
+      question: "Which country is where Mozart, Beethoven, and Strauss all made their mark?",
     },
     {
       fact: "The world's oldest zoo still in operation opened at Vienna's Schönbrunn Palace in 1752.",
@@ -245,7 +247,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
     },
     {
       fact: "The annual Voodoo festival in Ouidah draws practitioners and visitors to ceremonies honoring ancestors and spirits.",
-      question: "Which country hosts a major annual Voodoo festival in the coastal city of Ouidah?",
+      question: "Which country hosts a major annual Voodoo festival in a historic coastal city?",
     },
   ],
   BMU: [
@@ -271,7 +273,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
   BOL: [
     {
       fact: "Two capital cities serve the nation: La Paz is the administrative seat and Sucre the constitutional capital.",
-      question: "Which country has two capitals—La Paz as the administrative seat and Sucre as the constitutional capital?",
+      question: "Which country has two capitals—one administrative and one constitutional?",
     },
     {
       fact: "Salar de Uyuni becomes the world's largest natural mirror after rain covers its vast salt flat with a thin layer of water.",
@@ -281,11 +283,11 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
   BIH: [
     {
       fact: "Mostar's Ottoman-era Stari Most bridge was destroyed in 1993 and painstakingly rebuilt stone by stone.",
-      question: "Which country is home to Mostar's Stari Most bridge, destroyed in 1993 and rebuilt stone by stone?",
+      question: "Which country is home to a famous Ottoman-era stone bridge destroyed in 1993 and rebuilt stone by stone?",
     },
     {
       fact: "Sarajevo hosted the 1984 Winter Olympics, the first ever held in a socialist country.",
-      question: "Which country hosted the 1984 Winter Olympics in Sarajevo?",
+      question: "Which country hosted the 1984 Winter Olympics?",
     },
   ],
   BWA: [
@@ -315,17 +317,17 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
     },
     {
       fact: "Rio de Janeiro's Christ the Redeemer statue stands 30 meters tall atop Corcovado Mountain.",
-      question: "Which country is home to the Christ the Redeemer statue overlooking Rio de Janeiro?",
+      question: "Which country is home to the Christ the Redeemer statue overlooking a harbor from a peak?",
     },
   ],
   IOT: [
     {
       fact: "The Chagos Archipelago includes Diego Garcia, a strategically vital U.S.–U.K. military base in the Indian Ocean.",
-      question: "Which country includes Diego Garcia, a strategically vital U.S.–U.K. military base in the Indian Ocean?",
+      question: "Which country includes a strategically vital U.S.–U.K. military base on a remote coral atoll?",
     },
     {
       fact: "Coral atolls here ring some of the clearest lagoons in the Indian Ocean, far from any continental coastline.",
-      question: "Which country consists of remote coral atolls and lagoons in the central Indian Ocean?",
+      question: "Which country consists of remote coral atolls and lagoons far from any continent?",
     },
   ],
   VGB: [
@@ -365,7 +367,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
     },
     {
       fact: "Ouagadougou hosts FESPACO, Africa's largest film festival, every two years.",
-      question: "Which country hosts Africa's largest film festival in Ouagadougou?",
+      question: "Which country hosts Africa's largest film festival?",
     },
   ],
   BDI: [
@@ -415,17 +417,17 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
     },
     {
       fact: "Pico do Fogo is an active volcano whose black lava slopes rise from the middle of Fogo Island.",
-      question: "Which country includes Fogo Island and the active volcano Pico do Fogo?",
+      question: "Which country includes an inhabited volcanic island with a crater-floor village and an active peak?",
     },
   ],
   BES: [
     {
       fact: "Bonaire, Sint Eustatius, and Saba are Caribbean municipalities of the Netherlands known for diving and reefs.",
-      question: "Which country includes Bonaire, Sint Eustatius, and Saba—Caribbean municipalities known for diving and reefs?",
+      question: "Which country consists of three Dutch municipalities known for diving and reefs?",
     },
     {
       fact: "Saba's Mount Scenery is the highest point in the entire Kingdom of the Netherlands.",
-      question: "Which Caribbean country includes Mount Scenery, the highest peak in its European kingdom?",
+      question: "Which country includes Mount Scenery, the highest peak in its European kingdom?",
     },
   ],
   CYM: [
@@ -521,7 +523,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
   COG: [
     {
       fact: "The Congo Basin rainforest here is the world's second-largest tropical forest after the Amazon.",
-      question: "Which country contains the Congo Basin rainforest, the world's second-largest tropical forest after the Amazon?",
+      question: "Which country contains part of the world's second-largest tropical rainforest, after the Amazon?",
     },
     {
       fact: "Its capital faces Kinshasa across the Congo River, making the two cities the world's closest pair of national capitals.",
@@ -531,11 +533,11 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
   COK: [
     {
       fact: "Residents carry New Zealand passports but govern themselves in free association with Wellington.",
-      question: "Which country's residents carry New Zealand passports but govern themselves in free association with Wellington?",
+      question: "Which country's residents carry New Zealand passports but govern themselves in free association with a nearby country?",
     },
     {
       fact: "Aitutaki's turquoise lagoon is ringed by tiny motus, or coral islets, and is often considered one of the Pacific's most beautiful lagoons.",
-      question: "Which country includes Aitutaki's lagoon of coral islets?",
+      question: "Which country includes a triangular lagoon dotted with coral islets?",
     },
   ],
   CRI: [
@@ -551,7 +553,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
   HRV: [
     {
       fact: "Dubrovnik's medieval walls became a filming location for King's Landing in Game of Thrones.",
-      question: "Which country is home to Dubrovnik's medieval walls, a filming location for King's Landing in Game of Thrones?",
+      question: "Which country is home to medieval city walls that served as a filming location for King's Landing in Game of Thrones?",
     },
     {
       fact: "The necktie takes its name from the cravat, inspired by the scarves worn by Croatian soldiers in 17th-century France.",
@@ -591,17 +593,17 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
   CZE: [
     {
       fact: "Prague's Astronomical Clock has been keeping time since 1410—one of the oldest still working.",
-      question: "Which country is home to Prague's Astronomical Clock, keeping time since 1410?",
+      question: "Which country is home to a medieval astronomical clock that has kept time since 1410?",
     },
     {
       fact: "In 1618, officials were thrown from a Prague castle window in an event called the Defenestration of Prague, helping ignite the Thirty Years' War.",
-      question: "Which country was the setting for the Defenestration of Prague?",
+      question: "Which country was the setting for a famous defenestration that helped start the Thirty Years' War?",
     },
   ],
   DNK: [
     {
       fact: "LEGO bricks were invented in Billund, where the original LEGOLAND theme park still stands.",
-      question: "Which country invented LEGO bricks in Billund, home to the original LEGOLAND theme park?",
+      question: "Which country invented LEGO bricks and is home to the original LEGOLAND theme park?",
     },
     {
       fact: "The Dannebrog, its red flag with a white cross, is widely regarded as the world's oldest continuously used national flag.",
@@ -641,7 +643,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
   COD: [
     {
       fact: "The Congo River is the world's deepest river and second-largest by discharge, cutting through rainforests.",
-      question: "Which country is home to the Congo River, the world's deepest and second-largest by discharge?",
+      question: "Which country is home to the world's deepest river, also the second-largest by discharge?",
     },
     {
       fact: "Bonobos, great apes closely related to chimpanzees, live naturally only in the forests south of the Congo River.",
@@ -661,7 +663,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
   EGY: [
     {
       fact: "The Great Pyramid of Giza was the tallest human-made structure in the world for nearly 4,000 years.",
-      question: "Which country is home to the Great Pyramid of Giza, the tallest human-made structure for nearly 4,000 years?",
+      question: "Which country is home to a great pyramid that was the tallest human-made structure for nearly 4,000 years?",
     },
     {
       fact: "In the 1960s, the temples of Abu Simbel were cut into enormous blocks and moved uphill to save them from a rising reservoir.",
@@ -685,13 +687,13 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
     },
     {
       fact: "The capital, Malabo, sits on Bioko Island rather than on the mainland, separated from it by the Gulf of Guinea.",
-      question: "Which country has its capital on Bioko Island off the African mainland?",
+      question: "Which country has its capital on an island off the African mainland?",
     },
   ],
   ERI: [
     {
       fact: "The capital Asmara has one of the world's finest collections of Art Deco and Modernist architecture.",
-      question: "Which country's capital Asmara has one of the world's finest collections of Art Deco architecture?",
+      question: "Which country's capital has one of the world's finest collections of Art Deco architecture?",
     },
     {
       fact: "The Dahlak Archipelago in the Red Sea contains more than 200 islands and is known for exceptionally clear coral reefs.",
@@ -705,7 +707,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
     },
     {
       fact: "The Kaali meteorite crater field on Saaremaa was formed when a meteor broke apart and struck the island thousands of years ago.",
-      question: "Which country contains the Kaali meteorite craters on Saaremaa?",
+      question: "Which country contains meteorite craters on a Baltic island?",
     },
   ],
   SWZ: [
@@ -781,7 +783,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
   GUF: [
     {
       fact: "Europe's main spaceport at Kourou launches rockets from South America under a European flag.",
-      question: "Which country hosts Europe's main spaceport at Kourou, launching rockets from South America?",
+      question: "Which country hosts Europe's main spaceport, launching rockets from South America?",
     },
     {
       fact: "Although it lies in South America, it is part of the European Union and uses the euro.",
@@ -791,7 +793,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
   PYF: [
     {
       fact: "Bora Bora and Tahiti helped define the world's image of a tropical paradise.",
-      question: "Which country includes Bora Bora and Tahiti, which helped define the image of a tropical paradise?",
+      question: "Which country includes lagoon islands that helped define the image of a tropical paradise?",
     },
     {
       fact: "Teahupo'o is famous for a powerful wave that breaks over an extremely shallow coral reef, producing a strikingly hollow barrel.",
@@ -801,7 +803,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
   ATF: [
     {
       fact: "Remote sub-Antarctic islands with no permanent human population.",
-      question: "Which country includes remote sub-Antarctic islands with no permanent human population?",
+      question: "Which country includes remote southern-ocean islands with no permanent human population?",
     },
     {
       fact: "The Crozet Islands host huge colonies of king penguins, albatrosses, and elephant seals in the southern Indian Ocean.",
@@ -845,7 +847,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
     },
     {
       fact: "More than 1,300 breweries operate here, and the Oktoberfest celebration began in Munich as a royal wedding party in 1810.",
-      question: "Which country began Oktoberfest in Munich and has more than 1,300 breweries?",
+      question: "Which country began Oktoberfest and has more than 1,300 breweries?",
     },
   ],
   GHA: [
@@ -921,7 +923,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
   GTM: [
     {
       fact: "Tikal ruins were a major Maya city—its temples rise above the Petén jungle canopy.",
-      question: "Which country is home to the Tikal ruins, a major Maya city rising above the Petén jungle?",
+      question: "Which country is home to the Tikal ruins, a major Maya city rising above the jungle?",
     },
     {
       fact: "The quetzal, a brilliantly colored bird sacred to the Maya, gives its name to the national currency.",
@@ -1005,13 +1007,13 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
     },
     {
       fact: "The Star Ferry has crossed Victoria Harbour since 1888, offering one of the world's most iconic short urban boat rides.",
-      question: "Which country is home to the historic Star Ferry crossing Victoria Harbour?",
+      question: "Which country is home to a historic harbor ferry that has shuttled passengers between island and peninsula for more than a century?",
     },
   ],
   HUN: [
     {
       fact: "Budapest was formed by merging three cities and sits atop more than 100 thermal springs.",
-      question: "Which country is home to Budapest, formed by merging three cities atop more than 100 thermal springs?",
+      question: "Which country is home to a capital formed by merging three cities atop more than 100 thermal springs?",
     },
     {
       fact: "Rubik’s Cube was invented in Budapest in 1974 by architecture professor Ernő Rubik.",
@@ -1105,7 +1107,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
     },
     {
       fact: "Venice is built across more than 100 small islands, with canals serving as streets and boats as everyday transport.",
-      question: "Which country is home to Venice, the canal city built on more than 100 islands?",
+      question: "Which country is home to a canal city built on more than 100 islands?",
     },
   ],
   CIV: [
@@ -1151,7 +1153,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
   JOR: [
     {
       fact: "Petra is a rose-red city carved into sandstone cliffs by the Nabataeans over 2,000 years ago.",
-      question: "Which country is home to Petra, a rose-red city carved into sandstone cliffs by the Nabataeans?",
+      question: "Which country is home to a rose-red ancient site carved into sandstone cliffs by the Nabataeans?",
     },
     {
       fact: "The vast desert landscape of Wadi Rum, with towering sandstone cliffs and natural arches, is often called the Valley of the Moon.",
@@ -1165,7 +1167,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
     },
     {
       fact: "Baikonur Cosmodrome, the launch site for Sputnik 1 and Yuri Gagarin’s first spaceflight, lies on its steppe.",
-      question: "Which country contains Baikonur Cosmodrome, launch site of the first satellite and first human spaceflight?",
+      question: "Which country contains the launch site of the first satellite and first human spaceflight?",
     },
   ],
   KEN: [
@@ -1231,7 +1233,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
   LVA: [
     {
       fact: "Riga has one of Europe's largest collections of Art Nouveau architecture.",
-      question: "Which country's capital Riga has one of Europe's largest collections of Art Nouveau architecture?",
+      question: "Which country's capital has one of Europe's largest collections of Art Nouveau architecture?",
     },
     {
       fact: "A song and dance festival held every five years brings together tens of thousands of performers in a huge national choir.",
@@ -1331,7 +1333,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
   MWI: [
     {
       fact: "Lake Malawi contains more species of fish than any other lake on Earth—hundreds of colorful cichlids.",
-      question: "Which country contains Lake Malawi, which has more fish species than any other lake on Earth?",
+      question: "Which country contains a great African lake with more fish species than any other lake on Earth?",
     },
     {
       fact: "Mount Mulanje rises abruptly from the surrounding plains, with granite peaks and one of central Africa’s largest rock faces.",
@@ -1361,7 +1363,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
   MLI: [
     {
       fact: "Timbuktu was once a legendary center of Islamic learning and trans-Saharan trade.",
-      question: "Which country is home to Timbuktu, once a legendary center of Islamic learning and trans-Saharan trade?",
+      question: "Which country is home to a legendary desert city once a center of Islamic learning and trans-Saharan trade?",
     },
     {
       fact: "The Great Mosque of Djenné is the world’s largest mud-brick building and is replastered each year by the community.",
@@ -1391,7 +1393,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
   MTQ: [
     {
       fact: "Mount Pelée erupted in 1902, destroying the city of Saint-Pierre in minutes.",
-      question: "Which country saw Mount Pelée erupt in 1902, destroying the city of Saint-Pierre in minutes?",
+      question: "Which country saw a volcano erupt in 1902, destroying a coastal city in minutes?",
     },
     {
       fact: "Its national flower, the red heliconia, is called the “balisier” and appears on local symbols and designs.",
@@ -1485,7 +1487,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
     },
     {
       fact: "The Bay of Kotor is a winding Adriatic inlet surrounded by steep mountains and medieval towns.",
-      question: "Which country contains the dramatic Adriatic inlet known as the Bay of Kotor?",
+      question: "Which country contains a dramatic Adriatic inlet ringed by medieval fortified towns?",
     },
   ],
   MSR: [
@@ -1501,7 +1503,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
   MAR: [
     {
       fact: "Chefchaouen is famous for buildings painted in shades of blue.",
-      question: "Which country is home to Chefchaouen, famous for buildings painted in shades of blue?",
+      question: "Which country is home to a mountain town famous for buildings painted in shades of blue?",
     },
     {
       fact: "Fez contains one of the world’s oldest continually operating universities, founded in 859 at al-Qarawiyyin.",
@@ -1525,7 +1527,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
     },
     {
       fact: "The ancient city of Bagan contains more than 2,000 surviving Buddhist temples and pagodas spread across a vast plain.",
-      question: "Which country is home to the temple-studded plain of Bagan?",
+      question: "Which country is home to a plain studded with thousands of ancient temples?",
     },
   ],
   NAM: [
@@ -1551,7 +1553,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
   NPL: [
     {
       fact: "Mount Everest's summit sits on the border with China—the world's highest point at 8,849 meters.",
-      question: "Which country shares Mount Everest's summit on its border with China—the world's highest point?",
+      question: "Which country shares the world's highest mountain on its border?",
     },
     {
       fact: "The Kumari, a young girl chosen to embody a living goddess, is a celebrated tradition in the Kathmandu Valley.",
@@ -1585,7 +1587,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
     },
     {
       fact: "Glowworms illuminate the limestone caves of Waitomo, making their ceilings look like a star-filled night sky.",
-      question: "Which country is famous for the glowworm caves of Waitomo?",
+      question: "Which country is famous for caves lit by glowworms?",
     },
   ],
   NIC: [
@@ -1651,7 +1653,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
   MKD: [
     {
       fact: "Lake Ohrid is one of Europe's oldest and deepest lakes, home to species found nowhere else.",
-      question: "Which country contains Lake Ohrid, one of Europe's oldest and deepest lakes?",
+      question: "Which country contains one of Europe's oldest and deepest lakes, shared with a neighbor?",
     },
     {
       fact: "Mother Teresa was born in Skopje in 1910, long before she became known worldwide for her humanitarian work.",
@@ -1661,11 +1663,11 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
   MNP: [
     {
       fact: "The Mariana Trench nearby is the deepest point in the ocean—almost 11 km down.",
-      question: "Which country is near the Mariana Trench, the deepest point in the ocean at almost 11 km down?",
+      question: "Which country is near the deepest point in the ocean, almost 11 km down?",
     },
     {
       fact: "Tinian's North Field was the World War II departure point for the two aircraft that dropped atomic bombs on Japan.",
-      question: "Which country includes Tinian, home to the historic North Field air base?",
+      question: "Which country includes a World War II airfield from which the first atomic bombing mission departed?",
     },
   ],
   NOR: [
@@ -1675,7 +1677,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
     },
     {
       fact: "For centuries, fishing villages in Lofoten have dried cod on vast wooden racks to make stockfish without salt.",
-      question: "Which country is known for Lofoten's traditional stockfish-drying racks?",
+      question: "Which country is known for Arctic fishing islands lined with traditional stockfish-drying racks?",
     },
   ],
   OMN: [
@@ -1685,7 +1687,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
     },
     {
       fact: "Frankincense trees grow in the Dhofar region, where their fragrant resin powered an ancient trade route across Arabia and the Mediterranean.",
-      question: "Which country is famed for the frankincense trees of Dhofar?",
+      question: "Which country is famed for frankincense trees in a southern monsoon region?",
     },
   ],
   PAK: [
@@ -1711,11 +1713,11 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
   PSE: [
     {
       fact: "Jericho is one of the oldest continuously inhabited cities in the world.",
-      question: "Which country is home to Jericho, one of the oldest continuously inhabited cities in the world?",
+      question: "Which country is home to one of the oldest continuously inhabited cities in the world, in a desert oasis below sea level?",
     },
     {
       fact: "Bethlehem's Church of the Nativity stands above the traditional site of Jesus's birth and has welcomed pilgrims for centuries.",
-      question: "Which country contains Bethlehem's Church of the Nativity?",
+      question: "Which country contains the Church of the Nativity, built over the traditional birthplace of Jesus?",
     },
   ],
   PAN: [
@@ -1765,7 +1767,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
     },
     {
       fact: "The Banaue Rice Terraces were carved into mountain slopes by hand more than 2,000 years ago and are still farmed today.",
-      question: "Which country is home to the Banaue Rice Terraces?",
+      question: "Which country is home to ancient rice terraces carved into steep mountain slopes?",
     },
   ],
   PCN: [
@@ -1775,13 +1777,13 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
     },
     {
       fact: "With no airstrip, this remote island group is reached by ship, and its tiny main settlement is called Adamstown.",
-      question: "Which country has Adamstown as its only settlement?",
+      question: "Which country has only one inhabited settlement?",
     },
   ],
   POL: [
     {
       fact: "Wieliczka Salt Mine has chapels, sculptures, and chandeliers carved entirely from salt.",
-      question: "Which country is home to the Wieliczka Salt Mine, with chapels and chandeliers carved from salt?",
+      question: "Which country is home to a salt mine with chapels and chandeliers carved from salt?",
     },
     {
       fact: "Białowieża Forest shelters European bison, the continent's heaviest land animal, in one of Europe's last primeval forests.",
@@ -1825,7 +1827,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
     },
     {
       fact: "The cirque of Mafate contains mountain villages with no road access; many supplies arrive by foot or helicopter.",
-      question: "Which country includes the roadless mountain villages of Mafate?",
+      question: "Which country includes roadless mountain villages reachable only on foot or by helicopter?",
     },
   ],
   ROU: [
@@ -1835,7 +1837,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
     },
     {
       fact: "The Merry Cemetery in Săpânța uses brightly painted wooden crosses and humorous epitaphs to tell the stories of the dead.",
-      question: "Which country is home to the colorful Merry Cemetery of Săpânța?",
+      question: "Which country is home to a colorful cemetery where carved wooden crosses tell the life stories of the dead?",
     },
   ],
   RUS: [
@@ -1865,7 +1867,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
     },
     {
       fact: "Its harbor town, Gustavia, is named after a Swedish king, recalling the island's period under Swedish rule in the 1800s.",
-      question: "Which country has a harbor town called Gustavia that was named for a Swedish king?",
+      question: "Which country has a harbor town named for a Swedish king?",
     },
   ],
   SHN: [
@@ -1875,7 +1877,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
     },
     {
       fact: "Tristan da Cunha, part of this territory, is often called the world's most remote inhabited archipelago.",
-      question: "Which country includes Tristan da Cunha, one of the world's most remote inhabited places?",
+      question: "Which country includes one of the world's most remote inhabited islands, reachable only by a long sea voyage?",
     },
   ],
   KNA: [
@@ -1905,7 +1907,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
     },
     {
       fact: "Marigot, its main town, grew around a French fort built to watch over the island's sheltered bay.",
-      question: "Which country has Marigot as its main town?",
+      question: "Which country has its main town on a Caribbean lagoon, on an island split with another nation?",
     },
   ],
   SPM: [
@@ -1975,13 +1977,13 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
     },
     {
       fact: "Dakar's African Renaissance Monument rises 49 meters above a hill and is one of Africa's tallest statues.",
-      question: "Which country is home to Dakar's African Renaissance Monument?",
+      question: "Which country is home to a colossal bronze statue of a family looking out over the Atlantic?",
     },
   ],
   SRB: [
     {
       fact: "Sits at a crossroads of empires—Belgrade is one of Europe's oldest continuously inhabited cities.",
-      question: "Which country sits at a crossroads of empires, with Belgrade among Europe's oldest continuously inhabited cities?",
+      question: "Which country sits at a crossroads of empires, with a capital among Europe's oldest continuously inhabited cities?",
     },
     {
       fact: "Đavolja Varoš, or Devil's Town, is a hillside filled with more than 200 natural stone pillars capped by dark rocks.",
@@ -2005,7 +2007,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
     },
     {
       fact: "Freetown Harbour is one of the world's largest natural harbors, broad enough to shelter a vast number of ships.",
-      question: "Which country is home to Freetown Harbour, one of the world's largest natural harbors?",
+      question: "Which country is home to one of the world's largest natural harbors on the West African coast?",
     },
   ],
   SGP: [
@@ -2021,7 +2023,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
   SXM: [
     {
       fact: "Maho Beach is famous for airliners passing just meters overhead on approach to the runway.",
-      question: "Which country has Maho Beach, where airliners pass just meters overhead on approach to the runway?",
+      question: "Which country has a beach where airliners pass just meters overhead on approach to the runway?",
     },
     {
       fact: "This island's Dutch side hosts the world's smallest landmass divided between two countries, shared with France.",
@@ -2041,11 +2043,11 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
   SVN: [
     {
       fact: "Postojna Cave holds a unique species of blind salamander called the olm—or 'human fish.'",
-      question: "Which country is home to Postojna Cave and the olm, a blind salamander called the 'human fish'?",
+      question: "Which country is home to a vast cave system and a blind salamander called the 'human fish'?",
     },
     {
       fact: "Lake Bled has a tiny island with a church whose bell is said to grant wishes when rung three times.",
-      question: "Which country is known for Lake Bled's wish-granting church bell?",
+      question: "Which country is known for an alpine lake with a wish-granting church bell on an island?",
     },
   ],
   SLB: [
@@ -2081,7 +2083,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
   SGS: [
     {
       fact: "Grytviken whaling station is where explorer Ernest Shackleton is buried.",
-      question: "Which country is where explorer Ernest Shackleton is buried at Grytviken whaling station?",
+      question: "Which country is where explorer Ernest Shackleton is buried at a former whaling station?",
     },
     {
       fact: "South Georgia supports one of the world's largest king penguin colonies, with hundreds of thousands of breeding pairs at St. Andrews Bay.",
@@ -2095,7 +2097,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
     },
     {
       fact: "Jeju Island's women divers, known as haenyeo, traditionally harvest seafood by free-diving without oxygen tanks.",
-      question: "Which country is known for Jeju Island's haenyeo free-divers?",
+      question: "Which country is known for free-diving women who harvest the sea without scuba gear?",
     },
   ],
   SSD: [
@@ -2111,7 +2113,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
   ESP: [
     {
       fact: "Sagrada Família in Barcelona has been under construction since 1882 and is still not finished.",
-      question: "Which country is home to the Sagrada Família in Barcelona, under construction since 1882?",
+      question: "Which country is home to the Sagrada Família, under construction since 1882?",
     },
     {
       fact: "Spain's tomato-throwing festival, La Tomatina, turns the streets of Buñol red with thousands of participants each year.",
@@ -2145,7 +2147,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
     },
     {
       fact: "Its capital, Paramaribo, has a UNESCO-listed historic center of distinctive wooden colonial buildings.",
-      question: "Which country has Paramaribo's UNESCO-listed wooden historic center?",
+      question: "Which country has a UNESCO-listed wooden historic center along a river?",
     },
   ],
   SJM: [
@@ -2161,7 +2163,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
   SWE: [
     {
       fact: "Nobel Prizes are awarded each year in Stockholm—except Peace, which is given in Oslo.",
-      question: "Which country awards Nobel Prizes each year in Stockholm—except Peace, given in Oslo?",
+      question: "Which country awards Nobel Prizes each year in its capital—except Peace, given in a neighboring country?",
     },
     {
       fact: "The Icehotel in Jukkasjärvi is rebuilt each winter from blocks of ice and snow taken from the nearby Torne River.",
@@ -2181,17 +2183,17 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
   SYR: [
     {
       fact: "Damascus is one of the oldest continuously inhabited cities in the world.",
-      question: "Which country is home to Damascus, one of the oldest continuously inhabited cities in the world?",
+      question: "Which country is home to one of the oldest continuously inhabited cities in the world, long a crossroads of the Levant?",
     },
     {
       fact: "Aleppo soap, traditionally made from olive oil and laurel oil, is considered one of the world's oldest hard soaps.",
-      question: "Which country is associated with the ancient olive-and-laurel Aleppo soap?",
+      question: "Which country is associated with an ancient olive-and-laurel soap still made by traditional methods?",
     },
   ],
   TWN: [
     {
       fact: "Taipei 101 was the world's tallest building from 2004 to 2010 and is designed to withstand typhoons and earthquakes.",
-      question: "Which country is home to Taipei 101, the world's tallest building from 2004 to 2010?",
+      question: "Which country is home to a 101-story skyscraper that was the world's tallest building from 2004 to 2010?",
     },
     {
       fact: "Taiwan's night markets are famous for snacks such as bubble tea, which was invented there in the 1980s.",
@@ -2285,13 +2287,13 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
     },
     {
       fact: "The island of Djerba has one of Africa's oldest Jewish communities, centered on the ancient El Ghriba synagogue.",
-      question: "Which country is home to Djerba's ancient El Ghriba synagogue?",
+      question: "Which country is home to an ancient synagogue on a Mediterranean island?",
     },
   ],
   TUR: [
     {
       fact: "Istanbul is the only major city spanning two continents—Europe and Asia.",
-      question: "Which country is home to Istanbul, the only major city spanning two continents?",
+      question: "Which country is home to the only major city that spans two continents?",
     },
     {
       fact: "Cappadocia's soft volcanic rock was carved into cave homes, underground cities, and rock-cut churches.",
@@ -2315,7 +2317,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
     },
     {
       fact: "Grand Turk Island is known for a dramatic underwater wall where shallow reefs drop steeply into deep ocean.",
-      question: "Which country or territory is known for Grand Turk's dramatic underwater reef wall?",
+      question: "Which country or territory is known for a dramatic underwater reef wall dropping into deep ocean?",
     },
   ],
   TUV: [
@@ -2361,7 +2363,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
   GBR: [
     {
       fact: "Made up of four countries—England, Scotland, Wales, and Northern Ireland.",
-      question: "Which country is made up of four countries—England, Scotland, Wales, and Northern Ireland?",
+      question: "Which country is a union of four historic nations off the northwest coast of Europe?",
     },
     {
       fact: "Stonehenge's largest stones were transported from more than 20 kilometers away, while smaller bluestones came from western Wales.",
@@ -2381,11 +2383,11 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
   UMI: [
     {
       fact: "Includes Midway Atoll, site of a pivotal 1942 naval battle in World War II.",
-      question: "Which country includes Midway Atoll, site of a pivotal 1942 naval battle in World War II?",
+      question: "Which country includes a Pacific atoll that was the site of a pivotal 1942 naval battle?",
     },
     {
       fact: "Johnston Atoll is so remote that it has no permanent residents and is mainly a protected wildlife refuge.",
-      question: "Which country or territory includes the remote, uninhabited Johnston Atoll?",
+      question: "Which country or territory includes a remote, uninhabited Pacific atoll once used as a military outpost?",
     },
   ],
   VIR: [
@@ -2395,7 +2397,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
     },
     {
       fact: "Saint Thomas's harbor is watched over by the 99 Steps, a steep staircase built from Danish ship ballast bricks.",
-      question: "Which country or territory is home to Saint Thomas's historic 99 Steps?",
+      question: "Which country or territory is home to a historic hillside staircase of 99 steps?",
     },
   ],
   URY: [
@@ -2411,27 +2413,27 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
   UZB: [
     {
       fact: "The Registan in Samarkand was a glittering center of the Silk Road trade route.",
-      question: "Which country is home to the Registan in Samarkand, a center of the Silk Road trade route?",
+      question: "Which country is home to a tiled public square that was a center of the Silk Road trade route?",
     },
     {
       fact: "The walled city of Khiva looks like an open-air museum, with minarets, palaces, and madrasas preserved along the old Silk Road.",
-      question: "Which country is home to the walled Silk Road city of Khiva?",
+      question: "Which country is home to a walled Silk Road city of mud-brick palaces and minarets?",
     },
   ],
   VUT: [
     {
       fact: "Bungee jumping was inspired by local land divers on Pentecost Island.",
-      question: "Which country's land divers on Pentecost Island inspired the invention of bungee jumping?",
+      question: "Which country's land divers on a Pacific island inspired the invention of bungee jumping?",
     },
     {
       fact: "The people of Tanna Island maintain a living tradition of sending messages between villages using elaborate drum rhythms.",
-      question: "Which country includes Tanna Island, known for traditional drum-message systems?",
+      question: "Which country includes an island known for traditional drum-message systems?",
     },
   ],
   VAT: [
     {
       fact: "The world's smallest independent state—about 44 hectares enclosed within Rome.",
-      question: "Which country is the world's smallest independent state, about 44 hectares enclosed within Rome?",
+      question: "Which country is the world's smallest independent state, about 44 hectares enclosed within a larger capital?",
     },
     {
       fact: "Michelangelo painted the Sistine Chapel ceiling while standing on scaffolding for four years, completing it in 1512.",
@@ -2451,7 +2453,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
   VNM: [
     {
       fact: "Ha Long Bay has thousands of limestone karsts rising from emerald water—a UNESCO World Heritage Site.",
-      question: "Which country is home to Ha Long Bay, with thousands of limestone karsts rising from emerald water?",
+      question: "Which country is home to a bay with thousands of limestone karsts rising from emerald water?",
     },
     {
       fact: "Sơn Đoòng, the world's largest known cave passage by volume, is large enough to contain a forest and its own weather system.",
@@ -2481,7 +2483,7 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
   YEM: [
     {
       fact: "Old City of Sana'a has distinctive multi-story tower houses decorated with white gypsum patterns.",
-      question: "Which country is home to the Old City of Sana'a, with multi-story tower houses decorated with white gypsum?",
+      question: "Which country is home to an old city of multi-story tower houses decorated with white gypsum?",
     },
     {
       fact: "Socotra's dragon blood trees have umbrella-shaped crowns and red sap, creating one of Earth's most otherworldly landscapes.",
@@ -2514,7 +2516,7 @@ export const STATE_FACTS: Record<string, PlaceFactPair> = {
   "US-AL": [
     {
       fact: "The Saturn V rockets that carried Apollo astronauts to the Moon were designed and built in Huntsville.",
-      question: "Which state designed and built the Saturn V rockets that carried Apollo astronauts to the Moon in Huntsville?",
+      question: "Which state designed and built the Saturn V rockets that carried Apollo astronauts to the Moon?",
     },
     {
       fact: "The first 911 emergency call in the United States was made in Haleyville in 1968.",
@@ -2544,7 +2546,7 @@ export const STATE_FACTS: Record<string, PlaceFactPair> = {
   "US-AR": [
     {
       fact: "Hot Springs National Park predates Yellowstone and was the first U.S. federal reserve.",
-      question: "Which state has Hot Springs National Park, the first U.S. federal reserve, predating Yellowstone?",
+      question: "Which state has the first U.S. federal reserve, a thermal-spring park that predates Yellowstone?",
     },
     {
       fact: "Crater of Diamonds State Park is the only diamond-producing site in the world where visitors can search for gems and keep what they find.",
@@ -2564,7 +2566,7 @@ export const STATE_FACTS: Record<string, PlaceFactPair> = {
   "US-CO": [
     {
       fact: "Denver sits exactly one mile above sea level, giving the capital its 'Mile High City' nickname.",
-      question: "Which state's capital Denver sits exactly one mile above sea level, earning the 'Mile High City' nickname?",
+      question: "Which state's capital sits exactly one mile above sea level, earning the 'Mile High City' nickname?",
     },
     {
       fact: "At Four Corners, one marker is the only place in the United States where four states meet at a single point.",
@@ -2604,11 +2606,11 @@ export const STATE_FACTS: Record<string, PlaceFactPair> = {
   "US-GA": [
     {
       fact: "Coca-Cola was invented by a pharmacist in Atlanta in 1886 and first sold at a local drugstore.",
-      question: "Which state is where Coca-Cola was invented by a pharmacist in Atlanta in 1886?",
+      question: "Which state is where Coca-Cola was invented by a pharmacist in 1886?",
     },
     {
       fact: "The Vidalia onion, famous for its sweetness, can be grown commercially only in a legally defined region of this state.",
-      question: "Which state is the only place where true Vidalia onions can be grown?",
+      question: "Which state is the only place where a famous sweet onion variety can be grown?",
     },
   ],
   "US-HI": [
@@ -2634,7 +2636,7 @@ export const STATE_FACTS: Record<string, PlaceFactPair> = {
   "US-IL": [
     {
       fact: "Chicago reversed the flow of its river in 1900 so wastewater would drain away from Lake Michigan.",
-      question: "Which state saw Chicago reverse the flow of its river in 1900 to drain wastewater away from Lake Michigan?",
+      question: "Which state saw a major city reverse the flow of its river in 1900 to drain wastewater away from a Great Lake?",
     },
     {
       fact: "Chicago's Home Insurance Building, completed in 1885, is widely considered the world's first skyscraper because of its metal-frame construction.",
@@ -2644,7 +2646,7 @@ export const STATE_FACTS: Record<string, PlaceFactPair> = {
   "US-IN": [
     {
       fact: "The Indianapolis 500, first held in 1911, is one of the oldest and most famous car races in the world.",
-      question: "Which state hosts the Indianapolis 500, first held in 1911, one of the world's most famous car races?",
+      question: "Which state hosts a 500-mile car race first held in 1911, one of the world's most famous?",
     },
     {
       fact: "Every December, the post office in the town of Santa Claus receives thousands of letters addressed to the famous gift giver.",
@@ -2664,7 +2666,7 @@ export const STATE_FACTS: Record<string, PlaceFactPair> = {
   "US-KS": [
     {
       fact: "The geographic center of the contiguous United States lies near Lebanon.",
-      question: "Which state contains the geographic center of the contiguous United States near Lebanon?",
+      question: "Which state contains the geographic center of the contiguous United States?",
     },
     {
       fact: "The first Pizza Hut opened in Wichita in 1958, in a building so small its sign could fit only eight letters.",
@@ -2684,7 +2686,7 @@ export const STATE_FACTS: Record<string, PlaceFactPair> = {
   "US-LA": [
     {
       fact: "New Orleans sits largely below sea level and relies on levees, pumps, and Mississippi River silt to stay dry.",
-      question: "Which state has New Orleans sitting largely below sea level, relying on levees and pumps to stay dry?",
+      question: "Which state has a historic river-delta city sitting largely below sea level, relying on levees and pumps to stay dry?",
     },
     {
       fact: "The state capitol in Baton Rouge stands 450 feet tall, making it the tallest state capitol building in the United States.",
@@ -2704,7 +2706,7 @@ export const STATE_FACTS: Record<string, PlaceFactPair> = {
   "US-MD": [
     {
       fact: "The Star-Spangled Banner was written during the 1814 Battle of Baltimore at Fort McHenry.",
-      question: "Which state is where the Star-Spangled Banner was written during the 1814 Battle of Baltimore?",
+      question: "Which state is where the Star-Spangled Banner was written during a War of 1812 harbor battle?",
     },
     {
       fact: "The Baltimore and Ohio Railroad began service in 1830 as the first commercial railroad in the United States.",
@@ -2714,7 +2716,7 @@ export const STATE_FACTS: Record<string, PlaceFactPair> = {
   "US-MA": [
     {
       fact: "The first subway system in the Americas opened in Boston in 1897.",
-      question: "Which state opened the first subway system in the Americas in Boston in 1897?",
+      question: "Which state opened the first subway system in the Americas in 1897?",
     },
     {
       fact: "James Naismith invented basketball in Springfield in 1891 using a soccer ball and two peach baskets.",
@@ -2744,7 +2746,7 @@ export const STATE_FACTS: Record<string, PlaceFactPair> = {
   "US-MS": [
     {
       fact: "A great river forms most of the western border and inspired the state's name.",
-      question: "Which state has a namesake river forming most of its western border?",
+      question: "Which state has a great river forming most of its western border?",
     },
     {
       fact: "Elvis Presley was born in a two-room house in Tupelo in 1935 before becoming known worldwide as the King of Rock and Roll.",
@@ -2754,7 +2756,7 @@ export const STATE_FACTS: Record<string, PlaceFactPair> = {
   "US-MO": [
     {
       fact: "The Gateway Arch in St. Louis is 630 feet tall—the tallest monument in the United States.",
-      question: "Which state is home to the 630-foot Gateway Arch in St. Louis, the tallest U.S. monument?",
+      question: "Which state is home to a 630-foot gateway arch, the tallest U.S. monument?",
     },
     {
       fact: "Albert Berry made the first successful parachute jump from an airplane over St. Louis in 1912.",
@@ -2764,7 +2766,7 @@ export const STATE_FACTS: Record<string, PlaceFactPair> = {
   "US-MT": [
     {
       fact: "The name comes from the Spanish word montaña, though it is not the most mountainous U.S. state.",
-      question: "Which state's name comes from the Spanish word montaña, though it is not the most mountainous?",
+      question: "Which state contains Glacier National Park, where sharp peaks rise above northern high plains?",
     },
     {
       fact: "The Berkeley Pit, an open-pit copper mine near Butte, filled with acidic water after mining stopped and became one of the nation's largest Superfund sites.",
@@ -2774,7 +2776,7 @@ export const STATE_FACTS: Record<string, PlaceFactPair> = {
   "US-NE": [
     {
       fact: "Carhenge in Alliance is a full-scale replica of England's Stonehenge built from vintage American cars.",
-      question: "Which state has Carhenge in Alliance, a full-scale Stonehenge replica built from vintage cars?",
+      question: "Which state has a full-scale Stonehenge replica built from vintage cars?",
     },
     {
       fact: "Kool-Aid was invented in Hastings in 1927 by Edwin Perkins, who figured out how to turn a liquid drink concentrate into powder.",
@@ -2784,7 +2786,7 @@ export const STATE_FACTS: Record<string, PlaceFactPair> = {
   "US-NV": [
     {
       fact: "About three-quarters of the population lives in the Las Vegas metro area.",
-      question: "Which state has about three-quarters of its population living in the Las Vegas metro area?",
+      question: "Which state has about three-quarters of its population living in a single desert metro known for casinos and neon?",
     },
     {
       fact: "Nevada legalized casino gambling statewide in 1931, helping transform a desert railroad stop into a global entertainment center.",
@@ -2804,7 +2806,7 @@ export const STATE_FACTS: Record<string, PlaceFactPair> = {
   "US-NJ": [
     {
       fact: "Thomas Edison developed the practical light bulb, phonograph, and motion picture in his Menlo Park laboratory.",
-      question: "Which state is where Thomas Edison developed the light bulb, phonograph, and motion picture in Menlo Park?",
+      question: "Which state is where Thomas Edison developed the light bulb, phonograph, and motion picture?",
     },
     {
       fact: "Atlantic City built the first boardwalk in the United States in 1870 to keep beach sand out of hotels and railroad cars.",
@@ -2814,7 +2816,7 @@ export const STATE_FACTS: Record<string, PlaceFactPair> = {
   "US-NM": [
     {
       fact: "Roswell became synonymous with UFO lore after a 1947 incident that still fuels conspiracy theories.",
-      question: "Which state's Roswell became synonymous with UFO lore after a 1947 incident?",
+      question: "Which state became synonymous with UFO lore after a 1947 ranch incident?",
     },
     {
       fact: "Santa Fe, founded in 1610, is the oldest capital city in the United States.",
@@ -2834,7 +2836,7 @@ export const STATE_FACTS: Record<string, PlaceFactPair> = {
   "US-NC": [
     {
       fact: "The Wright brothers achieved the first powered airplane flight at Kitty Hawk in 1903.",
-      question: "Which state is where the Wright brothers achieved the first powered airplane flight at Kitty Hawk in 1903?",
+      question: "Which state is where the Wright brothers achieved the first powered airplane flight in 1903?",
     },
     {
       fact: "The Biltmore Estate in Asheville has 250 rooms and remains the largest privately owned house in the United States.",
@@ -2924,7 +2926,7 @@ export const STATE_FACTS: Record<string, PlaceFactPair> = {
   "US-TN": [
     {
       fact: "Memphis is a cradle of blues and rock and roll—Elvis Presley's Graceland draws visitors from around the world.",
-      question: "Which state has Memphis as a cradle of blues and rock and roll, home to Elvis Presley's Graceland?",
+      question: "Which state was a cradle of blues and rock and roll, home to Elvis Presley's Graceland?",
     },
     {
       fact: "Great Smoky Mountains National Park is the most visited national park in the United States.",
@@ -2944,7 +2946,7 @@ export const STATE_FACTS: Record<string, PlaceFactPair> = {
   "US-UT": [
     {
       fact: "The Great Salt Lake is saltier than the ocean, so swimmers float effortlessly on its surface.",
-      question: "Which state is home to the Great Salt Lake, saltier than the ocean so swimmers float effortlessly?",
+      question: "Which state is home to a huge inland lake saltier than the ocean, so swimmers float effortlessly?",
     },
     {
       fact: "Artist Robert Smithson created Spiral Jetty in 1970, a 1,500-foot earthwork of basalt rock that curls into a salty lake.",
@@ -2954,7 +2956,7 @@ export const STATE_FACTS: Record<string, PlaceFactPair> = {
   "US-VT": [
     {
       fact: "Ben & Jerry's ice cream began in a renovated gas station in Burlington in 1978.",
-      question: "Which state is where Ben & Jerry's ice cream began in a renovated gas station in Burlington in 1978?",
+      question: "Which state is where Ben & Jerry's ice cream began in a renovated gas station in 1978?",
     },
     {
       fact: "The first ski tow in the United States began operating in Woodstock in 1934, pulling skiers uphill with a rope powered by a car engine.",
@@ -2974,7 +2976,7 @@ export const STATE_FACTS: Record<string, PlaceFactPair> = {
   "US-WA": [
     {
       fact: "Mount Rainier is an active volcano towering over Seattle and visible across much of the Puget Sound.",
-      question: "Which state has Mount Rainier, an active volcano towering over Seattle and visible across the Puget Sound?",
+      question: "Which state has an active volcano towering over its largest city and visible across a long inland sound?",
     },
     {
       fact: "The first Starbucks store opened near Seattle's Pike Place Market in 1971.",
@@ -2984,7 +2986,7 @@ export const STATE_FACTS: Record<string, PlaceFactPair> = {
   "US-WV": [
     {
       fact: "Split from Virginia during the Civil War and joined the Union as its own state in 1863.",
-      question: "Which state split from Virginia during the Civil War and joined the Union in 1863?",
+      question: "Which state was formed during the Civil War when its mountain counties broke away and joined the Union in 1863?",
     },
     {
       fact: "The Green Bank Telescope is the world's largest fully steerable radio telescope and sits in a protected area with very limited radio signals.",
@@ -2994,7 +2996,7 @@ export const STATE_FACTS: Record<string, PlaceFactPair> = {
   "US-WI": [
     {
       fact: "Produces more cheese than any other U.S. state and hosts the Green Bay Packers' Lambeau Field.",
-      question: "Which state produces more cheese than any other and hosts the Green Bay Packers' Lambeau Field?",
+      question: "Which state produces more cheese than any other and hosts a storied NFL team in a historic outdoor stadium?",
     },
     {
       fact: "The first kindergarten in the United States opened in Watertown in 1856, founded by German educator Margarethe Schurz.",

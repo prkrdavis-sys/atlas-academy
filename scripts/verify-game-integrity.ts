@@ -221,6 +221,104 @@ const SCOPE_SETUPS: { scope: GameScope; regions: Region[] }[] = [
   { scope: "usa", regions: [...US_REGIONS] },
 ];
 
+const TRIVIA_LEAK_STOP_WORDS = new Set([
+  "the",
+  "of",
+  "and",
+  "republic",
+  "democratic",
+  "people",
+  "peoples",
+  "kingdom",
+  "state",
+  "states",
+  "united",
+  "federation",
+  "federal",
+  "islamic",
+  "arab",
+  "emirates",
+  "islands",
+  "island",
+  "territory",
+  "territories",
+  "saint",
+  "south",
+  "north",
+  "east",
+  "west",
+  "central",
+  "new",
+  "northern",
+  "southern",
+  "eastern",
+  "western",
+  "great",
+  "city",
+  "independent",
+  "principality",
+  "commonwealth",
+  "union",
+  "province",
+  "america",
+  "american",
+  "africa",
+  "african",
+  "asia",
+  "asian",
+  "europe",
+  "european",
+  "ocean",
+  "indian",
+  "lands",
+  "coast",
+  "ivory",
+  "cape",
+  "holy",
+  "see",
+]);
+
+const GENERIC_TRIVIA_ALIAS_NEEDLES = new Set(["america", "usa", "u.s.", "u.s.a.", "uk", "u.k.", "drc"]);
+
+function normalizeTriviaText(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .replace(/['’]/g, "")
+    .toLowerCase();
+}
+
+function triviaTextHasPhrase(haystack: string, needle: string): boolean {
+  if (needle.length < 4) return false;
+  const escaped = needle.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return new RegExp(`(^|[^a-z0-9])${escaped}([^a-z0-9]|$)`).test(haystack);
+}
+
+function triviaLeakNeedles(place: (typeof countries)[number]): string[] {
+  const needles = new Set<string>();
+  const add = (raw: string | undefined) => {
+    if (!raw) return;
+    const normalized = normalizeTriviaText(raw).trim();
+    if (normalized.length >= 4 && !GENERIC_TRIVIA_ALIAS_NEEDLES.has(normalized)) {
+      needles.add(normalized);
+    }
+  };
+
+  add(place.name);
+  add(place.officialName);
+  add(place.capital);
+  for (const alias of place.aliases ?? []) {
+    add(alias);
+  }
+  for (const token of normalizeTriviaText(place.name).split(/[^a-z0-9]+/)) {
+    if (token.length >= 5 && !TRIVIA_LEAK_STOP_WORDS.has(token)) {
+      needles.add(token);
+    }
+  }
+
+  return [...needles];
+}
+
 const allPlaces = [...countries, ...usStates];
 for (const place of allPlaces) {
   const keywords = place.searchKeywords ?? [];
@@ -230,6 +328,20 @@ for (const place of allPlaces) {
   const normalizedKeywords = keywords.map(normalizeAnswerText);
   if (new Set(normalizedKeywords).size !== normalizedKeywords.length) {
     fail(`${place.name}: duplicate library trivia search keywords`);
+  }
+
+  const leakNeedles = triviaLeakNeedles(place);
+  for (const [label, question] of [
+    ["factQuestion", place.factQuestion],
+    ["factQuestion2", place.factQuestion2],
+  ] as const) {
+    const haystack = normalizeTriviaText(question);
+    const hits = leakNeedles.filter((needle) => triviaTextHasPhrase(haystack, needle));
+    if (hits.length > 0) {
+      fail(
+        `${place.name}: ${label} names the place or its capital (${hits.join(", ")}): ${question}`,
+      );
+    }
   }
 }
 
@@ -263,6 +375,37 @@ expectLibrarySearchMatch("world", "Guarulhos", "BR", "GRU - Guarulhos", "airport
 expectLibrarySearchMatch("world", "BRL", "BR", "BRL", "currency");
 expectLibrarySearchMatch("world", "Brazilian real", "BR", "Brazilian real", "currency");
 expectLibrarySearchMatch("world", "America Sao Paulo", "BR", "America/Sao_Paulo", "time zone");
+expectLibrarySearchMatch("world", "red", "MX", "Red", "flag color");
+expectLibrarySearchMatch("world", "bird", "MX", "Bird", "flag");
+expectLibrarySearchMatch("world", "bird", "KI", "Bird", "flag");
+expectLibrarySearchMatch("world", "eagle", "MX", "Eagle", "flag");
+expectLibrarySearchMatch("usa", "red", "US-CA", "Red", "flag color");
+expectLibrarySearchMatch("usa", "bear", "US-CA", "Bear", "flag");
+
+const birdMatches = searchLibraryPlaces("world", "bird");
+if (!birdMatches.some(({ place }) => place.code === "MX")) {
+  fail('Library search "bird" should return Mexico');
+}
+if (!birdMatches.some(({ place }) => place.code === "KI")) {
+  fail('Library search "bird" should return Kiribati');
+}
+if (birdMatches.some(({ place }) => place.code === "PL")) {
+  fail('Library search "bird" must not return Poland’s plain civil flag');
+}
+if (birdMatches.some(({ place }) => place.code === "AT")) {
+  fail('Library search "bird" must not return Austria’s plain civil flag');
+}
+
+const redMatches = searchLibraryPlaces("world", "red");
+if (!redMatches.some(({ place }) => place.code === "MX")) {
+  fail('Library search "red" should return Mexico');
+}
+if (redMatches.some(({ place }) => place.code === "BR")) {
+  fail('Library search "red" must not return Brazil via Redeemer trivia');
+}
+if (redMatches.length < 50) {
+  fail(`Library search "red" should return many red flags, got ${redMatches.length}`);
+}
 
 const worldGeorgia = searchLibraryPlaces("world", "Georgia");
 const usaGeorgia = searchLibraryPlaces("usa", "Georgia");
