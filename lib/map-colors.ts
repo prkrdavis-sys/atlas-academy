@@ -1,6 +1,6 @@
 import {
   getMasteryGlowClass,
-  getMasteryGradientId,
+  getMasteryPatternId,
   getMasterySolidColor,
 } from "@/lib/map-mastery-fx";
 import { getOceanFallbackHex } from "@/lib/ocean-depth-lut";
@@ -226,7 +226,7 @@ function progressPathStyleForLevel(
 ): MapPathStyle {
   const border = getProgressBorder(isDark);
   const paint =
-    level === 4 ? `url(#${getMasteryGradientId(difficulty)})` : fill;
+    level === 4 ? `url(#${getMasteryPatternId(difficulty)})` : fill;
   return {
     fill: paint,
     ...border,

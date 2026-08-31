@@ -8,12 +8,11 @@ import {
   getProgressFillColor,
   MAP_SELECTION_GLOW_BLUR,
 } from "@/lib/map-colors";
-import { MASTERY_DIAMOND_ALBEDO_FALLBACK } from "@/lib/mastery-diamond-texture";
 import {
-  createGoldMaskCanvas,
-  fillGoldMaskPath,
-  MASTERY_GOLD_ALBEDO_FALLBACK,
-} from "@/lib/mastery-gold-texture";
+  createMasteryMaskCanvas,
+  fillMasteryMaskPath,
+  getMasteryFinish,
+} from "@/lib/mastery-finish";
 import { getLandColorCanvas } from "@/lib/globe-land-color";
 import { getPlaceMasteryLevel } from "@/lib/map-progress";
 import {
@@ -400,8 +399,8 @@ export type PaintCloseupOptions = {
 
 export type CloseupPaintResult = {
   color: HTMLCanvasElement;
-  /** White where mastery-4 gold or diamond covers this window; null when none does. */
-  goldMaskCanvas: HTMLCanvasElement | null;
+  /** White where mastery-4 covers this window; null when none does. */
+  masteryMaskCanvas: HTMLCanvasElement | null;
 };
 
 /** Grain scale cap so the tile never stretches into blur at extreme zoom. */
@@ -504,17 +503,16 @@ export function paintGlobeCloseupRegion(
     ctx.restore();
   }
 
-  const useGoldMask = shapes.some((shape) => shape.level === 4);
-  const goldMask = useGoldMask ? createGoldMaskCanvas(width, height) : null;
+  const useMasteryMask = shapes.some((shape) => shape.level === 4);
+  const masteryMask = useMasteryMask ? createMasteryMaskCanvas(width, height) : null;
 
   for (const { shape, path } of shapePaths) {
     const level = shape.level as 0 | 1 | 2 | 3 | 4;
     if (level === 4) {
       // Gold / diamond stays fully opaque over the imagery. The GPU adds the
       // tiling grain, roughness, and relief from the mastery detail maps.
-      ctx.fillStyle =
-        difficulty === "hard" ? MASTERY_DIAMOND_ALBEDO_FALLBACK : MASTERY_GOLD_ALBEDO_FALLBACK;
-      if (goldMask) fillGoldMaskPath(goldMask, path);
+      ctx.fillStyle = getMasteryFinish(difficulty).albedoFallback;
+      if (masteryMask) fillMasteryMaskPath(masteryMask, path);
       ctx.fill(path, "evenodd");
     } else if (level === 0) {
       // Unstarted land is the imagery itself; flat fill only as fallback.
@@ -573,7 +571,7 @@ export function paintGlobeCloseupRegion(
   }
 
   applyEdgeFeather(ctx, width, height);
-  return { color: canvas, goldMaskCanvas: goldMask?.canvas ?? null };
+  return { color: canvas, masteryMaskCanvas: masteryMask?.canvas ?? null };
 }
 
 /**

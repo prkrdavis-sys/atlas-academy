@@ -26,6 +26,15 @@ export type Difficulty = "easy" | "medium" | "hard";
 
 export const DIFFICULTIES: Difficulty[] = ["easy", "medium", "hard"];
 
+/** Easy shape rounds show the learn-card regional map instead of a lone silhouette. */
+export function showShapeContextMap(difficulty: Difficulty): boolean {
+  return difficulty === "easy";
+}
+
+export function usesShapeContextMap(mode: GameMode, difficulty: Difficulty): boolean {
+  return mode === "shape-to-country" && showShapeContextMap(difficulty);
+}
+
 /** Difficulties that count toward stats map progress. */
 export type MapProgressDifficulty = Extract<Difficulty, "medium" | "hard">;
 
@@ -233,10 +242,9 @@ export function getDifficultyHint(mode: GameMode, level: Difficulty): string {
 
   switch (level) {
     case "easy":
-      if (mode === "shape-to-country") {
-        return " - multiple choice + regional map + boosts";
-      }
-      return " - multiple choice + boosts";
+      return usesShapeContextMap(mode, level)
+        ? " - multiple choice + regional map + boosts"
+        : " - multiple choice + boosts";
     case "medium":
       return " - multiple choice";
     case "hard":
@@ -271,10 +279,9 @@ export function getDifficultyDescription(mode: GameMode, level: Difficulty): str
 
   switch (level) {
     case "easy":
-      if (mode === "shape-to-country") {
-        return "Multiple choice, with a regional map so you can see the surrounding area, plus hints and boosts.";
-      }
-      return "Multiple choice, with hints and boosts to help you along.";
+      return usesShapeContextMap(mode, level)
+        ? "Multiple choice, with a regional map so you can see the surrounding area, plus hints and boosts."
+        : "Multiple choice, with hints and boosts to help you along.";
     case "medium":
       return "Multiple choice with four options and no extra help.";
     case "hard":
@@ -365,7 +372,7 @@ export type Country = {
   /** Alternate spoiler-free prompt for fact-to-country game mode. */
   factQuestion2: string;
   /** Curated trivia terms and memorable names used by the library search. */
-  searchKeywords?: string[];
+  searchKeywords: string[];
 };
 
 export type ModeStats = {
@@ -521,6 +528,8 @@ export type Question = {
     | "population"
     | "atlasle"
     | "globe";
+  /** Shape rounds: regional map on easy, lone silhouette otherwise. */
+  shapeLayout?: "silhouette" | "context-map";
   /** Flag Close-Up: randomized presentation without changing the selected crop. */
   flagCropOrientation?: FlagCropOrientation;
   secondaryCountryCode?: string;

@@ -2,6 +2,7 @@ import { formatAirportChip } from "@/lib/airport";
 import { getPlacesForScope, getRegionsForScope } from "@/lib/countries";
 import { normalizeAnswerText } from "@/lib/answer-matcher";
 import { getFlagSearchTerms } from "@/lib/flag-search";
+import { uniqueLabeledValues } from "@/lib/search-labels";
 import { formatTimeZoneName } from "@/lib/timezone";
 import type { Country, GameScope, Region } from "@/lib/types";
 
@@ -139,19 +140,10 @@ function addSearchDescriptor(
   values: string[] = [],
   isPlaceName = false,
 ): void {
-  const trimmedLabel = label?.trim();
-  if (!trimmedLabel || !normalizeAnswerText(trimmedLabel)) return;
-
-  const searchableValues = [...new Set([trimmedLabel, ...values])]
-    .filter((value) => normalizeAnswerText(value).length > 0);
-  if (searchableValues.length === 0) return;
-
-  const key = `${category ?? "name"}:${normalizeAnswerText(trimmedLabel)}`;
-  if (seen.has(key)) return;
-  seen.add(key);
+  const entry = uniqueLabeledValues(seen, label, category ?? "name", values);
+  if (!entry) return;
   descriptors.push({
-    label: trimmedLabel,
-    values: searchableValues,
+    ...entry,
     category,
     isPlaceName,
   });
@@ -210,7 +202,7 @@ function getSearchDescriptors(place: Country): SearchDescriptor[] {
     );
   }
 
-  for (const keyword of place.searchKeywords ?? []) {
+  for (const keyword of place.searchKeywords) {
     addSearchDescriptor(descriptors, seen, keyword, "trivia");
   }
 
@@ -284,7 +276,8 @@ function getDescriptorMatch(
 
 const DEFAULT_LIBRARY_SEARCH_LIMIT = 8;
 
-function isExpandedFlagQuery(
+/** Flag-attribute queries (color / charge) return every matching place. */
+function isFlagAttributeQuery(
   normalizedQuery: string,
   matches: ScoredSearchMatch[],
 ): boolean {
@@ -334,7 +327,7 @@ export function searchLibraryPlaces(
     if (bestMatch) matches.push(bestMatch);
   }
 
-  const resultLimit = isExpandedFlagQuery(normalizedQuery, matches)
+  const resultLimit = isFlagAttributeQuery(normalizedQuery, matches)
     ? matches.length
     : limit;
 

@@ -375,7 +375,6 @@ export function GameQuestionStage({
             >
               <QuestionMedia
                 question={question}
-                difficulty={difficulty}
                 hiddenOptions={hiddenOptions}
                 onSelectFlag={(code) => onAnswer(code, code)}
               />

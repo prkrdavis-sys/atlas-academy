@@ -1,55 +1,5 @@
+import { getMasteryFinish } from "@/lib/mastery-finish";
 import type { MapProgressDifficulty, PlaceMasteryLevel } from "@/lib/types";
-
-/** SVG paint ids for mastery-4 fills on the 2D progress map. */
-export const MASTERY_GOLD_GRADIENT_ID = "map-mastery-gold";
-export const MASTERY_DIAMOND_GRADIENT_ID = "map-mastery-diamond";
-
-export type MasteryGradientStop = { offset: number; color: string };
-
-/** Classic metallic gold — bronze → amber with a sharp specular highlight band. */
-export const MASTERY_GOLD_STOPS: readonly MasteryGradientStop[] = [
-  { offset: 0, color: "#713f12" },
-  { offset: 0.14, color: "#a16207" },
-  { offset: 0.28, color: "#ca8a04" },
-  { offset: 0.42, color: "#fbbf24" },
-  { offset: 0.5, color: "#fff7ed" },
-  { offset: 0.58, color: "#f59e0b" },
-  { offset: 0.74, color: "#b45309" },
-  { offset: 0.88, color: "#92400e" },
-  { offset: 1, color: "#eab308" },
-];
-
-/** Icy diamond fallback for consumers that cannot paint the tiled camo. */
-export const MASTERY_DIAMOND_STOPS: readonly MasteryGradientStop[] = [
-  { offset: 0, color: "#7aa3bd" },
-  { offset: 0.28, color: "#c5dce8" },
-  { offset: 0.5, color: "#f4fbff" },
-  { offset: 0.72, color: "#b7d0e0" },
-  { offset: 1, color: "#8eb4cc" },
-];
-
-/** Representative solid for consumers that cannot paint a texture. */
-export const MASTERY_GOLD_SOLID = "#d4af37";
-export const MASTERY_DIAMOND_SOLID = "#c5dce8";
-
-export type MasteryGlowIntensity = {
-  /** Canvas shadowBlur multiplier (relative to texture pixel scale). */
-  blur: number;
-  /** Glow opacity 0–1 for CSS drop-shadow / canvas shadow. */
-  opacity: number;
-};
-
-/**
- * Soft edge presence only — no pulse. Kept low so fills stay sharp and
- * metallic texture reads first.
- */
-export const MASTERY_GLOW_BY_LEVEL: Record<PlaceMasteryLevel, MasteryGlowIntensity> = {
-  0: { blur: 0, opacity: 0 },
-  1: { blur: 0, opacity: 0 },
-  2: { blur: 0.8, opacity: 0.18 },
-  3: { blur: 1.6, opacity: 0.22 },
-  4: { blur: 2.2, opacity: 0.28 },
-};
 
 export type MapProgressChrome = {
   selectedLabelClass: string;
@@ -102,17 +52,32 @@ export function getMapProgressChrome(difficulty: MapProgressDifficulty): MapProg
   return difficulty === "hard" ? HARD_CHROME : NORMAL_CHROME;
 }
 
-export function getMasteryGradientStops(difficulty: MapProgressDifficulty): readonly MasteryGradientStop[] {
-  return difficulty === "hard" ? MASTERY_DIAMOND_STOPS : MASTERY_GOLD_STOPS;
-}
-
-export function getMasteryGradientId(difficulty: MapProgressDifficulty): string {
-  return difficulty === "hard" ? MASTERY_DIAMOND_GRADIENT_ID : MASTERY_GOLD_GRADIENT_ID;
+export function getMasteryPatternId(difficulty: MapProgressDifficulty): string {
+  return getMasteryFinish(difficulty).patternId;
 }
 
 export function getMasterySolidColor(difficulty: MapProgressDifficulty): string {
-  return difficulty === "hard" ? MASTERY_DIAMOND_SOLID : MASTERY_GOLD_SOLID;
+  return getMasteryFinish(difficulty).albedoFallback;
 }
+
+export type MasteryGlowIntensity = {
+  /** Canvas shadowBlur multiplier (relative to texture pixel scale). */
+  blur: number;
+  /** Glow opacity 0–1 for CSS drop-shadow / canvas shadow. */
+  opacity: number;
+};
+
+/**
+ * Soft edge presence only — no pulse. Kept low so fills stay sharp and
+ * metallic texture reads first.
+ */
+export const MASTERY_GLOW_BY_LEVEL: Record<PlaceMasteryLevel, MasteryGlowIntensity> = {
+  0: { blur: 0, opacity: 0 },
+  1: { blur: 0, opacity: 0 },
+  2: { blur: 0.8, opacity: 0.18 },
+  3: { blur: 1.6, opacity: 0.22 },
+  4: { blur: 2.2, opacity: 0.28 },
+};
 
 /** CSS class for SVG path edge presence at a mastery level (no pulse). */
 export function getMasteryGlowClass(
@@ -120,93 +85,12 @@ export function getMasteryGlowClass(
   difficulty: MapProgressDifficulty = "medium",
 ): string | undefined {
   if (level <= 1) return undefined;
+  if (level === 4) return getMasteryFinish(difficulty).metalClass;
   const accent = difficulty === "hard" ? "mastery-glow-hard" : "mastery-glow-normal";
-  if (level === 4) {
-    // Gold and diamond are texture-only so facet/metal edges stay crisp.
-    return difficulty === "hard" ? "mastery-metal-diamond" : "mastery-metal-gold";
-  }
   return [`mastery-glow-${level}`, accent].join(" ");
 }
 
 /** CSS class for mastery-4 swatch fills (static gold / diamond camo). */
 export function getMasteryTextureClass(difficulty: MapProgressDifficulty): string {
-  return difficulty === "hard" ? "mastery-texture-diamond" : "mastery-texture-gold";
-}
-
-/** Mastery-4 fills are static photo tiles — nothing drifts. */
-export function mastery4ShouldAnimate(_difficulty: MapProgressDifficulty): boolean {
-  return false;
-}
-
-/**
- * Samples a looping gradient at `t` in [0, 1). Used by the globe canvas so
- * gold/diamond fallbacks sample a looping ramp when a solid isn't enough.
- */
-export function sampleGradientColor(
-  stops: readonly MasteryGradientStop[],
-  t: number,
-): string {
-  if (stops.length === 0) return "#ffffff";
-  const wrapped = ((t % 1) + 1) % 1;
-  // Treat stops as a loop: last blends into first across the seam.
-  const extended = [...stops, { offset: 1, color: stops[0].color }];
-  for (let i = 0; i < extended.length - 1; i++) {
-    const a = extended[i];
-    const b = extended[i + 1];
-    if (wrapped >= a.offset && wrapped <= b.offset) {
-      const span = b.offset - a.offset || 1;
-      return mixHexColors(a.color, b.color, (wrapped - a.offset) / span);
-    }
-  }
-  return extended[extended.length - 1].color;
-}
-
-/** Phase-shifted stop list for SVG / CSS backgrounds that share a clock. */
-export function shiftGradientStops(
-  stops: readonly MasteryGradientStop[],
-  phase: number,
-): MasteryGradientStop[] {
-  const wrapped = ((phase % 1) + 1) % 1;
-  return stops.map((stop) => ({
-    offset: stop.offset,
-    color: sampleGradientColor(stops, stop.offset + wrapped),
-  }));
-}
-
-export function masteryFxPhaseFromTime(nowMs: number, periodMs = 3200): number {
-  return (nowMs % periodMs) / periodMs;
-}
-
-function mixHexColors(a: string, b: string, t: number): string {
-  const ca = hexToRgb(a);
-  const cb = hexToRgb(b);
-  if (!ca || !cb) return a;
-  const u = Math.min(1, Math.max(0, t));
-  const r = Math.round(ca.r + (cb.r - ca.r) * u);
-  const g = Math.round(ca.g + (cb.g - ca.g) * u);
-  const bCh = Math.round(ca.b + (cb.b - ca.b) * u);
-  return rgbToHex(r, g, bCh);
-}
-
-function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
-  const raw = hex.replace("#", "");
-  if (raw.length !== 6) return null;
-  const n = Number.parseInt(raw, 16);
-  if (Number.isNaN(n)) return null;
-  return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
-}
-
-function rgbToHex(r: number, g: number, b: number): string {
-  return `#${[r, g, b].map((c) => c.toString(16).padStart(2, "0")).join("")}`;
-}
-
-/** Builds a CSS linear-gradient string from stops (for legend/summary swatches). */
-export function masteryGradientCss(
-  difficulty: MapProgressDifficulty,
-  angleDeg = 125,
-): string {
-  const stops = getMasteryGradientStops(difficulty)
-    .map((stop) => `${stop.color} ${Math.round(stop.offset * 100)}%`)
-    .join(", ");
-  return `linear-gradient(${angleDeg}deg, ${stops})`;
+  return getMasteryFinish(difficulty).textureClass;
 }

@@ -13,7 +13,7 @@ import {
 } from "@/components/globe/globe-celestial";
 import {
   GlobeSurfaceMaterial,
-  useGoldDetailTextures,
+  useMasteryDetailTextures,
 } from "@/components/globe/globe-materials";
 import { getGlobeSphereSegments } from "@/components/globe/globe-runtime";
 import { useGlobeTexture } from "@/components/globe/globe-scene";
@@ -93,14 +93,14 @@ export function GlobePlanet({
 }: GlobePlanetProps) {
   const internalMeshRef = useRef<THREE.Mesh>(null);
   const planetMeshRef = meshRef ?? internalMeshRef;
-  const { map, goldMask, ready } = useGlobeTexture(profile, {
+  const { map, masteryMask, ready } = useGlobeTexture(profile, {
     difficulty,
     usMode,
     isDark,
     selectedCode,
     perfTier,
   });
-  const goldDetail = useGoldDetailTextures(goldMask !== null, difficulty);
+  const masteryDetail = useMasteryDetailTextures(masteryMask !== null, difficulty);
   const segments = getGlobeSphereSegments(perfTier);
 
   if (!ready) {
@@ -113,8 +113,8 @@ export function GlobePlanet({
         <sphereGeometry args={[1, segments, segments]} />
         <GlobeSurfaceMaterial
           map={map}
-          goldMask={goldMask}
-          goldDetail={goldDetail}
+          masteryMask={masteryMask}
+          masteryDetail={masteryDetail}
           difficulty={difficulty}
         />
         <GlobeCityLights dayNight={dayNight} perfTier={perfTier} />

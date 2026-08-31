@@ -1,30 +1,23 @@
 /**
- * Gold mastery as a GPU material feature instead of a painted canvas.
+ * Mastery-4 as a GPU material feature instead of a painted canvas.
  *
- * The only geography-dependent part of gold is *where* it is — a mask. The
- * brushed grain, roughness, and normal relief are tiling textures sampled in
- * global equirectangular UV space, so they stay welded to the planet no matter
- * how the camera moves and no canvas ever has to be repainted for them.
+ * The only geography-dependent part of the finish is *where* it is — a mask.
+ * Grain, roughness, and normal relief are tiling textures sampled in global
+ * equirectangular UV space, so they stay welded to the planet no matter how
+ * the camera moves and no canvas ever has to be repainted for them.
  *
  * Two tiling frequencies are cross-faded by camera distance so the grain stays
  * crisp when zoomed in without over-tiling at globe scale.
+ *
+ * Shader uniforms keep the historical `uGold*` names; the TypeScript contract
+ * is a mastery finish, not gold-only.
  */
 
 import * as THREE from "three";
-import {
-  MASTERY_DIAMOND_NORMAL_PATH,
-  MASTERY_DIAMOND_ROUGHNESS_PATH,
-  MASTERY_DIAMOND_TEXTURE_PATH,
-} from "@/lib/mastery-diamond-texture";
-import {
-  MASTERY_GOLD_NORMAL_PATH,
-  MASTERY_GOLD_ROUGHNESS_PATH,
-  MASTERY_GOLD_TEXTURE_PATH,
-  MASTERY_GOLD_TILE_BASE_PX,
-} from "@/lib/mastery-gold-texture";
 import { GLOBE_BASE_TEXTURE_SIZE } from "@/lib/globe-texture";
+import type { MasteryFinish, MasteryFinishId } from "@/lib/mastery-finish";
 
-export type GoldDetailTextures = {
+export type MasteryDetailTextures = {
   color: THREE.Texture;
   roughness: THREE.Texture;
   normal: THREE.Texture;
@@ -50,7 +43,7 @@ const DETAIL_BLEND_FAR_DISTANCE = 2.6;
 const DETAIL_BLEND_NEAR_DISTANCE = 1.15;
 
 /** Full-globe window: sphere UVs already are global equirectangular UVs. */
-export const GOLD_FULL_GLOBE_UV_WINDOW = new THREE.Vector4(0, 0, 1, 1);
+export const MASTERY_FULL_GLOBE_UV_WINDOW = new THREE.Vector4(0, 0, 1, 1);
 
 function loadTexture(src: string, colorSpace: THREE.ColorSpace): Promise<THREE.Texture> {
   return new Promise((resolve, reject) => {
@@ -74,54 +67,31 @@ function loadTexture(src: string, colorSpace: THREE.ColorSpace): Promise<THREE.T
   });
 }
 
-let goldDetailPromise: Promise<GoldDetailTextures> | null = null;
-let diamondDetailPromise: Promise<GoldDetailTextures> | null = null;
+const detailPromises = new Map<MasteryFinishId, Promise<MasteryDetailTextures>>();
 
-function loadDetailSet(
-  colorPath: string,
-  roughPath: string,
-  normalPath: string,
-): Promise<GoldDetailTextures> {
+function loadDetailSet(finish: MasteryFinish): Promise<MasteryDetailTextures> {
   return Promise.all([
-    loadTexture(colorPath, THREE.SRGBColorSpace),
-    loadTexture(roughPath, THREE.NoColorSpace),
-    loadTexture(normalPath, THREE.NoColorSpace),
+    loadTexture(finish.colorPath, THREE.SRGBColorSpace),
+    loadTexture(finish.roughnessPath, THREE.NoColorSpace),
+    loadTexture(finish.normalPath, THREE.NoColorSpace),
   ]).then(([color, roughness, normal]) => ({ color, roughness, normal }));
 }
 
-/** Loads the shared tiling gold PBR set once per session (browser only). */
-export function loadGoldDetailTextures(): Promise<GoldDetailTextures> {
+/** Loads the tiling PBR set for a finish once per session (browser only). */
+export function loadMasteryDetailTextures(finish: MasteryFinish): Promise<MasteryDetailTextures> {
   if (typeof window === "undefined") {
-    return Promise.reject(new Error("Gold detail textures require a browser environment"));
+    return Promise.reject(new Error("Mastery detail textures require a browser environment"));
   }
-  if (!goldDetailPromise) {
-    goldDetailPromise = loadDetailSet(
-      MASTERY_GOLD_TEXTURE_PATH,
-      MASTERY_GOLD_ROUGHNESS_PATH,
-      MASTERY_GOLD_NORMAL_PATH,
-    );
-  }
-  return goldDetailPromise;
-}
-
-/** Loads the shared tiling diamond-camo PBR set once per session (browser only). */
-export function loadDiamondDetailTextures(): Promise<GoldDetailTextures> {
-  if (typeof window === "undefined") {
-    return Promise.reject(new Error("Diamond detail textures require a browser environment"));
-  }
-  if (!diamondDetailPromise) {
-    diamondDetailPromise = loadDetailSet(
-      MASTERY_DIAMOND_TEXTURE_PATH,
-      MASTERY_DIAMOND_ROUGHNESS_PATH,
-      MASTERY_DIAMOND_NORMAL_PATH,
-    );
-  }
-  return diamondDetailPromise;
+  const cached = detailPromises.get(finish.id);
+  if (cached) return cached;
+  const promise = loadDetailSet(finish);
+  detailPromises.set(finish.id, promise);
+  return promise;
 }
 
 /** Raises anisotropy on the shared tiles to the renderer's supported maximum. */
-export function applyGoldDetailAnisotropy(
-  textures: GoldDetailTextures,
+export function applyMasteryDetailAnisotropy(
+  textures: MasteryDetailTextures,
   gl: THREE.WebGLRenderer,
   cap: number,
 ): void {
@@ -133,8 +103,8 @@ export function applyGoldDetailAnisotropy(
   }
 }
 
-/** Mask texture marking which texels are mastered gold. */
-export function createGoldMaskTexture(
+/** Mask texture marking which texels are mastery-4. */
+export function createMasteryMaskTexture(
   canvas: HTMLCanvasElement,
   gl: THREE.WebGLRenderer,
 ): THREE.CanvasTexture {
@@ -148,7 +118,7 @@ export function createGoldMaskTexture(
   return texture;
 }
 
-export type GoldDetailUniforms = {
+export type MasteryDetailUniforms = {
   uGoldMask: { value: THREE.Texture };
   uGoldColorTex: { value: THREE.Texture };
   uGoldRoughTex: { value: THREE.Texture };
@@ -161,25 +131,19 @@ export type GoldDetailUniforms = {
   uMatteRoughness: { value: number };
 };
 
-export type GoldMaterialConfig = {
-  /** Painted albedo canvas texture (ocean, land, borders, flat gold fills). */
+export type MasteryMaterialConfig = {
+  /** Painted albedo canvas texture (ocean, land, borders, flat finish fills). */
   map: THREE.Texture;
-  goldMask: THREE.Texture;
-  detail: GoldDetailTextures;
+  masteryMask: THREE.Texture;
+  detail: MasteryDetailTextures;
+  finish: MasteryFinish;
   /**
    * Window this material's UVs cover in global equirectangular space,
    * as `(originX, originY, spanX, spanY)`. Full globe is `(0, 0, 1, 1)`.
    */
   uvWindow: THREE.Vector4;
-  goldMetalness: number;
   matteMetalness: number;
   matteRoughness: number;
-  /** Pixel size of one detail tile at {@link GLOBE_BASE_TEXTURE_SIZE}. */
-  tileBasePx?: number;
-  emissive: THREE.ColorRepresentation;
-  emissiveIntensity: number;
-  envMapIntensity: number;
-  normalScale: THREE.Vector2;
   transparent?: boolean;
   opacity?: number;
   depthWrite?: boolean;
@@ -187,22 +151,23 @@ export type GoldMaterialConfig = {
 };
 
 /**
- * A `MeshStandardMaterial` whose gold response is evaluated per-pixel from the
- * tiling detail set, masked to mastered places. Matte land and ocean pay only
- * one extra mask fetch and keep their painted albedo untouched.
+ * A `MeshStandardMaterial` whose mastery-4 response is evaluated per-pixel
+ * from the tiling detail set, masked to mastered places. Matte land and ocean
+ * pay only one extra mask fetch and keep their painted albedo untouched.
  */
-export function createGoldSurfaceMaterial(
-  config: GoldMaterialConfig,
+export function createMasterySurfaceMaterial(
+  config: MasteryMaterialConfig,
 ): THREE.MeshStandardMaterial {
+  const finish = config.finish;
   const material = new THREE.MeshStandardMaterial({
     map: config.map,
     // Set so three compiles the tangent-space normal path (and its TBN); the
     // sampling itself is replaced below with the masked dual-frequency version.
     normalMap: config.detail.normal,
-    normalScale: config.normalScale,
-    emissive: config.emissive,
-    emissiveIntensity: config.emissiveIntensity,
-    envMapIntensity: config.envMapIntensity,
+    normalScale: new THREE.Vector2(finish.normalScale[0], finish.normalScale[1]),
+    emissive: finish.emissive,
+    emissiveIntensity: finish.emissiveIntensity,
+    envMapIntensity: finish.envMapIntensity,
     roughness: config.matteRoughness,
     metalness: config.matteMetalness,
     transparent: config.transparent ?? false,
@@ -211,16 +176,16 @@ export function createGoldSurfaceMaterial(
     side: config.side ?? THREE.FrontSide,
   });
 
-  const repeats = tileRepeats(config.tileBasePx ?? MASTERY_GOLD_TILE_BASE_PX);
-  const uniforms: GoldDetailUniforms = {
-    uGoldMask: { value: config.goldMask },
+  const repeats = tileRepeats(finish.tileBasePx);
+  const uniforms: MasteryDetailUniforms = {
+    uGoldMask: { value: config.masteryMask },
     uGoldColorTex: { value: config.detail.color },
     uGoldRoughTex: { value: config.detail.roughness },
     uGoldDetailRepeatA: { value: repeats.coarse },
     uGoldDetailRepeatB: { value: repeats.fine },
     uGoldDetailBlend: { value: 0 },
     uGoldUvWindow: { value: config.uvWindow.clone() },
-    uGoldMetalness: { value: config.goldMetalness },
+    uGoldMetalness: { value: finish.metalness },
     uMatteMetalness: { value: config.matteMetalness },
     uMatteRoughness: { value: config.matteRoughness },
   };
@@ -259,9 +224,6 @@ export function createGoldSurfaceMaterial(
         vec2 gGoldDetailUvA;
         vec2 gGoldDetailUvB;`,
       )
-      // Gold albedo replaces the flat painted fill wherever the mask is set.
-      // Detail UVs are global equirectangular, so a close-up patch and the
-      // planet beneath it sample the exact same point of the tile.
       .replace(
         "#include <map_fragment>",
         `#include <map_fragment>
@@ -296,7 +258,6 @@ export function createGoldSurfaceMaterial(
         `#include <metalnessmap_fragment>
         metalnessFactor = mix( uMatteMetalness, uGoldMetalness, gGoldMask );`,
       )
-      // Relief only inside gold; matte land keeps the sphere's own normal.
       .replace(
         "#include <normal_fragment_maps>",
         `#ifdef USE_NORMALMAP_TANGENTSPACE
@@ -313,7 +274,6 @@ export function createGoldSurfaceMaterial(
           normal = normalize( tbn * gGoldMapN );
         #endif`,
       )
-      // Emissive is a readability fill for shaded foil — never tint the ocean.
       .replace(
         "#include <emissivemap_fragment>",
         `#include <emissivemap_fragment>
@@ -321,27 +281,27 @@ export function createGoldSurfaceMaterial(
       );
   };
 
-  material.userData.goldUniforms = uniforms;
-  material.customProgramCacheKey = () => "globe-gold-detail";
+  material.userData.masteryUniforms = uniforms;
+  material.customProgramCacheKey = () => "globe-mastery-detail";
   return material;
 }
 
-/** Gold detail uniforms for a material built by {@link createGoldSurfaceMaterial}. */
-export function getGoldUniforms(
+/** Mastery-detail uniforms for a material built by {@link createMasterySurfaceMaterial}. */
+export function getMasteryUniforms(
   material: THREE.Material | null | undefined,
-): GoldDetailUniforms | null {
-  return (material?.userData?.goldUniforms as GoldDetailUniforms | undefined) ?? null;
+): MasteryDetailUniforms | null {
+  return (material?.userData?.masteryUniforms as MasteryDetailUniforms | undefined) ?? null;
 }
 
 /**
  * Cross-fades the coarse and fine tiling tiers by camera distance. One float
  * write per frame — no repaint, no texture upload.
  */
-export function updateGoldDetailBlend(
+export function updateMasteryDetailBlend(
   material: THREE.Material | null | undefined,
   cameraDistance: number,
 ): void {
-  const uniforms = getGoldUniforms(material);
+  const uniforms = getMasteryUniforms(material);
   if (!uniforms) return;
   const span = DETAIL_BLEND_FAR_DISTANCE - DETAIL_BLEND_NEAR_DISTANCE;
   const t = (DETAIL_BLEND_FAR_DISTANCE - cameraDistance) / span;

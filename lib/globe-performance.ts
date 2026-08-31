@@ -104,13 +104,6 @@ export const GLOBE_DPR_CAP_BY_TIER: Record<GlobePerfTier, number> = {
   desktop: 1.75,
 };
 
-/** Mastery-4 shimmer frame interval (ms). Higher = less CPU. */
-export const GLOBE_MASTERY4_FRAME_MS_BY_TIER: Record<GlobePerfTier, number> = {
-  phone: 100,
-  tablet: 70,
-  desktop: 50,
-};
-
 /** Idle ms after last interaction before dropping to demand frameloop. */
 export const GLOBE_FRAMELOOP_IDLE_MS = 1600;
 

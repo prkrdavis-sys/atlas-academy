@@ -5,17 +5,15 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { Environment } from "@react-three/drei";
 import * as THREE from "three";
 import {
-  applyGoldDetailAnisotropy,
-  createGoldSurfaceMaterial,
-  GOLD_FULL_GLOBE_UV_WINDOW,
-  loadDiamondDetailTextures,
-  loadGoldDetailTextures,
-  updateGoldDetailBlend,
-  type GoldDetailTextures,
+  applyMasteryDetailAnisotropy,
+  createMasterySurfaceMaterial,
+  MASTERY_FULL_GLOBE_UV_WINDOW,
+  loadMasteryDetailTextures,
+  updateMasteryDetailBlend,
+  type MasteryDetailTextures,
 } from "@/lib/globe-gold-material";
 import type { GlobePerfTier } from "@/lib/globe-performance";
-import { MASTERY_DIAMOND_TILE_BASE_PX } from "@/lib/mastery-diamond-texture";
-import { MASTERY_GOLD_TILE_BASE_PX } from "@/lib/mastery-gold-texture";
+import { getMasteryFinish } from "@/lib/mastery-finish";
 import type { MapProgressDifficulty } from "@/lib/types";
 
 /**
@@ -45,71 +43,47 @@ export function globeEarthshineIntensity(): number {
   return 0.38;
 }
 
-/**
- * Worked-gold normal intensity — the map is baked from a real height field
- * (hammered dents + scratches), so slopes are already physical; this just
- * compensates for mip softening at globe scale so sun glints stay crisp.
- */
-const GOLD_NORMAL_SCALE = new THREE.Vector2(2.4, 2.4);
-const DIAMOND_NORMAL_SCALE = new THREE.Vector2(3.1, 3.1);
-
-/**
- * PBR tuning for mastery-4 gold / diamond vs the matte globe surface.
- * Roughness comes per-pixel from the tiling roughness map.
- */
-export const GLOBE_GOLD_METALNESS = 0.96;
-export const GLOBE_GOLD_EMISSIVE = "#c4921a";
-export const GLOBE_GOLD_EMISSIVE_INTENSITY = 0.07;
-export const GLOBE_GOLD_ENV_MAP_INTENSITY = 1.35;
-export const GLOBE_DIAMOND_METALNESS = 0.84;
-export const GLOBE_DIAMOND_EMISSIVE = "#9ec4dc";
-export const GLOBE_DIAMOND_EMISSIVE_INTENSITY = 0.09;
-export const GLOBE_DIAMOND_ENV_MAP_INTENSITY = 1.65;
 export const GLOBE_MATTE_METALNESS = 0.04;
 export const GLOBE_MATTE_ROUGHNESS = 0.72;
 
 /**
- * Shared gold-material configuration for the globe and the close-up patch, so
- * both shade identically as the camera crosses the close-up activation
+ * Shared mastery-material configuration for the globe and the close-up patch,
+ * so both shade identically as the camera crosses the close-up activation
  * distance. `uvWindow` is the region of global equirectangular space the mesh
  * UVs cover — that is what keeps the tiling grain welded to geography.
  */
-export function globeGoldMaterialConfig(
+export function globeMasteryMaterialConfig(
   map: THREE.Texture,
-  goldMask: THREE.Texture,
-  detail: GoldDetailTextures,
+  masteryMask: THREE.Texture,
+  detail: MasteryDetailTextures,
   uvWindow: THREE.Vector4,
   difficulty: MapProgressDifficulty = "medium",
 ) {
-  const diamond = difficulty === "hard";
   return {
     map,
-    goldMask,
+    masteryMask,
     detail,
     uvWindow,
-    goldMetalness: diamond ? GLOBE_DIAMOND_METALNESS : GLOBE_GOLD_METALNESS,
+    finish: getMasteryFinish(difficulty),
     matteMetalness: GLOBE_MATTE_METALNESS,
     matteRoughness: GLOBE_MATTE_ROUGHNESS,
-    emissive: diamond ? GLOBE_DIAMOND_EMISSIVE : GLOBE_GOLD_EMISSIVE,
-    emissiveIntensity: diamond ? GLOBE_DIAMOND_EMISSIVE_INTENSITY : GLOBE_GOLD_EMISSIVE_INTENSITY,
-    envMapIntensity: diamond ? GLOBE_DIAMOND_ENV_MAP_INTENSITY : GLOBE_GOLD_ENV_MAP_INTENSITY,
-    normalScale: diamond ? DIAMOND_NORMAL_SCALE : GOLD_NORMAL_SCALE,
-    tileBasePx: diamond ? MASTERY_DIAMOND_TILE_BASE_PX : MASTERY_GOLD_TILE_BASE_PX,
   };
 }
 
 /**
- * Loads the shared tiling gold PBR set once and keeps its anisotropy matched
- * to the renderer. Returns null until the images decode, so the surface falls
- * back to flat painted gold rather than blocking the first frame.
+ * Loads the tiling PBR set for the current finish once and keeps its
+ * anisotropy matched to the renderer. Returns null until the images decode,
+ * so the surface falls back to a flat painted fill rather than blocking the
+ * first frame.
  */
-export function useGoldDetailTextures(
+export function useMasteryDetailTextures(
   enabled: boolean,
   difficulty: MapProgressDifficulty = "medium",
-): GoldDetailTextures | null {
+): MasteryDetailTextures | null {
   const gl = useThree((state) => state.gl);
   const invalidate = useThree((state) => state.invalidate);
-  const [detail, setDetail] = useState<GoldDetailTextures | null>(null);
+  const [detail, setDetail] = useState<MasteryDetailTextures | null>(null);
+  const finish = getMasteryFinish(difficulty);
 
   useEffect(() => {
     if (!enabled) {
@@ -118,27 +92,26 @@ export function useGoldDetailTextures(
     }
     let cancelled = false;
     setDetail(null);
-    const load = difficulty === "hard" ? loadDiamondDetailTextures : loadGoldDetailTextures;
-    load()
+    loadMasteryDetailTextures(finish)
       .then((textures) => {
         if (cancelled) return;
-        applyGoldDetailAnisotropy(textures, gl, 8);
+        applyMasteryDetailAnisotropy(textures, gl, 8);
         setDetail(textures);
         invalidate();
       })
       .catch(() => {
-        // Flat painted gold / diamond remains the fallback.
+        // Flat painted finish remains the fallback.
       });
     return () => {
       cancelled = true;
     };
-  }, [enabled, difficulty, gl, invalidate]);
+  }, [enabled, finish, gl, invalidate]);
 
   return enabled ? detail : null;
 }
 
 /**
- * Studio IBL for mastered-gold reflections only. Matte land/ocean keep
+ * Studio IBL for mastered-finish reflections only. Matte land/ocean keep
  * `envMapIntensity` at 0 so the HDRI cannot tint the painted albedo.
  */
 export function GlobeMetalReflection({ perfTier = "desktop" }: { perfTier?: GlobePerfTier }) {
@@ -148,43 +121,41 @@ export function GlobeMetalReflection({ perfTier = "desktop" }: { perfTier?: Glob
 
 /**
  * Planet surface material. Matte land and ocean stay Lambert so the painted
- * colors read true. When any place is mastered gold or diamond, the surface
- * upgrades to a StandardMaterial whose metal response is evaluated per-pixel
- * from tiling maps, masked to those places — so the camo reacts to the sun
- * and the studio IBL without any canvas ever being repainted for lighting.
- *
- * Day/night does NOT use the color map as emissiveMap — that turned borders and
- * selection glow into a globe-wide lit grid whenever the texture updated.
- * Night stays dark via low ambient; a thin earthshine wash keeps land faintly
- * readable without washing out the terminator.
+ * colors read true. When any place is mastery-4, the surface upgrades to a
+ * StandardMaterial whose metal response is evaluated per-pixel from tiling
+ * maps, masked to those places.
  */
 export function GlobeSurfaceMaterial({
   map,
-  goldMask = null,
-  goldDetail = null,
+  masteryMask = null,
+  masteryDetail = null,
   difficulty = "medium",
 }: {
   map: THREE.Texture;
-  goldMask?: THREE.Texture | null;
-  goldDetail?: GoldDetailTextures | null;
+  masteryMask?: THREE.Texture | null;
+  masteryDetail?: MasteryDetailTextures | null;
   difficulty?: MapProgressDifficulty;
 }) {
   const material = useMemo(() => {
-    if (!goldMask || !goldDetail) return null;
-    return createGoldSurfaceMaterial(
-      globeGoldMaterialConfig(map, goldMask, goldDetail, GOLD_FULL_GLOBE_UV_WINDOW, difficulty),
+    if (!masteryMask || !masteryDetail) return null;
+    return createMasterySurfaceMaterial(
+      globeMasteryMaterialConfig(
+        map,
+        masteryMask,
+        masteryDetail,
+        MASTERY_FULL_GLOBE_UV_WINDOW,
+        difficulty,
+      ),
     );
-  }, [map, goldMask, goldDetail, difficulty]);
+  }, [map, masteryMask, masteryDetail, difficulty]);
 
   useEffect(() => {
     if (!material) return;
     return () => material.dispose();
   }, [material]);
 
-  // The two tiling tiers cross-fade with camera distance: one float per frame,
-  // no repaint and no texture upload.
   useFrame(({ camera }) => {
-    updateGoldDetailBlend(material, camera.position.length());
+    updateMasteryDetailBlend(material, camera.position.length());
   });
 
   if (!material) return <meshLambertMaterial map={map} />;

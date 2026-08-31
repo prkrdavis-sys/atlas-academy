@@ -5,14 +5,14 @@ import { useFrame, useThree } from "@react-three/fiber";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
 import {
-  globeGoldMaterialConfig,
-  useGoldDetailTextures,
+  globeMasteryMaterialConfig,
+  useMasteryDetailTextures,
 } from "@/components/globe/globe-materials";
 import {
-  createGoldMaskTexture,
-  createGoldSurfaceMaterial,
-  updateGoldDetailBlend,
-  type GoldDetailTextures,
+  createMasteryMaskTexture,
+  createMasterySurfaceMaterial,
+  updateMasteryDetailBlend,
+  type MasteryDetailTextures,
 } from "@/lib/globe-gold-material";
 import {
   buildCloseupPatchGeometry,
@@ -56,7 +56,7 @@ const FADE_SPEED = 5; // opacity units per second (~200ms 0→1)
 type PatchResources = {
   mesh: THREE.Mesh;
   texture: THREE.CanvasTexture;
-  goldMaskTexture: THREE.CanvasTexture | null;
+  masteryMaskTexture: THREE.CanvasTexture | null;
   geometry: THREE.BufferGeometry;
   material: THREE.MeshLambertMaterial | THREE.MeshStandardMaterial;
   window: CloseupWindow;
@@ -74,7 +74,7 @@ type PaintInputs = {
   focusOnly: boolean;
   oceanDepthImage: HTMLImageElement | null;
   landColorImage: HTMLImageElement | null;
-  goldDetail: GoldDetailTextures | null;
+  masteryDetail: MasteryDetailTextures | null;
 };
 
 function paintKeyOf(inputs: PaintInputs): string {
@@ -87,7 +87,7 @@ function paintKeyOf(inputs: PaintInputs): string {
     inputs.textureWidth,
     inputs.oceanDepthImage ? "depth" : "flat",
     inputs.landColorImage ? "terrain" : "flat",
-    inputs.goldDetail ? "gold" : "flat",
+    inputs.masteryDetail ? "mastery" : "flat",
   ].join("|");
 }
 
@@ -124,7 +124,7 @@ export function GlobeCloseupLayer({
   const lookDirRef = useRef(new THREE.Vector3());
   const localCameraRef = useRef(new THREE.Vector3());
 
-  const goldDetail = useGoldDetailTextures(
+  const masteryDetail = useMasteryDetailTextures(
     profileHasMastery4(profile, difficulty, usMode),
     difficulty,
   );
@@ -172,7 +172,7 @@ export function GlobeCloseupLayer({
     focusOnly: isGlobeCloseupFocusOnly(perfTier),
     oceanDepthImage,
     landColorImage,
-    goldDetail,
+    masteryDetail,
   });
   inputsRef.current = {
     profile,
@@ -185,7 +185,7 @@ export function GlobeCloseupLayer({
     focusOnly: isGlobeCloseupFocusOnly(perfTier),
     oceanDepthImage,
     landColorImage,
-    goldDetail,
+    masteryDetail,
   };
 
   const clearDebounce = () => {
@@ -199,7 +199,7 @@ export function GlobeCloseupLayer({
     if (!patch) return;
     groupRef.current?.remove(patch.mesh);
     disposeCloseupResources(patch.texture, patch.geometry, patch.material);
-    patch.goldMaskTexture?.dispose();
+    patch.masteryMaskTexture?.dispose();
   };
 
   const ensureData = () => {
@@ -237,9 +237,9 @@ export function GlobeCloseupLayer({
     texture.anisotropy = Math.min(8, gl.capabilities.getMaxAnisotropy());
     texture.needsUpdate = true;
 
-    const goldMaskTexture =
-      painted.goldMaskCanvas && inputs.goldDetail
-        ? createGoldMaskTexture(painted.goldMaskCanvas, gl)
+    const masteryMaskTexture =
+      painted.masteryMaskCanvas && inputs.masteryDetail
+        ? createMasteryMaskTexture(painted.masteryMaskCanvas, gl)
         : null;
 
     const geometry = buildCloseupPatchGeometry(window);
@@ -248,12 +248,12 @@ export function GlobeCloseupLayer({
     // not shift tone. Gold detail is sampled in global equirectangular space,
     // so the patch's grain lines up with the planet's texel for texel.
     const material =
-      goldMaskTexture && inputs.goldDetail
-        ? createGoldSurfaceMaterial({
-            ...globeGoldMaterialConfig(
+      masteryMaskTexture && inputs.masteryDetail
+        ? createMasterySurfaceMaterial({
+            ...globeMasteryMaterialConfig(
               texture,
-              goldMaskTexture,
-              inputs.goldDetail,
+              masteryMaskTexture,
+              inputs.masteryDetail,
               new THREE.Vector4(
                 window.centerX - window.halfX,
                 window.centerY - window.halfY,
@@ -281,7 +281,7 @@ export function GlobeCloseupLayer({
     return {
       mesh,
       texture,
-      goldMaskTexture,
+      masteryMaskTexture,
       geometry,
       material,
       window,
@@ -420,12 +420,12 @@ export function GlobeCloseupLayer({
     if (livePatchRef.current) {
       const mat = livePatchRef.current.material;
       mat.opacity = Math.min(1, mat.opacity + fadeStep);
-      updateGoldDetailBlend(mat, distance);
+      updateMasteryDetailBlend(mat, distance);
     }
     if (fadingPatchRef.current) {
       const mat = fadingPatchRef.current.material;
       mat.opacity = Math.max(0, mat.opacity - fadeStep);
-      updateGoldDetailBlend(mat, distance);
+      updateMasteryDetailBlend(mat, distance);
       if (mat.opacity <= 0.001) {
         disposePatch(fadingPatchRef.current);
         fadingPatchRef.current = null;

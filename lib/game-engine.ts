@@ -557,6 +557,7 @@ export class GameEngine {
           correctAnswer: country.name,
           correctCode: country.code,
           displayType: "shape",
+          shapeLayout: showShapeContextMap(this.difficulty) ? "context-map" : "silhouette",
           ...mc,
         };
       }

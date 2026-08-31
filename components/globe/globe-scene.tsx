@@ -6,18 +6,15 @@ import * as THREE from "three";
 import {
   createGlobeTexturePaint,
   createGlobeTexturePaintAsync,
-  MASTERY_FX_STATIC_PHASE,
   resolveGlobeTextureSize,
   type GlobeTexturePaintHandle,
   type GlobeUsMode,
 } from "@/lib/globe-texture";
 import { ensureOceanDepthCanvas, loadOceanDepthImage } from "@/lib/globe-ocean-depth";
 import { loadLandColorImage } from "@/lib/globe-land-color";
-import { createGoldMaskTexture } from "@/lib/globe-gold-material";
-import { masteryFxPhaseFromTime } from "@/lib/map-mastery-fx";
+import { createMasteryMaskTexture } from "@/lib/globe-gold-material";
 import {
   getGlobePerfTier,
-  GLOBE_MASTERY4_FRAME_MS_BY_TIER,
   isGlobeFxConstrained,
   type GlobePerfTier,
 } from "@/lib/globe-performance";
@@ -38,8 +35,8 @@ export type GlobeTextureConfig = {
 
 export type GlobeSurfaceMaps = {
   map: THREE.CanvasTexture;
-  /** Gold coverage for the shader; null when nothing is mastered in Normal. */
-  goldMask: THREE.CanvasTexture | null;
+  /** Mastery-4 coverage for the shader; null when nothing is mastered. */
+  masteryMask: THREE.CanvasTexture | null;
   ready?: boolean;
 };
 
@@ -69,16 +66,16 @@ function mapsFromPaint(
   map.colorSpace = THREE.SRGBColorSpace;
   configureGlobeCanvasTexture(map, anisotropy);
 
-  const goldMask = paint.goldMaskCanvas
-    ? createGoldMaskTexture(paint.goldMaskCanvas, gl)
+  const masteryMask = paint.masteryMaskCanvas
+    ? createMasteryMaskTexture(paint.masteryMaskCanvas, gl)
     : null;
 
-  return { map, goldMask };
+  return { map, masteryMask };
 }
 
 function disposeGlobeMaps(maps: GlobeSurfaceMaps) {
   maps.map.dispose();
-  maps.goldMask?.dispose();
+  maps.masteryMask?.dispose();
 }
 
 /**
@@ -149,9 +146,7 @@ export function useGlobeTexture(
       isDark,
       size,
       selectedCode: null as string | null,
-      phase: MASTERY_FX_STATIC_PHASE,
       allowCanvasGlow: !fxConstrained,
-      allowMastery4Animation: !fxConstrained,
       oceanDepthImage,
       landColorImage,
     }),
@@ -234,62 +229,10 @@ export function useGlobeTexture(
   // Selection is an overlay layer — update without rebuilding the base canvas.
   useEffect(() => {
     paint.setSelectedCode(selectedCode);
-    if (!paint.animateMastery4) {
-      paint.paintFrame(MASTERY_FX_STATIC_PHASE);
-    } else {
-      paint.paintFrame(masteryFxPhaseFromTime(performance.now(), 5500));
-    }
+    paint.paintSelection();
     maps.map.needsUpdate = true;
     invalidate();
   }, [paint, selectedCode, maps, invalidate]);
-
-  useEffect(() => {
-    if (!paint.animateMastery4) return;
-
-    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    let raf = 0;
-    let lastPaint = 0;
-    const frameIntervalMs = GLOBE_MASTERY4_FRAME_MS_BY_TIER[perfTier];
-
-    const stop = () => {
-      cancelAnimationFrame(raf);
-      raf = 0;
-    };
-
-    const tick = (now: number) => {
-      if (now - lastPaint >= frameIntervalMs) {
-        lastPaint = now;
-        paint.paintFrame(masteryFxPhaseFromTime(now, 5500));
-        maps.map.needsUpdate = true;
-        invalidate();
-      }
-      raf = requestAnimationFrame(tick);
-    };
-
-    const start = () => {
-      if (raf) return;
-      raf = requestAnimationFrame(tick);
-    };
-
-    const syncMotion = () => {
-      if (motionQuery.matches) {
-        stop();
-        paint.paintFrame(MASTERY_FX_STATIC_PHASE);
-        maps.map.needsUpdate = true;
-        invalidate();
-        return;
-      }
-      start();
-    };
-
-    syncMotion();
-    motionQuery.addEventListener("change", syncMotion);
-
-    return () => {
-      stop();
-      motionQuery.removeEventListener("change", syncMotion);
-    };
-  }, [paint, maps, invalidate, perfTier]);
 
   return { ...maps, ready: textureReady };
 }

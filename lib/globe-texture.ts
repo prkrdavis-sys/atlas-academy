@@ -11,18 +11,12 @@ import {
   getProgressFillColor,
   MAP_SELECTION_GLOW_BLUR,
 } from "@/lib/map-colors";
+import { MASTERY_GLOW_BY_LEVEL } from "@/lib/map-mastery-fx";
 import {
-  getMasterySolidColor,
-  MASTERY_GLOW_BY_LEVEL,
-  mastery4ShouldAnimate,
-  masteryFxPhaseFromTime,
-} from "@/lib/map-mastery-fx";
-import { MASTERY_DIAMOND_ALBEDO_FALLBACK } from "@/lib/mastery-diamond-texture";
-import {
-  createGoldMaskCanvas,
-  fillGoldMaskPath,
-  MASTERY_GOLD_ALBEDO_FALLBACK,
-} from "@/lib/mastery-gold-texture";
+  createMasteryMaskCanvas,
+  fillMasteryMaskPath,
+  getMasteryFinish,
+} from "@/lib/mastery-finish";
 import { getOceanDepthCanvas } from "@/lib/globe-ocean-depth";
 import { getLandColorCanvas } from "@/lib/globe-land-color";
 import { awaitPaintYield, type PaintYieldGate } from "@/lib/globe-yield";
@@ -359,11 +353,13 @@ export function profileHasMastery4(
   return collectShapes(profile, difficulty, usMode).some((shape) => shape.level === 4);
 }
 
-function createMastery4FillStyle(difficulty: MapProgressDifficulty): string {
-  // Flat base only — grain, roughness, and relief are sampled on the GPU
-  // from tiling maps so they stay locked to geography.
-  return difficulty === "hard" ? MASTERY_DIAMOND_ALBEDO_FALLBACK : MASTERY_GOLD_ALBEDO_FALLBACK;
-}
+type DrawShapeFillOpts = {
+  isDark: boolean;
+  difficulty: MapProgressDifficulty;
+  pixelScale: number;
+  allowCanvasGlow: boolean;
+  hasLandImagery: boolean;
+};
 
 function drawShapeFill(
   ctx: CanvasRenderingContext2D,
@@ -375,16 +371,7 @@ function drawShapeFill(
     pixelScale,
     allowCanvasGlow,
     hasLandImagery,
-  }: {
-    isDark: boolean;
-    difficulty: MapProgressDifficulty;
-    pixelScale: number;
-    width: number;
-    height: number;
-    phase: number;
-    allowCanvasGlow: boolean;
-    hasLandImagery: boolean;
-  },
+  }: DrawShapeFillOpts,
 ) {
   // With real land imagery underneath, unstarted land is the imagery itself.
   if (level === 0 && hasLandImagery) return;
@@ -402,7 +389,7 @@ function drawShapeFill(
   }
 
   if (level === 4) {
-    ctx.fillStyle = createMastery4FillStyle(difficulty);
+    ctx.fillStyle = getMasteryFinish(difficulty).albedoFallback;
   } else {
     // Mastery 1–3 tints stay translucent over the imagery so terrain reads.
     if (hasLandImagery) ctx.globalAlpha = MASTERY_TINT_ALPHA;
@@ -432,12 +419,8 @@ export type GlobeTextureOptions = {
   size?: number;
   /** Place code currently selected on the map globe (teal fill, normal border). */
   selectedCode?: string | null;
-  /** 0–1 animation phase kept for the paint-frame API (mastery-4 is static). */
-  phase?: number;
   /** When false, skip canvas shadowBlur (phones). Default: not constrained. */
   allowCanvasGlow?: boolean;
-  /** When false, mastery-4 paints a static mid-phase sample. */
-  allowMastery4Animation?: boolean;
   /** Preloaded grayscale bathymetry map — real ocean depth shading. */
   oceanDepthImage?: HTMLImageElement | null;
   /** Preloaded Blue Marble natural-color land imagery. */
@@ -447,28 +430,25 @@ export type GlobeTextureOptions = {
 export type GlobeTexturePaintHandle = {
   canvas: HTMLCanvasElement;
   /**
-   * White where mastery-4 gold or diamond covers the surface. The shader
-   * uses it to gate the tiling albedo / roughness / relief.
+   * White where mastery-4 covers the surface. The shader uses it to gate the
+   * tiling albedo / roughness / relief.
    */
-  goldMaskCanvas: HTMLCanvasElement | null;
+  masteryMaskCanvas: HTMLCanvasElement | null;
   /** True when any mastery-4 places exist. */
   hasMastery4: boolean;
-  /** True when mastery-4 fills should animate (unused — both tiles are static). */
-  animateMastery4: boolean;
-  /** Recompose the visible canvas from the cached base + mastery-4 layer. */
-  paintFrame: (phase: number) => void;
+  /** Recompose the visible canvas from the cached base + selection overlay. */
+  paintSelection: () => void;
   /**
    * Updates the selection highlight without rebuilding the base texture.
-   * Call `paintFrame` afterward to refresh the visible canvas.
+   * Call `paintSelection` afterward to refresh the visible canvas.
    */
   setSelectedCode: (code: string | null) => void;
 };
 
 /**
- * Builds a layered globe texture: a static base (ocean + mastery 0–3) cached
- * once, plus a mastery-4 overlay that can be redrawn cheaply each animation
- * frame. Selected highlight is part of the animated layer so it stays on top
- * without rebuilding the base.
+ * Builds a layered globe texture: a static base (ocean, mastery 0–4) cached
+ * once, plus a selection overlay so a tap highlight can update without
+ * rebuilding the planet.
  *
  * Prefer {@link createGlobeTexturePaintAsync} while the globe may be spinning —
  * this sync path can stall auto-rotation for a noticeable beat at 4K.
@@ -500,9 +480,7 @@ function resolveTextureOptions({
   isDark = true,
   size = GLOBE_BASE_TEXTURE_SIZE,
   selectedCode = null,
-  phase = masteryFxPhaseFromTime(0),
   allowCanvasGlow = !isGlobeFxConstrained(),
-  allowMastery4Animation = !isGlobeFxConstrained(),
   oceanDepthImage = null,
   landColorImage = null,
 }: GlobeTextureOptions = {}) {
@@ -512,11 +490,87 @@ function resolveTextureOptions({
     isDark,
     size,
     selectedCode,
-    phase,
     allowCanvasGlow,
-    allowMastery4Animation,
     oceanDepthImage,
     landColorImage,
+  };
+}
+
+function composeGlobeTexturePaint({
+  width,
+  height,
+  base,
+  baseCtx,
+  shapes,
+  mastery4Shapes,
+  pathFor,
+  selectedCode,
+  mapPalette,
+  palette,
+  pixelScale,
+  allowCanvasGlow,
+  drawOpts,
+}: {
+  width: number;
+  height: number;
+  base: HTMLCanvasElement;
+  baseCtx: CanvasRenderingContext2D;
+  shapes: PaintedShape[];
+  mastery4Shapes: PaintedShape[];
+  pathFor: (code: string, rings: number[][]) => Path2D;
+  selectedCode: string | null;
+  mapPalette: ReturnType<typeof getMapPalette>;
+  palette: GlobePalette;
+  pixelScale: number;
+  allowCanvasGlow: boolean;
+  drawOpts: DrawShapeFillOpts;
+}): GlobeTexturePaintHandle {
+  const hasMastery4 = mastery4Shapes.length > 0;
+  for (const shape of mastery4Shapes) {
+    const path = pathFor(shape.code, shape.rings);
+    drawShapeFill(baseCtx, path, 4, drawOpts);
+    strokeShape(baseCtx, path, shape.isState, palette, pixelScale);
+  }
+
+  let masteryMaskCanvas: HTMLCanvasElement | null = null;
+  if (hasMastery4) {
+    const mask = createMasteryMaskCanvas(width, height);
+    masteryMaskCanvas = mask.canvas;
+    for (const shape of mastery4Shapes) {
+      fillMasteryMaskPath(mask, pathFor(shape.code, shape.rings));
+    }
+  }
+
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d")!;
+  let activeSelectedCode = selectedCode;
+
+  const paintSelection = () => {
+    ctx.clearRect(0, 0, width, height);
+    ctx.drawImage(base, 0, 0);
+    if (!activeSelectedCode) return;
+    const selected = shapes.find((shape) => shape.code === activeSelectedCode);
+    if (!selected) return;
+    const path = pathFor(selected.code, selected.rings);
+    fillSelectedMapPath(ctx, path, mapPalette.highlight.fill, {
+      glowBlur: MAP_SELECTION_GLOW_BLUR * pixelScale,
+      allowGlow: allowCanvasGlow,
+    });
+    strokeShape(ctx, path, selected.isState, palette, pixelScale);
+  };
+
+  paintSelection();
+
+  return {
+    canvas,
+    masteryMaskCanvas,
+    hasMastery4,
+    paintSelection,
+    setSelectedCode: (code) => {
+      activeSelectedCode = code;
+    },
   };
 }
 
@@ -530,9 +584,7 @@ function buildGlobeTexturePaintSync(
     isDark,
     size,
     selectedCode,
-    phase,
     allowCanvasGlow,
-    allowMastery4Animation,
     oceanDepthImage,
     landColorImage,
   } = resolveTextureOptions(options);
@@ -544,8 +596,6 @@ function buildGlobeTexturePaintSync(
   const pixelScale = width / GLOBE_BASE_TEXTURE_SIZE;
   const shapes = collectShapes(profile, difficulty, usMode);
   const mastery4Shapes = shapes.filter((shape) => shape.level === 4);
-  const hasMastery4 = mastery4Shapes.length > 0;
-  let activeSelectedCode = selectedCode;
 
   const pathByCode = new Map<string, Path2D>();
   const pathFor = (code: string, rings: number[][]) => {
@@ -598,9 +648,6 @@ function buildGlobeTexturePaintSync(
     isDark,
     difficulty,
     pixelScale,
-    width,
-    height,
-    phase: 0.35,
     allowCanvasGlow,
     hasLandImagery,
   };
@@ -630,59 +677,21 @@ function buildGlobeTexturePaintSync(
   applyGlobeSurfaceGrain(baseCtx, width, height, pixelScale, "land");
   if (clipGrainToLand) baseCtx.restore();
 
-  const canvas = document.createElement("canvas");
-  canvas.width = width;
-  canvas.height = height;
-  const ctx = canvas.getContext("2d")!;
-
-  const useGoldMask = hasMastery4;
-  let goldMaskCanvas: HTMLCanvasElement | null = null;
-
-  if (useGoldMask) {
-    const mask = createGoldMaskCanvas(width, height);
-    goldMaskCanvas = mask.canvas;
-    for (const shape of mastery4Shapes) {
-      fillGoldMaskPath(mask, pathFor(shape.code, shape.rings));
-    }
-  }
-
-  const paintFrame = (nextPhase: number) => {
-    ctx.clearRect(0, 0, width, height);
-    ctx.drawImage(base, 0, 0);
-
-    const frameOpts = { ...drawOpts, phase: nextPhase };
-    for (const shape of mastery4Shapes) {
-      const path = pathFor(shape.code, shape.rings);
-      drawShapeFill(ctx, path, 4, frameOpts);
-      strokeShape(ctx, path, shape.isState, palette, pixelScale);
-    }
-
-    if (activeSelectedCode) {
-      const selected = shapes.find((shape) => shape.code === activeSelectedCode);
-      if (selected) {
-        const path = pathFor(selected.code, selected.rings);
-        fillSelectedMapPath(ctx, path, mapPalette.highlight.fill, {
-          glowBlur: MAP_SELECTION_GLOW_BLUR * pixelScale,
-          allowGlow: allowCanvasGlow,
-        });
-        strokeShape(ctx, path, selected.isState, palette, pixelScale);
-      }
-    }
-  };
-
-  paintFrame(phase);
-
-  return {
-    canvas,
-    goldMaskCanvas,
-    hasMastery4,
-    animateMastery4:
-      hasMastery4 && allowMastery4Animation && mastery4ShouldAnimate(difficulty),
-    paintFrame,
-    setSelectedCode: (code) => {
-      activeSelectedCode = code;
-    },
-  };
+  return composeGlobeTexturePaint({
+    width,
+    height,
+    base,
+    baseCtx,
+    shapes,
+    mastery4Shapes,
+    pathFor,
+    selectedCode,
+    mapPalette,
+    palette,
+    pixelScale,
+    allowCanvasGlow,
+    drawOpts,
+  });
 }
 
 async function buildGlobeTexturePaintAsync(
@@ -696,9 +705,7 @@ async function buildGlobeTexturePaintAsync(
     isDark,
     size,
     selectedCode,
-    phase,
     allowCanvasGlow,
-    allowMastery4Animation,
     oceanDepthImage,
     landColorImage,
   } = resolveTextureOptions(options);
@@ -710,8 +717,6 @@ async function buildGlobeTexturePaintAsync(
   const pixelScale = width / GLOBE_BASE_TEXTURE_SIZE;
   const shapes = collectShapes(profile, difficulty, usMode);
   const mastery4Shapes = shapes.filter((shape) => shape.level === 4);
-  const hasMastery4 = mastery4Shapes.length > 0;
-  let activeSelectedCode = selectedCode;
 
   const pathByCode = new Map<string, Path2D>();
   const pathFor = (code: string, rings: number[][]) => {
@@ -773,9 +778,6 @@ async function buildGlobeTexturePaintAsync(
     isDark,
     difficulty,
     pixelScale,
-    width,
-    height,
-    phase: 0.35,
     allowCanvasGlow,
     hasLandImagery,
   };
@@ -812,59 +814,21 @@ async function buildGlobeTexturePaintAsync(
   await awaitPaintYield(gate);
   if (!gate.shouldContinue()) return null;
 
-  const canvas = document.createElement("canvas");
-  canvas.width = width;
-  canvas.height = height;
-  const ctx = canvas.getContext("2d")!;
-
-  const useGoldMask = hasMastery4;
-  let goldMaskCanvas: HTMLCanvasElement | null = null;
-
-  if (useGoldMask) {
-    const mask = createGoldMaskCanvas(width, height);
-    goldMaskCanvas = mask.canvas;
-    for (const shape of mastery4Shapes) {
-      fillGoldMaskPath(mask, pathFor(shape.code, shape.rings));
-    }
-  }
-
-  const paintFrame = (nextPhase: number) => {
-    ctx.clearRect(0, 0, width, height);
-    ctx.drawImage(base, 0, 0);
-
-    const frameOpts = { ...drawOpts, phase: nextPhase };
-    for (const shape of mastery4Shapes) {
-      const path = pathFor(shape.code, shape.rings);
-      drawShapeFill(ctx, path, 4, frameOpts);
-      strokeShape(ctx, path, shape.isState, palette, pixelScale);
-    }
-
-    if (activeSelectedCode) {
-      const selected = shapes.find((shape) => shape.code === activeSelectedCode);
-      if (selected) {
-        const path = pathFor(selected.code, selected.rings);
-        fillSelectedMapPath(ctx, path, mapPalette.highlight.fill, {
-          glowBlur: MAP_SELECTION_GLOW_BLUR * pixelScale,
-          allowGlow: allowCanvasGlow,
-        });
-        strokeShape(ctx, path, selected.isState, palette, pixelScale);
-      }
-    }
-  };
-
-  paintFrame(phase);
-
-  return {
-    canvas,
-    goldMaskCanvas,
-    hasMastery4,
-    animateMastery4:
-      hasMastery4 && allowMastery4Animation && mastery4ShouldAnimate(difficulty),
-    paintFrame,
-    setSelectedCode: (code) => {
-      activeSelectedCode = code;
-    },
-  };
+  return composeGlobeTexturePaint({
+    width,
+    height,
+    base,
+    baseCtx,
+    shapes,
+    mastery4Shapes,
+    pathFor,
+    selectedCode,
+    mapPalette,
+    palette,
+    pixelScale,
+    allowCanvasGlow,
+    drawOpts,
+  });
 }
 
 /**
@@ -879,10 +843,3 @@ export function buildGlobeTextureCanvas(
   return createGlobeTexturePaint(profile, options).canvas;
 }
 
-/** Mid-phase static sample used when motion is reduced. */
-export const MASTERY_FX_STATIC_PHASE = 0.35;
-
-/** Solid used when a quick non-animated mastery-4 sample is needed. */
-export function getGlobeMastery4Fallback(difficulty: MapProgressDifficulty): string {
-  return getMasterySolidColor(difficulty);
-}

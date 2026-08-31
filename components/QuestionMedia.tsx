@@ -6,12 +6,11 @@ import { FlagCropDisplay } from "@/components/FlagCropDisplay";
 import { NeighborCountryDisplay } from "@/components/NeighborCountryDisplay";
 import { PopulationMatchupDisplay } from "@/components/PopulationMatchupDisplay";
 import { ShapeContextDisplay, ShapeDisplay } from "@/components/ShapeDisplay";
-import { isInvertedFlagRound, showShapeContextMap } from "@/lib/question-presentation";
-import type { Difficulty, Question } from "@/lib/types";
+import { isInvertedFlagRound } from "@/lib/question-presentation";
+import type { Question } from "@/lib/types";
 
 type QuestionMediaProps = {
   question: Question;
-  difficulty?: Difficulty;
   /** Options removed by a 50/50; only meaningful for the flag grid. */
   hiddenOptions?: string[];
   /** Required only for flag-grid rounds, which answer by tapping a flag. */
@@ -24,7 +23,6 @@ type QuestionMediaProps = {
  */
 export function QuestionMedia({
   question,
-  difficulty = "medium",
   hiddenOptions = [],
   onSelectFlag,
 }: QuestionMediaProps) {
@@ -43,7 +41,7 @@ export function QuestionMedia({
         />
       )}
       {question.displayType === "shape" &&
-        (showShapeContextMap(difficulty) ? (
+        (question.shapeLayout === "context-map" ? (
           <ShapeContextDisplay code={question.countryCode} />
         ) : (
           <ShapeDisplay code={question.countryCode} compact />
