@@ -54,12 +54,13 @@ export function AppHeader() {
             <LibraryScrollKeeper />
           </Suspense>
           <header className="sticky top-0 z-40 border-b border-teal-900/10 bg-white/85 pt-[env(safe-area-inset-top)] backdrop-blur-xl dark:border-slate-700/50 dark:bg-slate-900/85">
-            <div className="mx-auto flex h-14 max-w-5xl items-center gap-4 px-4 sm:h-16">
+            <div className="mx-auto flex h-14 max-w-5xl items-center gap-2 px-3 sm:h-16 lg:gap-4 lg:px-4">
               <Link
                 href="/"
-                className="font-display text-lg font-extrabold tracking-tight text-teal-800 transition-opacity active:opacity-60 dark:text-teal-300 sm:text-xl"
+                className="shrink-0 font-display text-lg font-extrabold tracking-tight text-teal-800 transition-opacity active:opacity-60 dark:text-teal-300 sm:text-xl"
               >
-                <span aria-hidden>🌍</span> Atlas Academy
+                <span aria-hidden>🌍</span>
+                <span className="sr-only lg:not-sr-only"> Atlas Academy</span>
               </Link>
               <div className="hidden flex-1 justify-center sm:flex">
                 <PlayModeSwitcher />
@@ -69,7 +70,7 @@ export function AppHeader() {
                 <HeaderStreakChip />
                 <ProfileSwitcher compact />
               </div>
-              <div className="hidden items-center gap-1.5 sm:flex">
+              <div className="hidden shrink-0 items-center gap-1.5 sm:flex">
                 <FriendsHeaderButton />
                 <HeaderStreakChip />
                 <ProfileSwitcher />

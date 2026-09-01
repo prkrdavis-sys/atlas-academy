@@ -244,7 +244,7 @@ export function ProfileSwitcher({ compact = false }: { compact?: boolean }) {
         <span
           className={cn(
             "min-w-0 truncate font-display font-extrabold text-slate-800 dark:text-slate-100",
-            compact ? "max-w-[5.5rem] text-xs" : "max-w-[9rem] text-sm",
+            compact ? "max-w-[5.5rem] text-xs" : "max-w-[4.5rem] text-sm lg:max-w-[9rem]",
           )}
         >
           {displayProfile?.name ?? "Menu"}

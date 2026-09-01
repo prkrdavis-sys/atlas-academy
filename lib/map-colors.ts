@@ -15,6 +15,7 @@ export type MapPathStyle = {
   fill: string;
   stroke: string;
   strokeWidth: number;
+  strokeOpacity?: number;
   /** Optional CSS class (e.g. mastery glow pulse). */
   className?: string;
 };
@@ -30,11 +31,13 @@ const LIGHT_MAP_PALETTE: MapPalette = {
     strokeWidth: 0.35,
   },
   neighbor: {
-    // Honey gold + bronze ink — warm land, clear of teal highlight and navy ocean.
-    // Width is CSS px with non-scaling-stroke so cropped maps keep a visible outline.
-    fill: "#e8c96a",
-    stroke: "#3a2508",
-    strokeWidth: 2.25,
+    // Warm stone with a same-family edge — readable next to sage land, not a halo.
+    // Hairline is CSS px (non-scaling-stroke). Soft opacity + a later fill cover
+    // keep thin corridors from reading as a doubled outline.
+    fill: "#d4cbb8",
+    stroke: "#b5aa98",
+    strokeWidth: 0.65,
+    strokeOpacity: 0.4,
   },
   answer: {
     fill: "#f59e0b",
@@ -58,9 +61,10 @@ const DARK_MAP_PALETTE: MapPalette = {
     strokeWidth: 0.35,
   },
   neighbor: {
-    fill: "#7d6328",
-    stroke: "#f2e2a0",
-    strokeWidth: 2.25,
+    fill: "#6d6356",
+    stroke: "#8f8578",
+    strokeWidth: 0.65,
+    strokeOpacity: 0.4,
   },
   answer: {
     fill: "#fbbf24",

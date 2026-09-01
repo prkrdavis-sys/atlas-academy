@@ -342,10 +342,12 @@ export function ContextMapSvg({
       style,
       strokeWidth,
       stroke: strokeWidth > 0 ? style.stroke : "none",
+      strokeOpacity: style.strokeOpacity,
       pathVectorEffect:
         scaleStrokesWithMap && !keepNeighborOutline ? undefined : "non-scaling-stroke",
       fill: textureEnabled ? `url(#${landPatternId})` : style.fill,
       tintOpacity,
+      coverInteriorStroke: role === "neighbor" || role === "highlight",
     };
   });
 
@@ -493,7 +495,7 @@ export function ContextMapSvg({
           />
         ))
       )}
-      {styledPaths.map(({ path, stroke, strokeWidth, pathVectorEffect }) =>
+      {styledPaths.map(({ path, stroke, strokeWidth, strokeOpacity, pathVectorEffect }) =>
         strokeWidth > 0 && stroke !== "none" ? (
           <path
             key={`stroke-${path.id}`}
@@ -501,12 +503,37 @@ export function ContextMapSvg({
             fill="none"
             stroke={stroke}
             strokeWidth={strokeWidth}
+            strokeOpacity={strokeOpacity}
             vectorEffect={pathVectorEffect}
             strokeLinejoin="round"
             strokeLinecap="round"
             style={{ pointerEvents: "none" }}
             aria-hidden
           />
+        ) : null,
+      )}
+      {/* Re-fill neighbors and the subject so shared / inland strokes don't stack
+          on thin land. The outer half of each neighbor stroke stays visible. */}
+      {styledPaths.map(({ path, style, fill, tintOpacity, coverInteriorStroke }) =>
+        coverInteriorStroke ? (
+          textureEnabled ? (
+            <g key={`stroke-cover-${path.id}`} style={{ pointerEvents: "none" }} aria-hidden>
+              <path d={path.d} fill={style.fill} stroke="none" />
+              <path d={path.d} fill={fill} stroke="none" />
+              {tintOpacity > 0 ? (
+                <path d={path.d} fill={style.fill} fillOpacity={tintOpacity} stroke="none" />
+              ) : null}
+            </g>
+          ) : (
+            <path
+              key={`stroke-cover-${path.id}`}
+              d={path.d}
+              fill={fill}
+              stroke="none"
+              style={{ pointerEvents: "none" }}
+              aria-hidden
+            />
+          )
         ) : null,
       )}
       {capitalMarker ? (
@@ -572,8 +599,8 @@ export function PlaceContextMap({
   }, [answerNeighborCode]);
 
   // Featured place is fill-only (a selection stroke fattens thin geographies).
-  // Answer callouts and neighbors keep a vector stroke so their outline is
-  // not the same color as the fill. Other surrounding land is fill-only.
+  // Neighbors use a quiet fill plus a thin outline; inland doubles are covered
+  // after the stroke pass. Answer callouts keep a stronger vector stroke.
   const pathStyleResolver = useMemo(() => {
     const mapPalette = getMapPalette(isDark);
     const subtleNeighbor = getSubtleNeighborMapStyle(isDark);
