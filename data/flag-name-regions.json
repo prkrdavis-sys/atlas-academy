@@ -1,62 +1,62 @@
 {
-  "US-AR": [{ "x": 32, "y": 43, "w": 36, "h": 9 }],
-  "US-CA": [{ "x": 14, "y": 70, "w": 36, "h": 9 }],
+  "US-AR": [{ "x": 22, "y": 40.5, "w": 56, "h": 14 }],
+  "US-CA": [{ "x": 16.4, "y": 68.3, "w": 33.2, "h": 10 }],
   "US-FL": [
-    { "shape": "arc", "cx": 50, "cy": 50, "r": 15.8, "start": 48, "end": 138, "thickness": 3 }
+    { "shape": "arc", "cx": 50, "cy": 50, "r": 15.8, "start": 54, "end": 146, "thickness": 2.6 }
   ],
-  "US-IA": [{ "x": 38, "y": 73, "w": 24, "h": 9 }],
+  "US-IA": [{ "x": 39.5, "y": 73.6, "w": 22, "h": 11 }],
   "US-ID": [
-    { "shape": "arc", "cx": 50, "cy": 46, "r": 19, "start": 138, "end": 172, "thickness": 3 },
-    { "x": 52, "y": 74, "w": 16, "h": 8 }
+    { "shape": "arc", "cx": 50, "cy": 46, "r": 19, "start": 154, "end": 176, "thickness": 3 },
+    { "x": 50, "y": 72, "w": 20, "h": 11 }
   ],
-  "US-IL": [{ "x": 28, "y": 84, "w": 44, "h": 8 }],
+  "US-IL": [{ "x": 36, "y": 83.5, "w": 28, "h": 7.2 }],
   "US-IN": [
-    { "shape": "arc", "cx": 50, "cy": 41, "r": 16.8, "start": 328, "end": 32, "thickness": 4.6 }
+    { "shape": "arc", "cx": 50, "cy": 41, "r": 16.8, "start": 326, "end": 34, "thickness": 5.8 }
   ],
-  "US-KS": [{ "x": 20, "y": 83, "w": 60, "h": 9 }],
+  "US-KS": [{ "x": 23.5, "y": 78, "w": 53, "h": 18 }],
   "US-KY": [
-    { "shape": "arc", "cx": 50, "cy": 50, "r": 16.4, "start": 14, "end": 86, "thickness": 3.6 }
+    { "shape": "arc", "cx": 50, "cy": 50, "r": 16.4, "start": 18, "end": 88, "thickness": 4.4 }
   ],
   "US-ME": [
     { "shape": "arc", "cx": 50, "cy": 50, "r": 18.2, "start": 148, "end": 212, "thickness": 4.8 }
   ],
-  "US-MT": [{ "x": 12, "y": 12, "w": 76, "h": 16 }],
+  "US-MT": [{ "x": 12, "y": 11, "w": 76, "h": 18 }],
   "US-NC": [
-    { "x": 3.8, "y": 41.5, "w": 9.4, "h": 16 },
-    { "x": 19.8, "y": 41.5, "w": 9.4, "h": 16 }
+    { "x": 1.8, "y": 35, "w": 9.2, "h": 28 },
+    { "x": 22.6, "y": 35, "w": 10.2, "h": 28 }
   ],
   "US-ND": [
-    { "x": 28, "y": 76, "w": 44, "h": 14 }
+    { "x": 30, "y": 78, "w": 39, "h": 13 }
   ],
   "US-NE": [
-    { "shape": "arc", "cx": 50, "cy": 50, "r": 26.5, "start": 48, "end": 148, "thickness": 3.8 }
+    { "shape": "arc", "cx": 50, "cy": 50, "r": 26.5, "start": 28, "end": 148, "thickness": 3.8 }
   ],
   "US-NH": [
     { "shape": "arc", "cx": 50, "cy": 50, "r": 18, "start": 38, "end": 160, "thickness": 3 }
   ],
   "US-NV": [
-    { "shape": "arc", "cx": 21, "cy": 52, "r": 12, "start": 330, "end": 30, "thickness": 3.4 }
+    { "shape": "arc", "cx": 21, "cy": 52, "r": 11.8, "start": 324, "end": 36, "thickness": 4.2 }
   ],
-  "US-OK": [{ "x": 22, "y": 79, "w": 56, "h": 9 }],
+  "US-OK": [{ "x": 25, "y": 75, "w": 50, "h": 13 }],
   "US-OR": [
-    { "shape": "arc", "cx": 50, "cy": 128, "r": 77, "start": 1.7, "end": 31.2, "thickness": 6.2 }
+    { "shape": "arc", "cx": 50, "cy": 130, "r": 78.5, "start": 2.4, "end": 29, "thickness": 10.5 }
   ],
   "US-SD": [
-    { "shape": "arc", "cx": 50, "cy": 50, "r": 20, "start": 298, "end": 62, "thickness": 6 },
-    { "shape": "arc", "cx": 50, "cy": 50, "r": 8.4, "start": 8, "end": 82, "thickness": 2.4 }
+    { "shape": "arc", "cx": 50, "cy": 50, "r": 19.2, "start": 296, "end": 64, "thickness": 7.4 },
+    { "shape": "arc", "cx": 50, "cy": 50, "r": 8.6, "start": 8, "end": 86, "thickness": 2.6 }
   ],
   "US-VA": [
     { "shape": "arc", "cx": 50, "cy": 50, "r": 16.4, "start": 324, "end": 36, "thickness": 3.8 }
   ],
-  "US-VT": [{ "x": 43.5, "y": 76.2, "w": 13, "h": 5.8 }],
+  "US-VT": [{ "x": 46, "y": 77, "w": 8, "h": 4.2 }],
   "US-WA": [
-    { "shape": "arc", "cx": 50, "cy": 50, "r": 18, "start": 48, "end": 158, "thickness": 3.4 }
+    { "shape": "arc", "cx": 50, "cy": 50, "r": 18, "start": 42, "end": 168, "thickness": 3.4 }
   ],
-  "US-WI": [{ "x": 22, "y": 5, "w": 56, "h": 13 }],
+  "US-WI": [{ "x": 16, "y": 2.5, "w": 68, "h": 17.5 }],
   "US-WV": [
-    { "shape": "arc", "cx": 50, "cy": 140, "r": 63, "start": 0.5, "end": 18, "thickness": 3.6 }
+    { "shape": "arc", "cx": 50, "cy": 141, "r": 63, "start": 0.5, "end": 18.5, "thickness": 4.2 }
   ],
   "US-WY": [
-    { "shape": "arc", "cx": 44.5, "cy": 45, "r": 8.8, "start": 304, "end": 8, "thickness": 2.1 }
+    { "shape": "arc", "cx": 44.5, "cy": 45, "r": 8.8, "start": 300, "end": 8, "thickness": 2.3 }
   ]
 }
