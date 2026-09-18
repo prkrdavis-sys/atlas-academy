@@ -1,4 +1,8 @@
 import { type CSSProperties, type ReactNode } from "react";
+
+type FlagMaskStyle = CSSProperties & {
+  WebkitMaskMode?: "alpha" | "luminance" | "match-source";
+};
 import {
   type DisplayFlagNameRegion,
   flagNameLetterSize,
@@ -25,27 +29,28 @@ export function FlagNameBlurLayer({
     <span aria-hidden className="pointer-events-none absolute inset-0" style={style}>
       {regions.map((region, index) => {
         const mask = `url("data:image/svg+xml,${encodeURIComponent(flagNameMaskSvg(region))}")`;
+        const layerStyle: FlagMaskStyle = {
+          left: `${region.x}%`,
+          top: `${region.y}%`,
+          width: `${region.w}%`,
+          height: `${region.h}%`,
+          backgroundColor: "rgb(255 255 255 / 0.015)",
+          backdropFilter: flagNameBlurFilter(region),
+          WebkitBackdropFilter: flagNameBlurFilter(region),
+          WebkitMaskImage: mask,
+          maskImage: mask,
+          WebkitMaskMode: "alpha",
+          maskMode: "alpha",
+          WebkitMaskSize: "100% 100%",
+          maskSize: "100% 100%",
+          WebkitMaskRepeat: "no-repeat",
+          maskRepeat: "no-repeat",
+        };
         return (
           <span
             key={`${region.x}-${region.y}-${index}`}
             className="absolute overflow-hidden"
-            style={{
-              left: `${region.x}%`,
-              top: `${region.y}%`,
-              width: `${region.w}%`,
-              height: `${region.h}%`,
-              backgroundColor: "rgb(255 255 255 / 0.015)",
-              backdropFilter: flagNameBlurFilter(region),
-              WebkitBackdropFilter: flagNameBlurFilter(region),
-              WebkitMaskImage: mask,
-              maskImage: mask,
-              WebkitMaskMode: "alpha",
-              maskMode: "alpha",
-              WebkitMaskSize: "100% 100%",
-              maskSize: "100% 100%",
-              WebkitMaskRepeat: "no-repeat",
-              maskRepeat: "no-repeat",
-            }}
+            style={layerStyle}
           >
             <span
               className="absolute inset-0"
