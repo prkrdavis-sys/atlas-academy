@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
+import { isCloudEnabled } from "@/lib/cloud-availability";
 import {
   previewFriendInvite,
   redeemFriendInvite,
@@ -51,6 +52,7 @@ function getInviteMessage(
 export default function FriendInvitePage() {
   const params = useParams<{ token: string }>();
   const token = params.token;
+  const cloudEnabled = isCloudEnabled();
   const { user, isGuest, hydrated } = useAuth();
   const [previewState, setPreviewState] = useState<PreviewState>({ kind: "loading" });
   const [redemptionState, setRedemptionState] = useState<RedemptionState>({
@@ -59,7 +61,7 @@ export default function FriendInvitePage() {
   const [redeemAttempt, setRedeemAttempt] = useState(0);
 
   useEffect(() => {
-    if (!token) return;
+    if (!cloudEnabled || !token) return;
 
     let cancelled = false;
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -83,7 +85,7 @@ export default function FriendInvitePage() {
     return () => {
       cancelled = true;
     };
-  }, [token]);
+  }, [cloudEnabled, token]);
 
   useEffect(() => {
     // Wait for auth hydration so we don't flash "sending" before knowing the
@@ -128,6 +130,30 @@ export default function FriendInvitePage() {
   const inviteReady = previewState.kind === "ready";
   const inviterName = inviteReady ? previewState.invite.inviterName : "an Atlas Academy player";
   const showAuthPrompt = !hydrated || !user || isGuest;
+
+  if (!cloudEnabled) {
+    return (
+      <div className="flex min-h-dvh items-center justify-center bg-gradient-to-br from-slate-950 via-teal-950 to-slate-900 px-4 py-8">
+        <main className="w-full max-w-md">
+          <section className="rounded-[2rem] border border-white/15 bg-white/95 p-5 text-center shadow-2xl shadow-teal-950/30 dark:bg-slate-900/95 sm:p-7">
+            <p className="font-display text-xl font-extrabold text-slate-900 dark:text-white">
+              Friends are temporarily offline
+            </p>
+            <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+              Invites, versus, and accounts will return when cloud services are restored. You can
+              still play on this device.
+            </p>
+            <Link
+              href="/"
+              className="mt-5 inline-flex min-h-11 items-center justify-center rounded-2xl bg-emerald-500 px-5 py-2.5 font-bold text-white shadow-[0_3px_0_var(--color-emerald-700)]"
+            >
+              Continue to Atlas Academy
+            </Link>
+          </section>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-dvh items-center justify-center bg-gradient-to-br from-slate-950 via-teal-950 to-slate-900 px-4 py-8">

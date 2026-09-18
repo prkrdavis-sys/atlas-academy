@@ -1,3 +1,4 @@
+import { isCloudEnabled } from "@/lib/cloud-availability";
 import { createClient } from "@/lib/supabase/server";
 import {
   createFriendInviteToken,
@@ -30,6 +31,10 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST() {
+  if (!isCloudEnabled()) {
+    return NextResponse.json({ error: "Accounts are temporarily unavailable." }, { status: 503 });
+  }
+
   try {
     const supabase = await createClient();
     const { data: claimsData, error: claimsError } = await supabase.auth.getClaims();

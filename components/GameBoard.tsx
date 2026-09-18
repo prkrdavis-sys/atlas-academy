@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/components/AuthProvider";
 import { useProfiles, useRequiredProfile } from "@/components/ProfileProvider";
 import { useCoachMarkAnchor } from "@/components/CoachMarkProvider";
+import { isCloudEnabled } from "@/lib/cloud-availability";
 import { getCountryByCode, getCountryName } from "@/lib/countries";
 import { DAILY_COUNTING_SESSION_KEY, formatDailyDateKey, getDailyDateKey } from "@/lib/daily-calendar";
 import {
@@ -315,7 +316,7 @@ export function GameBoard({
       sessionStorage.removeItem(DAILY_COUNTING_SESSION_KEY);
     }
     refresh();
-    if (user) {
+    if (user && isCloudEnabled()) {
       void ensureDailyChallengeResultSubmitted(
         activeProfile,
         result,

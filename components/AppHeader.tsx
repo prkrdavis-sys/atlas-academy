@@ -11,6 +11,7 @@ import { PlayModeSwitcher } from "@/components/PlayModeSwitcher";
 import { ProfileSwitcher } from "@/components/ProfileSwitcher";
 import { FriendsHeaderButton } from "@/components/social/FriendsHeaderButton";
 import { CoachMarkLink } from "@/components/CoachMarkProvider";
+import { isCloudEnabled } from "@/lib/cloud-availability";
 import { getPrimaryNavHref, isExploreRoute } from "@/lib/navigation";
 import { useLibraryNavHref } from "@/lib/use-library-nav-href";
 import { LIBRARY_ICON } from "@/lib/library";
@@ -41,6 +42,7 @@ export function AppHeader() {
   const libraryHref = useLibraryNavHref();
   const onLibraryTab = isExploreRoute(pathname);
   const hideHeader = pathname.startsWith("/play/") && !pathname.startsWith("/play/setup");
+  const cloudEnabled = isCloudEnabled();
   const activeNavIndex = MOBILE_NAV_ITEMS.findIndex((item) =>
     isMobileNavItemActive(pathname, item),
   );
@@ -66,12 +68,12 @@ export function AppHeader() {
                 <PlayModeSwitcher />
               </div>
               <div className="ml-auto flex items-center gap-1 sm:hidden">
-                <FriendsHeaderButton compact />
+                {cloudEnabled ? <FriendsHeaderButton compact /> : null}
                 <HeaderStreakChip />
                 <ProfileSwitcher compact />
               </div>
               <div className="hidden shrink-0 items-center gap-1.5 sm:flex">
-                <FriendsHeaderButton />
+                {cloudEnabled ? <FriendsHeaderButton /> : null}
                 <HeaderStreakChip />
                 <ProfileSwitcher />
               </div>

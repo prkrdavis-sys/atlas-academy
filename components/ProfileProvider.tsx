@@ -10,6 +10,7 @@ import {
   useState,
 } from "react";
 import { useAuth } from "@/components/AuthProvider";
+import { isCloudEnabled } from "@/lib/cloud-availability";
 import {
   deleteCloudProfile,
   loadCloudProfiles,
@@ -24,6 +25,7 @@ import {
 } from "@/lib/profile-merge";
 import {
   PROFILE_STORAGE_CHANGE_EVENT,
+  adoptExistingAccountCache,
   createProfile,
   deleteProfile,
   getStorageAccount,
@@ -161,6 +163,15 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setSyncError(null);
     setHydrated(false);
+
+    if (!isCloudEnabled()) {
+      adoptExistingAccountCache();
+      setState(loadState());
+      setHydrated(true);
+      return () => {
+        cancelled = true;
+      };
+    }
 
     const anonymousState =
       nextUserId && getStorageAccount() === null ? loadState() : null;

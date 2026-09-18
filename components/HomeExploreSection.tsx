@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ModeBestFraction } from "@/components/ModeBestFraction";
 import { ProfileRequiredDialog } from "@/components/ProfileRequiredDialog";
 import { FriendsShortcutButton } from "@/components/social/FriendsShortcutButton";
+import { isCloudEnabled } from "@/lib/cloud-availability";
 import { resolvePlayConfig } from "@/lib/game-setup";
 import { getLoginStreak } from "@/lib/login-streak";
 import { getScopedModeInfo, scopedHref, scopeQuery, SCOPE_INFO } from "@/lib/scope";
@@ -202,8 +203,12 @@ export function HomeExploreSection({
             Jump in
           </h2>
           <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3">
-            <ShortcutButton href="/daily-challenge" icon="🏆" label="Leaderboard" />
-            <FriendsShortcutButton scope={scope} />
+            <ShortcutButton
+              href="/daily-challenge"
+              icon="🏆"
+              label={isCloudEnabled() ? "Leaderboard" : "Daily results"}
+            />
+            {isCloudEnabled() ? <FriendsShortcutButton scope={scope} /> : null}
             <button type="button" onClick={startWeakSpots} className={shortcutClassName}>
               <span aria-hidden className="text-xl">
                 🎯

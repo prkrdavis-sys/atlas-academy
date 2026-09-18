@@ -1,14 +1,13 @@
 import { createBrowserClient } from "@supabase/ssr";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { getSupabasePublicConfig } from "@/lib/cloud-availability";
 
 let browserClient: SupabaseClient | undefined;
 
 export function createClient() {
   if (!browserClient) {
-    browserClient = createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
-    );
+    const { url, key } = getSupabasePublicConfig();
+    browserClient = createBrowserClient(url, key);
   }
 
   return browserClient;

@@ -1,3 +1,4 @@
+import { isCloudEnabled } from "@/lib/cloud-availability";
 import { createClient } from "@/lib/supabase/server";
 import {
   hashFriendInviteToken,
@@ -12,6 +13,10 @@ type RedeemBody = {
 };
 
 export async function POST(request: Request) {
+  if (!isCloudEnabled()) {
+    return NextResponse.json({ error: "Accounts are temporarily unavailable." }, { status: 503 });
+  }
+
   try {
     const body = (await request.json().catch(() => null)) as RedeemBody | null;
     const token = typeof body?.token === "string" ? body.token : null;

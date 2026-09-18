@@ -7,6 +7,7 @@ import { ProfileAvatar } from "@/components/ProfileAvatar";
 import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/components/AuthProvider";
 import { useProfiles } from "@/components/ProfileProvider";
+import { isCloudEnabled } from "@/lib/cloud-availability";
 import {
   ensureDailyChallengeResultSubmitted,
   formatDailyElapsedTime,
@@ -267,6 +268,8 @@ export function DailyChallengeLeaderboard() {
 
 function DailyChallengeLeaderboardContent({ profile }: { profile: Profile }) {
   const { user, isGuest } = useAuth();
+  const cloudEnabled = isCloudEnabled();
+  const showGlobalBoard = cloudEnabled && Boolean(user) && !isGuest;
   const searchParams = useSearchParams();
   const todayKey = getDailyDateKey();
   const requestedDateKey = searchParams.get("date");
@@ -303,7 +306,7 @@ function DailyChallengeLeaderboardContent({ profile }: { profile: Profile }) {
 
   useEffect(() => {
     let cancelled = false;
-    if (!user || isGuest || !selectedDateCompleted) return;
+    if (!selectedDateCompleted || !showGlobalBoard) return;
 
     async function loadBoard() {
       let syncError: string | null = null;
@@ -347,13 +350,12 @@ function DailyChallengeLeaderboardContent({ profile }: { profile: Profile }) {
       cancelled = true;
     };
   }, [
-    isGuest,
     playerResult,
     profile,
     selectedDateCompleted,
     selectedDateKey,
+    showGlobalBoard,
     submitRetryKey,
-    user,
   ]);
 
   function moveMonth(direction: -1 | 1) {
@@ -379,15 +381,23 @@ function DailyChallengeLeaderboardContent({ profile }: { profile: Profile }) {
   }
 
   const currentProfileId = profile.id;
+  const localSnapshot =
+    selectedDateCompleted && !showGlobalBoard
+      ? buildDailyChallengeSnapshot(selectedDateKey)
+      : null;
   const visibleEntries = loadedDateKey === selectedDateKey ? entries : [];
-  const visibleSnapshot = loadedDateKey === selectedDateKey ? snapshot : null;
+  const visibleSnapshot = showGlobalBoard
+    ? loadedDateKey === selectedDateKey
+      ? snapshot
+      : null
+    : localSnapshot;
   const detailedTimeEntries = visibleEntries.filter((_, index) => isCloseTimeResult(visibleEntries, index));
 
   return (
     <div className="mx-auto w-full max-w-4xl space-y-5">
       <header>
         <h1 className="font-display text-3xl font-black text-slate-900 dark:text-slate-100">
-          The daily leaderboard
+          {cloudEnabled ? "The daily leaderboard" : "Daily Challenge"}
         </h1>
       </header>
 
@@ -496,18 +506,67 @@ function DailyChallengeLeaderboardContent({ profile }: { profile: Profile }) {
               Your time and question list will appear here after your first full attempt.
             </p>
           </div>
-        ) : !user || isGuest ? (
-          <div className="mt-5 rounded-2xl border-2 border-dashed border-amber-300 p-5 text-center dark:border-amber-700">
-            <p className="font-display text-lg font-black">Sign in to see the global leaderboard</p>
-            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-              Guest progress stays on this device and cannot be submitted globally.
+        ) : !showGlobalBoard ? (
+          <div className="mt-5 space-y-6">
+            {playerResult && playerAccuracy !== null ? (
+              <div className="flex items-center justify-between gap-3 rounded-2xl border-2 border-amber-300 bg-amber-50 px-3 py-3 dark:border-amber-700 dark:bg-amber-950/40">
+                <div className="min-w-0">
+                  <p className="font-bold text-slate-900 dark:text-slate-100">{profile.name}</p>
+                  <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                    {playerResult.correctAnswers}/{playerResult.questionCount} correct
+                  </p>
+                </div>
+                <div className="shrink-0 text-right">
+                  <p
+                    className={cn(
+                      "font-display text-2xl font-black tabular-nums leading-none",
+                      accuracyColorClass(playerAccuracy),
+                    )}
+                  >
+                    {playerAccuracy}%
+                  </p>
+                  <p className="mt-1 font-display text-sm font-bold tabular-nums text-slate-600 dark:text-slate-300">
+                    {formatDailyElapsedTime(playerResult.elapsedCentiseconds)}
+                  </p>
+                </div>
+              </div>
+            ) : null}
+            <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">
+              {cloudEnabled
+                ? "Guest progress stays on this device and cannot be submitted globally."
+                : "The global leaderboard is temporarily offline. Your result is saved on this device."}
             </p>
-            <Link
-              href="/auth"
-              className="mt-4 inline-flex min-h-11 items-center justify-center rounded-2xl bg-emerald-500 px-4 py-2.5 text-sm font-bold text-white shadow-[0_3px_0_var(--color-emerald-700)] transition-all hover:bg-emerald-400 active:translate-y-[3px] active:shadow-none"
-            >
-              Sign in
-            </Link>
+            {visibleSnapshot ? (
+              <div>
+                <h3 className="font-display text-xl font-black">Questions included</h3>
+                <ol className="mt-3 space-y-2">
+                  {visibleSnapshot.questions.map((question, index) => (
+                    <li
+                      key={question.id}
+                      className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-700 dark:bg-slate-800/70"
+                    >
+                      <p className="text-xs font-black uppercase tracking-[0.12em] text-slate-400">
+                        Question {index + 1}
+                      </p>
+                      <p className="mt-1 text-xs font-bold text-slate-500 dark:text-slate-400">
+                        {formatQuestionType(question.mode)}
+                      </p>
+                      <p className="mt-1 font-semibold text-slate-800 dark:text-slate-100">{question.prompt}</p>
+                      <p className="mt-1 text-sm font-bold text-emerald-700 dark:text-emerald-300">
+                        Answer: {question.correctAnswer}
+                      </p>
+                      {playerResult?.answers?.[index] ? (
+                        <p className="mt-1 text-sm font-semibold text-slate-600 dark:text-slate-300">
+                          Your answer: {playerResult.answers[index].skipped ? "Skipped" : playerResult.answers[index].answer}
+                          {" · "}
+                          {playerResult.answers[index].correct ? "Correct" : "Incorrect"}
+                        </p>
+                      ) : null}
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            ) : null}
           </div>
         ) : loadedDateKey !== selectedDateKey ? (
           <p className="mt-6 text-center text-sm font-semibold text-slate-500">Loading leaderboard…</p>

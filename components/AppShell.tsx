@@ -8,6 +8,7 @@ import { CoachMarkProvider } from "@/components/CoachMarkProvider";
 import { GlobeExperience } from "@/components/GlobeExperience";
 import { useProfiles } from "@/components/ProfileProvider";
 import { WelcomeDialog } from "@/components/WelcomeDialog";
+import { isCloudEnabled } from "@/lib/cloud-availability";
 import { isExploreRoute, isMapRoute } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 
@@ -16,6 +17,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { user, isGuest, hydrated: authHydrated } = useAuth();
   const { syncError } = useProfiles();
+  const cloudEnabled = isCloudEnabled();
   const isAuthRoute = pathname.startsWith("/auth");
   const isAuthEntryRoute = pathname === "/auth";
   const isDevPreviewRoute = pathname.startsWith("/dev/");
@@ -24,10 +26,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   // Home, map, and Library share one persistent globe page that slides between panes.
   const isGlobeExperienceRoute =
     pathname === "/" || isMapRoute(pathname) || isExploreRoute(pathname);
-  const canAccessApp = Boolean(user) || isGuest;
+  const canAccessApp = cloudEnabled ? Boolean(user) || isGuest : true;
 
   useEffect(() => {
     if (!authHydrated) return;
+    if (!cloudEnabled) {
+      if (isAuthRoute) {
+        router.replace("/");
+      }
+      return;
+    }
     if (!canAccessApp && !isAuthRoute && !isDevPreviewRoute && !isInviteRoute) {
       router.replace("/auth");
     } else if (user && isAuthEntryRoute) {
@@ -38,6 +46,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }, [
     authHydrated,
     canAccessApp,
+    cloudEnabled,
     isAuthEntryRoute,
     isAuthRoute,
     isDevPreviewRoute,
@@ -70,7 +79,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <CoachMarkProvider>
       <div className="min-h-dvh">
-        {syncError && (
+        {cloudEnabled && syncError ? (
           <div
             role="alert"
             className="fixed inset-x-3 top-3 z-[90] mx-auto max-w-xl rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900 shadow-xl dark:border-amber-700 dark:bg-amber-950/90 dark:text-amber-100"
@@ -80,7 +89,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               Your progress is still cached on this device and will keep retrying automatically. {syncError}
             </p>
           </div>
-        )}
+        ) : null}
         {!isActiveGameRoute && <WelcomeDialog />}
         <AppHeader />
         <main

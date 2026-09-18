@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useAuth } from "@/components/AuthProvider";
 import { Button } from "@/components/ui/Button";
+import { isCloudEnabled } from "@/lib/cloud-availability";
 
 const SIGNED_IN_PROGRESS_TIPS = [
   "Stats and streaks save automatically to your account.",
@@ -19,6 +20,12 @@ const GUEST_PROGRESS_TIPS = [
   "Use Backup & restore on Profiles anytime for a portable copy.",
 ] as const;
 
+const OFFLINE_PROGRESS_TIPS = [
+  "Stats and streaks save automatically on this device.",
+  "Accounts, friends, and cloud sync are temporarily offline.",
+  "Use Backup & restore on Profiles anytime for a portable copy.",
+] as const;
+
 type ProfileProgressInfoDialogProps = {
   open: boolean;
   onClose: () => void;
@@ -27,10 +34,16 @@ type ProfileProgressInfoDialogProps = {
 export function ProfileProgressInfoDialog({ open, onClose }: ProfileProgressInfoDialogProps) {
   const { isGuest } = useAuth();
   const [mounted, setMounted] = useState(false);
-  const tips = isGuest ? GUEST_PROGRESS_TIPS : SIGNED_IN_PROGRESS_TIPS;
-  const title = isGuest
-    ? "Your progress saves on this device"
-    : "Your progress saves to your account";
+  const cloudEnabled = isCloudEnabled();
+  const tips = !cloudEnabled
+    ? OFFLINE_PROGRESS_TIPS
+    : isGuest
+      ? GUEST_PROGRESS_TIPS
+      : SIGNED_IN_PROGRESS_TIPS;
+  const title =
+    !cloudEnabled || isGuest
+      ? "Your progress saves on this device"
+      : "Your progress saves to your account";
 
   useEffect(() => {
     setMounted(true);

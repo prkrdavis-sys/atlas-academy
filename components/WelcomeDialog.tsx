@@ -3,13 +3,17 @@
 import { useCallback, useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/Button";
+import { isCloudEnabled } from "@/lib/cloud-availability";
 import { hasSeenWelcome, markWelcomeSeen } from "@/lib/welcome";
 
 const WELCOME_HIGHLIGHTS = [
   "Match flags, capitals, and country shapes from around the world.",
   "Build streaks, chase daily challenges, and beat your personal best.",
-  "Create a profile to save your streaks, stats, and daily progress to your account.",
 ] as const;
+const WELCOME_ACCOUNT_HIGHLIGHT =
+  "Create a profile to save your streaks, stats, and daily progress to your account.";
+const WELCOME_LOCAL_HIGHLIGHT =
+  "Create a profile to save your streaks, stats, and daily progress on this device.";
 
 const WELCOME_COUNTDOWN_SECONDS = 5;
 
@@ -113,7 +117,10 @@ export function WelcomeDialog() {
           of the Atlas.
         </p>
         <div className="mt-4 space-y-2.5">
-          {WELCOME_HIGHLIGHTS.map((highlight) => (
+          {[
+            ...WELCOME_HIGHLIGHTS,
+            isCloudEnabled() ? WELCOME_ACCOUNT_HIGHLIGHT : WELCOME_LOCAL_HIGHLIGHT,
+          ].map((highlight) => (
             <div
               key={highlight}
               className="flex gap-2.5 text-sm leading-snug text-slate-600 dark:text-slate-300"

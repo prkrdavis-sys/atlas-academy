@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/Button";
 import { ProfileProgressInfoDialog } from "@/components/ProfileProgressInfoDialog";
 import { useProfiles } from "@/components/ProfileProvider";
 import { PROFILE_AVATARS } from "@/lib/profile-avatars";
+import { isCloudEnabled } from "@/lib/cloud-availability";
 import { exportProfile, importProfile } from "@/lib/storage";
 import { PROFILE_EMOJI } from "@/lib/types";
 import type { Profile, ProfileAvatarId, ProfileAvatarSelection } from "@/lib/types";
@@ -270,23 +271,36 @@ export default function ProfilesPage() {
               ))}
             </div>
             <div className="mt-5 border-t border-slate-200 pt-4 dark:border-slate-700">
-              <div className="flex items-end justify-between gap-3">
+              {isCloudEnabled() ? (
+                <>
+                  <div className="flex items-end justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                        {isGuest ? "Account" : "Account username"}
+                      </p>
+                      <p className="mt-1 truncate text-sm font-medium text-slate-800 dark:text-slate-200">
+                        {isGuest ? "Guest (this device only)" : (user?.email ?? "Unavailable")}
+                      </p>
+                    </div>
+                    <Button type="button" variant="secondary" onClick={handleLogout} disabled={loggingOut}>
+                      {loggingOut ? "Logging out…" : isGuest ? "Exit guest" : "Log out"}
+                    </Button>
+                  </div>
+                  {accountError && (
+                    <p role="alert" className="mt-2 text-xs text-rose-600 dark:text-rose-400">
+                      {accountError}
+                    </p>
+                  )}
+                </>
+              ) : (
                 <div className="min-w-0">
                   <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                    {isGuest ? "Account" : "Account username"}
+                    This device
                   </p>
-                  <p className="mt-1 truncate text-sm font-medium text-slate-800 dark:text-slate-200">
-                    {isGuest ? "Guest (this device only)" : (user?.email ?? "Unavailable")}
+                  <p className="mt-1 text-sm font-medium text-slate-800 dark:text-slate-200">
+                    Guest progress stays on this device while accounts are offline.
                   </p>
                 </div>
-                <Button type="button" variant="secondary" onClick={handleLogout} disabled={loggingOut}>
-                  {loggingOut ? "Logging out…" : isGuest ? "Exit guest" : "Log out"}
-                </Button>
-              </div>
-              {accountError && (
-                <p role="alert" className="mt-2 text-xs text-rose-600 dark:text-rose-400">
-                  {accountError}
-                </p>
               )}
             </div>
           </div>

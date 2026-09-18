@@ -68,6 +68,20 @@ export function getStorageAccount() {
   return activeStorageAccountId;
 }
 
+/** Keep a previously signed-in device cache when cloud auth is offline. */
+export function adoptExistingAccountCache() {
+  if (typeof window === "undefined" || activeStorageAccountId) return;
+  const prefix = `${STORAGE_KEY}:`;
+  for (let index = 0; index < window.localStorage.length; index += 1) {
+    const key = window.localStorage.key(index);
+    if (!key?.startsWith(prefix)) continue;
+    const accountId = key.slice(prefix.length);
+    if (!accountId) continue;
+    activeStorageAccountId = accountId;
+    return;
+  }
+}
+
 function notifyStateChange(detail: StorageChangeDetail = {}) {
   if (typeof window === "undefined") return;
   window.dispatchEvent(

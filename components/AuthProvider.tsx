@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import type { Session, User } from "@supabase/supabase-js";
+import { isCloudEnabled } from "@/lib/cloud-availability";
 import { isGuestModeEnabled, setGuestModeEnabled } from "@/lib/guest-mode";
 import { createClient } from "@/lib/supabase/client";
 
@@ -30,7 +31,7 @@ type AuthContextValue = {
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
-const supabase = createClient();
+const CLOUD_OFFLINE_ERROR = "Accounts are temporarily unavailable.";
 
 function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : "Something went wrong. Please try again.";
@@ -40,14 +41,25 @@ function clearGuestMode() {
   setGuestModeEnabled(false);
 }
 
+function enterGuestMode() {
+  setGuestModeEnabled(true);
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
-  const [isGuest, setIsGuest] = useState(false);
-  const [hydrated, setHydrated] = useState(false);
+  const [isGuest, setIsGuest] = useState(() => !isCloudEnabled());
+  const [hydrated, setHydrated] = useState(() => !isCloudEnabled());
 
   useEffect(() => {
     let mounted = true;
+
+    if (!isCloudEnabled()) {
+      enterGuestMode();
+      return;
+    }
+
+    const supabase = createClient();
 
     void supabase.auth.getSession().then(({ data, error }) => {
       if (!mounted) return;
@@ -92,16 +104,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const continueAsGuest = useCallback(() => {
-    setGuestModeEnabled(true);
+    enterGuestMode();
     setIsGuest(true);
   }, []);
 
   const exitGuest = useCallback(() => {
+    if (!isCloudEnabled()) {
+      enterGuestMode();
+      setIsGuest(true);
+      return;
+    }
     clearGuestMode();
     setIsGuest(false);
   }, []);
 
   const signIn = useCallback(async (email: string, password: string): Promise<AuthActionResult> => {
+    if (!isCloudEnabled()) return { error: CLOUD_OFFLINE_ERROR };
+
+    const supabase = createClient();
     const { error } = await supabase.auth.signInWithPassword({
       email: email.trim(),
       password,
@@ -116,6 +136,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signUp = useCallback(async (email: string, password: string): Promise<AuthActionResult> => {
+    if (!isCloudEnabled()) return { error: CLOUD_OFFLINE_ERROR };
+
+    const supabase = createClient();
     const { data, error } = await supabase.auth.signUp({
       email: email.trim(),
       password,
@@ -133,8 +156,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signOut = useCallback(async (): Promise<AuthActionResult> => {
+    if (!isCloudEnabled()) {
+      enterGuestMode();
+      setUser(null);
+      setSession(null);
+      setIsGuest(true);
+      return { error: null };
+    }
+
     clearGuestMode();
     setIsGuest(false);
+    const supabase = createClient();
     const { error } = await supabase.auth.signOut();
     return { error: error ? getErrorMessage(error) : null };
   }, []);

@@ -1,3 +1,4 @@
+import { isCloudEnabled } from "@/lib/cloud-availability";
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 
@@ -14,6 +15,10 @@ type ResetResult = {
 };
 
 export async function POST(request: Request) {
+  if (!isCloudEnabled()) {
+    return NextResponse.json({ error: "Accounts are temporarily unavailable." }, { status: 503 });
+  }
+
   try {
     const body = (await request.json()) as ResetBody;
     const email = typeof body.email === "string" ? body.email.trim() : "";

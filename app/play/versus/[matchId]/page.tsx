@@ -4,6 +4,7 @@ import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
 import { VersusBoard } from "@/components/versus/VersusBoard";
+import { isCloudEnabled } from "@/lib/cloud-availability";
 import { loadPlayers } from "@/lib/social/friends";
 import { loadMatch } from "@/lib/social/versus";
 import type { PlayerRow } from "@/lib/social/types";
@@ -23,8 +24,8 @@ export default function VersusPage({
 
   useEffect(() => {
     if (!hydrated) return;
-    if (!userId) {
-      router.replace("/auth");
+    if (!isCloudEnabled() || !userId) {
+      router.replace(isCloudEnabled() ? "/auth" : "/");
       return;
     }
 

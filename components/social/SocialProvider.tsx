@@ -21,6 +21,7 @@ import {
   syncOwnPlayer,
 } from "@/lib/social/friends";
 import { useLobbyPresence } from "@/lib/social/presence";
+import { isCloudEnabled } from "@/lib/cloud-availability";
 import { createClient } from "@/lib/supabase/client";
 import type {
   Friend,
@@ -75,7 +76,7 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
   const [refreshToken, setRefreshToken] = useState(0);
 
   const userId = user?.id ?? null;
-  const enabled = authHydrated && userId !== null;
+  const enabled = isCloudEnabled() && authHydrated && userId !== null;
 
   const refresh = useCallback(() => setRefreshToken((token) => token + 1), []);
 

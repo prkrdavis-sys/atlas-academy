@@ -1,3 +1,4 @@
+import { isCloudEnabled } from "@/lib/cloud-availability";
 import { saveCloudProfile } from "@/lib/cloud-profiles";
 import { getDailySeedForDateKey } from "@/lib/daily-calendar";
 import {
@@ -93,6 +94,8 @@ export async function loadDailyChallengeSnapshot(
   dateKey: string,
   profileId: string,
 ): Promise<DailyChallengeSnapshot | null> {
+  if (!isCloudEnabled()) return buildDailyChallengeSnapshot(dateKey);
+
   const { data, error } = await supabase.rpc("get_daily_challenge_snapshot", {
     p_challenge_date: dateKey,
     p_profile_id: profileId,
@@ -106,6 +109,8 @@ export async function loadDailyChallengeLeaderboard(
   dateKey: string,
   profileId: string,
 ): Promise<DailyChallengeLeaderboardEntry[]> {
+  if (!isCloudEnabled()) return [];
+
   const { data, error } = await supabase.rpc("get_daily_challenge_leaderboard", {
     p_challenge_date: dateKey,
     p_profile_id: profileId,
@@ -121,6 +126,8 @@ export async function submitDailyChallengeResult(
   contentVersion = DAILY_CHALLENGE_CONTENT_VERSION,
   questions?: Question[],
 ): Promise<DailyChallengeLeaderboardEntry | null> {
+  if (!isCloudEnabled()) return null;
+
   const questionSpecs = resolveSubmitQuestions(result, questions);
   if (!questionSpecs.length) return null;
 
@@ -164,6 +171,8 @@ export async function ensureDailyChallengeResultSubmitted(
   result: DailyChallengeLocalResult,
   questions?: Question[],
 ): Promise<DailyChallengeLeaderboardEntry | null> {
+  if (!isCloudEnabled()) return null;
+
   const {
     data: { session },
   } = await supabase.auth.getSession();
