@@ -2,12 +2,12 @@
   "US-AR": [{ "x": 22, "y": 40.5, "w": 56, "h": 14 }],
   "US-CA": [{ "x": 16.4, "y": 68.3, "w": 33.2, "h": 10 }],
   "US-FL": [
-    { "shape": "arc", "cx": 50, "cy": 50, "r": 15.8, "start": 54, "end": 146, "thickness": 2.6 }
+    { "shape": "arc", "cx": 50, "cy": 50, "r": 15.6, "start": 75, "end": 144, "thickness": 2.4 }
   ],
   "US-IA": [{ "x": 39.5, "y": 73.6, "w": 22, "h": 11 }],
   "US-ID": [
-    { "shape": "arc", "cx": 50, "cy": 46, "r": 19, "start": 154, "end": 176, "thickness": 3 },
-    { "x": 50, "y": 72, "w": 20, "h": 11 }
+    { "shape": "arc", "cx": 50, "cy": 46, "r": 14.7, "start": 140, "end": 174, "thickness": 2.5 },
+    { "x": 49.8, "y": 71.5, "w": 20.2, "h": 12.0 }
   ],
   "US-IL": [{ "x": 36, "y": 83.5, "w": 28, "h": 7.2 }],
   "US-IN": [
@@ -29,10 +29,10 @@
     { "x": 30, "y": 78, "w": 39, "h": 13 }
   ],
   "US-NE": [
-    { "shape": "arc", "cx": 50, "cy": 50, "r": 26.5, "start": 28, "end": 148, "thickness": 3.8 }
+    { "shape": "arc", "cx": 50, "cy": 50, "r": 22.8, "start": 44, "end": 126, "thickness": 2.4 }
   ],
   "US-NH": [
-    { "shape": "arc", "cx": 50, "cy": 50, "r": 18, "start": 38, "end": 160, "thickness": 3 }
+    { "shape": "arc", "cx": 50, "cy": 50, "r": 15.5, "start": 29, "end": 167, "thickness": 3.6 }
   ],
   "US-NV": [
     { "shape": "arc", "cx": 21, "cy": 52, "r": 11.8, "start": 324, "end": 36, "thickness": 4.2 }
@@ -42,8 +42,8 @@
     { "shape": "arc", "cx": 50, "cy": 130, "r": 78.5, "start": 2.4, "end": 29, "thickness": 10.5 }
   ],
   "US-SD": [
-    { "shape": "arc", "cx": 50, "cy": 50, "r": 19.2, "start": 296, "end": 64, "thickness": 7.4 },
-    { "shape": "arc", "cx": 50, "cy": 50, "r": 8.6, "start": 8, "end": 86, "thickness": 2.6 }
+    { "shape": "arc", "cx": 50, "cy": 50, "r": 21.4, "start": 302, "end": 57, "thickness": 3.4 },
+    { "shape": "arc", "cx": 50, "cy": 50, "r": 11.7, "start": 342, "end": 82, "thickness": 2.6 }
   ],
   "US-VA": [
     { "shape": "arc", "cx": 50, "cy": 50, "r": 16.4, "start": 324, "end": 36, "thickness": 3.8 }
@@ -54,9 +54,9 @@
   ],
   "US-WI": [{ "x": 16, "y": 2.5, "w": 68, "h": 17.5 }],
   "US-WV": [
-    { "shape": "arc", "cx": 50, "cy": 141, "r": 63, "start": 0.5, "end": 18.5, "thickness": 4.2 }
+    { "shape": "arc", "cx": 50, "cy": 141, "r": 63.3, "start": 356.0, "end": 13.2, "thickness": 4.4 }
   ],
   "US-WY": [
-    { "shape": "arc", "cx": 44.5, "cy": 45, "r": 8.8, "start": 300, "end": 8, "thickness": 2.3 }
+    { "shape": "arc", "cx": 44.5, "cy": 45, "r": 8.4, "start": 283, "end": 359, "thickness": 2.5 }
   ]
 }
