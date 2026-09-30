@@ -5,6 +5,12 @@
 export type PlaceFactEntry = {
   fact: string;
   question: string;
+  /**
+   * ISO codes that must not appear as multiple-choice answers.
+   * Use when another country would also satisfy the prompt, or when the
+   * prompt names that country and showing it would give the answer away.
+   */
+  blockedAnswerCodes?: readonly string[];
 };
 
 export type PlaceFactPair = readonly [PlaceFactEntry, PlaceFactEntry];
@@ -2037,7 +2043,9 @@ export const COUNTRY_FACTS: Record<string, PlaceFactPair> = {
     },
     {
       fact: "Bratislava is so close to Austria that the two capitals are only about 60 kilometers apart—the nearest pair of national capitals in Europe.",
-      question: "Which country has a capital that is Europe's nearest to another national capital?",
+      question:
+        "Which country's capital is only about 60 kilometers from Austria's capital—the closest pair of national capitals in Europe?",
+      blockedAnswerCodes: ["AT"],
     },
   ],
   SVN: [
@@ -3027,12 +3035,20 @@ export function getCountryFactQuestion(code3: string): string | undefined {
   return COUNTRY_FACTS[code3.toUpperCase()]?.[0]?.question;
 }
 
+export function getCountryFactQuestionBlockedCodes(code3: string): readonly string[] | undefined {
+  return COUNTRY_FACTS[code3.toUpperCase()]?.[0]?.blockedAnswerCodes;
+}
+
 export function getCountryFact2(code3: string): string | undefined {
   return COUNTRY_FACTS[code3.toUpperCase()]?.[1]?.fact;
 }
 
 export function getCountryFactQuestion2(code3: string): string | undefined {
   return COUNTRY_FACTS[code3.toUpperCase()]?.[1]?.question;
+}
+
+export function getCountryFactQuestion2BlockedCodes(code3: string): readonly string[] | undefined {
+  return COUNTRY_FACTS[code3.toUpperCase()]?.[1]?.blockedAnswerCodes;
 }
 
 export function getStateFacts(code: string): PlaceFactPair | undefined {

@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { LibrarySearch } from "@/components/LibrarySearch";
 import { useProfiles } from "@/components/ProfileProvider";
-import { GLASS_CONTROL_CLASS, GLASS_PANEL_CLASS } from "@/lib/glass";
+import { GLASS_CONTROL_CLASS, OPAQUE_SURFACE_CLASS } from "@/lib/glass";
 import {
   buildLibraryDetailHref,
   buildLibraryListHref,
@@ -123,7 +123,7 @@ export function LibraryDetailNav({
         className={cn(
           "relative z-30 -mx-4 sticky top-0 px-4 py-2 transition-[background-color,border-color,box-shadow] duration-200 sm:mx-0 sm:px-0",
           chromeActive &&
-            `${GLASS_PANEL_CLASS} rounded-none border-x-0 border-t-0`,
+            `${OPAQUE_SURFACE_CLASS} rounded-none border-x-0 border-t-0 shadow-[0_8px_20px_-14px_rgb(15_23_42_/_0.5)]`,
         )}
       >
         <div className="relative grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 sm:flex sm:flex-nowrap sm:gap-3">

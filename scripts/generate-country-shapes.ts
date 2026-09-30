@@ -1,102 +1,46 @@
 /**
  * Generates quiz/library silhouette SVGs at public/shapes/{code3}.svg.
  *
- * Each place is projected alone with an azimuthal equal-area view centered on
- * its landmass so outlines keep true proportions — not the world Natural Earth I
- * stretch used by context maps.
- *
- * Remote overseas scraps that share an ADM0 polygon (e.g. Caribbean
- * Netherlands inside NLD) are dropped via toFocusGeometry so the recognizable
- * mainland fills the frame.
+ * Each shape is the land the learn card already draws: context-map rings that
+ * intersect the learn-card crop. Overseas scraps outside that crop stay out;
+ * islands inside it stay in, instead of being dropped by a distance filter.
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import countriesData from "../data/countries.json";
+import type { MapBoundsManifest } from "../lib/map-bounds";
 import type { Country } from "../lib/types";
-import {
-  findFeatureForCountry,
-  loadDetailedGeometry,
-  loadNaturalEarthFeatures,
-  type NaturalEarthFeature,
-} from "./natural-earth-map-data";
-import { buildTrueShapeSvg } from "./shape-projection";
+import boundsManifest from "../public/maps/bounds.json";
+import { buildLearnCardSilhouetteSvg, loadContextMapPaths } from "./learn-card-silhouette";
 
 const countries = countriesData as Country[];
 const SHAPES_DIR = join(process.cwd(), "public", "shapes");
-
-async function mapPool<T, R>(
-  items: T[],
-  concurrency: number,
-  mapper: (item: T, index: number) => Promise<R>,
-): Promise<R[]> {
-  const results = new Array<R>(items.length);
-  let nextIndex = 0;
-
-  async function worker(): Promise<void> {
-    while (nextIndex < items.length) {
-      const index = nextIndex;
-      nextIndex += 1;
-      results[index] = await mapper(items[index], index);
-    }
-  }
-
-  const workers = Array.from({ length: Math.min(concurrency, items.length) }, () => worker());
-  await Promise.all(workers);
-  return results;
-}
+const manifest = boundsManifest as unknown as MapBoundsManifest;
 
 export async function generateCountryShapes(
   shapesDir = SHAPES_DIR,
 ): Promise<{ written: number; skipped: string[]; missing: string[] }> {
   mkdirSync(shapesDir, { recursive: true });
 
-  console.log("Loading Natural Earth 10m features...");
-  const features = await loadNaturalEarthFeatures();
-  console.log("Building true-shape silhouettes (geoBoundaries upgrades for microstates)...");
+  const pathsByTemplate = {
+    world: loadContextMapPaths("world"),
+    usa: loadContextMapPaths("usa"),
+  };
 
   const playable = countries.filter((country) => !country.code.startsWith("US-"));
   const missing: string[] = [];
   const skipped: string[] = [];
   let written = 0;
 
-  const resolved = await mapPool(playable, 3, async (country) => {
-    const baseFeature = findFeatureForCountry(features, country);
-    if (!baseFeature?.geometry) {
-      return { country, feature: null as NaturalEarthFeature | null, didUpgrade: false };
-    }
-
-    const detailedGeometry = await loadDetailedGeometry(country, baseFeature.geometry);
-    const didUpgrade = detailedGeometry !== baseFeature.geometry;
-    const feature: NaturalEarthFeature = didUpgrade
-      ? { ...baseFeature, geometry: detailedGeometry }
-      : baseFeature;
-
-    return { country, feature, didUpgrade };
-  });
-
-  const upgraded: string[] = [];
-
-  for (const { country, feature, didUpgrade } of resolved) {
-    if (!feature?.geometry) {
-      missing.push(`${country.code} (${country.name})`);
-      continue;
-    }
-
-    const svg = buildTrueShapeSvg(feature.geometry, {
-      southPole: country.code.toUpperCase() === "AQ",
-    });
+  for (const country of playable) {
+    const svg = buildLearnCardSilhouetteSvg(country, manifest, pathsByTemplate);
     if (!svg) {
-      missing.push(`${country.code} (${country.name}) failed to project`);
+      missing.push(`${country.code} (${country.name})`);
       continue;
     }
 
     writeFileSync(join(shapesDir, `${country.code3.toLowerCase()}.svg`), svg);
     written += 1;
-    if (didUpgrade) upgraded.push(country.code);
-  }
-
-  if (upgraded.length > 0) {
-    console.log(`Detail upgrades: ${upgraded.join(", ")}`);
   }
 
   return { written, skipped, missing };
@@ -113,7 +57,10 @@ async function main() {
   }
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
+const entry = process.argv[1]?.replaceAll("\\", "/");
+if (entry?.endsWith("generate-country-shapes.ts")) {
+  main().catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
+}

@@ -5,6 +5,8 @@ import {
   getCountryFact2,
   getCountryFactQuestion,
   getCountryFactQuestion2,
+  getCountryFactQuestion2BlockedCodes,
+  getCountryFactQuestionBlockedCodes,
 } from "./place-facts";
 import { getCountrySearchKeywords } from "./place-search-keywords";
 import {
@@ -205,6 +207,14 @@ function buildFactQuestion2(code3: string, name: string): string {
   return question;
 }
 
+function blockedFactCodes(
+  key: "factQuestionBlockedCodes" | "factQuestion2BlockedCodes",
+  codes: readonly string[] | undefined,
+): Partial<Record<"factQuestionBlockedCodes" | "factQuestion2BlockedCodes", string[]>> {
+  if (!codes || codes.length === 0) return {};
+  return { [key]: [...codes] };
+}
+
 async function fetchPopulationByCode3(): Promise<Map<string, number>> {
   const population = new Map<string, number>();
   let page = 1;
@@ -244,7 +254,7 @@ async function main() {
   mkdirSync(PUBLIC_FLAGS, { recursive: true });
   mkdirSync(PUBLIC_SHAPES, { recursive: true });
 
-  console.log("Generating country shapes from Natural Earth...");
+  console.log("Generating country shapes from learn-card map land...");
   const { written: shapesGenerated, missing: shapeMissing } = await generateCountryShapes(PUBLIC_SHAPES);
   if (shapeMissing.length > 0) {
     throw new Error(`Shape generation failed:\n${shapeMissing.join("\n")}`);
@@ -357,8 +367,10 @@ async function main() {
       isTerritory: raw.independent === false,
       fact: buildFact(code3, raw.name.common),
       factQuestion: buildFactQuestion(code3, raw.name.common),
+      ...blockedFactCodes("factQuestionBlockedCodes", getCountryFactQuestionBlockedCodes(code3)),
       fact2: buildFact2(code3, raw.name.common),
       factQuestion2: buildFactQuestion2(code3, raw.name.common),
+      ...blockedFactCodes("factQuestion2BlockedCodes", getCountryFactQuestion2BlockedCodes(code3)),
       searchKeywords: getCountrySearchKeywords(code3),
     });
   }

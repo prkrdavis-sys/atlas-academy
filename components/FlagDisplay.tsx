@@ -7,8 +7,8 @@ import {
   getFlagAspectRatio,
   getFlagClipPath,
   getFlagDisplayProfile,
+  getFlagGridAspectRatio,
   getFlagGridObjectFit,
-  getFlagGridObjectPosition,
   isShapedFlag,
 } from "@/lib/flag-display";
 import { getDisplayFlagNameRegions } from "@/lib/flag-name-regions";
@@ -55,9 +55,6 @@ const SHAPED_FRAME_STYLES: Record<Exclude<FlagFrameVariant, "none">, string> = {
   lg: "[filter:drop-shadow(0_0_0_2px_rgb(226_232_240))_drop-shadow(0_8px_16px_rgb(15_23_42_/_0.12))] dark:[filter:drop-shadow(0_0_0_2px_rgb(71_85_105))]",
   pill: "[filter:drop-shadow(0_0_0_1px_rgb(226_232_240))] dark:[filter:drop-shadow(0_0_0_1px_rgb(71_85_105))]",
 };
-
-// Quiz tiles use a consistent rectangle; non-rectangular flags keep their silhouette below.
-const FLAG_GRID_ASPECT_RATIO = 3 / 2;
 
 type FlagImgProps = {
   code: string;
@@ -405,13 +402,13 @@ export function FlagGrid({
     codes.length >= 6
       ? "max-w-[min(100cqw,22rem)] md:max-w-[min(100cqw,40rem)] lg:max-w-[min(100cqw,44rem)]"
       : "max-w-[min(100cqw,22rem)] md:max-w-[min(100cqw,34rem)] lg:max-w-[min(100cqw,38rem)]";
-  // Leave room for tile borders, row gaps, and the 2px bottom shadow so overflow
-  // parents don't clip the bottom edge of the revealed answer grid.
-  const revealedGridWidth =
-    codes.length >= 6
-      ? "w-[min(100cqw,28rem,calc((100cqh-0.75rem)*1.75))]"
-      : "w-[min(100cqw,22rem,calc((100cqh-0.5rem)*1.15))]";
   const tileRadius = revealed ? "rounded-lg" : "rounded-xl";
+  const gridAspectRatio = getFlagGridAspectRatio(codes);
+  // Revealed grids cap width from the container height. Scale the old 3:2
+  // factor with the tile ratio so a taller shared shape still fits.
+  const revealedWidthFactor =
+    (codes.length >= 6 ? 1.75 : 1.15) * (gridAspectRatio / (3 / 2));
+  const revealedWidth = `min(100cqw, ${codes.length >= 6 ? "28rem" : "22rem"}, calc((100cqh - ${codes.length >= 6 ? "0.75rem" : "0.5rem"}) * ${Number(revealedWidthFactor.toFixed(4))}))`;
 
   return (
     <div
@@ -425,21 +422,21 @@ export function FlagGrid({
           "grid items-start",
           gridCols,
           revealed
-            ? cn("max-h-full gap-1.5 md:gap-2", revealedGridWidth)
+            ? "max-h-full gap-1.5 md:gap-2"
             : cn("w-full", gridMaxWidth, compact ? "gap-2 md:gap-4" : "gap-3 md:gap-5"),
         )}
+        style={revealed ? { width: revealedWidth } : undefined}
       >
         {codes.map((code) => {
           const isCorrect = revealed && correctCode === code;
           const isIncorrect = revealed && selectedCode === code && correctCode !== code;
           const shaped = isShapedFlag(code);
-          const objectFit = getFlagGridObjectFit(code, FLAG_GRID_ASPECT_RATIO);
-          const cropsRightEdge =
-            objectFit === "cover" && getFlagAspectRatio(code) > FLAG_GRID_ASPECT_RATIO;
+          const objectFit = getFlagGridObjectFit(code, gridAspectRatio);
           const tileClassName = cn(
-            "relative flex aspect-[3/2] h-auto w-full shrink-0 items-center justify-center leading-none",
+            "relative flex h-auto w-full shrink-0 items-center justify-center leading-none",
             getTileBorderClass(shaped, tileRadius, isCorrect, isIncorrect, revealed),
           );
+          const tileStyle = { aspectRatio: gridAspectRatio };
 
           const flag = shaped ? (
             <div className="flex h-full w-full items-center justify-center">
@@ -458,17 +455,16 @@ export function FlagGrid({
               code={code}
               alt={inverted ? `Inverted flag option ${code}` : `Flag option ${code}`}
               width={flagWidth}
-              displayAspectRatio={FLAG_GRID_ASPECT_RATIO}
+              displayAspectRatio={gridAspectRatio}
               className="h-full w-full"
               objectFit={objectFit}
-              objectPosition={cropsRightEdge ? getFlagGridObjectPosition(code) : undefined}
               inverted={inverted}
               obscureName={!revealed}
             />
           );
 
           return revealed ? (
-            <div key={code} className={tileClassName} aria-hidden>
+            <div key={code} className={tileClassName} style={tileStyle} aria-hidden>
               {flag}
             </div>
           ) : (
@@ -477,6 +473,7 @@ export function FlagGrid({
               type="button"
               onClick={() => onSelect(code)}
               className={tileClassName}
+              style={tileStyle}
             >
               {flag}
             </button>

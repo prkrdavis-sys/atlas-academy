@@ -10146,7 +10146,10 @@
     "bird": "Eagle",
     "plant": "Rose",
     "fact2": "Bratislava is so close to Austria that the two capitals are only about 60 kilometers apart—the nearest pair of national capitals in Europe.",
-    "factQuestion2": "Which country has a capital that is Europe's nearest to another national capital?",
+    "factQuestion2": "Which country's capital is only about 60 kilometers from Austria's capital—the closest pair of national capitals in Europe?",
+    "factQuestion2BlockedCodes": [
+      "AT"
+    ],
     "medianHouseholdIncomeUsd": 8929,
     "medianRentUsd": 567,
     "ecosystem": "Temperate forest",

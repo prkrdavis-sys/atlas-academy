@@ -10,11 +10,34 @@ export type PathBounds = [left: number, top: number, right: number, bottom: numb
 export const MAP_WIDTH = 10000;
 export const MAP_HEIGHT = 5000;
 
-/** Target canvas for library/quiz silhouette SVGs (local equal-area coords). */
+/** Target canvas for library/quiz silhouette SVGs. */
 export const SHAPE_OUTPUT_CANVAS = 1000;
 export const SHAPE_PAD_RATIO = 0.03;
 /** Reject silhouettes whose viewBox edge is too small to render reliably as `<img>`. */
 export const MIN_SHAPE_VIEWBOX = SHAPE_OUTPUT_CANVAS * 0.1;
+
+/** One `M…` ring. d3-geo emits absolute commands, including holes as later subpaths. */
+export function splitPathSubpaths(path: string): string[] {
+  const subpaths = path.match(/M[^M]*/g);
+  return subpaths && subpaths.length > 0 ? subpaths : [path];
+}
+
+/**
+ * Rings whose bounds meet the learn-card viewBox (`x y width height`).
+ * The whole ring is kept so an island is not sliced on the crop edge.
+ */
+export function subpathsIntersectingViewBox(
+  path: string,
+  viewBox: readonly [number, number, number, number],
+): string[] {
+  const [x, y, width, height] = viewBox;
+  const right = x + width;
+  const bottom = y + height;
+  return splitPathSubpaths(path).filter((subpath) => {
+    const [left, top, subRight, subBottom] = toPathBounds(subpath);
+    return !(subRight < x || left > right || subBottom < y || top > bottom);
+  });
+}
 
 export function toPathBounds(path: string): PathBounds {
   const [left, top, right, bottom] = getPathBounds(path);

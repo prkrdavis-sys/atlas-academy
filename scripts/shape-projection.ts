@@ -1,7 +1,8 @@
 /**
- * Quiz/library silhouette projection: each place is drawn alone with an
- * azimuthal equal-area view centered on its landmass so outlines keep true
- * proportions (no world Natural Earth I / Albers flat-map stretch).
+ * Azimuthal equal-area outlines for one-off geometry.
+ *
+ * Quiz and library silhouettes do not use this. `toFocusGeometry` drops islands
+ * the learn card still draws. Those SVGs come from `learn-card-silhouette.ts`.
  */
 import {
   geoArea,

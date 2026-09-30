@@ -367,10 +367,14 @@ export type Country = {
   fact: string;
   /** Spoiler-free prompt for fact-to-country game mode. */
   factQuestion: string;
+  /** ISO codes hidden from multiple choice for `factQuestion`. */
+  factQuestionBlockedCodes?: string[];
   /** Alternate library fact; either trivia prompt counts toward mastery. */
   fact2: string;
   /** Alternate spoiler-free prompt for fact-to-country game mode. */
   factQuestion2: string;
+  /** ISO codes hidden from multiple choice for `factQuestion2`. */
+  factQuestion2BlockedCodes?: string[];
   /** Curated trivia terms and memorable names used by the library search. */
   searchKeywords: string[];
 };

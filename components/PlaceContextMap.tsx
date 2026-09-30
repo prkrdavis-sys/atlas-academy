@@ -17,6 +17,7 @@ import {
 import {
   computeFocusedViewBox,
   computeInteractiveSurroundingsViewBox,
+  LEARN_CARD_MAP_CROP,
   formatSvgViewBox,
   getMapOverviewViewBox,
   loadMapBoundsManifest,
@@ -76,13 +77,7 @@ const CROP_OPTIONS = {
     completeSurroundings: true,
     maxExpandRatio: 1.55,
   },
-  learn: {
-    aspectRatio: 2.2,
-    paddingRatio: 0.45,
-    useFocusBounds: true,
-    completeSurroundings: true,
-    maxExpandRatio: 1.6,
-  },
+  learn: { ...LEARN_CARD_MAP_CROP },
   hero: {
     aspectRatio: 1.6,
     paddingRatio: 0.4,

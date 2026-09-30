@@ -304,6 +304,18 @@ function fitCloseUpViewBox(
 }
 
 /**
+ * Learn-card close-up. Quiz silhouettes keep every polygon that intersects
+ * this crop so the shape shows the same land as the card.
+ */
+export const LEARN_CARD_MAP_CROP = {
+  aspectRatio: 2.2,
+  paddingRatio: 0.45,
+  useFocusBounds: true,
+  completeSurroundings: true,
+  maxExpandRatio: 1.6,
+} as const;
+
+/**
  * Close-up crop of a place on its context map.
  * By default frames the mainland/core landmass (`focusPaths`) so remote
  * territories (e.g. Caribbean Netherlands) and antimeridian fragments do not

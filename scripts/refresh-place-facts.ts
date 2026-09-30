@@ -9,6 +9,8 @@ import {
   getCountryFact2,
   getCountryFactQuestion,
   getCountryFactQuestion2,
+  getCountryFactQuestion2BlockedCodes,
+  getCountryFactQuestionBlockedCodes,
   getStateFact,
   getStateFact2,
   getStateFactQuestion,
@@ -23,7 +25,21 @@ type PlaceRow = {
   factQuestion: string;
   fact2: string;
   factQuestion2: string;
+  factQuestionBlockedCodes?: string[];
+  factQuestion2BlockedCodes?: string[];
 };
+
+function assignBlockedCodes(
+  place: PlaceRow,
+  key: "factQuestionBlockedCodes" | "factQuestion2BlockedCodes",
+  codes: readonly string[] | undefined,
+) {
+  if (codes && codes.length > 0) {
+    place[key] = [...codes];
+    return;
+  }
+  delete place[key];
+}
 
 const ROOT = process.cwd();
 
@@ -42,8 +58,14 @@ function updateCountries() {
     }
     country.fact = fact;
     country.factQuestion = question;
+    assignBlockedCodes(country, "factQuestionBlockedCodes", getCountryFactQuestionBlockedCodes(code3));
     country.fact2 = fact2;
     country.factQuestion2 = question2;
+    assignBlockedCodes(
+      country,
+      "factQuestion2BlockedCodes",
+      getCountryFactQuestion2BlockedCodes(code3),
+    );
   }
 
   const codes = new Set(countries.map((c) => (c.code3 ?? c.code).toUpperCase()));

@@ -638,14 +638,29 @@ export class GameEngine {
         };
       }
       case "fact-to-country": {
+        const triviaPrompts = [
+          {
+            prompt: country.factQuestion,
+            blockedCodes: country.factQuestionBlockedCodes,
+          },
+          {
+            prompt: country.factQuestion2,
+            blockedCodes: country.factQuestion2BlockedCodes,
+          },
+        ].filter((entry) => entry.prompt.trim().length > 0);
+        const selected = pickFromPool(triviaPrompts, this.random);
+        const blockedCodes = new Set(
+          (selected.blockedCodes ?? []).map((code) => getCountryByCode(code)?.code ?? code),
+        );
+        const distractorPool =
+          blockedCodes.size > 0
+            ? this.pool.filter((candidate) => !blockedCodes.has(candidate.code))
+            : this.pool;
         const mc =
           this.difficulty !== "hard"
-            ? buildNameMcOptions(country, this.pool, this.difficulty, undefined, 4, this.random)
+            ? buildNameMcOptions(country, distractorPool, this.difficulty, undefined, 4, this.random)
             : undefined;
-        const triviaPrompts = [country.factQuestion, country.factQuestion2].filter(
-          (prompt) => prompt.trim().length > 0,
-        );
-        const factQuestion = pickFromPool(triviaPrompts, this.random);
+        const factQuestion = selected.prompt;
         const prompt =
           displayScope === "usa"
             ? scopeText(factQuestion, displayScope)

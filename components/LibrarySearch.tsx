@@ -9,7 +9,7 @@ import {
   type LibraryFilter,
   type LibrarySort,
 } from "@/lib/library";
-import { GLASS_CONTROL_CLASS, GLASS_INSET_CLASS, GLASS_PANEL_CLASS } from "@/lib/glass";
+import { GLASS_CONTROL_CLASS, GLASS_INSET_CLASS, OPAQUE_SURFACE_CLASS } from "@/lib/glass";
 import { cn } from "@/lib/utils";
 import type { GameScope } from "@/lib/types";
 import { useCoachMarkAnchor } from "@/components/CoachMarkProvider";
@@ -204,7 +204,7 @@ export function LibrarySearch({
           role="listbox"
           aria-label={isState ? "Matching states" : "Matching countries"}
           className={cn(
-            `${GLASS_PANEL_CLASS} absolute z-20 mt-2 max-h-[min(28rem,70vh)] w-full overflow-y-auto rounded-2xl p-1.5 shadow-lg`,
+            `${OPAQUE_SURFACE_CLASS} absolute z-30 mt-2 max-h-[min(28rem,70vh)] w-full overflow-y-auto rounded-2xl p-1.5 shadow-lg`,
             mobileDropdownFullWidth &&
               "max-sm:-left-4 max-sm:-right-4 max-sm:top-[calc(100%+0.5rem)] max-sm:mt-0 max-sm:w-auto",
           )}

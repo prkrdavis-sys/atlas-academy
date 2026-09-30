@@ -5,7 +5,7 @@
  * `continent` field holds the US Census region instead.
  *
  * Flag assets come from scripts/fetch-state-flags.sh (Wikimedia Commons) and
- * shape assets from scripts/generate-state-shapes.ts (us-atlas equal-area).
+ * shape assets from scripts/generate-state-shapes.ts (learn-card map land).
  */
 import { existsSync, writeFileSync } from "node:fs";
 import { join } from "node:path";

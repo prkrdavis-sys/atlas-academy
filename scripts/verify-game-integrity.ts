@@ -14,6 +14,7 @@ import {
   wouldCountTowardMapProgress,
 } from "../lib/map-progress";
 import { normalizeAnswerText } from "../lib/answer-matcher";
+import { placeText, scopeText } from "../lib/scope";
 import { countries, getCountryByCode, usStates } from "../lib/countries";
 import { PROFILE_AVATARS } from "../lib/profile-avatars";
 import { CONTEXT_MAP_TEMPLATES } from "../lib/context-maps";
@@ -449,6 +450,27 @@ for (const mode of MODES) {
         if (correctIdx === -1) {
           fail(`${mode}: correct answer not among options (${target}: ${optionCodes.join(",")})`);
           continue;
+        }
+        if (questionMode === "fact-to-country") {
+          const place = getCountryByCode(countryCode);
+          const blockedGroups = [
+            [place?.factQuestion, place?.factQuestionBlockedCodes],
+            [place?.factQuestion2, place?.factQuestion2BlockedCodes],
+          ] as const;
+          for (const [sourcePrompt, blocked] of blockedGroups) {
+            if (!place || !sourcePrompt || !blocked?.length) continue;
+            const displayedPrompt =
+              scope === "usa" ? scopeText(sourcePrompt, scope) : placeText(sourcePrompt, scope, place);
+            if (q.prompt !== displayedPrompt) continue;
+            for (const code of blocked) {
+              const canonical = getCountryByCode(code)?.code ?? code;
+              if (optionCodes.includes(canonical)) {
+                fail(
+                  `${mode}: blocked answer ${canonical} shown for ${place?.name} (${q.prompt})`,
+                );
+              }
+            }
+          }
         }
         if (questionMode === "neighbor-quiz") {
           const subject = getCountryByCode(countryCode);

@@ -19,98 +19,56 @@ const shapedClipByCode = new Map(
   Object.entries(flagDisplayData.shaped).map(([code, clipPath]) => [code.toUpperCase(), clipPath]),
 );
 
-// Wide flags with a centered emblem or symbol need a centered crop in quiz tiles.
-// Other wide flags stay left-anchored so hoist-side details remain visible.
-const centeredSubjectCodes = new Set([
-  "AR",
-  "AS",
-  "AZ",
-  "BI",
-  "BN",
-  "BZ",
-  "CA",
-  "CR",
-  "CV",
-  "CX",
-  "DE",
-  "DM",
-  "ET",
-  "FM",
-  "GB",
-  "GI",
-  "GT",
-  "GU",
-  "HN",
-  "HR",
-  "HT",
-  "IM",
-  "IR",
-  "JE",
-  "JM",
-  "KG",
-  "KH",
-  "KI",
-  "KM",
-  "KZ",
-  "LC",
-  "LI",
-  "LY",
-  "MD",
-  "ME",
-  "MK",
-  "MP",
-  "MX",
-  "NC",
-  "NF",
-  "NI",
-  "PY",
-  "SC",
-  "SI",
-  "SV",
-  "TJ",
-  "US-IL",
-  "US-KS",
-  "US-KY",
-  "US-LA",
-  "US-MA",
-  "US-MN",
-  "US-MO",
-  "US-MS",
-  "US-NE",
-  "US-NJ",
-  "US-NY",
-  "US-SD",
-  "US-TN",
-  "US-UT",
-  "US-VT",
-  "US-WA",
-  "US-WV",
-]);
+/** Quiz choice tiles prefer 3:2, the most common national-flag ratio. */
+export const FLAG_GRID_ASPECT_RATIO = 3 / 2;
 
-// Mildly wide flags whose outer frame (borders, stars along the edge) is essential
-// to recognition. Stretching into the 3:2 tile preserves the full design better
-// than cropping a thin strip off one or both sides.
-const preserveFrameCodes = new Set(["GD"]);
+/**
+ * How far a flag may be stretched to sit flush in a shared tile.
+ * 3:5 versus 3:2 is about 11%, so that family still fills the preferred tile.
+ * 1:2 ensigns are past this limit: cropping them drops fly-side symbols
+ * (New Zealand's stars sit on the cut line), and stretching them that far
+ * distorts the design. Those flags are shown whole inside the tile instead.
+ */
+const FLAG_GRID_MAX_STRETCH = 1.12;
 
 /** Display width / height from the flag SVG's rendered viewport metadata. */
 export function getFlagAspectRatio(code: string): number {
   return ratioByCode.get(code.toLowerCase()) ?? DEFAULT_ASPECT_RATIO;
 }
 
-/** How a flag should fill a fixed-ratio quiz tile. */
+function withinGridStretch(flagRatio: number, tileRatio: number): boolean {
+  if (tileRatio <= 0) return false;
+  const delta = flagRatio / tileRatio;
+  return delta >= 1 / FLAG_GRID_MAX_STRETCH && delta <= FLAG_GRID_MAX_STRETCH;
+}
+
+/**
+ * Shared tile ratio for a set of flag choices.
+ * Uses 3:2 whenever every flag can fill it without a hard stretch.
+ * If the whole set shares some other ratio, uses that so those flags fill
+ * the tile completely. Mixed sets fall back to 3:2 and letterbox the outliers.
+ */
+export function getFlagGridAspectRatio(codes: string[]): number {
+  const ratios = codes.map((code) => getFlagAspectRatio(code));
+  if (ratios.length === 0) return FLAG_GRID_ASPECT_RATIO;
+  if (ratios.every((ratio) => withinGridStretch(ratio, FLAG_GRID_ASPECT_RATIO))) {
+    return FLAG_GRID_ASPECT_RATIO;
+  }
+
+  const sorted = [...ratios].sort((left, right) => left - right);
+  const median = sorted[Math.floor((sorted.length - 1) / 2)] ?? FLAG_GRID_ASPECT_RATIO;
+  if (ratios.every((ratio) => withinGridStretch(ratio, median))) return median;
+  return FLAG_GRID_ASPECT_RATIO;
+}
+
+/** How a flag should fill a fixed-ratio quiz tile. Never crops. */
 export function getFlagGridObjectFit(
   code: string,
   gridAspectRatio: number,
-): "fill" | "cover" {
+): "fill" | "contain" {
   const ratio = getFlagAspectRatio(code);
-  if (ratio <= gridAspectRatio) return "fill";
-  if (preserveFrameCodes.has(code.toUpperCase())) return "fill";
-  return "cover";
-}
-
-/** Returns the crop anchor for wide flags in fixed-ratio quiz tiles. */
-export function getFlagGridObjectPosition(code: string): "left center" | "center center" {
-  return centeredSubjectCodes.has(code.toUpperCase()) ? "center center" : "left center";
+  if (withinGridStretch(ratio, gridAspectRatio)) return "fill";
+  return "contain";
 }
 
 /** Returns the explicit geometry exception, or the profile implied by its ratio. */
