@@ -4,6 +4,13 @@ import { PANZOOM_EXCLUDE_CLASS } from "@/lib/map-colors";
 /** Pinch, wheel, and button zoom sensitivity (Panzoom default is 0.3). */
 export const MAP_PANZOOM_STEP = 1;
 
+/**
+ * Library place maps open already framed on one country, so the explorer step
+ * jumps the surroundings too fast. Wheel zoom multiplies scale by exp(step / 3)
+ * per event; 0.4 is about a 14% change instead of about 40%.
+ */
+export const LIBRARY_MAP_PANZOOM_STEP = 0.4;
+
 /** Smaller step for toolbar +/- buttons so desktop clicks stay controlled. */
 export const MAP_ZOOM_BUTTON_STEP = 0.55;
 

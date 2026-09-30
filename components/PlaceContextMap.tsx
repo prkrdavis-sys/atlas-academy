@@ -48,7 +48,7 @@ import {
   shouldUseRuntimeMapTexture,
 } from "@/lib/map-land-texture-runtime";
 import { getMapOceanTexture, preloadMapOceanTexture } from "@/lib/map-ocean-texture";
-import { MAP_PANZOOM_OPTIONS } from "@/lib/map-panzoom";
+import { LIBRARY_MAP_PANZOOM_STEP, MAP_PANZOOM_OPTIONS } from "@/lib/map-panzoom";
 import { getCountryByCode } from "@/lib/countries";
 import { isStateCode } from "@/lib/scope";
 import type { Country } from "@/lib/types";
@@ -750,6 +750,7 @@ export function PlaceContextMap({
       ...MAP_PANZOOM_OPTIONS,
       maxScale,
       startScale: interactiveViewBoxes.initialScale,
+      step: LIBRARY_MAP_PANZOOM_STEP,
     });
 
     const onZoom = (event: Event) => {
